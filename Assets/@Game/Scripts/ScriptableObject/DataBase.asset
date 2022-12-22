@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62b24b04b68136f46a1a5638fc3a6f01, type: 3}
+  m_Name: DataBase
+  m_EditorClassIdentifier: 
+  professorDatas:
+  - {fileID: 11400000, guid: a41c0853268e7b94087dceb04ccc9b35, type: 2}
+  studentDatas:
+  - {fileID: 11400000, guid: 845f45666a0a20840a2f4d5ab5eec135, type: 2}
+  - {fileID: 11400000, guid: c1f95575dd70d1b4590aed261ba6ec96, type: 2}
+  - {fileID: 11400000, guid: 6b20683f563a4b74583a10c22cef4ab2, type: 2}
+  - {fileID: 11400000, guid: 4a48038d695549843a3f55745e4c567f, type: 2}
+  - {fileID: 11400000, guid: 3ecfa0398f9cd7c4aba6cda5b321a06d, type: 2}
+  - {fileID: 11400000, guid: d468c669a93ed8f4b87855891f6d3176, type: 2}
+  classDatas:
+  - {fileID: 11400000, guid: 8a5f52eebcddc3b479012a1b118232eb, type: 2}
+  - {fileID: 11400000, guid: ca0cab65f7a4953419506bddaee25312, type: 2}
+  - {fileID: 11400000, guid: 7ff449c2a8287c54dbd2b6d60dda7924, type: 2}
+  - {fileID: 11400000, guid: 3cac4311dcffee0479ee60492ca5677f, type: 2}
+  - {fileID: 11400000, guid: 311d5e90515348243a06826070b8973b, type: 2}
+  studentCondition:
+  - {fileID: 11400000, guid: 54ec874f7eef98641a0698b4d0860858, type: 2}
