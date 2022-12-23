@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using TMPro;
 using StatData.Runtime;
 
@@ -11,6 +12,7 @@ public class ClassPrefab : MonoBehaviour
 {
     public GameObject m_Prefab;
     public Transform m_parent;
+
     [SerializeField] private ClassController m_SelecteClass;
 
     bool isCheck = true;
@@ -29,6 +31,8 @@ public class ClassPrefab : MonoBehaviour
 
     public void MakeClass()
     {
+        GameObject _clickObject = EventSystem.current.currentSelectedGameObject;
+
         if (isCheck == true)
         {
             for (int i = 0; i < m_SelecteClass.dataBase.classDatas.Count; i++)     // 수업의 갯수만큼 생성해주기

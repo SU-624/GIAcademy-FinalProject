@@ -90,9 +90,9 @@ public class ObjectManager : MonoBehaviour
         int _bottomNum = Random.Range(0, m_CharacterPartsBottom.Count);
         
         // 머리카락과 옷을 생성할 때 부모를 _newStudentObject로 설정해준다.
-        GameObject.Instantiate(m_CharacterPartsHair[_hairNum], _newStudentObject.transform);
-        GameObject.Instantiate(m_CharacterPartsTop[_topNum],_newStudentObject.transform);
-        GameObject.Instantiate(m_CharacterPartsBottom[_bottomNum], _newStudentObject.transform);
+        GameObject.Instantiate(m_CharacterPartsHair[_hairNum], _newStudentObject.transform.GetChild(0).transform);
+        GameObject.Instantiate(m_CharacterPartsTop[_topNum], _newStudentObject.transform.GetChild(0).transform);
+        GameObject.Instantiate(m_CharacterPartsBottom[_bottomNum], _newStudentObject.transform.GetChild(0).transform);
 
         // 엔티티로부터 스크립트를 얻어낸다
         Student _student = _newStudentObject.GetComponent<Student>();
