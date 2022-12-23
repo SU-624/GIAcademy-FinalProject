@@ -14,7 +14,9 @@ public class ClassPrefab : MonoBehaviour
     public Transform m_parent;
 
     [SerializeField] private ClassController m_SelecteClass;
-
+    [SerializeField] private GameObject m_Month1;
+    [SerializeField] private GameObject m_Month2;
+    [SerializeField] private GameObject m_Month3;
     bool isCheck = true;
 
     // Start is called before the first frame update
@@ -31,24 +33,50 @@ public class ClassPrefab : MonoBehaviour
 
     public void MakeClass()
     {
-        GameObject _clickObject = EventSystem.current.currentSelectedGameObject;
-
         if (isCheck == true)
         {
-            for (int i = 0; i < m_SelecteClass.dataBase.classDatas.Count; i++)     // 수업의 갯수만큼 생성해주기
+            if(m_Month1.name == "ProductManagerC_Button" || m_Month2.name == "ProductManagerC_Button" || m_Month3.name == "ProductManagerC_Button")
             {
-                // 이미 만들어졌다면 더이상 생성하지 못하도록
-                GameObject.Instantiate(m_Prefab, m_parent);
-                m_Prefab.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
-                //m_Prefab.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
-                m_Prefab.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].Stats.systemValue.ToString();
-                m_Prefab.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].Stats.contentsValue.ToString();
-                m_Prefab.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].Stats.balanceValue.ToString();
-                //m_Prefab.transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
-
-
-                isCheck = false;
+                for(int i =0; i < ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass.Count; i++)
+                {
+                    GameObject _classClick1 = GameObject.Instantiate(m_Prefab, m_parent);
+                    _classClick1.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass[i].m_ClassName;
+                    //_classClick1.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
+                    _classClick1.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass[i].m_ClassSystemValue.ToString();
+                    _classClick1.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass[i].m_ClassContentsValue.ToString();
+                    _classClick1.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass[i].m_ClassBalanceValue.ToString();
+                    //_classClick1.transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
+                }
             }
+
+            if (m_Month1.name == "ArtC_Button" || m_Month2.name == "ArtC_Button" || m_Month3.name == "ArtC_Button")
+            {
+                for (int i = 0; i < ClassSchedule.Instance.m_NowPlayerClass.ArtClass.Count; i++)
+                {
+                    GameObject _classClick2 = GameObject.Instantiate(m_Prefab, m_parent);
+                    _classClick2.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassName;
+                    //_classClick2.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
+                    _classClick2.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassSystemValue.ToString();
+                    _classClick2.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassContentsValue.ToString();
+                    _classClick2.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassBalanceValue.ToString();
+                    //_classClick2.transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
+                }
+            }
+
+            if (m_Month1.name == "ProgrammingC_Button" || m_Month2.name == "ProgrammingC_Button" || m_Month3.name == "ProgrammingC_Button")
+            {
+                for (int i = 0; i < ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass.Count; i++)
+                {
+                    GameObject _classClick3 = GameObject.Instantiate(m_Prefab, m_parent);
+                    _classClick3.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassName;
+                    //_classClick3.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
+                    _classClick3.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassSystemValue.ToString();
+                    _classClick3.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassContentsValue.ToString();
+                    _classClick3.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassBalanceValue.ToString();
+                    //_classClick3.transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
+                }
+            }
+            //isCheck = false;
         }
     }
 }

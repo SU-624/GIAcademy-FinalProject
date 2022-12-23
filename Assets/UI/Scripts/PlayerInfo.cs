@@ -29,10 +29,12 @@ public class PlayerInfo
     public string m_AcademyName;
     public string m_DirectorName;
 
+
     // 인게임 데이터
     // 보유 교사
     // 보유 학생
     // 보유 금액
+    public int m_MyMoney = 10000;
     // 퀘스트
     // 메일함
     // 캘린더

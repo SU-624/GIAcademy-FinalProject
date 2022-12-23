@@ -49,6 +49,9 @@ public class PopOffUI : MonoBehaviour
         {
             m_UI.SetActive(false);
         }
+
+        Time.timeScale = 1;
+        Debug.Log("Ω√∞£ »Â∏ß");
     }
 
 }

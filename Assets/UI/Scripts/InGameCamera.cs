@@ -1,16 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Collections;
 
 public class InGameCamera : MonoBehaviour
 {
     public float m_OrthoZoomSpeed = 0.5f;    // OrthoGraphic Mode
     public Camera camera;
-    public Transform cameraTransform;
 
     public float MoveSpeed;
-    Vector2 PrevPos = Vector2.zero;
+    // Vector2 PrevPos = Vector2.zero;
+
+    Vector2 prePos, nowPos;
+    Vector3 movePos;
+
     float PrevDistance = 0.0f;
 
     Vector2 ClickPoint;
@@ -18,9 +20,7 @@ public class InGameCamera : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // camera = new Camera();
 
-        cameraTransform = Camera.main.transform;
     }
 
     // Update is called once per frame
@@ -32,20 +32,88 @@ public class InGameCamera : MonoBehaviour
             PinchZoom();
         }
 
+        //if (Input.touchCount == 1)
+        //{
+        //    if (PrevPos == Vector2.zero)
+        //    {
+        //        PrevPos = Input.GetTouch(0).position;
 
-        if(Input.GetMouseButtonDown(0))
+        //        return;
+        //    }
+
+        //    Vector3 dir = (Input.GetTouch(0).position - PrevPos).normalized;
+
+        //    if(dir.z < -25)
+        //    {
+        //        dir.z = -25;
+        //    }
+
+        //    Vector3 vec = new Vector3(dir.x, dir.y, dir.z);
+
+        //    cameraTransform.position -= vec * MoveSpeed * Time.deltaTime;
+        //    PrevPos = Input.GetTouch(0).position;
+        //}
+
+        if (Input.touchCount == 1)
         {
-            ClickPoint = Input.mousePosition;
-        
-            Vector3 position = camera.ScreenToViewportPoint((Vector2)Input.mousePosition - ClickPoint);
-        
-            Vector3 move = position * (Time.deltaTime * MoveSpeed);
-        
-            cameraTransform.Translate(move);
+            ClickPoint = Input.GetTouch(0).position;
+        }
+
+        if (Input.touchCount == 1)
+        {
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began)
+            {
+                prePos = touch.position - touch.deltaPosition;
+            }
+            else if (touch.phase == TouchPhase.Moved)
+            {
+                nowPos = touch.position - touch.deltaPosition;
+                movePos = (Vector3)(prePos - nowPos) * Time.deltaTime * MoveSpeed;
+                camera.transform.Translate(movePos);
+                prePos = touch.position - touch.deltaPosition;
+            }
+        }
+
+        //if (Input.touchCount == 1)
+        //{
+        //    Vector3 position
+        //    = camera.ScreenToViewportPoint((Vector2)Input.GetTouch(0).position - ClickPoint);
+        //
+        //    position.z = position.y;
+        //    position.y = .0f;
+        //
+        //    Vector3 move = position * (Time.deltaTime * MoveSpeed);
+        //
+        //    float y = transform.position.y;
+        //
+        //    transform.position += move;
+        //
+        //    transform.Translate(move);
+        //    transform.transform.position
+        //        = new Vector3(transform.position.x, y, transform.position.z);
+        //}
+        ////if(Input.touchCount == 1)
+        //{
+        //    Touch touchZero = Input.GetTouch(0);        // 첫번째 손가락 좌표
+
+        //    ClickPoint = touchZero.position;
+
+        //    Vector3 position = camera.ScreenToViewportPoint((Vector2)touchZero.position - ClickPoint);
+
+        //    Vector3 move = position * (Time.deltaTime * MoveSpeed);
+
+        //    cameraTransform.Translate(move);
+        //    cameraTransform.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
+        //}
+
+        if (Input.touchCount == 0)
+        {
+
         }
     }
 
-    public void OnMouseDrag()
+   /* public void OnMouseDrag()
     {
         int touchcount = Input.touchCount;
 
@@ -62,15 +130,17 @@ public class InGameCamera : MonoBehaviour
             Vector2 dir = (Input.GetTouch(0).position - PrevPos).normalized;
             Vector3 vec = new Vector3(dir.x, dir.y);
 
-            cameraTransform.position -= vec * MoveSpeed * Time.deltaTime;
+            camera.transform.position -= vec * MoveSpeed * Time.deltaTime;
             PrevPos = Input.GetTouch(0).position;
         }
     }
+
     public void ExitDrag()
     {
         PrevPos = Vector2.zero;
         PrevDistance = 0.0f;
     }
+   */
 
     public void PinchZoom()
     {

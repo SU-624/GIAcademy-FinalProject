@@ -25,8 +25,13 @@ public class PopUpUI : MonoBehaviour
     }
 
     // UI를 켜주는 시간 조정 함수
-    public void DelayTurnOnUI()
+    public void DelayTurnOnUI(/*int t*/)
     {
+        //if(t != 0)
+        //{
+        //    m_DelayTime = t;
+        //}
+
         Invoke("JustTurnOn", m_DelayTime);
     }
 
@@ -39,15 +44,20 @@ public class PopUpUI : MonoBehaviour
         {
             m_UI.gameObject.SetActive(true);
         }
+
+        Time.timeScale = 0;
+        Debug.Log("시간 멈춤");
     }
 
     public void JustTurnOn()
     {
-
         if (this.gameObject.activeSelf == false)
         {
             this.gameObject.SetActive(true);
         }
+
+        Time.timeScale = 0;
+        Debug.Log("시간 멈춤");
     }
 
     // 지정 팝업창을 켜 주면서 그 전의 UI 는 꺼준다.
@@ -58,6 +68,9 @@ public class PopUpUI : MonoBehaviour
             m_UI.gameObject.SetActive(true);    // 이 스크립트가 붙어있는 오브젝트 본인
             this.gameObject.SetActive(false);   // 누르는 버튼은 꺼주기
         }
+
+        Time.timeScale = 0;
+        Debug.Log("시간 멈춤");
     }
 
 

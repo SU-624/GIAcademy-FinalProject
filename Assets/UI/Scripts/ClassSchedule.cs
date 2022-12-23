@@ -47,11 +47,13 @@ public class ClassSchedule : MonoBehaviour
 {
     private static ClassSchedule _instance = null;
 
-    [SerializeField] private GameObject m_SelecteClassArea;
+    [SerializeField] private GameObject m_SelecteClassArea1;
+    [SerializeField] private GameObject m_SelecteClassArea2;
+    [SerializeField] private GameObject m_SelecteClassArea3;
     [SerializeField] private GameObject m_MonthClassSpace;
     [SerializeField] private ClassController m_LoadClassData;
 
-    EachClass m_NowPlayerClass = new EachClass();
+    public EachClass m_NowPlayerClass = new EachClass();
 
     public static ClassSchedule Instance
     {
@@ -111,45 +113,34 @@ public class ClassSchedule : MonoBehaviour
         // 총 3개의 선택을 할 수있는 창이 떠야함. 방금 선택한 버튼의 이름으로 생성하기 그래야 수업이 어느 반의 수업인지 알기 쉬움.
         GameObject gobj = EventSystem.current.currentSelectedGameObject;
 
-        if (m_MonthClassSpace.transform.childCount > 0)
-        {
-            for (int i = 0; i < m_MonthClassSpace.transform.childCount; i++)
-            {
-                //Destroy(m_MonthClassSpace.);
-            }
-        }
-
         if (gobj.name == "ProductManagerC_Button")
         {
             Debug.Log("기획반");
 
-            for (int i = 0; i < 3; i++)
-            {
-                GameObject _button = GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
-                _button.name = gobj.name;
-            }
+            //GameObject _button = GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
+            m_SelecteClassArea1.name = gobj.name;
+            m_SelecteClassArea2.name = gobj.name;
+            m_SelecteClassArea3.name = gobj.name;
         }
 
         if (gobj.name == "ArtC_Button")
         {
             Debug.Log("아트반");
 
-            for (int i = 0; i < 3; i++)
-            {
-                GameObject _button = GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
-                _button.name = gobj.name;
-            }
+            //GameObject _button = GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
+            m_SelecteClassArea1.name = gobj.name;
+            m_SelecteClassArea2.name = gobj.name;
+            m_SelecteClassArea3.name = gobj.name;
         }
 
         if (gobj.name == "ProgrammingC_Button")
         {
             Debug.Log("플밍반");
 
-            for (int i = 0; i < 3; i++)
-            {
-                GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
-                m_SelecteClassArea.name = gobj.name;
-            }
+            //GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
+            m_SelecteClassArea1.name = gobj.name;
+            m_SelecteClassArea2.name = gobj.name;
+            m_SelecteClassArea3.name = gobj.name;
         }
 
         //if (gobj.name == "ArtC_Button")
