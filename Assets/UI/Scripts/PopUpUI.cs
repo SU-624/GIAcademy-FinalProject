@@ -45,6 +45,7 @@ public class PopUpUI : MonoBehaviour
             m_UI.gameObject.SetActive(true);
         }
 
+        GameTime.Instance.IsGameMode = false;
         Time.timeScale = 0;
         Debug.Log("Ω√∞£ ∏ÿ√„");
     }
@@ -56,6 +57,7 @@ public class PopUpUI : MonoBehaviour
             this.gameObject.SetActive(true);
         }
 
+        GameTime.Instance.IsGameMode = false;
         Time.timeScale = 0;
         Debug.Log("Ω√∞£ ∏ÿ√„");
     }
@@ -69,6 +71,7 @@ public class PopUpUI : MonoBehaviour
             this.gameObject.SetActive(false);   // ¥©∏£¥¬ πˆ∆∞¿∫ ≤®¡÷±‚
         }
 
+        GameTime.Instance.IsGameMode = false;
         Time.timeScale = 0;
         Debug.Log("Ω√∞£ ∏ÿ√„");
     }

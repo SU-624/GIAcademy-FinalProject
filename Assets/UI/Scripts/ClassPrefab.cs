@@ -107,7 +107,6 @@ public class ClassPrefab : MonoBehaviour
         for (int i = 0; i < m_SelecteClass.classData.Count; i++)
         {
             // 수업을 클릭했을 때 현재 클릭한 수업을 저장하기 위해 리스트에 넣어줬다.
-            m_SelecteClassDataList.Add(m_SelecteClass.classData.ElementAt(i).Value);
 
             // 클릭한 수업이랑 같은 이름의 수업 정보를 띄워주기 위한 것이다.
             if (_nowObj.name == m_SelecteClass.classData.ElementAt(i).Value.m_ClassName)
@@ -120,6 +119,7 @@ public class ClassPrefab : MonoBehaviour
                 _classDataObj.transform.GetChild(4).GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.classData.ElementAt(i).Value.m_ClassContentsValue.ToString();
                 _classDataObj.transform.GetChild(5).GetChild(0).GetComponent<TextMeshProUGUI>().text = "Balance";
                 _classDataObj.transform.GetChild(5).GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.classData.ElementAt(i).Value.m_ClassBalanceValue.ToString();
+                m_SelecteClassDataList.Add(m_SelecteClass.classData.ElementAt(i).Value);
             }
 
         }

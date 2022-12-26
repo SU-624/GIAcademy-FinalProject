@@ -53,6 +53,7 @@ public class PopOffUI : MonoBehaviour
             m_ClassPrefab.m_SelecteClassDataList.Clear();
         }
 
+        GameTime.Instance.IsGameMode = true;
         Time.timeScale = 1;
         Debug.Log("Ω√∞£ »Â∏ß");
     }

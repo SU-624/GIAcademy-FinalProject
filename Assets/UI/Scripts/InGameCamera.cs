@@ -27,40 +27,23 @@ public class InGameCamera : MonoBehaviour
     void Update()
     {
 
-        if (Input.touchCount == 2)      // 줌인.아웃 가능한 손가락 2개만큼의 터치만 허용
+        if (GameTime.Instance.IsGameMode == true)
         {
-            PinchZoom();
+            if (Input.touchCount == 2)      // 줌인.아웃 가능한 손가락 2개만큼의 터치만 허용
+            {
+                PinchZoom();
+            }
         }
 
-        //if (Input.touchCount == 1)
-        //{
-        //    if (PrevPos == Vector2.zero)
-        //    {
-        //        PrevPos = Input.GetTouch(0).position;
-
-        //        return;
-        //    }
-
-        //    Vector3 dir = (Input.GetTouch(0).position - PrevPos).normalized;
-
-        //    if(dir.z < -25)
-        //    {
-        //        dir.z = -25;
-        //    }
-
-        //    Vector3 vec = new Vector3(dir.x, dir.y, dir.z);
-
-        //    cameraTransform.position -= vec * MoveSpeed * Time.deltaTime;
-        //    PrevPos = Input.GetTouch(0).position;
-        //}
+        // if (Input.touchCount == 1)
+        // {
+        //     ClickPoint = Input.GetTouch(0).position;
+        // }
 
         if (Input.touchCount == 1)
         {
             ClickPoint = Input.GetTouch(0).position;
-        }
 
-        if (Input.touchCount == 1)
-        {
             Touch touch = Input.GetTouch(0);
             if (touch.phase == TouchPhase.Began)
             {
@@ -75,72 +58,40 @@ public class InGameCamera : MonoBehaviour
             }
         }
 
-        //if (Input.touchCount == 1)
-        //{
-        //    Vector3 position
-        //    = camera.ScreenToViewportPoint((Vector2)Input.GetTouch(0).position - ClickPoint);
-        //
-        //    position.z = position.y;
-        //    position.y = .0f;
-        //
-        //    Vector3 move = position * (Time.deltaTime * MoveSpeed);
-        //
-        //    float y = transform.position.y;
-        //
-        //    transform.position += move;
-        //
-        //    transform.Translate(move);
-        //    transform.transform.position
-        //        = new Vector3(transform.position.x, y, transform.position.z);
-        //}
-        ////if(Input.touchCount == 1)
-        //{
-        //    Touch touchZero = Input.GetTouch(0);        // 첫번째 손가락 좌표
-
-        //    ClickPoint = touchZero.position;
-
-        //    Vector3 position = camera.ScreenToViewportPoint((Vector2)touchZero.position - ClickPoint);
-
-        //    Vector3 move = position * (Time.deltaTime * MoveSpeed);
-
-        //    cameraTransform.Translate(move);
-        //    cameraTransform.transform.position = new Vector3(transform.position.x, transform.position.y, 0);
-        //}
-
         if (Input.touchCount == 0)
         {
 
         }
     }
 
-   /* public void OnMouseDrag()
-    {
-        int touchcount = Input.touchCount;
+    /* public void OnMouseDrag()
+     {
+         int touchcount = Input.touchCount;
 
-        ////뭐지
-        if (touchcount == 1)
-        {
-            if (PrevPos == Vector2.zero)
-            {
-                PrevPos = Input.GetTouch(0).position;
+         ////뭐지
+         if (touchcount == 1)
+         {
+             if (PrevPos == Vector2.zero)
+             {
+                 PrevPos = Input.GetTouch(0).position;
 
-                return;
-            }
+                 return;
+             }
 
-            Vector2 dir = (Input.GetTouch(0).position - PrevPos).normalized;
-            Vector3 vec = new Vector3(dir.x, dir.y);
+             Vector2 dir = (Input.GetTouch(0).position - PrevPos).normalized;
+             Vector3 vec = new Vector3(dir.x, dir.y);
 
-            camera.transform.position -= vec * MoveSpeed * Time.deltaTime;
-            PrevPos = Input.GetTouch(0).position;
-        }
-    }
+             camera.transform.position -= vec * MoveSpeed * Time.deltaTime;
+             PrevPos = Input.GetTouch(0).position;
+         }
+     }
 
-    public void ExitDrag()
-    {
-        PrevPos = Vector2.zero;
-        PrevDistance = 0.0f;
-    }
-   */
+     public void ExitDrag()
+     {
+         PrevPos = Vector2.zero;
+         PrevDistance = 0.0f;
+     }
+    */
 
     public void PinchZoom()
     {

@@ -7,13 +7,29 @@ using TMPro;
 
 public class GameTime : MonoBehaviour
 {
+    private static GameTime instance = null;
+
+    public static GameTime Instance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new GameTime();
+            }
+            return instance;
+        }
+
+        set { instance = value; }
+    }
+
     public TextMeshProUGUI m_nowTime;
 
 
     public float LimitTime = 30.0f;
     float PrevTime = 0.0f;
 
-    int Year;
+    int Year = 1;
     // string[] Month = new string[12];
     // string[] Week = new string[4];
 
@@ -24,15 +40,17 @@ public class GameTime : MonoBehaviour
     int MonthIndex = 2;
     int WeekIndex = 0;
 
-    
+    public bool IsGameMode = false;        // 메인게임화면 or UI 창 화면 체크해서 각 모드 때만 가능한 것들을 하기 위한 변수
 
     // Start is called before the first frame update
     void Start()
     {
+        IsGameMode = false;
+        Debug.Log(IsGameMode);
 
-        Year = 1;
         // Month[11] = "12월";
         // Week[0] = "첫째주";
+
         m_nowTime.text = Year + "년 " + Month[MonthIndex] + " " + Week[WeekIndex];
 
         Debug.Log(Year + "년 " + Month[MonthIndex] + " " + Week[WeekIndex]);
@@ -41,22 +59,26 @@ public class GameTime : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        FlowtheTime();
+        if (IsGameMode == true)
+        {
+            ShowGameTime();
 
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            Time.timeScale = 0;
+            FlowtheTime();
         }
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            Time.timeScale = 1;
-        }
+
+        //if (Input.GetKeyDown(KeyCode.A))
+        //{
+        //    Time.timeScale = 0;
+        //}
+        //if (Input.GetKeyDown(KeyCode.S))
+        //{
+        //    Time.timeScale = 1;
+        //}
 
     }
 
     public void FlowtheTime()
     {
-
         if (PrevTime == 0.0f)
         {
             PrevTime = Time.time;
@@ -127,6 +149,12 @@ public class GameTime : MonoBehaviour
     public void IsLimitedGameTimeEnd()
     {
         Debug.Log("게임 스토리 끝~");
+
+    }
+
+    public void ShowGameTime()
+    {
+        Debug.Log("시간 진행 : " + IsGameMode);
 
     }
 }

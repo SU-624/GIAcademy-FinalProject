@@ -39,19 +39,7 @@ public class UIManager : MonoBehaviour
 
     }
 
-    // public 프로퍼티로 선언해서 외부에서 private 메버변수에만 접근 가능하도록
-    public static UIManager Instance
-    {
-        get
-        {
-            if (m_Instance == null)
-            {
-                return null;
-            }
-            return m_Instance;
-        }
-    }
-
+    
     //public void PopUpUI()
     //{
     //    if (Input.GetKeyDown("1"))
