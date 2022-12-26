@@ -3,7 +3,7 @@ using UnityEngine;
 namespace StatData.Runtime
 {
     /// <summary>
-    /// 만들어진 학생과 교수들의 ScriptableObject의 정보들을 가져오는 클래스
+    /// 만들어진 학생들의 ScriptableObject의 정보들을 가져오는 클래스
     /// 
     /// 2022.11.05
     /// </summary>

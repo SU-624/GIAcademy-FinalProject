@@ -12,7 +12,7 @@ namespace StatData.Runtime
     public class Stat
     {
         protected StudentData m_StudentData;
-        protected ProfessorData m_ProfessorData;
+        //protected ProfessorData m_ProfessorData;
 
         public int m_StudentSystemValue;
         public int m_StudentContentsValue;
@@ -33,9 +33,9 @@ namespace StatData.Runtime
             m_StudentType = studentType;
         }
 
-        public Stat(ProfessorData _professorData)
-        {
-            m_ProfessorData = _professorData;
-        }
+        //public Stat(ProfessorData _professorData)
+        //{
+        //    m_ProfessorData = _professorData;
+        //}
     }
 }

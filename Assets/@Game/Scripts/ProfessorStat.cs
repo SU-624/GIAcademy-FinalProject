@@ -13,11 +13,15 @@ namespace StatData.Runtime
         public int professorSystem => m_ProfessorData.ProfessorSystem;
         public int professorContents => m_ProfessorData.ProfessorContents;
         public int professorBalance => m_ProfessorData.ProfessorBalance;
-        //public int professorType => m_ProfessorData.ProfessorSystem;
+        public Type professorType => m_ProfessorData.ProfessorType;
 
         public ProfessorStat(ProfessorData _professorData)
         {
             m_ProfessorData = _professorData;
+            m_ProfessorSystemValue = professorSystem;
+            m_ProfessorContentsValue = professorContents;
+            m_ProfessorBalanceValue = professorBalance;
+            m_ProfessorType = professorType;
         }
     }
 }

@@ -12,6 +12,8 @@ public class PopOffUI : MonoBehaviour
     public GameObject m_UI;         // ม๖มควา UI
     public int m_DelayTime;
 
+    [SerializeField] private ClassPrefab m_ClassPrefab;
+
     [SerializeField]
     private GameObject MyUI
     {
@@ -48,6 +50,7 @@ public class PopOffUI : MonoBehaviour
         if(m_UI.activeSelf == true)
         {
             m_UI.SetActive(false);
+            m_ClassPrefab.m_SelecteClassDataList.Clear();
         }
 
         Time.timeScale = 1;

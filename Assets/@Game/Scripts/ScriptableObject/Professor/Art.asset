@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: abb9ef05c3f84d345a1566c8aaff9f1b, type: 3}
-  m_Name: Programming
+  m_Name: Art
   m_EditorClassIdentifier: 
-  m_ProfessorName: MinSik
-  m_ProfessorSystem: 16
-  m_ProfessorContents: 2
-  m_ProfessorBalance: 7
-  m_ProfessorType: 0
+  m_ProfessorName: Jinsu
+  m_ProfessorSystem: 2
+  m_ProfessorContents: 3
+  m_ProfessorBalance: 4
+  m_ProfessorType: 1

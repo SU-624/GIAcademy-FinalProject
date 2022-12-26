@@ -143,24 +143,7 @@ public class ClassSchedule : MonoBehaviour
             m_SelecteClassArea3.name = gobj.name;
         }
 
-        //if (gobj.name == "ArtC_Button")
-        //{
-        //    Debug.Log("아트반");
 
-        //    for (int i = 0; i < m_NowPlayerClass.ArtClass.Count; i++)
-        //    {
-        //        GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
-        //    }
-        //}
-        //if (gobj.name == "ProgrammingC_Button")
-        //{
-        //    Debug.Log("플밍반");
-
-        //    for (int i = 0; i < m_NowPlayerClass.ProgrammingClass.Count; i++)
-        //    {
-        //        GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
-        //    }
-        //}
     }
 
     //public void ChangeColor()
