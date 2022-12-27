@@ -118,9 +118,9 @@ public class ClassSchedule : MonoBehaviour
             Debug.Log("기획반");
 
             //GameObject _button = GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
-            m_SelecteClassArea1.name = gobj.name;
-            m_SelecteClassArea2.name = gobj.name;
-            m_SelecteClassArea3.name = gobj.name;
+            m_SelecteClassArea1.name = gobj.name + "1";
+            m_SelecteClassArea2.name = gobj.name + "2";
+            m_SelecteClassArea3.name = gobj.name + "3";
         }
 
         if (gobj.name == "ArtC_Button")
@@ -128,9 +128,9 @@ public class ClassSchedule : MonoBehaviour
             Debug.Log("아트반");
 
             //GameObject _button = GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
-            m_SelecteClassArea1.name = gobj.name;
-            m_SelecteClassArea2.name = gobj.name;
-            m_SelecteClassArea3.name = gobj.name;
+            m_SelecteClassArea1.name = gobj.name + "1";
+            m_SelecteClassArea2.name = gobj.name + "2";
+            m_SelecteClassArea3.name = gobj.name + "3";
         }
 
         if (gobj.name == "ProgrammingC_Button")
@@ -138,9 +138,9 @@ public class ClassSchedule : MonoBehaviour
             Debug.Log("플밍반");
 
             //GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
-            m_SelecteClassArea1.name = gobj.name;
-            m_SelecteClassArea2.name = gobj.name;
-            m_SelecteClassArea3.name = gobj.name;
+            m_SelecteClassArea1.name = gobj.name + "1";
+            m_SelecteClassArea2.name = gobj.name + "2";
+            m_SelecteClassArea3.name = gobj.name + "3";
         }
 
 

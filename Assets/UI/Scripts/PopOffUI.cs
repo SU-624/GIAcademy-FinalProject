@@ -44,13 +44,26 @@ public class PopOffUI : MonoBehaviour
         Invoke("TurnOffUI", m_DelayTime);
     }
 
-    // 팝업 되어서 켜진 UI를 꺼주는 함수
+    // 뒤로가기 버튼을 눌렀을 때
     public void TurnOffUI()
     {
-        if(m_UI.activeSelf == true)
+        if (m_UI.activeSelf == true)
         {
             m_UI.SetActive(false);
-            m_ClassPrefab.m_SelecteClassDataList.Clear();
+
+            if (m_ClassPrefab != null)
+            {
+                if (m_ClassPrefab.m_SelecteClassDataList != null)
+                {
+                    m_ClassPrefab.m_SelecteClassDataList.Clear();
+                }
+
+
+                if (m_ClassPrefab.m_SelecteClassButtonName != null)
+                {
+                    m_ClassPrefab.m_SelecteClassButtonName.Clear();
+                }
+            }
         }
 
         GameTime.Instance.IsGameMode = true;
@@ -58,4 +71,17 @@ public class PopOffUI : MonoBehaviour
         Debug.Log("시간 흐름");
     }
 
+    // 선택 완료를 눌렀을 때
+    //public void SelecteComplete()
+    //{
+    //    if (m_UI.activeSelf == true)
+    //    {
+    //        m_UI.SetActive(false);
+
+    //        if (m_ClassPrefab.m_SelecteClassDataList != null)
+    //        {
+    //            m_ClassPrefab.m_SelecteClassDataList.Clear();
+    //        }
+    //    }
+    //}
 }

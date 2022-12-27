@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-
-
 public class GameTime : MonoBehaviour
 {
     private static GameTime instance = null;
@@ -15,7 +13,7 @@ public class GameTime : MonoBehaviour
         {
             if (instance == null)
             {
-                instance = new GameTime();
+                return null;
             }
             return instance;
         }
@@ -42,8 +40,16 @@ public class GameTime : MonoBehaviour
 
     public bool IsGameMode = false;        // 메인게임화면 or UI 창 화면 체크해서 각 모드 때만 가능한 것들을 하기 위한 변수
 
+    public void Awake()
+    {
+        if(instance == null)
+        {
+            instance = this;
+        }
+    }
+
     // Start is called before the first frame update
-    void Start()
+    public void Start()
     {
         IsGameMode = false;
         Debug.Log(IsGameMode);
@@ -57,7 +63,7 @@ public class GameTime : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    public void Update()
     {
         if (IsGameMode == true)
         {
@@ -154,7 +160,12 @@ public class GameTime : MonoBehaviour
 
     public void ShowGameTime()
     {
-        Debug.Log("시간 진행 : " + IsGameMode);
+        //Debug.Log("시간 진행 : " + IsGameMode);
 
+    }
+
+    public void SendGameMode(bool b)
+    {
+        b = IsGameMode;
     }
 }

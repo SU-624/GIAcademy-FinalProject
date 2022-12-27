@@ -11,9 +11,12 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/@Game/Scenes/TitleScene.unity
     guid: 0ce87c40c646f2641b8217212d5955b1
+  - enabled: 0
+    path: Assets/@Game/Scenes/PreInGameScene.unity
+    guid: a4a232a52cd40fc4d9e02472b261bc2b
   - enabled: 1
     path: Assets/@Game/Scenes/InGameScene.unity
-    guid: a4a232a52cd40fc4d9e02472b261bc2b
+    guid: e3805ba0360aa1f4aacbdb40cff1cad3
   - enabled: 1
     path: Assets/@Game/Scenes/UIScene.unity
     guid: 063ade2873d305b438b00d6c6015e050

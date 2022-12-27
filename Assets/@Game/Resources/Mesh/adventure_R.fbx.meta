@@ -2,7 +2,88 @@ fileFormatVersion: 2
 guid: 1663fdcc77a057946b27d2ca4936da4a
 ModelImporter:
   serializedVersion: 21300
-  internalIDToNameTable: []
+  internalIDToNameTable:
+  - first:
+      74: -5045858055481332143
+    second: Retopo_Circle.003|Armature.001Action.004
+  - first:
+      74: 2742839259732343671
+    second: Retopo_Circle.003|book_body.002|Take 001|BaseLayer
+  - first:
+      74: 8189477876730503999
+    second: Retopo_Circle.003|book_body.002|Take 001|BaseLayer.002
+  - first:
+      74: -2371268936618482178
+    second: Retopo_Circle.003|book_body|Take 001|BaseLayer
+  - first:
+      74: 3557454553913943315
+    second: Retopo_Circle.003|book_body|Take 001|BaseLayer.001
+  - first:
+      74: -236248420000297660
+    second: Retopo_Circle.003|Plane.048|Scene
+  - first:
+      74: -5353026066218415050
+    second: Retopo_Circle.003|PolySphere.001|Scene
+  - first:
+      74: 2327716427230011972
+    second: Retopo_Circle.003|PolySphere.001|Scene.001
+  - first:
+      74: -6643486403581004080
+    second: Retopo_Circle.003|shine_001.001|Take 001|BaseLayer
+  - first:
+      74: -237650156551938673
+    second: Retopo_Circle.003|shine_001|Take 001|BaseLayer
+  - first:
+      74: 8401705040870586398
+    second: Retopo_Circle.003|shine_002.001|Take 001|BaseLayer
+  - first:
+      74: -4127269612099894970
+    second: Retopo_Circle.003|shine_002.001|Take 001|BaseLayer.001
+  - first:
+      74: 8366999319946133516
+    second: Retopo_Circle.003|shine_002|Take 001|BaseLayer
+  - first:
+      74: -2656625090268144232
+    second: Retopo_Circle.003|shine_003.001|Take 001|BaseLayer
+  - first:
+      74: -1186502974970184565
+    second: Retopo_Circle.003|shine_003.001|Take 001|BaseLayer.001
+  - first:
+      74: -5711154590414573530
+    second: Retopo_Circle.003|shine_003|Take 001|BaseLayer
+  - first:
+      74: 1229453151038085012
+    second: Retopo_Circle.003|shine_004.001|Take 001|BaseLayer
+  - first:
+      74: -5307276014049508527
+    second: Retopo_Circle.003|shine_004.001|Take 001|BaseLayer.001
+  - first:
+      74: 4289381234951375346
+    second: Retopo_Circle.003|shine_004|Take 001|BaseLayer
+  - first:
+      74: 8269306400838441705
+    second: Retopo_Circle.003|shine_005.001|Take 001|BaseLayer
+  - first:
+      74: 2431840647357801369
+    second: Retopo_Circle.003|shine_005.001|Take 001|BaseLayer.001
+  - first:
+      74: 2356797595607452614
+    second: Retopo_Circle.003|shine_005|Take 001|BaseLayer
+  - first:
+      74: 8701921149607581832
+    second: Retopo_Circle.003|shine_006.001|Take 001|BaseLayer
+  - first:
+      74: 2708399227257409620
+    second: Retopo_Circle.003|shine_006.001|Take 001|BaseLayer.001
+  - first:
+      74: -2828364356784210183
+    second: Retopo_Circle.003|shine_006|Take 001|BaseLayer
+  - first:
+      74: -3725042643937765337
+    second: Retopo_Circle.003|shine_007.001|Take 001|BaseLayer
+  - first:
+      74: 895117024811786249
+    second: Retopo_Circle.003|shine_007|Take 001|BaseLayer
   externalObjects: {}
   materials:
     materialImportMode: 2

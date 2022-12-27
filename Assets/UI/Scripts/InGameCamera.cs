@@ -35,6 +35,7 @@ public class InGameCamera : MonoBehaviour
             }
         }
 
+
         // if (Input.touchCount == 1)
         // {
         //     ClickPoint = Input.GetTouch(0).position;
@@ -114,8 +115,8 @@ public class InGameCamera : MonoBehaviour
         {
             camera.orthographicSize += deltaMagnitudeDiff * m_OrthoZoomSpeed;
 
-            camera.orthographicSize = Mathf.Max(camera.orthographicSize, 1.5f);
-            camera.orthographicSize = Mathf.Min(camera.orthographicSize, 7.28f);
+            camera.orthographicSize = Mathf.Max(camera.orthographicSize, 3f);
+            camera.orthographicSize = Mathf.Min(camera.orthographicSize, 12f);
         }
 
     }

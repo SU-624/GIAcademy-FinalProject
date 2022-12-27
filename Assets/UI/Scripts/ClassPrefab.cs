@@ -21,11 +21,16 @@ public class ClassPrefab : MonoBehaviour
     [SerializeField] private GameObject m_Month3;
     [SerializeField] private GameObject m_ClassInfo;
 
+    [SerializeField] private TextMeshProUGUI m_SelecteClassName1;
+    [SerializeField] private TextMeshProUGUI m_SelecteClassName2;
+    [SerializeField] private TextMeshProUGUI m_SelecteClassName3;
+
     //bool isCheck = true;
 
     // 만들어진 수업들을 관리하기 위한 리스트
     public List<GameObject> m_ClassList = new List<GameObject>();
     public List<Class> m_SelecteClassDataList = new List<Class>(); // 방금 선택한 수업의 내용을 저장하려고 만든 리스트
+    public List<string> m_SelecteClassButtonName = new List<string>(); // 내가 클릭한 버튼에 최종적으로 선택한 수업을 넣어주기 위해 만든 리스트
 
     public void MakeClass()
     {
@@ -36,14 +41,29 @@ public class ClassPrefab : MonoBehaviour
                 Destroy(m_ClassList[i]);
             }
             m_ClassList.Clear();
-            m_SelecteClassDataList.Clear();
+            //m_SelecteClassDataList.Clear();
         }
 
-        if (m_Month1.name == "ProductManagerC_Button" || m_Month2.name == "ProductManagerC_Button" || m_Month3.name == "ProductManagerC_Button")
+        if (m_Month1.name == "ProductManagerC_Button1" || m_Month2.name == "ProductManagerC_Button2" || m_Month3.name == "ProductManagerC_Button3")
         {
             for (int i = 0; i < ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass.Count; i++)
             {
+                GameObject _nowObj = EventSystem.current.currentSelectedGameObject;
                 GameObject _classClick1 = GameObject.Instantiate(m_Prefab, m_parent);
+
+                if (_nowObj.name == "1Week_Button1" && m_SelecteClassButtonName.Count == 0)
+                {
+                    m_SelecteClassButtonName.Add(_nowObj.name);
+                }
+                else if (_nowObj.name == "1Week_Button2" && m_SelecteClassButtonName.Count == 0)
+                {
+                    m_SelecteClassButtonName.Add(_nowObj.name);
+                }
+                else if (_nowObj.name == "1Week_Button3" && m_SelecteClassButtonName.Count == 0)
+                {
+                    m_SelecteClassButtonName.Add(_nowObj.name);
+                }
+
                 _classClick1.name = ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass[i].m_ClassName;
                 m_ClassList.Add(_classClick1);
                 _classClick1.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass[i].m_ClassName;
@@ -57,13 +77,14 @@ public class ClassPrefab : MonoBehaviour
             }
         }
 
-        if (m_Month1.name == "ArtC_Button" || m_Month2.name == "ArtC_Button" || m_Month3.name == "ArtC_Button")
+        if (m_Month1.name == "ArtC_Button1" || m_Month2.name == "ArtC_Button2" || m_Month3.name == "ArtC_Button3")
         {
             for (int i = 0; i < ClassSchedule.Instance.m_NowPlayerClass.ArtClass.Count; i++)
             {
                 GameObject _classClick2 = GameObject.Instantiate(m_Prefab, m_parent);
                 _classClick2.name = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassName;
                 m_ClassList.Add(_classClick2);
+
                 _classClick2.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassName;
                 //_classClick2.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
                 _classClick2.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassSystemValue.ToString();
@@ -75,13 +96,14 @@ public class ClassPrefab : MonoBehaviour
             }
         }
 
-        if (m_Month1.name == "ProgrammingC_Button" || m_Month2.name == "ProgrammingC_Button" || m_Month3.name == "ProgrammingC_Button")
+        if (m_Month1.name == "ProgrammingC_Button1" || m_Month2.name == "ProgrammingC_Button2" || m_Month3.name == "ProgrammingC_Button3")
         {
             for (int i = 0; i < ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass.Count; i++)
             {
                 GameObject _classClick3 = GameObject.Instantiate(m_Prefab, m_parent);
                 _classClick3.name = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassName;
                 m_ClassList.Add(_classClick3);
+
                 _classClick3.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassName;
                 //_classClick3.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
                 _classClick3.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassSystemValue.ToString();
@@ -122,6 +144,17 @@ public class ClassPrefab : MonoBehaviour
                 m_SelecteClassDataList.Add(m_SelecteClass.classData.ElementAt(i).Value);
             }
 
+        }
+    }
+
+    public void SelecteClassComplete()
+    {
+        if (m_SelecteClassButtonName != null)
+        {
+            if (m_SelecteClassButtonName.Contains("1Week_Button1") == true)
+            {
+
+            }
         }
     }
 }
