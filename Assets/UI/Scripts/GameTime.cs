@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
+/// <summary>
+///  
+/// </summary>
 public class GameTime : MonoBehaviour
 {
     private static GameTime instance = null;
@@ -11,10 +14,6 @@ public class GameTime : MonoBehaviour
     {
         get
         {
-            if (instance == null)
-            {
-                return null;
-            }
             return instance;
         }
 
@@ -162,10 +161,5 @@ public class GameTime : MonoBehaviour
     {
         //Debug.Log("시간 진행 : " + IsGameMode);
 
-    }
-
-    public void SendGameMode(bool b)
-    {
-        b = IsGameMode;
     }
 }

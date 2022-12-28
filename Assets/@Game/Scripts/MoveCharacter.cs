@@ -40,6 +40,22 @@ public class MoveCharacter : MonoBehaviour
 
     private void Update()
     {
+        if (GameTime.Instance != null)
+        {
+            if (GameTime.Instance.IsGameMode == true)
+            {
+                Debug.Log("³×ºñ¸Å½¬ ÄÑÁü");
+                _agent.enabled = true;
+            }
+            else
+            {
+                _agent.enabled = false;
+                Debug.Log("³×ºñ¸Å½¬ ²¨¾î¾îÁü");
+
+
+            }
+        }
+
         MoveCharacters();
     }
 
@@ -47,11 +63,13 @@ public class MoveCharacter : MonoBehaviour
     {
 
         if (m_Student.m_Doing == Student.Doing.FreeWalk)
-        { 
+        {
             if (_agent.velocity.magnitude <= 0.001f)
             {
                 int _randomPath = Random.Range(0, 4);
-                
+
+                _agent.enabled = true;
+
                 _agent.SetDestination(m_FreeWalkPath[_randomPath].transform.position);
             }
         }
@@ -92,5 +110,15 @@ public class MoveCharacter : MonoBehaviour
                 m_Student.isHereRestaurant = true;
             }
         }
+    }
+
+    public void NaviMeshStop()
+    {
+        _agent.enabled = false;
+    }
+
+    public void NaviMeshStart()
+    {
+        _agent.enabled = true;
     }
 }

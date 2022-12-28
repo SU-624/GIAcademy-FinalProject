@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// 빌드 순서 지키자 
+/// 
+/// Title -> InGame -> UI
+/// </summary>
 public class MergeScenes : MonoBehaviour
 {
     // Start is called before the first frame update

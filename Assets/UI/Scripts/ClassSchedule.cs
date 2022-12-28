@@ -52,8 +52,10 @@ public class ClassSchedule : MonoBehaviour
     [SerializeField] private GameObject m_SelecteClassArea3;
     [SerializeField] private GameObject m_MonthClassSpace;
     [SerializeField] private ClassController m_LoadClassData;
+    [SerializeField] private ClassPrefab m_ClassPrefab;
 
     public EachClass m_NowPlayerClass = new EachClass();
+    //public List<string> m_
 
     public static ClassSchedule Instance
     {
@@ -116,7 +118,7 @@ public class ClassSchedule : MonoBehaviour
         if (gobj.name == "ProductManagerC_Button")
         {
             Debug.Log("기획반");
-
+            m_ClassPrefab.m_SaveData.m_ClassName = "ProductManager";
             //GameObject _button = GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
             m_SelecteClassArea1.name = gobj.name + "1";
             m_SelecteClassArea2.name = gobj.name + "2";
@@ -126,7 +128,7 @@ public class ClassSchedule : MonoBehaviour
         if (gobj.name == "ArtC_Button")
         {
             Debug.Log("아트반");
-
+            m_ClassPrefab.m_SaveData.m_ClassName = "Art";
             //GameObject _button = GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
             m_SelecteClassArea1.name = gobj.name + "1";
             m_SelecteClassArea2.name = gobj.name + "2";
@@ -136,7 +138,7 @@ public class ClassSchedule : MonoBehaviour
         if (gobj.name == "ProgrammingC_Button")
         {
             Debug.Log("플밍반");
-
+            m_ClassPrefab.m_SaveData.m_ClassName = "Programming";
             //GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
             m_SelecteClassArea1.name = gobj.name + "1";
             m_SelecteClassArea2.name = gobj.name + "2";

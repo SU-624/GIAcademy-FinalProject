@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Mang 10.17 
@@ -47,17 +48,18 @@ public class PopOffUI : MonoBehaviour
     // 뒤로가기 버튼을 눌렀을 때
     public void TurnOffUI()
     {
+        // 버튼이 활성화 되어있는 지 체크
         if (m_UI.activeSelf == true)
         {
             m_UI.SetActive(false);
 
+            // 수연이의 학생 프리팹이 존재하는지 체크
             if (m_ClassPrefab != null)
             {
                 if (m_ClassPrefab.m_SelecteClassDataList != null)
                 {
                     m_ClassPrefab.m_SelecteClassDataList.Clear();
                 }
-
 
                 if (m_ClassPrefab.m_SelecteClassButtonName != null)
                 {
@@ -66,9 +68,17 @@ public class PopOffUI : MonoBehaviour
             }
         }
 
-        GameTime.Instance.IsGameMode = true;
-        Time.timeScale = 1;
-        Debug.Log("시간 흐름");
+        // 인게임 씬에서만 시간이 체크되도록 체크
+        if (SceneManager.GetActiveScene().name == "InGameScene")
+        {
+            if (GameTime.Instance != null)
+            {
+                GameTime.Instance.IsGameMode = true;
+            }
+            Time.timeScale = 1;
+
+            Debug.Log("시간 흐름");
+        }
     }
 
     // 선택 완료를 눌렀을 때

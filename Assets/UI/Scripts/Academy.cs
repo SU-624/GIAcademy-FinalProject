@@ -47,7 +47,7 @@ public class Academy : MonoBehaviour
             PlayerInfo.Instance.m_DirectorName = MyDirector;
 
             string strFile = Application.dataPath + "\\Json\\PlayerInfo_NewtonJson.json";
-            FileInfo fileInfo = new FileInfo(strFile);
+           FileInfo fileInfo = new FileInfo(strFile);
 
             Debug.Log(strFile);
 
@@ -57,14 +57,14 @@ public class Academy : MonoBehaviour
                 Debug.Log(" 파일 있으니까 덮어쓰기 ");
                 // 딕셔너리도 가능한 NewtonJson 사용하자
                 // "\\Json\\NewtonJson.json" -> 파일 이름은 각각의 정보에 맞는 이름으로
-                File.WriteAllText(Application.dataPath + "\\Json\\PlayerInfo_NewtonJson.json", JsonConvert.SerializeObject(PlayerInfo.Instance));
+                //File.WriteAllText(Application.dataPath + "\\Json\\PlayerInfo_NewtonJson.json", JsonConvert.SerializeObject(PlayerInfo.Instance));
                 Debug.Log(PlayerInfo.Instance);
 
             }
             else
             {
                 Debug.Log(" 파일 없으니까 생성 ");
-                File.WriteAllText(Application.dataPath + "\\Json\\PlayerInfo_NewtonJson.json", JsonConvert.SerializeObject(PlayerInfo.Instance));
+                //File.WriteAllText(Application.dataPath + "\\Json\\PlayerInfo_NewtonJson.json", JsonConvert.SerializeObject(PlayerInfo.Instance));
                 Debug.Log(PlayerInfo.Instance);
 
             }

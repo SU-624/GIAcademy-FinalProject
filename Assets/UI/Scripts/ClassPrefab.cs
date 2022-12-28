@@ -7,6 +7,14 @@ using TMPro;
 using System.Linq;
 using StatData.Runtime;
 
+public struct SaveClassAndProfesssorData
+{
+    public Class m_SelecteClassDataSave;
+    public ProfessorStat m_SelecteProfessorDataSave;
+    public string m_ClickPointDataSave;
+    public string m_ClassName;
+};
+
 /// <summary>
 /// 프리팹 생성해줄 스크립트
 /// </summary>
@@ -32,6 +40,43 @@ public class ClassPrefab : MonoBehaviour
     public List<Class> m_SelecteClassDataList = new List<Class>(); // 방금 선택한 수업의 내용을 저장하려고 만든 리스트
     public List<string> m_SelecteClassButtonName = new List<string>(); // 내가 클릭한 버튼에 최종적으로 선택한 수업을 넣어주기 위해 만든 리스트
 
+    public SaveClassAndProfesssorData m_SaveData = new SaveClassAndProfesssorData();
+
+    public List<SaveClassAndProfesssorData> m_ProductManagerData = new List<SaveClassAndProfesssorData>();
+    public List<SaveClassAndProfesssorData> m_ArtData = new List<SaveClassAndProfesssorData>();
+    public List<SaveClassAndProfesssorData> m_ProgrammingData = new List<SaveClassAndProfesssorData>();
+
+    #region _각 반의 선택한 수업과 교수의 정보를 저장하기 위한 구조체에 데이터를 넣기위해 만든 함수들
+    private void AddButtonData(List<SaveClassAndProfesssorData> _saveData, int _index, string _buttonName)
+    {
+        SaveClassAndProfesssorData _temp = _saveData[_index];
+        _temp.m_ClickPointDataSave = _buttonName;
+        _saveData[_index] = _temp;
+    }
+
+    public void AddClassData(List<SaveClassAndProfesssorData> _saveData, int _index, Class _classInfo)
+    {
+        SaveClassAndProfesssorData _temp = _saveData[_index];
+        _temp.m_SelecteClassDataSave = _classInfo;
+        _saveData[_index] = _temp;
+
+    }
+
+    public void AddProfessorData(List<SaveClassAndProfesssorData> _saveData, int _index, ProfessorStat _professorInfo)
+    {
+        SaveClassAndProfesssorData _temp = _saveData[_index];
+        _temp.m_SelecteProfessorDataSave = _professorInfo;
+        _saveData[_index] = _temp;
+    }
+    #endregion
+
+    private void Start()
+    {
+        m_ProductManagerData.Capacity = 3;
+        m_ArtData.Capacity = 3;
+        m_ProgrammingData.Capacity = 3;
+    }
+
     public void MakeClass()
     {
         if (m_ClassList.Count != 0)
@@ -54,24 +99,27 @@ public class ClassPrefab : MonoBehaviour
                 if (_nowObj.name == "1Week_Button1" && m_SelecteClassButtonName.Count == 0)
                 {
                     m_SelecteClassButtonName.Add(_nowObj.name);
+                    m_SaveData.m_ClickPointDataSave = _nowObj.name;
                 }
                 else if (_nowObj.name == "1Week_Button2" && m_SelecteClassButtonName.Count == 0)
                 {
                     m_SelecteClassButtonName.Add(_nowObj.name);
+                    m_SaveData.m_ClickPointDataSave = _nowObj.name;
                 }
                 else if (_nowObj.name == "1Week_Button3" && m_SelecteClassButtonName.Count == 0)
                 {
                     m_SelecteClassButtonName.Add(_nowObj.name);
+                    m_SaveData.m_ClickPointDataSave = _nowObj.name;
                 }
 
                 _classClick1.name = ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass[i].m_ClassName;
+
                 m_ClassList.Add(_classClick1);
+
                 _classClick1.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass[i].m_ClassName;
-                //_classClick1.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
                 _classClick1.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass[i].m_ClassSystemValue.ToString();
                 _classClick1.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass[i].m_ClassContentsValue.ToString();
                 _classClick1.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProductManagerClass[i].m_ClassBalanceValue.ToString();
-                //_classClick1.transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
 
                 _classClick1.GetComponent<Button>().onClick.AddListener(SelecteClassInfo);
             }
@@ -81,17 +129,34 @@ public class ClassPrefab : MonoBehaviour
         {
             for (int i = 0; i < ClassSchedule.Instance.m_NowPlayerClass.ArtClass.Count; i++)
             {
+                GameObject _nowObj = EventSystem.current.currentSelectedGameObject;
                 GameObject _classClick2 = GameObject.Instantiate(m_Prefab, m_parent);
-                _classClick2.name = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassName;
-                m_ClassList.Add(_classClick2);
 
+                if (_nowObj.name == "1Week_Button1" && m_SelecteClassButtonName.Count == 0)
+                {
+                    m_SelecteClassButtonName.Add(_nowObj.name);
+                    m_SaveData.m_ClickPointDataSave = _nowObj.name;
+                }
+                else if (_nowObj.name == "1Week_Button2" && m_SelecteClassButtonName.Count == 0)
+                {
+                    m_SelecteClassButtonName.Add(_nowObj.name);
+                    m_SaveData.m_ClickPointDataSave = _nowObj.name;
+                }
+                else if (_nowObj.name == "1Week_Button3" && m_SelecteClassButtonName.Count == 0)
+                {
+                    m_SelecteClassButtonName.Add(_nowObj.name);
+                    m_SaveData.m_ClickPointDataSave = _nowObj.name;
+                }
+
+                _classClick2.name = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassName;
+                
+                m_ClassList.Add(_classClick2);
+                
                 _classClick2.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassName;
-                //_classClick2.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
                 _classClick2.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassSystemValue.ToString();
                 _classClick2.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassContentsValue.ToString();
                 _classClick2.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassBalanceValue.ToString();
-                //_classClick2.transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
-
+                
                 _classClick2.GetComponent<Button>().onClick.AddListener(SelecteClassInfo);
             }
         }
@@ -100,17 +165,34 @@ public class ClassPrefab : MonoBehaviour
         {
             for (int i = 0; i < ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass.Count; i++)
             {
+                GameObject _nowObj = EventSystem.current.currentSelectedGameObject;
                 GameObject _classClick3 = GameObject.Instantiate(m_Prefab, m_parent);
-                _classClick3.name = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassName;
-                m_ClassList.Add(_classClick3);
 
+                if (_nowObj.name == "1Week_Button1" && m_SelecteClassButtonName.Count == 0)
+                {
+                    m_SelecteClassButtonName.Add(_nowObj.name);
+                    m_SaveData.m_ClickPointDataSave = _nowObj.name;
+                }
+                else if (_nowObj.name == "1Week_Button2" && m_SelecteClassButtonName.Count == 0)
+                {
+                    m_SelecteClassButtonName.Add(_nowObj.name);
+                    m_SaveData.m_ClickPointDataSave = _nowObj.name;
+                }
+                else if (_nowObj.name == "1Week_Button3" && m_SelecteClassButtonName.Count == 0)
+                {
+                    m_SelecteClassButtonName.Add(_nowObj.name);
+                    m_SaveData.m_ClickPointDataSave = _nowObj.name;
+                }
+
+                _classClick3.name = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassName;
+                
+                m_ClassList.Add(_classClick3);
+                
                 _classClick3.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassName;
-                //_classClick3.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
                 _classClick3.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassSystemValue.ToString();
                 _classClick3.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassContentsValue.ToString();
                 _classClick3.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassBalanceValue.ToString();
-                //_classClick3.transform.GetChild(5).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.dataBase.classDatas[i].ClassName;
-
+                
                 _classClick3.GetComponent<Button>().onClick.AddListener(SelecteClassInfo);
             }
         }
@@ -141,20 +223,28 @@ public class ClassPrefab : MonoBehaviour
                 _classDataObj.transform.GetChild(4).GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.classData.ElementAt(i).Value.m_ClassContentsValue.ToString();
                 _classDataObj.transform.GetChild(5).GetChild(0).GetComponent<TextMeshProUGUI>().text = "Balance";
                 _classDataObj.transform.GetChild(5).GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.classData.ElementAt(i).Value.m_ClassBalanceValue.ToString();
-                m_SelecteClassDataList.Add(m_SelecteClass.classData.ElementAt(i).Value);
+                
+                if (m_SelecteClassDataList.Contains(m_SelecteClass.classData.ElementAt(i).Value) == false)
+                {
+                    m_SelecteClassDataList.Add(m_SelecteClass.classData.ElementAt(i).Value);
+                }
             }
-
         }
     }
 
-    public void SelecteClassComplete()
+    public void SaveClassData()
     {
-        if (m_SelecteClassButtonName != null)
-        {
-            if (m_SelecteClassButtonName.Contains("1Week_Button1") == true)
-            {
+        int _index = 0;
 
-            }
+        if (m_SelecteClassDataList.Count > 0)
+        {
+            _index = m_SelecteClassDataList.Count - 1;
         }
+        else
+        {
+            _index = m_SelecteClassDataList.Count;
+        }
+
+        m_SaveData.m_SelecteClassDataSave = m_SelecteClassDataList[_index];
     }
 }

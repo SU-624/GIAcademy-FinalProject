@@ -40,7 +40,8 @@ public class Network : MonoBehaviour
     private Socket m_CbSock;
     private byte[] m_RecvBuffer;
     private const int MAXSIZE = 4096;
-    private string HOST = "192.168.0.33";
+    //private string HOST = "192.168.0.33";
+    private string HOST = "221.163.91.111";
     private int PORT = 3000;
 
     private string sData;        // 서버에서 돌아오는 정보?
@@ -48,6 +49,7 @@ public class Network : MonoBehaviour
     #region sData_Property
     public string MysData
     {
+        set { sData = value; }
         get { return sData; }
     }
     #endregion
@@ -57,6 +59,7 @@ public class Network : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        sData = " ";
     }
 
     public void CreateSocket()
@@ -326,6 +329,20 @@ public class Network : MonoBehaviour
             {
                 //MessageBox.Show("아이디 또는 비밀번호를 확인해주세요.");
                 Debug.Log("회원가입 실패");
+            }
+        }
+
+        else if (sp.m_packetType == PacketType.DuplicationCheck)
+        {
+            if (sp.m_isSuccess)
+            {
+                // true
+            }
+            else
+            {
+                //MessageBox.Show("중복 IP에서 접속되었습니다.");
+                //m_form1.FormClose();
+                Debug.Log("중복 IP에서 접속되었습니다.");
             }
         }
     }

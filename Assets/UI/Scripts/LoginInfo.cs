@@ -22,28 +22,31 @@ public class LoginInfo : MonoBehaviour
 
     public TextMeshProUGUI m_PopupNotice;                       // 안내문구 띄워줄 변수
 
-    private Network network = Network.instance;                // 서버에서 확인한 데이터를 받을 변수
+    private Network network;                // 서버에서 확인한 데이터를 받을 변수
 
     public GameObject m_AcademySetting;
 
-    private string testStr = "";
+    private string serverStr = "";
 
     private bool isLoginSuccess = false;
 
-    public string TestStr
+    public string ServerStr
     {
-        get { return testStr; }
+        get { return serverStr; }
         set
         {
-            testStr = value;
+            serverStr = value;
             if (!isLoginSuccess)
             {
-                if (network.MysData == "로그인 성공" || network.MysData == "로그인 실패")
-                {
-                    LoginTest();
-                }
+                LoginTest();
             }
         }
+    }
+
+    private void Awake()
+    {
+        network = Network.instance;
+        serverStr = " ";
     }
 
     // Start is called before the first frame update
@@ -55,7 +58,11 @@ public class LoginInfo : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        TestStr = network.MysData;
+        if (network.MysData != " " && (network.MysData == "로그인 성공" || network.MysData == "로그인 실패"))
+        {
+            ServerStr = network.MysData;
+            network.MysData = " ";
+        }
     }
 
     public void CheckLoginData()
@@ -118,7 +125,7 @@ public class LoginInfo : MonoBehaviour
 
     public void LoginTest()
     {
-        if (m_NowLogInfo.MyID != "" && m_NowLogInfo.MyPW != "" && network.MysData == "로그인 성공")   // 아이디만 입력했다면
+        if (m_NowLogInfo.MyID != "" && m_NowLogInfo.MyPW != "" && serverStr == "로그인 성공")   // 아이디만 입력했다면
         {
             PlayerInfo.Instance.m_PlayerID = m_NowLogInfo.MyID;
             isLoginSuccess = true;
@@ -126,9 +133,9 @@ public class LoginInfo : MonoBehaviour
             // 아카데미 & 원장 이름 정하기 
             m_AcademySetting.SetActive(true);
         }
-        else if (m_NowLogInfo.MyID != "" && m_NowLogInfo.MyPW != "" && network.MysData == "로그인 실패")   //  아무것도 입력 안했다면
+        else if (m_NowLogInfo.MyID != "" && m_NowLogInfo.MyPW != "" && serverStr == "로그인 실패")   //  아무것도 입력 안했다면
         {
-            m_PopupNotice.text = network.MysData;
+            m_PopupNotice.text = serverStr;
 
             m_PopupNotice.gameObject.SetActive(true);
             m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();    // 팝업창 띄우기 

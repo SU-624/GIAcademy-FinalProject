@@ -28,10 +28,23 @@ public class DataManager : MonoBehaviour
 {
     string path;
 
+    string sDirPath;
+    
     // Start is called before the first frame update
     void Start()
     {
-        path = Path.Combine(Application.persistentDataPath + "/Data/", "database.json");
+        // if (!Directory.Exists(Application.persistentDataPath + "/Data/"))
+        // {
+        //     path = Path.Combine(Application.persistentDataPath + "/Data/", "database.json");
+        // }
+
+        sDirPath = Application.persistentDataPath + "/Json";
+        DirectoryInfo di = new DirectoryInfo(sDirPath);
+        if (di.Exists == false)
+        {
+            di.Create();
+        }
+
         JasonLoad();
     }
 
@@ -50,7 +63,7 @@ public class DataManager : MonoBehaviour
             saveData.MyTest.Add("Å×½ºÆ®?" + i);
         }
 
-        for(int i = 0; i < 10; i++)
+        for (int i = 0; i < 10; i++)
         {
             saveData.testDataB.Add(i);
         }
@@ -60,7 +73,7 @@ public class DataManager : MonoBehaviour
 
         string json = JsonUtility.ToJson(saveData, true);
 
-        File.WriteAllText(path, json);
+        File.WriteAllText(sDirPath, json);
 
         Debug.Log("data : " + saveData);
     }
@@ -70,14 +83,14 @@ public class DataManager : MonoBehaviour
     {
         SaveData saveData = new SaveData();
 
-        if (!File.Exists(path))
+        if (!File.Exists(sDirPath))
         {
             // TestJason.instance.playerGold = 100;
             // TestJason.instance.playerPower = 4;
         }
         else
         {
-            string loadJason = File.ReadAllText(path);
+            string loadJason = File.ReadAllText(sDirPath);
             saveData = JsonUtility.FromJson<SaveData>(loadJason);
 
             if (saveData != null)

@@ -53,28 +53,54 @@ public class SignInInfo : MonoBehaviour
 
     public TextMeshProUGUI m_PopupNotice;                       // 안내문구 띄워줄 변수
 
-    private Network network = Network.instance;                 // 서버에서 확인한 데이터를 받을 변수
+    private Network network;                 // 서버에서 확인한 데이터를 받을 변수
+
+    private string serverStr = "";
+
+    public string ServerStr
+    {
+        get { return serverStr; }
+        set
+        {
+            serverStr = value;
+            if (serverStr == "아이디 중복" || serverStr == "아이디 생성 가능")
+            {
+                IdCheckResult();
+            }
+            
+        }
+    }
 
     // 함수가 실행되었을지 판별할 bool 변수
     // bool m_isSaved = false;
+
+    private void Awake()
+    {
+        network = Network.instance;
+    }
 
     // Start is called before the first frame update
     void Start()
     {
         m_NowLogInfo = new LogData();       // 모든 로그인 데이터가 저장될 딕셔너리 초기화?
+        serverStr = " ";
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if (network.MysData != " " && (network.MysData == "아이디 중복" || network.MysData == "아이디 생성 가능"))
+        {
+            ServerStr = network.MysData;
+            network.MysData = " ";
+        }
     }
 
     public void CheckID()
     {
         m_NowLogInfo.MyID = m_InputID.text;
 
-        // 데이터 언제 ㅈ던져주지
+        // 데이터 언제 던져주지
         // 여기서 selectMessage 함수 불러서 데이터 넣어줘야 할것같다 여기서 이름을 넣어주도록 하자
 
         if (network.CheckServerConnect() == true && m_InputID.text != "")        // 서버 연결 되있을때 && 빈칸이 아닐때
@@ -97,24 +123,7 @@ public class SignInInfo : MonoBehaviour
             //    m_PopupNotice.gameObject.SetActive(true);
             //    m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();
             //}
-            if (network.MysData == "아이디 중복")                // 아이디 중복체크
-            {
-                Debug.Log("아이디 중복이야~");
-
-                m_PopupNotice.text = network.MysData;
-
-                // '아이디 중복' 팝업창
-                m_PopupNotice.gameObject.SetActive(true);
-                m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();
-            }
-            else if (network.MysData == "아이디 생성 가능")      // 아이디 중복아닐경우
-            {
-                m_PopupNotice.text = network.MysData;
-
-                // '아이디 생성 가능' 팝업창
-                m_PopupNotice.gameObject.SetActive(true);
-                m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();
-            }
+            
         }
         else          // 서버가 연결이 필요하거나 빈문자열일때
         {
@@ -125,6 +134,28 @@ public class SignInInfo : MonoBehaviour
             m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();
         }
 
+    }
+
+    private void IdCheckResult()
+    {
+        if (serverStr == "아이디 중복")                // 아이디 중복체크
+        {
+            Debug.Log("아이디 중복이야~");
+
+            m_PopupNotice.text = network.MysData;
+
+            // '아이디 중복' 팝업창
+            m_PopupNotice.gameObject.SetActive(true);
+            m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();
+        }
+        else if (serverStr == "아이디 생성 가능")      // 아이디 중복아닐경우
+        {
+            m_PopupNotice.text = network.MysData;
+
+            // '아이디 생성 가능' 팝업창
+            m_PopupNotice.gameObject.SetActive(true);
+            m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();
+        }
     }
 
     public void CheckPW()

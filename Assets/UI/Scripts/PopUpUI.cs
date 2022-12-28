@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Mang 10.18
@@ -45,9 +46,17 @@ public class PopUpUI : MonoBehaviour
             m_UI.gameObject.SetActive(true);
         }
 
-        GameTime.Instance.IsGameMode = false;
-        Time.timeScale = 0;
-        Debug.Log("Ω√∞£ ∏ÿ√„");
+        if (SceneManager.GetActiveScene().name == "InGameScene")
+        {
+
+            if (GameTime.Instance != null)
+            {
+                GameTime.Instance.IsGameMode = false;
+            }
+            Time.timeScale = 0;
+
+            Debug.Log("Ω√∞£ ∏ÿ√„");
+        }
     }
 
     public void JustTurnOn()
@@ -57,9 +66,17 @@ public class PopUpUI : MonoBehaviour
             this.gameObject.SetActive(true);
         }
 
-        GameTime.Instance.IsGameMode = false;
-        Time.timeScale = 0;
-        Debug.Log("Ω√∞£ ∏ÿ√„");
+        if (SceneManager.GetActiveScene().name == "InGameScene")
+        {
+
+            if (GameTime.Instance != null)
+            {
+                GameTime.Instance.IsGameMode = false;
+            }
+            Time.timeScale = 0;
+
+            Debug.Log("Ω√∞£ ∏ÿ√„");
+        }
     }
 
     // ¡ˆ¡§ ∆Àæ˜√¢¿ª ƒ— ¡÷∏Èº≠ ±◊ ¿¸¿« UI ¥¬ ≤®¡ÿ¥Ÿ.
@@ -71,9 +88,16 @@ public class PopUpUI : MonoBehaviour
             this.gameObject.SetActive(false);   // ¥©∏£¥¬ πˆ∆∞¿∫ ≤®¡÷±‚
         }
 
-        GameTime.Instance.IsGameMode = false;
-        Time.timeScale = 0;
-        Debug.Log("Ω√∞£ ∏ÿ√„");
+        if (SceneManager.GetActiveScene().name == "InGameScene")
+        {
+            if (GameTime.Instance != null)
+            {
+                GameTime.Instance.IsGameMode = false;
+            }
+            Time.timeScale = 0;
+
+            Debug.Log("Ω√∞£ ∏ÿ√„");
+        }
     }
 
 

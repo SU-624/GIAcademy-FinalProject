@@ -11,13 +11,15 @@ namespace Assets.Network
     {
         Login,
         SignUp,
-        IdCheck
+        IdCheck,
+        DuplicationCheck
     }
 
     [Serializable]
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class Packet<T> where T : class
     {
+        public PacketType m_packetType;
         public byte[] Serialize()
         {
             var size = Marshal.SizeOf(typeof(T));
@@ -44,8 +46,6 @@ namespace Assets.Network
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class ClientPacket : Packet<ClientPacket>
     {
-        public PacketType m_packetType;
-
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 30)]
         public string m_id;
 
@@ -58,8 +58,6 @@ namespace Assets.Network
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
     public class ServerPacket : Packet<ServerPacket>
     {
-        public PacketType m_packetType;
-
         [MarshalAs(UnmanagedType.Bool, SizeConst = 100)]
         public bool m_isSuccess;
     }
