@@ -360,4 +360,11 @@ public class Network : MonoBehaviour
             return true;
         }
     }
+
+    void OnApplicationQuit()
+    {
+        m_ClientSock.Disconnect(true);
+        m_ClientSock.Close();
+        instance = null;
+    }
 }

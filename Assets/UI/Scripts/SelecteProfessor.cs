@@ -40,6 +40,14 @@ public class SelecteProfessor : MonoBehaviour
     [SerializeField] private ProfessorController m_LoadProfessorData;
     [SerializeField] private ClassPrefab m_ClassPrefabData;
 
+    public GameObject m_SelecteClassName1;
+    public GameObject m_SelecteClassName2;
+    public GameObject m_SelecteClassName3;
+
+    public GameObject m_ChoiceButton1;
+    public GameObject m_ChoiceButton2;
+    public GameObject m_ChoiceButton3;
+
     public Professor m_NowPlayerProfessor = new Professor();
 
     public int m_ProfessorDataIndex;
@@ -185,18 +193,83 @@ public class SelecteProfessor : MonoBehaviour
                 // 클릭한 버튼의 순서에 따라 리스트의 인덱스를 바꿔준다(Button1이면 인덱스 0번에 넣어주기)
                 if(m_ClassPrefabData.m_SaveData.m_ClickPointDataSave == "1Week_Button1")
                 {
-                    /// ToDo
+                    m_ClassPrefabData.ChangeListIndex(m_ClassPrefabData.m_ArtData, 0, m_ClassPrefabData.m_SaveData);
+                    m_ClassPrefabData.m_ArtData.RemoveAt(3);
+                    m_ChoiceButton1.SetActive(false);
+                    m_SelecteClassName1.SetActive(true);
+                    m_SelecteClassName1.GetComponent<TextMeshProUGUI>().text = m_ClassPrefabData.m_SaveData.m_SelecteClassDataSave.m_ClassName;
+                }
+                else if (m_ClassPrefabData.m_SaveData.m_ClickPointDataSave == "1Week_Button2")
+                {
+                    m_ClassPrefabData.ChangeListIndex(m_ClassPrefabData.m_ArtData, 1, m_ClassPrefabData.m_SaveData);
+                    m_ChoiceButton2.SetActive(false);
+                    m_SelecteClassName2.SetActive(true);
+                    m_SelecteClassName2.GetComponent<TextMeshProUGUI>().text = m_ClassPrefabData.m_SaveData.m_SelecteClassDataSave.m_ClassName;
+                }
+                else if (m_ClassPrefabData.m_SaveData.m_ClickPointDataSave == "1Week_Button3")
+                {
+                    m_ClassPrefabData.ChangeListIndex(m_ClassPrefabData.m_ArtData, 2, m_ClassPrefabData.m_SaveData);
+                    m_ChoiceButton3.SetActive(false);
+                    m_SelecteClassName3.SetActive(true);
+                    m_SelecteClassName3.GetComponent<TextMeshProUGUI>().text = m_ClassPrefabData.m_SaveData.m_SelecteClassDataSave.m_ClassName;
                 }
             }
             else if (m_ClassPrefabData.m_SelecteClassDataList[_tempIndex].m_ClassType == Type.ProductManager)
             {
                 m_ClassPrefabData.m_SaveData.m_SelecteProfessorDataSave = m_NowPlayerProfessor.ProductManagerProcessor[m_ProfessorDataIndex];
                 m_ClassPrefabData.m_ProductManagerData.Add(m_ClassPrefabData.m_SaveData);
+
+                if (m_ClassPrefabData.m_SaveData.m_ClickPointDataSave == "1Week_Button1")
+                {
+                    m_ClassPrefabData.ChangeListIndex(m_ClassPrefabData.m_ProductManagerData, 0, m_ClassPrefabData.m_SaveData);
+                    m_ClassPrefabData.m_ProductManagerData.RemoveAt(3);
+                    m_ChoiceButton1.SetActive(false);
+                    m_SelecteClassName1.SetActive(true);
+                    m_SelecteClassName1.GetComponent<TextMeshProUGUI>().text = m_ClassPrefabData.m_SaveData.m_SelecteClassDataSave.m_ClassName;
+                }
+                else if (m_ClassPrefabData.m_SaveData.m_ClickPointDataSave == "1Week_Button2")
+                {
+                    m_ClassPrefabData.ChangeListIndex(m_ClassPrefabData.m_ProductManagerData, 1, m_ClassPrefabData.m_SaveData);
+                    m_ClassPrefabData.m_ProductManagerData.RemoveAt(3);
+                    m_ChoiceButton2.SetActive(false);
+                    m_SelecteClassName2.SetActive(true);
+                    m_SelecteClassName2.GetComponent<TextMeshProUGUI>().text = m_ClassPrefabData.m_SaveData.m_SelecteClassDataSave.m_ClassName;
+                }
+                else if (m_ClassPrefabData.m_SaveData.m_ClickPointDataSave == "1Week_Button3")
+                {
+                    m_ClassPrefabData.ChangeListIndex(m_ClassPrefabData.m_ProductManagerData, 2, m_ClassPrefabData.m_SaveData);
+                    m_ClassPrefabData.m_ProductManagerData.RemoveAt(3);
+                    m_ChoiceButton3.SetActive(false);
+                    m_SelecteClassName3.SetActive(true);
+                    m_SelecteClassName3.GetComponent<TextMeshProUGUI>().text = m_ClassPrefabData.m_SaveData.m_SelecteClassDataSave.m_ClassName;
+                }
             }
             else if (m_ClassPrefabData.m_SelecteClassDataList[_tempIndex].m_ClassType == Type.Programming)
             {
                 m_ClassPrefabData.m_SaveData.m_SelecteProfessorDataSave = m_NowPlayerProfessor.ProgrammingProfessor[m_ProfessorDataIndex];
                 m_ClassPrefabData.m_ProgrammingData.Add(m_ClassPrefabData.m_SaveData);
+
+                if (m_ClassPrefabData.m_SaveData.m_ClickPointDataSave == "1Week_Button1")
+                {
+                    m_ClassPrefabData.ChangeListIndex(m_ClassPrefabData.m_ProgrammingData, 0, m_ClassPrefabData.m_SaveData);
+                    m_ChoiceButton1.SetActive(false);
+                    m_SelecteClassName1.SetActive(true);
+                    m_SelecteClassName1.GetComponent<TextMeshProUGUI>().text = m_ClassPrefabData.m_SaveData.m_SelecteClassDataSave.m_ClassName;
+                }
+                else if (m_ClassPrefabData.m_SaveData.m_ClickPointDataSave == "1Week_Button2")
+                {
+                    m_ClassPrefabData.ChangeListIndex(m_ClassPrefabData.m_ProgrammingData, 1, m_ClassPrefabData.m_SaveData);
+                    m_ChoiceButton2.SetActive(false);
+                    m_SelecteClassName2.SetActive(true);
+                    m_SelecteClassName2.GetComponent<TextMeshProUGUI>().text = m_ClassPrefabData.m_SaveData.m_SelecteClassDataSave.m_ClassName;
+                }
+                else if (m_ClassPrefabData.m_SaveData.m_ClickPointDataSave == "1Week_Button3")
+                {
+                    m_ClassPrefabData.ChangeListIndex(m_ClassPrefabData.m_ProgrammingData, 2, m_ClassPrefabData.m_SaveData);
+                    m_ChoiceButton3.SetActive(false);
+                    m_SelecteClassName3.SetActive(true);
+                    m_SelecteClassName3.GetComponent<TextMeshProUGUI>().text = m_ClassPrefabData.m_SaveData.m_SelecteClassDataSave.m_ClassName;
+                }
             }
         }
     }

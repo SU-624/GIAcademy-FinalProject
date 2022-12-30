@@ -29,9 +29,9 @@ public class ClassPrefab : MonoBehaviour
     [SerializeField] private GameObject m_Month3;
     [SerializeField] private GameObject m_ClassInfo;
 
-    [SerializeField] private TextMeshProUGUI m_SelecteClassName1;
-    [SerializeField] private TextMeshProUGUI m_SelecteClassName2;
-    [SerializeField] private TextMeshProUGUI m_SelecteClassName3;
+    //[SerializeField] private TextMeshProUGUI m_SelecteClassName1;
+    //[SerializeField] private TextMeshProUGUI m_SelecteClassName2;
+    //[SerializeField] private TextMeshProUGUI m_SelecteClassName3;
 
     //bool isCheck = true;
 
@@ -46,27 +46,12 @@ public class ClassPrefab : MonoBehaviour
     public List<SaveClassAndProfesssorData> m_ArtData = new List<SaveClassAndProfesssorData>();
     public List<SaveClassAndProfesssorData> m_ProgrammingData = new List<SaveClassAndProfesssorData>();
 
-    #region _각 반의 선택한 수업과 교수의 정보를 저장하기 위한 구조체에 데이터를 넣기위해 만든 함수들
-    private void AddButtonData(List<SaveClassAndProfesssorData> _saveData, int _index, string _buttonName)
+    #region _구조체 형식의 리스트 인덱스를 바꾸기 위한 함수
+    public void ChangeListIndex(List<SaveClassAndProfesssorData> _tempList, int _index, SaveClassAndProfesssorData _saveData)
     {
-        SaveClassAndProfesssorData _temp = _saveData[_index];
-        _temp.m_ClickPointDataSave = _buttonName;
-        _saveData[_index] = _temp;
-    }
-
-    public void AddClassData(List<SaveClassAndProfesssorData> _saveData, int _index, Class _classInfo)
-    {
-        SaveClassAndProfesssorData _temp = _saveData[_index];
-        _temp.m_SelecteClassDataSave = _classInfo;
-        _saveData[_index] = _temp;
-
-    }
-
-    public void AddProfessorData(List<SaveClassAndProfesssorData> _saveData, int _index, ProfessorStat _professorInfo)
-    {
-        SaveClassAndProfesssorData _temp = _saveData[_index];
-        _temp.m_SelecteProfessorDataSave = _professorInfo;
-        _saveData[_index] = _temp;
+        SaveClassAndProfesssorData _temp = _tempList[_index];
+        _temp = _saveData;
+        _tempList[_index] = _temp;
     }
     #endregion
 
@@ -75,6 +60,13 @@ public class ClassPrefab : MonoBehaviour
         m_ProductManagerData.Capacity = 3;
         m_ArtData.Capacity = 3;
         m_ProgrammingData.Capacity = 3;
+
+        for (int i = 0; i < 3; i++)
+        {
+            m_ProductManagerData.Add(new SaveClassAndProfesssorData());
+            m_ArtData.Add(new SaveClassAndProfesssorData());
+            m_ProgrammingData.Add(new SaveClassAndProfesssorData());
+        }
     }
 
     public void MakeClass()
@@ -149,14 +141,14 @@ public class ClassPrefab : MonoBehaviour
                 }
 
                 _classClick2.name = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassName;
-                
+
                 m_ClassList.Add(_classClick2);
-                
+
                 _classClick2.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassName;
                 _classClick2.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassSystemValue.ToString();
                 _classClick2.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassContentsValue.ToString();
                 _classClick2.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ArtClass[i].m_ClassBalanceValue.ToString();
-                
+
                 _classClick2.GetComponent<Button>().onClick.AddListener(SelecteClassInfo);
             }
         }
@@ -185,14 +177,14 @@ public class ClassPrefab : MonoBehaviour
                 }
 
                 _classClick3.name = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassName;
-                
+
                 m_ClassList.Add(_classClick3);
-                
+
                 _classClick3.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassName;
                 _classClick3.transform.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassSystemValue.ToString();
                 _classClick3.transform.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassContentsValue.ToString();
                 _classClick3.transform.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = ClassSchedule.Instance.m_NowPlayerClass.ProgrammingClass[i].m_ClassBalanceValue.ToString();
-                
+
                 _classClick3.GetComponent<Button>().onClick.AddListener(SelecteClassInfo);
             }
         }
@@ -223,7 +215,7 @@ public class ClassPrefab : MonoBehaviour
                 _classDataObj.transform.GetChild(4).GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.classData.ElementAt(i).Value.m_ClassContentsValue.ToString();
                 _classDataObj.transform.GetChild(5).GetChild(0).GetComponent<TextMeshProUGUI>().text = "Balance";
                 _classDataObj.transform.GetChild(5).GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelecteClass.classData.ElementAt(i).Value.m_ClassBalanceValue.ToString();
-                
+
                 if (m_SelecteClassDataList.Contains(m_SelecteClass.classData.ElementAt(i).Value) == false)
                 {
                     m_SelecteClassDataList.Add(m_SelecteClass.classData.ElementAt(i).Value);
