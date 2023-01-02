@@ -16,6 +16,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a41c0853268e7b94087dceb04ccc9b35, type: 2}
   - {fileID: 11400000, guid: 5c93e9ba328998f4399a3c3bfc8c3f39, type: 2}
   - {fileID: 11400000, guid: 69b091789b8477a48892710c604b66da, type: 2}
+  - {fileID: 11400000, guid: f42b4917f516bd146b905893f66bf02a, type: 2}
+  - {fileID: 11400000, guid: fecfc6b82f11dd34aa1825c591b7e887, type: 2}
   studentDatas:
   - {fileID: 11400000, guid: 845f45666a0a20840a2f4d5ab5eec135, type: 2}
   - {fileID: 11400000, guid: c1f95575dd70d1b4590aed261ba6ec96, type: 2}

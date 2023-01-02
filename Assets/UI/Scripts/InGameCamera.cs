@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// 22. 12. 28 Mang
@@ -31,46 +32,46 @@ public class InGameCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameTime.Instance != null)
-        {
-            if (GameTime.Instance.IsGameMode == true)
+            if (GameTime.Instance != null)
             {
-                if (Input.touchCount == 2)      // 줌인.아웃 가능한 손가락 2개만큼의 터치만 허용
+                if (GameTime.Instance.IsGameMode == true && !EventSystem.current.IsPointerOverGameObject())
                 {
-                    Debug.Log("손가락 두개");
+                    if (Input.touchCount == 2)      // 줌인.아웃 가능한 손가락 2개만큼의 터치만 허용
+                    {
+                        Debug.Log("손가락 두개");
 
-                    PinchZoom();
+                        PinchZoom();
+                    }
                 }
             }
-        }
 
-        // if (Input.touchCount == 1)
-        // {
-        //     ClickPoint = Input.GetTouch(0).position;
-        // }
+            // if (Input.touchCount == 1)
+            // {
+            //     ClickPoint = Input.GetTouch(0).position;
+            // }
 
-        if (Input.touchCount == 1)
-        {
-            Debug.Log("손가락 한개");
-
-            ClickPoint = Input.GetTouch(0).position;
-
-            Touch touch = Input.GetTouch(0);
-            if (touch.phase == TouchPhase.Began)
+            if (Input.touchCount == 1 && !EventSystem.current.IsPointerOverGameObject())
             {
-                prePos = touch.position - touch.deltaPosition;
-                Debug.Log("손가락 처음찍은자리");
+                Debug.Log("손가락 한개");
+
+                ClickPoint = Input.GetTouch(0).position;
+
+                Touch touch = Input.GetTouch(0);
+                if (touch.phase == TouchPhase.Began)
+                {
+                    prePos = touch.position - touch.deltaPosition;
+                    Debug.Log("손가락 처음찍은자리");
+                }
+                else if (touch.phase == TouchPhase.Moved)
+                {
+                    nowPos = touch.position - touch.deltaPosition;
+                    movePos = (Vector3)(prePos - nowPos) * Time.deltaTime * MoveSpeed;
+                    camera.transform.Translate(movePos);
+                    prePos = touch.position - touch.deltaPosition;
+                    Debug.Log("손가락 움직이는 자리");
+                    Debug.Log(camera.transform.position.x + "     " + camera.transform.position.y + "     " + camera.transform.position.z);
+                }
             }
-            else if (touch.phase == TouchPhase.Moved)
-            {
-                nowPos = touch.position - touch.deltaPosition;
-                movePos = (Vector3)(prePos - nowPos) * Time.deltaTime * MoveSpeed;
-                camera.transform.Translate(movePos);
-                prePos = touch.position - touch.deltaPosition;
-                Debug.Log("손가락 움직이는 자리");
-                Debug.Log(camera.transform.position.x + "     " + camera.transform.position.y + "     " + camera.transform.position.z);
-            }
-        }
     }
 
     /* public void OnMouseDrag()

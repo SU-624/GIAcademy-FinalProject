@@ -60,6 +60,7 @@ public class ClassSchedule : MonoBehaviour
 
     private List<GameObject> m_ManagementSelecteClassName = new List<GameObject>(); // 수업 이름 관리하는 리스트
     private List<GameObject> m_ManagementChoiceButton = new List<GameObject>(); // 지정된 수업의 지정버튼 없애는 리스트
+    private List<GameObject> m_ManagementChoiceProfessorName = new List<GameObject>(); // 지정된 수업의 지정버튼 없애는 리스트
 
     public EachClass m_NowPlayerClass = new EachClass();
     //public List<string> m_
@@ -122,6 +123,10 @@ public class ClassSchedule : MonoBehaviour
         m_ManagementChoiceButton.Add(m_ChangeData.m_ChoiceButton1);
         m_ManagementChoiceButton.Add(m_ChangeData.m_ChoiceButton2);
         m_ManagementChoiceButton.Add(m_ChangeData.m_ChoiceButton3);
+
+        m_ManagementChoiceProfessorName.Add(m_ChangeData.m_ProfessorName1);
+        m_ManagementChoiceProfessorName.Add(m_ChangeData.m_ProfessorName2);
+        m_ManagementChoiceProfessorName.Add(m_ChangeData.m_ProfessorName3);
     }
 
     // 각 클래스의 월별을 정하기 위한 
@@ -135,6 +140,7 @@ public class ClassSchedule : MonoBehaviour
         {
             m_ManagementSelecteClassName[i].SetActive(false);
             m_ManagementChoiceButton[i].SetActive(true);
+            m_ManagementChoiceProfessorName[i].SetActive(false);
         }
 
         if (gobj.name == "ProductManagerC_Button")
@@ -152,7 +158,9 @@ public class ClassSchedule : MonoBehaviour
                 {
                     m_ManagementSelecteClassName[i].SetActive(true);
                     m_ManagementChoiceButton[i].SetActive(false);
+                    m_ManagementChoiceProfessorName[i].SetActive(true);
                     m_ManagementSelecteClassName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ProductManagerData[i].m_SelecteClassDataSave.m_ClassName;
+                    m_ManagementChoiceProfessorName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ProductManagerData[i].m_SelecteProfessorDataSave.m_ProfessorNameValue;
                 }
             }
             m_ClassPrefab.m_SaveData.m_ClassName = "ProductManager";
@@ -173,7 +181,9 @@ public class ClassSchedule : MonoBehaviour
                 {
                     m_ManagementSelecteClassName[i].SetActive(true);
                     m_ManagementChoiceButton[i].SetActive(false);
+                    m_ManagementChoiceProfessorName[i].SetActive(true);
                     m_ManagementSelecteClassName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ArtData[i].m_SelecteClassDataSave.m_ClassName;
+                    m_ManagementChoiceProfessorName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ArtData[i].m_SelecteProfessorDataSave.m_ProfessorNameValue;
                 }
             }
 
@@ -195,7 +205,9 @@ public class ClassSchedule : MonoBehaviour
                 {
                     m_ManagementSelecteClassName[i].SetActive(true);
                     m_ManagementChoiceButton[i].SetActive(false);
+                    m_ManagementChoiceProfessorName[i].SetActive(true);
                     m_ManagementSelecteClassName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ProgrammingData[i].m_SelecteClassDataSave.m_ClassName;
+                    m_ManagementChoiceProfessorName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ProgrammingData[i].m_SelecteProfessorDataSave.m_ProfessorNameValue;
                 }
             }
 

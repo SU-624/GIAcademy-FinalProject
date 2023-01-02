@@ -14,6 +14,7 @@ public class PopOffUI : MonoBehaviour
     public int m_DelayTime;
 
     [SerializeField] private ClassPrefab m_ClassPrefab;
+    [SerializeField] private SelecteProfessor m_ProfessorPrefab;
 
     [SerializeField]
     private GameObject MyUI
@@ -64,6 +65,16 @@ public class PopOffUI : MonoBehaviour
                 if (m_ClassPrefab.m_SelecteClassButtonName != null)
                 {
                     m_ClassPrefab.m_SelecteClassButtonName.Clear();
+                }
+            }
+
+            if (m_ProfessorPrefab != null)
+            {
+                m_ProfessorPrefab.m_ProfessorDataIndex = 0;
+             
+                if (m_ProfessorPrefab.m_ForClickNextButton != null)
+                {
+                    m_ProfessorPrefab.m_ForClickNextButton.Clear();
                 }
             }
         }

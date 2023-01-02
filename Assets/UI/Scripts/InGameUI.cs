@@ -15,11 +15,13 @@ public class InGameUI : MonoBehaviour
     public TextMeshProUGUI m_nowMoney;
     public TextMeshProUGUI m_touchcount;
 
-   // public TextMeshProUGUI m_CamerapointX;
-   // public TextMeshProUGUI m_CamerapointY;
-   // public TextMeshProUGUI m_CamerapointZ;
-   //
-   // public Camera camera;
+    public Image m_TimeBar;
+
+    // public TextMeshProUGUI m_CamerapointX;
+    // public TextMeshProUGUI m_CamerapointY;
+    // public TextMeshProUGUI m_CamerapointZ;
+    //
+    // public Camera camera;
 
     // Start is called before the first frame update
     void Start()
@@ -30,14 +32,17 @@ public class InGameUI : MonoBehaviour
         m_nowDirectorName.text = PlayerInfo.Instance.m_DirectorName;
         m_nowMoney.text = PlayerInfo.Instance.m_MyMoney.ToString();
 
+        m_TimeBar.fillAmount = 0.2f;
     }
 
     // Update is called once per frame
     void Update()
     {
+        GameTime.Instance.CheckPerSecond(m_TimeBar);       // 하루(6초) 체크
+
         m_nowMoney.text = PlayerInfo.Instance.m_MyMoney.ToString();
 
-        if(Input.touchCount == 0)
+        if (Input.touchCount == 0)
         {
             m_touchcount.text = "0";
         }

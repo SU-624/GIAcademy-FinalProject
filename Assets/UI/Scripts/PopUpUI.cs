@@ -25,6 +25,14 @@ public class PopUpUI : MonoBehaviour
         set { m_DelayTime = value; }
     }
 
+    Vector3 target;
+
+    public void Start()
+    {
+        float currentAspectRatio = (float)Screen.width / (float)Screen.height;
+
+        target = new Vector3(m_UI.transform.position.x - ((float)Screen.width / 2f), m_UI.transform.position.y, m_UI.transform.position.z);
+    }
     // UI를 켜주는 시간 조정 함수
     public void DelayTurnOnUI(/*int t*/)
     {
@@ -100,5 +108,30 @@ public class PopUpUI : MonoBehaviour
         }
     }
 
+    // 움직이는 UI의 속도
+    [SerializeField]
+    float moveSpeed = 0;
 
+    [SerializeField]            // 이동시키고 싶은 좌표
+    float movedPositionX = 0;
+
+    Vector3 prevMovedPosition = new Vector3(0,0,0);
+
+    // UI 메뉴가 누르면 팝업으로 나오는 함수 (가로 이동)
+    public void SlidePopUpUI()
+    {
+        // 현재 오브젝트 좌표와 이동시킬 좌표가 같지 않을 때
+        if (m_UI.transform.position != target)
+        {
+
+            prevMovedPosition = m_UI.transform.position;
+            m_UI.transform.position = target;
+        }
+        else
+        {
+            m_UI.transform.position = prevMovedPosition;
+            prevMovedPosition = new Vector3(0, 0, 0);
+        }
+
+    }
 }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
@@ -34,14 +35,18 @@ public class GameTime : MonoBehaviour
     string[] Week = { "첫째 주", "둘째 주", "셋째 주", "넷째 주" };
 
 
+    public string[] Day = { "월요일", "화요일", "수요일", "목요일", "금요일" };
+
     int MonthIndex = 2;
     int WeekIndex = 0;
+
+    int perSecond = 6;
 
     public bool IsGameMode = false;        // 메인게임화면 or UI 창 화면 체크해서 각 모드 때만 가능한 것들을 하기 위한 변수
 
     public void Awake()
     {
-        if(instance == null)
+        if (instance == null)
         {
             instance = this;
         }
@@ -55,7 +60,6 @@ public class GameTime : MonoBehaviour
 
         // Month[11] = "12월";
         // Week[0] = "첫째주";
-
         m_nowTime.text = Year + "년 " + Month[MonthIndex] + " " + Week[WeekIndex];
 
         Debug.Log(Year + "년 " + Month[MonthIndex] + " " + Week[WeekIndex]);
@@ -148,6 +152,38 @@ public class GameTime : MonoBehaviour
         if (MonthIndex == 11 && WeekIndex == 3)
         {
             Year++;
+        }
+    }
+
+    int i = 0;
+    public void CheckPerSecond(Image img)
+    {
+        if (GameTime.Instance.IsGameMode == true)
+        {
+            // 6초마다 시간체크
+            if (Time.time - PrevTime >= perSecond)
+            {
+                Debug.Log(perSecond);
+                Debug.Log(img.fillAmount);
+                Debug.Log(Day[i]);
+
+                img.fillAmount += 0.2f;
+
+                // 6초마다 더해주기
+                perSecond += 6;
+                i += 1;
+
+                if (Time.time - PrevTime >= 30)
+                {
+                    img.fillAmount = 0.2f;
+
+                    perSecond = 6;
+
+                    i = 0;
+
+                    Debug.Log(perSecond + "초 체크 초기화");
+                }
+            }
         }
     }
 

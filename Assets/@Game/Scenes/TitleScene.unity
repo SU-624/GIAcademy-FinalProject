@@ -2017,7 +2017,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &455518819
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4944,6 +4944,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 455518818}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!114 &943015569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7783,6 +7785,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 1328414086}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!114 &1435946465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8508,6 +8512,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 1875378211}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!114 &1522896538
 MonoBehaviour:
   m_ObjectHideFlags: 0
