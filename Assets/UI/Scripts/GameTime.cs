@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
@@ -31,14 +32,14 @@ public class GameTime : MonoBehaviour
     // string[] Month = new string[12];
     // string[] Week = new string[4];
 
-    string[] Month = { "1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월" };
-    string[] Week = { "첫째 주", "둘째 주", "셋째 주", "넷째 주" };
+    public string[] Month = { "1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월" };
+    public string[] Week = { "첫째 주", "둘째 주", "셋째 주", "넷째 주" };
 
 
     public string[] Day = { "월요일", "화요일", "수요일", "목요일", "금요일" };
 
-    int MonthIndex = 2;
-    int WeekIndex = 0;
+    public int MonthIndex = 2;
+    public int WeekIndex = 0;
 
     int perSecond = 6;
 

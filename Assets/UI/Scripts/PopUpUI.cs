@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 /// <summary>
 /// Mang 10.18
 /// 
-/// UI의 PopUp 관련을 담당해줄 스크립트S
+/// UI의 PopUp 관련을 담당해줄 스크립트
 /// </summary>
 public class PopUpUI : MonoBehaviour
 {
@@ -29,7 +29,7 @@ public class PopUpUI : MonoBehaviour
 
     public void Start()
     {
-        float currentAspectRatio = (float)Screen.width / (float)Screen.height;
+        // float currentAspectRatio = (float)Screen.width / (float)Screen.height;
 
         target = new Vector3(m_UI.transform.position.x - ((float)Screen.width / 2f), m_UI.transform.position.y, m_UI.transform.position.z);
     }
@@ -44,19 +44,49 @@ public class PopUpUI : MonoBehaviour
         Invoke("JustTurnOn", m_DelayTime);
     }
 
-    // 버튼이 눌리면 그냥 켜주기
+    // 버튼이 눌리면 켜고
     public void TurnOnUI()
     {
-        this.gameObject.SetActive(true);
+        InGameUI.Instance.UIStack.Push(this.gameObject);
+        Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
 
-        if (m_UI.gameObject.activeSelf == false)
+        if (InGameUI.Instance.UIStack != null)
         {
-            m_UI.gameObject.SetActive(true);
+            this.gameObject.SetActive(true);
+
+            if (m_UI.gameObject.activeSelf == false)
+            {
+                m_UI.gameObject.SetActive(true);
+            }
+
+            if (SceneManager.GetActiveScene().name == "InGameScene")
+            {
+                if (GameTime.Instance != null)
+                {
+                    GameTime.Instance.IsGameMode = false;
+                }
+                Time.timeScale = 0;
+
+                Debug.Log("시간 멈춤");
+            }
+        }
+    }
+
+    public void JustTurnOn()
+    {
+        InGameUI.Instance.UIStack.Push(this.gameObject);
+        Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
+
+        if (InGameUI.Instance.UIStack != null)
+        {
+            if (this.gameObject.activeSelf == false)
+            {
+                this.gameObject.SetActive(true);
+            }
         }
 
         if (SceneManager.GetActiveScene().name == "InGameScene")
         {
-
             if (GameTime.Instance != null)
             {
                 GameTime.Instance.IsGameMode = false;
@@ -67,33 +97,32 @@ public class PopUpUI : MonoBehaviour
         }
     }
 
-    public void JustTurnOn()
+    public void TurnOnMailIcon()
     {
-        if (this.gameObject.activeSelf == false)
+        if(m_UI.gameObject.activeSelf == false)
         {
-            this.gameObject.SetActive(true);
-        }
-
-        if (SceneManager.GetActiveScene().name == "InGameScene")
-        {
-
-            if (GameTime.Instance != null)
-            {
-                GameTime.Instance.IsGameMode = false;
-            }
-            Time.timeScale = 0;
-
-            Debug.Log("시간 멈춤");
+            m_UI.SetActive(true);
         }
     }
 
     // 지정 팝업창을 켜 주면서 그 전의 UI 는 꺼준다.
     public void PopUpMyUI()
     {
-        if (m_UI.gameObject.activeSelf == false)
+        InGameUI.Instance.UIStack.Push(this.gameObject);
+        Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
+
+        if (InGameUI.Instance.UIStack.Count != 0)
         {
-            m_UI.gameObject.SetActive(true);    // 이 스크립트가 붙어있는 오브젝트 본인
-            this.gameObject.SetActive(false);   // 누르는 버튼은 꺼주기
+            if (m_UI.gameObject.activeSelf == false)
+            {
+                InGameUI.Instance.UIStack.Pop();
+                m_UI.gameObject.SetActive(true);    // 이 스크립트가 붙어있는 오브젝트 본인
+                Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
+
+                //InGameUI.Instance.UIStack.Push(m_UI.gameObject);
+                this.gameObject.SetActive(false);   // 누르는 버튼은 꺼주기
+                //Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
+            }
         }
 
         if (SceneManager.GetActiveScene().name == "InGameScene")
@@ -115,7 +144,7 @@ public class PopUpUI : MonoBehaviour
     [SerializeField]            // 이동시키고 싶은 좌표
     float movedPositionX = 0;
 
-    Vector3 prevMovedPosition = new Vector3(0,0,0);
+    Vector3 prevMovedPosition = new Vector3(0, 0, 0);
 
     // UI 메뉴가 누르면 팝업으로 나오는 함수 (가로 이동)
     public void SlidePopUpUI()

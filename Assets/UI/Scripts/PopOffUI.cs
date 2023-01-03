@@ -46,8 +46,7 @@ public class PopOffUI : MonoBehaviour
         Invoke("TurnOffUI", m_DelayTime);
     }
 
-    // 뒤로가기 버튼을 눌렀을 때
-    public void TurnOffUI()
+    public void BackButton()
     {
         // 버튼이 활성화 되어있는 지 체크
         if (m_UI.activeSelf == true)
@@ -71,24 +70,85 @@ public class PopOffUI : MonoBehaviour
             if (m_ProfessorPrefab != null)
             {
                 m_ProfessorPrefab.m_ProfessorDataIndex = 0;
-             
+
                 if (m_ProfessorPrefab.m_ForClickNextButton != null)
                 {
                     m_ProfessorPrefab.m_ForClickNextButton.Clear();
                 }
             }
+
+            InGameUI.Instance.UIStack.Pop();
+            Debug.Log(InGameUI.Instance.UIStack.Count);
         }
 
-        // 인게임 씬에서만 시간이 체크되도록 체크
-        if (SceneManager.GetActiveScene().name == "InGameScene")
+        if (InGameUI.Instance.UIStack.Count == 0)
         {
-            if (GameTime.Instance != null)
+            // 인게임 씬에서만 시간이 체크되도록 체크
+            if (SceneManager.GetActiveScene().name == "InGameScene")
             {
-                GameTime.Instance.IsGameMode = true;
-            }
-            Time.timeScale = 1;
+                if (GameTime.Instance != null)
+                {
+                    GameTime.Instance.IsGameMode = true;
+                }
+                Time.timeScale = 1;
 
-            Debug.Log("시간 흐름");
+                Debug.Log("시간 흐름");
+            }
+        }
+    }
+
+    // 뒤로가기 버튼을 눌렀을 때
+    public void TurnOffUI()
+    {
+        if (InGameUI.Instance.UIStack != null)
+        {
+            // 버튼이 활성화 되어있는 지 체크
+            if (m_UI.activeSelf == true)
+            {
+                m_UI.SetActive(false);
+
+                // 수연이의 학생 프리팹이 존재하는지 체크
+                if (m_ClassPrefab != null)
+                {
+                    if (m_ClassPrefab.m_SelecteClassDataList != null)
+                    {
+                        m_ClassPrefab.m_SelecteClassDataList.Clear();
+                    }
+
+                    if (m_ClassPrefab.m_SelecteClassButtonName != null)
+                    {
+                        m_ClassPrefab.m_SelecteClassButtonName.Clear();
+                    }
+                }
+
+                if (m_ProfessorPrefab != null)
+                {
+                    m_ProfessorPrefab.m_ProfessorDataIndex = 0;
+
+                    if (m_ProfessorPrefab.m_ForClickNextButton != null)
+                    {
+                        m_ProfessorPrefab.m_ForClickNextButton.Clear();
+                    }
+                }
+
+                InGameUI.Instance.UIStack.Pop();
+                Debug.Log(InGameUI.Instance.UIStack.Count);
+            }
+        }
+
+        if (InGameUI.Instance.UIStack.Count == 0)
+        {
+            // 인게임 씬에서만 시간이 체크되도록 체크
+            if (SceneManager.GetActiveScene().name == "InGameScene")
+            {
+                if (GameTime.Instance != null)
+                {
+                    GameTime.Instance.IsGameMode = true;
+                }
+                Time.timeScale = 1;
+
+                Debug.Log("시간 흐름");
+            }
         }
     }
 

@@ -22,86 +22,52 @@ public class InGameCamera : MonoBehaviour
     float PrevDistance = 0.0f;
 
     Vector2 ClickPoint;
-
     // Start is called before the first frame update
     void Start()
     {
-
     }
 
     // Update is called once per frame
     void Update()
     {
-            if (GameTime.Instance != null)
+        // 줌인 줌아웃
+        if (GameTime.Instance != null)
+        {
+            if (GameTime.Instance.IsGameMode == true && !EventSystem.current.IsPointerOverGameObject())
             {
-                if (GameTime.Instance.IsGameMode == true && !EventSystem.current.IsPointerOverGameObject())
+                if (Input.touchCount == 2)      // 줌인.아웃 가능한 손가락 2개만큼의 터치만 허용
                 {
-                    if (Input.touchCount == 2)      // 줌인.아웃 가능한 손가락 2개만큼의 터치만 허용
-                    {
-                        Debug.Log("손가락 두개");
+                    Debug.Log("손가락 두개");
 
-                        PinchZoom();
-                    }
+                    PinchZoom();
                 }
             }
+        }
 
-            // if (Input.touchCount == 1)
-            // {
-            //     ClickPoint = Input.GetTouch(0).position;
-            // }
+        // 카메라 이동
+        if (Input.touchCount == 1 && !EventSystem.current.IsPointerOverGameObject())
+        {
+            Debug.Log("손가락 한개");
 
-            if (Input.touchCount == 1 && !EventSystem.current.IsPointerOverGameObject())
+            ClickPoint = Input.GetTouch(0).position;
+
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began)
             {
-                Debug.Log("손가락 한개");
-
-                ClickPoint = Input.GetTouch(0).position;
-
-                Touch touch = Input.GetTouch(0);
-                if (touch.phase == TouchPhase.Began)
-                {
-                    prePos = touch.position - touch.deltaPosition;
-                    Debug.Log("손가락 처음찍은자리");
-                }
-                else if (touch.phase == TouchPhase.Moved)
-                {
-                    nowPos = touch.position - touch.deltaPosition;
-                    movePos = (Vector3)(prePos - nowPos) * Time.deltaTime * MoveSpeed;
-                    camera.transform.Translate(movePos);
-                    prePos = touch.position - touch.deltaPosition;
-                    Debug.Log("손가락 움직이는 자리");
-                    Debug.Log(camera.transform.position.x + "     " + camera.transform.position.y + "     " + camera.transform.position.z);
-                }
+                prePos = touch.position - touch.deltaPosition;
+                Debug.Log("손가락 처음찍은자리");
             }
+            else if (touch.phase == TouchPhase.Moved)
+            {
+                nowPos = touch.position - touch.deltaPosition;
+                movePos = (Vector3)(prePos - nowPos) * Time.deltaTime * MoveSpeed;
+                camera.transform.Translate(movePos);
+                prePos = touch.position - touch.deltaPosition;
+                Debug.Log("손가락 움직이는 자리");
+                Debug.Log(camera.transform.position.x + "     " + camera.transform.position.y + "     " + camera.transform.position.z);
+            }
+        }
     }
-
-    /* public void OnMouseDrag()
-     {
-         int touchcount = Input.touchCount;
-
-         ////뭐지
-         if (touchcount == 1)
-         {
-             if (PrevPos == Vector2.zero)
-             {
-                 PrevPos = Input.GetTouch(0).position;
-
-                 return;
-             }
-
-             Vector2 dir = (Input.GetTouch(0).position - PrevPos).normalized;
-             Vector3 vec = new Vector3(dir.x, dir.y);
-
-             camera.transform.position -= vec * MoveSpeed * Time.deltaTime;
-             PrevPos = Input.GetTouch(0).position;
-         }
-     }
-
-     public void ExitDrag()
-     {
-         PrevPos = Vector2.zero;
-         PrevDistance = 0.0f;
-     }
-    */
 
     public void PinchZoom()
     {
@@ -131,5 +97,4 @@ public class InGameCamera : MonoBehaviour
         }
 
     }
-
 }

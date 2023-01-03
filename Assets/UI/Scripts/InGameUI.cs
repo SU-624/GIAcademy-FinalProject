@@ -4,8 +4,35 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
+/// <summary>
+/// 23. 01. 02 Mang
+/// 
+/// InGameScene 의 메인 화면에서 쓰일 UI 들을 관리 할 스크립트
+/// </summary>
 public class InGameUI : MonoBehaviour
 {
+    private static InGameUI instance = null;
+
+    public static InGameUI Instance
+    {
+        get
+        {
+            return instance;
+        }
+
+        set { instance = value; }
+    }
+    public void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+    }
+
+    // 켜진 UI 들을 다 담아 둘 스택
+    public Stack<GameObject> UIStack;
+
     [SerializeField]
     PopUpUI m_popUpInstant;     // Title -> InGame 씬으로 이동 시 제일 먼저 띄워질 팝업창
 
@@ -26,13 +53,18 @@ public class InGameUI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        m_popUpInstant.DelayTurnOnUI();
-
+        // UI에 그릴 데이터 로드 & 기본값 설정
         m_nowAcademyName.text = PlayerInfo.Instance.m_AcademyName;
         m_nowDirectorName.text = PlayerInfo.Instance.m_DirectorName;
         m_nowMoney.text = PlayerInfo.Instance.m_MyMoney.ToString();
 
         m_TimeBar.fillAmount = 0.2f;
+
+        UIStack = new Stack<GameObject>();
+        Debug.Log("stack count : " + UIStack.Count);
+        // 
+        m_popUpInstant.DelayTurnOnUI();
+
     }
 
     // Update is called once per frame
