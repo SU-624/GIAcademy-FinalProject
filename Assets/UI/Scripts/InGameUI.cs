@@ -70,10 +70,11 @@ public class InGameUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GameTime.Instance.CheckPerSecond(m_TimeBar);       // 하루(6초) 체크
+        GameTime.Instance.DrawTimeBar(m_TimeBar);       // 하루(6초) 체크
 
         m_nowMoney.text = PlayerInfo.Instance.m_MyMoney.ToString();
 
+        // 테스트를 위한 디버깅용
         if (Input.touchCount == 0)
         {
             m_touchcount.text = "0";

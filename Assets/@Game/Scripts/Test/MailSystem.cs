@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.Events;
 
 /// <summary>
@@ -12,14 +13,17 @@ using UnityEngine.Events;
 public class MailSystem : MonoBehaviour
 {
     public UnityEvent m_SendMail;
-    public ChangeMailContent m_ChangeDate;
-    bool m_IsTurnOnIcon = false;
+    public bool m_IsTurnOnIcon = false;
 
     void Update()
     {
-        if(GameTime.Instance.WeekIndex == 2 && m_IsTurnOnIcon == false)
+        if(m_IsTurnOnIcon == true && GameTime.Instance.isChangeWeek == true)
         {
-            //m_ChangeDate.ChangeDateAndFrom(GameTime.Instance.Week[2]);
+            m_IsTurnOnIcon = false;
+        }
+
+        if((GameTime.Instance.WeekIndex == 1 || GameTime.Instance.WeekIndex == 2) && m_IsTurnOnIcon == false)
+        {
             SatisfyRequirement();
         }
     }

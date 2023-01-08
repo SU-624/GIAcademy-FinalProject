@@ -132,7 +132,7 @@ public class PopOffUI : MonoBehaviour
                 }
 
                 InGameUI.Instance.UIStack.Pop();
-                Debug.Log(InGameUI.Instance.UIStack.Count);
+                Debug.Log("ÆË¾÷ Ã¢ ¶ç¿©Áø °¹¼ö : " + InGameUI.Instance.UIStack.Count);
             }
         }
 
