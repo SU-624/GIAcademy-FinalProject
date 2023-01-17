@@ -97,6 +97,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Prefab: {fileID: 4240316908068068959}
   m_parent: {fileID: 4240316908935855710}
+  m_SelecteClass: {fileID: 0}
+  m_Month1: {fileID: 0}
+  m_Month2: {fileID: 0}
+  m_Month3: {fileID: 0}
+  m_ClassInfo: {fileID: 0}
+  m_ClassList: []
+  m_SelecteClassButtonName: []
 --- !u!1 &4240316908087311758
 GameObject:
   m_ObjectHideFlags: 0
@@ -1452,6 +1459,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 4240316908698027164}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &4240316908214055406
 GameObject:
   m_ObjectHideFlags: 0
@@ -1623,9 +1632,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bc9b42f15a0d144a98381cd9053c12e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_img1: {fileID: 4240316908615374819}
-  m_img2: {fileID: 4240316908130778173}
-  m_img3: {fileID: 4240316909063948117}
+  m_SelecteClassArea1: {fileID: 0}
+  m_SelecteClassArea2: {fileID: 0}
+  m_SelecteClassArea3: {fileID: 0}
+  m_MonthClassSpace: {fileID: 0}
+  m_LoadClassData: {fileID: 0}
+  m_ClassPrefab: {fileID: 0}
+  m_ClickClass: {fileID: 0}
+  m_ChangeData: {fileID: 0}
 --- !u!1 &4240316908214737345
 GameObject:
   m_ObjectHideFlags: 0
@@ -8112,6 +8126,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 4240316908698027164}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &4240316908713227946
 GameObject:
   m_ObjectHideFlags: 0
@@ -10150,6 +10166,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 4240316909985590935}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &4240316908852875029
 GameObject:
   m_ObjectHideFlags: 0
@@ -10298,6 +10316,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 4240316909985590935}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &4240316908853408147
 GameObject:
   m_ObjectHideFlags: 0
@@ -11832,6 +11852,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Prefab: {fileID: 4240316908987418096}
   m_parent: {fileID: 4240316908935855710}
+  m_SelecteClass: {fileID: 0}
+  m_Month1: {fileID: 0}
+  m_Month2: {fileID: 0}
+  m_Month3: {fileID: 0}
+  m_ClassInfo: {fileID: 0}
+  m_ClassList: []
+  m_SelecteClassButtonName: []
 --- !u!1 &4240316909013770780
 GameObject:
   m_ObjectHideFlags: 0
@@ -12075,6 +12102,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Prefab: {fileID: 7385134580796439605, guid: 0ec47ddc7f53b9c40bd7d84a52707d77, type: 3}
   m_parent: {fileID: 4240316908935855710}
+  m_SelecteClass: {fileID: 0}
+  m_Month1: {fileID: 0}
+  m_Month2: {fileID: 0}
+  m_Month3: {fileID: 0}
+  m_ClassInfo: {fileID: 0}
+  m_ClassList: []
+  m_SelecteClassButtonName: []
 --- !u!1 &4240316909023692097
 GameObject:
   m_ObjectHideFlags: 0
@@ -16000,6 +16034,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 4240316909985590935}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &4240316909521089893
 GameObject:
   m_ObjectHideFlags: 0
@@ -16268,6 +16304,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Prefab: {fileID: 7385134580796439605, guid: 0ec47ddc7f53b9c40bd7d84a52707d77, type: 3}
   m_parent: {fileID: 4240316908935855710}
+  m_SelecteClass: {fileID: 0}
+  m_Month1: {fileID: 0}
+  m_Month2: {fileID: 0}
+  m_Month3: {fileID: 0}
+  m_ClassInfo: {fileID: 0}
+  m_ClassList: []
+  m_SelecteClassButtonName: []
 --- !u!1 &4240316909535063345
 GameObject:
   m_ObjectHideFlags: 0
@@ -16486,7 +16529,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1920, y: 1080}
+  m_ReferenceResolution: {x: 3200, y: 1440}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -18342,6 +18385,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 4240316909985590935}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &4240316909648932639
 GameObject:
   m_ObjectHideFlags: 0
@@ -18689,6 +18734,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Prefab: {fileID: 7385134580796439605, guid: 0ec47ddc7f53b9c40bd7d84a52707d77, type: 3}
   m_parent: {fileID: 4240316908935855710}
+  m_SelecteClass: {fileID: 0}
+  m_Month1: {fileID: 0}
+  m_Month2: {fileID: 0}
+  m_Month3: {fileID: 0}
+  m_ClassInfo: {fileID: 0}
+  m_ClassList: []
+  m_SelecteClassButtonName: []
 --- !u!1 &4240316909689442521
 GameObject:
   m_ObjectHideFlags: 0
@@ -20111,6 +20163,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 4240316908192352371}
   m_DelayTime: 1
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &4240316909870028935
 GameObject:
   m_ObjectHideFlags: 0
@@ -21147,6 +21201,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 4240316909985590935}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &4240316909923389737
 GameObject:
   m_ObjectHideFlags: 0
@@ -21373,6 +21429,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 4240316909985590935}
   m_DelayTime: 0
+  m_ClassPrefab: {fileID: 0}
+  m_ProfessorPrefab: {fileID: 0}
 --- !u!1 &4240316909938661192
 GameObject:
   m_ObjectHideFlags: 0
@@ -21521,6 +21579,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 4240316909985590935}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &4240316909941706664
 GameObject:
   m_ObjectHideFlags: 0
@@ -22884,9 +22944,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bc9b42f15a0d144a98381cd9053c12e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_img1: {fileID: 4240316908615374819}
-  m_img2: {fileID: 4240316908130778173}
-  m_img3: {fileID: 4240316909063948117}
+  m_SelecteClassArea1: {fileID: 0}
+  m_SelecteClassArea2: {fileID: 0}
+  m_SelecteClassArea3: {fileID: 0}
+  m_MonthClassSpace: {fileID: 0}
+  m_LoadClassData: {fileID: 0}
+  m_ClassPrefab: {fileID: 0}
+  m_ClickClass: {fileID: 0}
+  m_ChangeData: {fileID: 0}
 --- !u!1 &4240316910038933056
 GameObject:
   m_ObjectHideFlags: 0
@@ -23287,9 +23352,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bc9b42f15a0d144a98381cd9053c12e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_img1: {fileID: 4240316908615374819}
-  m_img2: {fileID: 4240316908130778173}
-  m_img3: {fileID: 4240316909063948117}
+  m_SelecteClassArea1: {fileID: 0}
+  m_SelecteClassArea2: {fileID: 0}
+  m_SelecteClassArea3: {fileID: 0}
+  m_MonthClassSpace: {fileID: 0}
+  m_LoadClassData: {fileID: 0}
+  m_ClassPrefab: {fileID: 0}
+  m_ClickClass: {fileID: 0}
+  m_ChangeData: {fileID: 0}
 --- !u!1 &4240316910061970010
 GameObject:
   m_ObjectHideFlags: 0
@@ -25004,6 +25074,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Prefab: {fileID: 7385134580796439605, guid: 0ec47ddc7f53b9c40bd7d84a52707d77, type: 3}
   m_parent: {fileID: 4240316908935855710}
+  m_SelecteClass: {fileID: 0}
+  m_Month1: {fileID: 0}
+  m_Month2: {fileID: 0}
+  m_Month3: {fileID: 0}
+  m_ClassInfo: {fileID: 0}
+  m_ClassList: []
+  m_SelecteClassButtonName: []
 --- !u!1 &4240316910198045284
 GameObject:
   m_ObjectHideFlags: 0

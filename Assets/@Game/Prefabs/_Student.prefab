@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 8450934139388433303}
   - component: {fileID: -4007326890499371423}
   - component: {fileID: 6658299915427880452}
-  - component: {fileID: 2130513402414319767}
+  - component: {fileID: -4393316826473684555}
   m_Layer: 0
   m_Name: _Student
-  m_TagString: Untagged
+  m_TagString: Student
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -73,8 +73,12 @@ MonoBehaviour:
   m_CoolTime: 5
   m_NameStudent: Su
   isHereRestaurant: 0
+  isArrivedClass: 0
+  isDesSetting: 0
+  isInteracting: 0
   m_RestaurantNumOfPeople: 0
---- !u!114 &2130513402414319767
+  m_Destination: ' '
+--- !u!114 &-4393316826473684555
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -83,9 +87,37 @@ MonoBehaviour:
   m_GameObject: {fileID: 7573151718727554126}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8cc17fd4068e31a43b27bb36eac35948, type: 3}
+  m_Script: {fileID: 11500000, guid: 8d7b55c7ecdb49a4a89fa5e6f9022861, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startWhenEnabled: 1
+  asynchronousLoad: 0
+  pauseWhenDisabled: 0
+  restartWhenComplete: 0
+  logTaskChanges: 0
+  group: 0
+  resetValuesOnRestart: 0
+  externalBehavior: {fileID: 0}
+  mBehaviorSource:
+    behaviorName: Behavior
+    behaviorDescription: 
+    mTaskData:
+      types: []
+      parentIndex: 
+      startIndex: 
+      variableStartIndex: 
+      JSONSerialization: 
+      fieldSerializationData:
+        typeName: []
+        fieldNameHash: 
+        startIndex: 
+        dataPosition: 
+        unityObjects: []
+        byteData: 
+        byteDataArray: 
+      Version: 
+  gizmoViewMode: 0
+  showBehaviorDesignerGizmo: 1
 --- !u!1001 &8643904464343387826
 PrefabInstance:
   m_ObjectHideFlags: 0

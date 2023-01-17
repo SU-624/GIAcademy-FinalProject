@@ -1,9 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using System.Linq;
 using StatData.Runtime;
 using Conditiondata.Runtime;
@@ -48,6 +48,14 @@ public class InGameTest : MonoBehaviour
     private List<Student> _startClassStudent = new List<Student>();
     private List<StatModifier> _startClassMagnitude = new List<StatModifier>();
 
+    //public Dictionary<string, GameObject> _programmingSeatDic;
+    //public Dictionary<string, GameObject> _ProductManagerSeatDic;
+    //public Dictionary<string, GameObject> _artSeatDic;
+
+    public List<string> _interactionScript = new List<string>();
+
+    public ClassState m_ClassState = ClassState.nothing;
+
     public static InGameTest Instance
     {
         get
@@ -62,6 +70,11 @@ public class InGameTest : MonoBehaviour
 
     private void Awake()
     {
+        //Debug.LogWarning("인게임");
+        //_ProductManagerSeatDic = new Dictionary<string, GameObject>();
+        //_programmingSeatDic = new Dictionary<string, GameObject>();
+        //_artSeatDic = new Dictionary<string, GameObject>();           
+
         if (_instance == null)
         {
             _instance = this;
@@ -71,6 +84,51 @@ public class InGameTest : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    private void Start()
+    {
+        if (_interactionScript == null)
+        {
+            InteractionScriptSetting();
+        }
+    }
+
+    private void Update()
+    {
+        if (m_ClassState == ClassState.ClassStart)
+        {
+            foreach (var student in ObjectManager.Instance.m_StudentList)
+            {
+                if (student.isArrivedClass == false)
+                {
+                    m_ClassState = ClassState.ClassStart;
+                    break;
+                }
+
+                m_ClassState = ClassState.StudyStart;
+            }
+        }
+
+        if (m_ClassState == ClassState.StudyStart)
+        {
+            StartStudy();
+        }
+
+        if (m_ClassState == ClassState.Studying)
+        {
+            if (GameTime.Instance.FlowTime.NowWeek == "셋째 주")
+            {
+                EndClass();
+            }
+        }
+    }
+
+    void InteractionScriptSetting()
+    {
+        _interactionScript.Add("A안녕");
+        _interactionScript.Add("B반가워");
+        _interactionScript.Add("A잘가");
     }
 
     // 버튼을 눌렀을 때 캐릭터가 생성이 되게 해보기
@@ -299,30 +357,69 @@ public class InGameTest : MonoBehaviour
         }
     }
 
-    // 버튼을 누르면 수업이 시작되면서 학생들의 상태가 수업중으로 바뀐다.
+    // 버튼을 누르면 3달치의 수업을 미리 저장하여 매 달 첫째 주에 m_ClassState가 ClassStart가 될 수 있도록 해주기.
     public void StarClass()
     {
-        for (int i = 0; i < _startClassStudent.Count; i++)
+        //for (int i = 0; i < _startClassStudent.Count; i++)
+        //{
+        //    _startClassStudent[i].m_Doing = Student.Doing.Study;
+        //}
+        //SelectClassAndStudent();
+        //StartCoroutine(EndClass());
+        m_ClassState = ClassState.ClassStart;
+
+        foreach (var student in ObjectManager.Instance.m_StudentBehaviorList)
         {
-            _startClassStudent[i].m_Doing = Student.Doing.Study;
+            student.GetComponent<Student>().isDesSetting = false;
         }
-        SelectClassAndStudent();
-        StartCoroutine(EndClass());
+    }
+
+    void StartStudy()
+    {
+        m_ClassState = ClassState.Studying;
+
+        // 인게임 씬에서만 시간이 체크되도록 체크
+        if (SceneManager.GetActiveScene().name == "InGameScene")
+        {
+            if (GameTime.Instance != null)
+            {
+                GameTime.Instance.IsGameMode = true;
+            }
+            Time.timeScale = 1;
+
+            Debug.Log("시간 흐름");
+        }
+
+        //Invoke("EndClass", 5f);
+
+        //StartCoroutine(EndClass());
     }
 
     // 3초 후 수업의 숫자만큼 학생의 능력치가 올라가게 해주는 코루틴
-    IEnumerator EndClass()
+    void EndClass()
     {
-        yield return new WaitForSeconds(3f);
+        //for (int i = 0; i < _startClassStudent.Count; i++)
+        //{
+        //    _startClassStudent[i].m_Doing = Student.Doing.FreeWalk;
+        //    _statController.CalculateValue(_startClassStudent[i], _startClassMagnitude[i]);
+        //}
 
-        for (int i = 0; i < _startClassStudent.Count; i++)
+        //SelectClassAndStudent();
+        m_ClassState = ClassState.ClassEnd;
+        foreach (var student in ObjectManager.Instance.m_StudentList)
         {
-            _startClassStudent[i].m_Doing = Student.Doing.FreeWalk;
-            _statController.CalculateValue(_startClassStudent[i], _startClassMagnitude[i]);
+            student.isArrivedClass = false;
+            student.isDesSetting = false;
         }
 
-        SelectClassAndStudent();
+        Invoke("StateInit", 5f);
     }
+
+    void StateInit()
+    {
+        m_ClassState = ClassState.nothing;
+    }
+
 }
 
 public class StudentStats
@@ -334,3 +431,13 @@ public class StudentStats
     public int hungry;
     public int tired;
 }
+
+public enum ClassState
+{
+    nothing,
+    ClassStart,
+    ClassEnd,
+    StudyStart,
+    Studying
+}
+

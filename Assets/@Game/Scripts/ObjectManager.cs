@@ -4,6 +4,7 @@ using UnityEngine;
 using StatData.Runtime;
 using Conditiondata.Runtime;
 using BT;
+using BehaviorDesigner.Runtime;
 
 /// <summary>
 /// 학생과 교수의 생성, 삭제를 관리해주는 스크립트
@@ -21,11 +22,17 @@ public class ObjectManager : MonoBehaviour
     [SerializeField] private List<GameObject> m_CharacterPartsHair = new List<GameObject>();
     [SerializeField] private List<GameObject> m_CharacterPartsTop = new List<GameObject>();
     [SerializeField] private List<GameObject> m_CharacterPartsBottom = new List<GameObject>();
+    [SerializeField] private ExternalBehaviorTree studentTree;
 
     public GameObject StudentOriginal;    /// 원본으로 사용할 프리팹(을 받는 GameObject)
 
     public List<Student> m_StudentList = new List<Student>();
+    public List<GameObject> m_StudentBehaviorList = new List<GameObject>();
 
+
+    public Dictionary<string, GameObject> _programmingSeatDic = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> _ProductManagerSeatDic = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> _artSeatDic = new Dictionary<string, GameObject>();
 
     public static ObjectManager Instance
     {
@@ -52,8 +59,17 @@ public class ObjectManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        Debug.LogWarning("오브젝트");
+        CreateStudent();
+        CreateStudent();
+        CreateStudent();
+    }
+
     // 학생 오브젝트를 필요할 때 동적으로 생성해주기 위한 함수
     // 랜덤한 숫자를 가져와서 데이터베이스에 있는 학생의 정보를 무작위로 가져온다
+    // 학생을 생성할 때 파츠를 오브젝트로 생성하는게 아니라 Mesh를 바꿔주는걸로 해주기
     public void CreateStudent()
     {
         int _randomStudent = Random.Range(0, 5);
@@ -88,7 +104,7 @@ public class ObjectManager : MonoBehaviour
         int _hairNum = Random.Range(0, m_CharacterPartsHair.Count);
         int _topNum = Random.Range(0, m_CharacterPartsTop.Count);
         int _bottomNum = Random.Range(0, m_CharacterPartsBottom.Count);
-        
+
         // 머리카락과 옷을 생성할 때 부모를 _newStudentObject로 설정해준다.
         GameObject.Instantiate(m_CharacterPartsHair[_hairNum], _newStudentObject.transform.GetChild(0).transform);
         GameObject.Instantiate(m_CharacterPartsTop[_topNum], _newStudentObject.transform.GetChild(0).transform);
@@ -98,7 +114,7 @@ public class ObjectManager : MonoBehaviour
         Student _student = _newStudentObject.GetComponent<Student>();
 
         // 그 스크립트로부터 이런 저런 처리를 한다.
-        Node _node = CreateNode(_student);
+        //Node _node = CreateNode(_student);
 
         StudentStat _stat = new StudentStat(m_StatController.dataBase.studentDatas[_randomStudent]);
 
@@ -106,7 +122,55 @@ public class ObjectManager : MonoBehaviour
 
         StudentCondition _studentCondition = new StudentCondition(m_conditionData.dataBase.studentCondition[0]);
 
-        _student.Initialize(_stat, _studentName, _studentCondition, _node);
+        _student.Initialize(_stat, _studentName, _studentCondition);
+
+        // 학생에 BT컴포넌트를 붙여준다
+        _newStudentObject.GetComponent<BehaviorTree>().StartWhenEnabled = true;
+        _newStudentObject.GetComponent<BehaviorTree>().PauseWhenDisabled = true;
+        _newStudentObject.GetComponent<BehaviorTree>().RestartWhenComplete = true;
+
+        _newStudentObject.GetComponent<BehaviorTree>().DisableBehavior();
+
+        ExternalBehavior studentTreeInstance = Instantiate(studentTree);
+        studentTreeInstance.Init();
+
+        // 학생들의 변수값 설정해주기
+        studentTreeInstance.SetVariableValue("Student", _newStudentObject);
+        
+        string _seatName;
+        string _clssName;
+
+        if (_student.m_StudentData.m_StudentType == Type.Art)
+        {
+            _clssName = "CheckArtClass";
+            studentTreeInstance.SetVariableValue("ClassEntrance", _clssName);
+            _seatName = string.Format("ArtFixedSeat{0}", _artSeatDic.Count + 1);
+            studentTreeInstance.SetVariableValue("ClassSeat", _seatName);
+            _artSeatDic.Add("ArtFixedSeat" + _artSeatDic.Count + 1, _newStudentObject);
+        }
+        else if (_student.m_StudentData.m_StudentType == Type.ProductManager)
+        {
+            _clssName = "CheckProductManagerClass";
+            studentTreeInstance.SetVariableValue("ClassEntrance", _clssName);
+            _seatName = string.Format("ProductManagerFixedSeat{0}", _ProductManagerSeatDic.Count + 1);
+            studentTreeInstance.SetVariableValue("ClassSeat", _seatName);
+            _ProductManagerSeatDic.Add("ProductManagerFixedSeat" + _ProductManagerSeatDic.Count + 1, _newStudentObject);
+        }
+        else if (_student.m_StudentData.m_StudentType == Type.Programming)
+        {
+            _clssName = "CheckProgrammingClass";
+            studentTreeInstance.SetVariableValue("ClassEntrance", _clssName);
+            _seatName = string.Format("ProgrammingFixedSeat{0}", _programmingSeatDic.Count + 1);
+            studentTreeInstance.SetVariableValue("ClassSeat", _seatName);
+            _programmingSeatDic.Add("ProgrammingFixedSeat" + _programmingSeatDic.Count + 1, _newStudentObject);
+        }
+
+        studentTreeInstance.SetVariableValue("FreeWalk1", "FreeWalk1");
+        studentTreeInstance.SetVariableValue("FreeWalk2", "FreeWalk2");
+        studentTreeInstance.SetVariableValue("FreeWalk3", "FreeWalk3");
+
+        _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior = studentTreeInstance;
+        _newStudentObject.GetComponent<BehaviorTree>().EnableBehavior();
 
         // 새로 만든 학생 오브젝트의 위치를 0으로 돌린다.
         _student.transform.position = new Vector3(0, 0, 0);
@@ -116,6 +180,7 @@ public class ObjectManager : MonoBehaviour
 
         // 만들어진 오브젝트를 특정 풀에 넣는다.
         m_StudentList.Add(_student);
+        m_StudentBehaviorList.Add(_newStudentObject);
     }
 
     // 교수 오브젝트를 필요할 때 동적으로 생성해주기 위한 함수
@@ -176,10 +241,5 @@ public class ObjectManager : MonoBehaviour
         //_root.AddChildNode(_freeWalkSeq);
 
         return _root;
-    }
-
-    void CharacterRandomParts()
-    {
-
     }
 }

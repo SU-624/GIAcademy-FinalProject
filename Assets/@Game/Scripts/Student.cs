@@ -1,6 +1,7 @@
 using UnityEngine;
 using StatData.Runtime;
 using Conditiondata.Runtime;
+using System.Collections.Generic;
 using BT;
 
 /// <summary>
@@ -23,7 +24,7 @@ public class Student : MonoBehaviour
     public StudentStat m_StudentData;
     public StudentCondition m_StudentCondition;
     public Doing m_Doing { get; set; }
-    public Node m_Node;
+    //public Node m_Node;
 
     public float m_Time = 0f;
     public float m_CoolTime = 1f;
@@ -31,8 +32,15 @@ public class Student : MonoBehaviour
     public string m_NameStudent;
 
     public bool isHereRestaurant = false;
+    public bool isArrivedClass = false;
+    public bool isDesSetting;
+    public bool isInteracting;
 
     public int m_RestaurantNumOfPeople;
+
+    public string m_Destination = " ";
+
+    public Queue<string> m_DestinationQueue = new Queue<string>();
 
     void Update()
     {
@@ -42,17 +50,17 @@ public class Student : MonoBehaviour
         {
             m_Time = 0f;
             //Debug.Log(m_Node);
-            m_Node.Run();
+            //m_Node.Run();
         }
     }
 
-    public void Initialize(StudentStat _stat ,string _name, StudentCondition _studentCondition, Node _node)
+    public void Initialize(StudentStat _stat ,string _name, StudentCondition _studentCondition)
     {
         m_Doing = Doing.FreeWalk;
         m_NameStudent = _name;
         gameObject.name = _name;
         m_StudentCondition = _studentCondition;
-        m_Node = _node;
+        //m_Node = _node;
         m_StudentData = _stat;
         m_StudentData.m_StudentSystemValue = _stat.m_StudentSystemValue;
         m_StudentData.m_StudentContentsValue = _stat.m_StudentContentsValue;

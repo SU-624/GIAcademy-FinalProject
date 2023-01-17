@@ -2099,6 +2099,7 @@ MonoBehaviour:
   m_UI: {fileID: 7034989335007433185}
   m_DelayTime: 0
   m_ClassPrefab: {fileID: 0}
+  m_ProfessorPrefab: {fileID: 0}
 --- !u!1 &7034989333278736338
 GameObject:
   m_ObjectHideFlags: 0
@@ -3146,7 +3147,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1920, y: 1080}
+  m_ReferenceResolution: {x: 3400, y: 1440}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
@@ -3679,6 +3680,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 7034989333954591517}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &7034989333373268137
 GameObject:
   m_ObjectHideFlags: 0
@@ -4309,9 +4312,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 105a743e382f93c47916eec472a4ff8a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_nowTime: {fileID: 7034989333388808447}
-  LimitTime: 30
+  m_DrawnowTime: {fileID: 0}
+  nowTime: 
+  Month:
+  - "1\uC6D4"
+  - "2\uC6D4"
+  - "3\uC6D4"
+  - "4\uC6D4"
+  - "5\uC6D4"
+  - "6\uC6D4"
+  - "7\uC6D4"
+  - "8\uC6D4"
+  - "9\uC6D4"
+  - "10\uC6D4"
+  - "11\uC6D4"
+  - "12\uC6D4"
+  Week:
+  - "\uCCAB\uC9F8 \uC8FC"
+  - "\uB458\uC9F8 \uC8FC"
+  - "\uC14B\uC9F8 \uC8FC"
+  - "\uB137\uC9F8 \uC8FC"
+  Day:
+  - "\uC6D4\uC694\uC77C"
+  - "\uD654\uC694\uC77C"
+  - "\uC218\uC694\uC77C"
+  - "\uBAA9\uC694\uC77C"
+  - "\uAE08\uC694\uC77C"
+  MonthIndex: 2
+  WeekIndex: 0
   IsGameMode: 0
+  IsMonthCycleCompleted: 0
+  IsOneSemesterCompleted: 0
+  IsYearCycleCompleted: 0
+  IsGameEnd: 0
 --- !u!1 &7034989333389775660
 GameObject:
   m_ObjectHideFlags: 0
@@ -6204,6 +6237,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 7034989334275087865}
   m_DelayTime: 1
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &7034989333566060367
 GameObject:
   m_ObjectHideFlags: 0
@@ -6740,6 +6775,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 7034989333954591517}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &7034989333614257385
 GameObject:
   m_ObjectHideFlags: 0
@@ -6903,6 +6940,7 @@ MonoBehaviour:
   m_UI: {fileID: 7034989333954591517}
   m_DelayTime: 0
   m_ClassPrefab: {fileID: 0}
+  m_ProfessorPrefab: {fileID: 0}
 --- !u!114 &7034989333614257395
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6918,6 +6956,7 @@ MonoBehaviour:
   m_UI: {fileID: 7034989334703952377}
   m_DelayTime: 0
   m_ClassPrefab: {fileID: 0}
+  m_ProfessorPrefab: {fileID: 0}
 --- !u!1 &7034989333615690915
 GameObject:
   m_ObjectHideFlags: 0
@@ -7270,6 +7309,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 7034989333954591517}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &7034989333638931199
 GameObject:
   m_ObjectHideFlags: 0
@@ -8076,6 +8117,7 @@ MonoBehaviour:
   m_Month3: {fileID: 0}
   m_ClassInfo: {fileID: 0}
   m_ClassList: []
+  m_SelecteClassButtonName: []
 --- !u!1 &7034989333738733074
 GameObject:
   m_ObjectHideFlags: 0
@@ -9622,6 +9664,7 @@ MonoBehaviour:
   m_Month3: {fileID: 0}
   m_ClassInfo: {fileID: 0}
   m_ClassList: []
+  m_SelecteClassButtonName: []
 --- !u!1 &7034989333896012810
 GameObject:
   m_ObjectHideFlags: 0
@@ -11981,6 +12024,7 @@ MonoBehaviour:
   m_UI: {fileID: 7034989333661368288}
   m_DelayTime: 0
   m_ClassPrefab: {fileID: 0}
+  m_ProfessorPrefab: {fileID: 0}
 --- !u!1 &7034989334038137349
 GameObject:
   m_ObjectHideFlags: 0
@@ -14035,6 +14079,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 7034989334839480598}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &7034989334277542992
 GameObject:
   m_ObjectHideFlags: 0
@@ -14396,6 +14442,17 @@ MonoBehaviour:
   m_SelecteProfessor: {fileID: 7034989333661368288}
   m_LoadProfessorData: {fileID: 0}
   m_ClassPrefabData: {fileID: 0}
+  m_NextProfessorInfoButton: {fileID: 0}
+  m_PreviousProfessorInfoButton: {fileID: 0}
+  m_SelecteClassName1: {fileID: 0}
+  m_SelecteClassName2: {fileID: 0}
+  m_SelecteClassName3: {fileID: 0}
+  m_ChoiceButton1: {fileID: 0}
+  m_ChoiceButton2: {fileID: 0}
+  m_ChoiceButton3: {fileID: 0}
+  m_ProfessorName1: {fileID: 0}
+  m_ProfessorName2: {fileID: 0}
+  m_ProfessorName3: {fileID: 0}
   m_ProfessorDataIndex: 0
 --- !u!1 &7034989334298144456
 GameObject:
@@ -15946,6 +16003,7 @@ MonoBehaviour:
   m_UI: {fileID: 7034989333547819244}
   m_DelayTime: 0
   m_ClassPrefab: {fileID: 0}
+  m_ProfessorPrefab: {fileID: 0}
 --- !u!1 &7034989334440474814
 GameObject:
   m_ObjectHideFlags: 0
@@ -18076,6 +18134,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 7034989335007433185}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &7034989334624072769
 GameObject:
   m_ObjectHideFlags: 0
@@ -20407,6 +20467,17 @@ MonoBehaviour:
   m_SelecteProfessor: {fileID: 7034989333661368288}
   m_LoadProfessorData: {fileID: 0}
   m_ClassPrefabData: {fileID: 0}
+  m_NextProfessorInfoButton: {fileID: 0}
+  m_PreviousProfessorInfoButton: {fileID: 0}
+  m_SelecteClassName1: {fileID: 0}
+  m_SelecteClassName2: {fileID: 0}
+  m_SelecteClassName3: {fileID: 0}
+  m_ChoiceButton1: {fileID: 0}
+  m_ChoiceButton2: {fileID: 0}
+  m_ChoiceButton3: {fileID: 0}
+  m_ProfessorName1: {fileID: 0}
+  m_ProfessorName2: {fileID: 0}
+  m_ProfessorName3: {fileID: 0}
   m_ProfessorDataIndex: 0
 --- !u!1 &7034989334782304435
 GameObject:
@@ -21420,6 +21491,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UI: {fileID: 7034989334839480598}
   m_DelayTime: 0
+  moveSpeed: 0
+  movedPositionX: 0
 --- !u!1 &7034989334850114979
 GameObject:
   m_ObjectHideFlags: 0
@@ -22126,6 +22199,7 @@ MonoBehaviour:
   m_Month3: {fileID: 0}
   m_ClassInfo: {fileID: 0}
   m_ClassList: []
+  m_SelecteClassButtonName: []
 --- !u!1 &7034989334928996246
 GameObject:
   m_ObjectHideFlags: 0
