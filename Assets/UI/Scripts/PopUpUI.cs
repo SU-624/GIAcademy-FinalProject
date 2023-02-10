@@ -47,16 +47,63 @@ public class PopUpUI : MonoBehaviour
     // 버튼이 눌리면 켜고
     public void TurnOnUI()
     {
-        InGameUI.Instance.UIStack.Push(this.gameObject);
-        Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
-
-        if (InGameUI.Instance.UIStack != null)
+        if (SceneManager.GetActiveScene().name == "TitleScene")
         {
             this.gameObject.SetActive(true);
 
             if (m_UI.gameObject.activeSelf == false)
             {
                 m_UI.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            InGameUI.Instance.UIStack.Push(this.gameObject);
+            Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
+            if (InGameUI.Instance.UIStack != null)
+            {
+                this.gameObject.SetActive(true);
+
+                if (m_UI.gameObject.activeSelf == false)
+                {
+                    m_UI.gameObject.SetActive(true);
+                }
+
+                if (SceneManager.GetActiveScene().name == "InGameScene")
+                {
+                    if (GameTime.Instance != null)
+                    {
+                        GameTime.Instance.IsGameMode = false;
+                    }
+                    Time.timeScale = 0;
+
+                    Debug.Log("시간 멈춤");
+                }
+            }
+        }
+    }
+
+    public void JustTurnOn()
+    {
+
+        if (SceneManager.GetActiveScene().name == "TitleScene")
+        {
+            if (this.gameObject.activeSelf == false)
+            {
+                this.gameObject.SetActive(true);
+            }
+        }
+        else
+        {
+            InGameUI.Instance.UIStack.Push(this.gameObject);
+            Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
+
+            if (InGameUI.Instance.UIStack != null)
+            {
+                if (this.gameObject.activeSelf == false)
+                {
+                    this.gameObject.SetActive(true);
+                }
             }
 
             if (SceneManager.GetActiveScene().name == "InGameScene")
@@ -72,34 +119,9 @@ public class PopUpUI : MonoBehaviour
         }
     }
 
-    public void JustTurnOn()
-    {
-        InGameUI.Instance.UIStack.Push(this.gameObject);
-        Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
-
-        if (InGameUI.Instance.UIStack != null)
-        {
-            if (this.gameObject.activeSelf == false)
-            {
-                this.gameObject.SetActive(true);
-            }
-        }
-
-        if (SceneManager.GetActiveScene().name == "InGameScene")
-        {
-            if (GameTime.Instance != null)
-            {
-                GameTime.Instance.IsGameMode = false;
-            }
-            Time.timeScale = 0;
-
-            Debug.Log("시간 멈춤");
-        }
-    }
-
     public void TurnOnMailIcon()
     {
-        if(m_UI.gameObject.activeSelf == false)
+        if (m_UI.gameObject.activeSelf == false)
         {
             m_UI.SetActive(true);
         }
@@ -108,32 +130,44 @@ public class PopUpUI : MonoBehaviour
     // 지정 팝업창을 켜 주면서 그 전의 UI 는 꺼준다.
     public void PopUpMyUI()
     {
-        InGameUI.Instance.UIStack.Push(this.gameObject);
-        Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
-
-        if (InGameUI.Instance.UIStack.Count != 0)
+        if (SceneManager.GetActiveScene().name == "TitleScene")
         {
             if (m_UI.gameObject.activeSelf == false)
             {
-                InGameUI.Instance.UIStack.Pop();
                 m_UI.gameObject.SetActive(true);    // 이 스크립트가 붙어있는 오브젝트 본인
-                Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
 
-                //InGameUI.Instance.UIStack.Push(m_UI.gameObject);
                 this.gameObject.SetActive(false);   // 누르는 버튼은 꺼주기
-                //Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
             }
         }
-
-        if (SceneManager.GetActiveScene().name == "InGameScene")
+        else
         {
-            if (GameTime.Instance != null)
-            {
-                GameTime.Instance.IsGameMode = false;
-            }
-            Time.timeScale = 0;
+            InGameUI.Instance.UIStack.Push(this.gameObject);
+            Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
 
-            Debug.Log("시간 멈춤");
+            if (InGameUI.Instance.UIStack.Count != 0)
+            {
+                if (m_UI.gameObject.activeSelf == false)
+                {
+                    InGameUI.Instance.UIStack.Pop();
+                    m_UI.gameObject.SetActive(true);    // 이 스크립트가 붙어있는 오브젝트 본인
+                    Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
+
+                    //InGameUI.Instance.UIStack.Push(m_UI.gameObject);
+                    this.gameObject.SetActive(false);   // 누르는 버튼은 꺼주기
+                                                        //Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
+                }
+            }
+
+            if (SceneManager.GetActiveScene().name == "InGameScene")
+            {
+                if (GameTime.Instance != null)
+                {
+                    GameTime.Instance.IsGameMode = false;
+                }
+                Time.timeScale = 0;
+
+                Debug.Log("시간 멈춤");
+            }
         }
     }
 

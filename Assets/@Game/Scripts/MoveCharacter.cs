@@ -62,54 +62,54 @@ public class MoveCharacter : MonoBehaviour
     private void MoveCharacters()
     {
 
-        if (m_Student.m_Doing == Student.Doing.FreeWalk)
-        {
-            if (_agent.velocity.magnitude <= 0.001f)
-            {
-                int _randomPath = Random.Range(0, 4);
+        //if (m_Student.m_Doing == Student.Doing.FreeWalk)
+        //{
+        //    if (_agent.velocity.magnitude <= 0.001f)
+        //    {
+        //        int _randomPath = Random.Range(0, 4);
 
-                _agent.enabled = true;
+        //        _agent.enabled = true;
 
-                _agent.SetDestination(m_FreeWalkPath[_randomPath].transform.position);
-            }
-        }
+        //        _agent.SetDestination(m_FreeWalkPath[_randomPath].transform.position);
+        //    }
+        //}
 
-        if (m_Student.m_Doing == Student.Doing.AtRest)
-        {
-            if (_agent.velocity.magnitude <= 0.001f)
-            {
-                int _randomPath = Random.Range(0, 4);
+        //if (m_Student.m_Doing == Student.Doing.AtRest)
+        //{
+        //    if (_agent.velocity.magnitude <= 0.001f)
+        //    {
+        //        int _randomPath = Random.Range(0, 4);
 
-                _agent.SetDestination(m_FreeWalkPath[_randomPath].transform.position);
+        //        _agent.SetDestination(m_FreeWalkPath[_randomPath].transform.position);
 
-            }
-        }
+        //    }
+        //}
 
-        if (m_Student.m_Doing == Student.Doing.Study)
-        {
-            if (m_Student.m_StudentData.m_StudentType == Type.Programming)
-            {
-                _agent.SetDestination(m_ProgrammingRoom.transform.position);
-            }
-            else if (m_Student.m_StudentData.m_StudentType == Type.ProductManager)
-            {
-                _agent.SetDestination(m_ProductManagerRoom.transform.position);
-            }
-            else if (m_Student.m_StudentData.m_StudentType == Type.Art)
-            {
-                _agent.SetDestination(m_ArtRoom.transform.position);
-            }
-        }
+        //if (m_Student.m_Doing == Student.Doing.Study)
+        //{
+        //    if (m_Student.m_StudentData.m_StudentType == StudentType.Programming)
+        //    {
+        //        _agent.SetDestination(m_ProgrammingRoom.transform.position);
+        //    }
+        //    else if (m_Student.m_StudentData.m_StudentType == StudentType.GameDesigner)
+        //    {
+        //        _agent.SetDestination(m_ProductManagerRoom.transform.position);
+        //    }
+        //    else if (m_Student.m_StudentData.m_StudentType == StudentType.Art)
+        //    {
+        //        _agent.SetDestination(m_ArtRoom.transform.position);
+        //    }
+        //}
 
-        if (m_Student.m_Doing == Student.Doing.GoTo)
-        {
-            _agent.SetDestination(m_Restaurant.transform.position);
+        //if (m_Student.m_Doing == Student.Doing.GoTo)
+        //{
+        //    _agent.SetDestination(m_Restaurant.transform.position);
 
-            if (m_Student.transform.position.x == m_Restaurant.transform.position.x)
-            {
-                m_Student.isHereRestaurant = true;
-            }
-        }
+        //    if (m_Student.transform.position.x == m_Restaurant.transform.position.x)
+        //    {
+        //        m_Student.isHereRestaurant = true;
+        //    }
+        //}
     }
 
     public void NaviMeshStop()

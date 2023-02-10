@@ -53,8 +53,8 @@ public class ChangeMailContent : MonoBehaviour
     private void Start()
     {
         m_ClickMailButton = m_Button;
-        MakeMail("안녕안녕", "2023년 01월 01일", "망극아카데미", "나는 망극이다!", MailType.News);
-        MakeMail("살려줘", "2023년 01월 02일", "망극아카데미", " 그만,,", MailType.Month);
+        MakeMail("안녕하세요", "2023년 03월 01일", "망극아카데미", "오늘은 3월 1일 입니다.", MailType.News);
+        MakeMail("반갑습니다", "2023년 03월 02일", "망극아카데미", "오늘은 3월 2일 입니다.", MailType.Month);
     }
 
     // 임시로 메일을 만들어주는 함수
@@ -71,7 +71,7 @@ public class ChangeMailContent : MonoBehaviour
     }
 
     // 리스트의 인덱스를 찾아주는 함수. 오브젝트의 이름으로 찾아서 인덱스를 찾자.
-    public int FindListIndex(List<GameObject> list, string val)
+    public int FindListIndex(List<MailBox> list, string val)
     {
         if (list == null)
         {
@@ -81,7 +81,7 @@ public class ChangeMailContent : MonoBehaviour
         for (int i = 0; i < list.Count; i++)
         {
             Debug.Log("현재 리스트 카운트 : " + list.Count);
-            if (list[i].name == val)
+            if (list[i].m_MailTitle == val)
             {
                 return i;
             }
@@ -162,7 +162,7 @@ public class ChangeMailContent : MonoBehaviour
 
             m_Mail.TryGetValue(m_Parent, out m_tempContent);
 
-            int _index = FindListIndex(m_NewMailTextList, m_tempContent.m_MailTitle);
+            int _index = FindListIndex(m_MailList, m_tempContent.m_MailTitle);
 
             m_MailList[_index].m_IsNewMail = false;
             _isNewMAilCheck = false;
@@ -211,7 +211,7 @@ public class ChangeMailContent : MonoBehaviour
                     MailObjectPool.ReturnObject(m_MailBox.transform.GetChild(i).gameObject);
                 }
 
-                for (int i = 0; i < m_NewMailTextList.Count; i++)
+                for (int i = 0; i < m_MailList.Count; i++)
                 {
                     if (m_MailList[i].m_IsNewMail == true)
                     {
@@ -235,7 +235,7 @@ public class ChangeMailContent : MonoBehaviour
             }
             else
             {
-                for (int i = 0; i < m_NewMailTextList.Count; i++)
+                for (int i = 0; i < m_MailList.Count; i++)
                 {
                     if (m_MailList[i].m_IsNewMail == true)
                     {
@@ -293,7 +293,7 @@ public class ChangeMailContent : MonoBehaviour
         {
             string m_TitleName = m_ReadMailContent.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;
 
-            int _index = FindListIndex(m_NewMailTextList, m_TitleName);
+            int _index = FindListIndex(m_MailList, m_TitleName);
 
             Debug.Log(_index + " 삭제");
             if (m_MailBox.childCount > 1)
@@ -305,14 +305,21 @@ public class ChangeMailContent : MonoBehaviour
             {
                 int _mailBoxCount = m_MailBox.childCount - 1;
                 MailObjectPool.ReturnObject(m_MailBox.transform.GetChild(_mailBoxCount).gameObject);
-                m_NewMailTextList.RemoveAt(_index);
+                if (m_NewMailTextList.Count == 1 && _index != 0)
+                {
+                    m_NewMailTextList.RemoveAt(_index - 1);
+                }
+                else
+                {
+                    m_NewMailTextList.RemoveAt(_index);
+                }
             }
 
             bool _isNewMail = false;
 
             foreach (var mail in m_MailList)
             {
-                if (mail.m_IsNewMail)
+                if (mail.m_IsNewMail == true)
                 {
                     _isNewMail = true;
                     _isNewMAilCheck = true;
@@ -545,7 +552,7 @@ public class ChangeMailContent : MonoBehaviour
                         MailObjectPool.ReturnObject(m_MailBox.transform.GetChild(i).gameObject);
                     }
 
-                    for (int i = 0; i < m_NewMailTextList.Count; i++)
+                    for (int i = 0; i < m_MailList.Count; i++)
                     {
                         if (m_MailList[i].m_IsNewMail == true)
                         {
@@ -570,7 +577,7 @@ public class ChangeMailContent : MonoBehaviour
                 }
                 else if (m_MailBox.childCount == 0 && m_NewMailTextList.Count != 0)
                 {
-                    for (int i = 0; i < m_NewMailTextList.Count; i++)
+                    for (int i = 0; i < m_MailList.Count; i++)
                     {
                         if (m_MailList[i].m_IsNewMail == true)
                         {

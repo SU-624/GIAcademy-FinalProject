@@ -6,10 +6,10 @@ public class ChangeState : Action
 {
 	public override void OnStart()
 	{
-		if (gameObject != null)
-        {
-			gameObject.GetComponent<Student>().isArrivedClass = true;
-        }
+		//if (gameObject != null)
+  //      {
+		//	gameObject.GetComponent<Student>().m_IsArrivedClass = true;
+  //      }
 	}
 
 	public override TaskStatus OnUpdate()

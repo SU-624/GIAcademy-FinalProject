@@ -24,17 +24,17 @@ namespace Conditiondata.Runtime
         }
 
         // 현재는 시간에 따라 컨디션이 줄어들 수 있게 해주는 함수
-        public void AutomaticCondition(int _hungry, int _tired)
-        {
-            if (m_StudentHungryValue > 0 && m_StudentTiredValue > 0)
-            {
-                m_StudentHungryValue -= _hungry;
-                m_StudentTiredValue -= _tired;
+        //public void AutomaticCondition(int _hungry, int _tired)
+        //{
+        //    if (m_StudentHungryValue > 0 && m_StudentTiredValue > 0)
+        //    {
+        //        m_StudentHungryValue -= _hungry;
+        //        m_StudentTiredValue -= _tired;
 
-                InGameTest.Instance.CheckStudentInfo();
-                InGameTest.Instance.SelectClassAndStudent();
-            }
-        }
+        //        InGameTest.Instance.CheckStudentInfo();
+        //        InGameTest.Instance.SelectClassAndStudent();
+        //    }
+        //}
     }
 }
 

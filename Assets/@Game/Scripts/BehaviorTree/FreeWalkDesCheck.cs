@@ -6,9 +6,14 @@ public class FreeWalkDesCheck : Conditional
 {
     public override TaskStatus OnUpdate()
     {
+        if(InGameTest.Instance == null)
+        {
+            return TaskStatus.Failure;
+        }
+
         if (InGameTest.Instance.m_ClassState == ClassState.nothing)
         {
-            if (gameObject.GetComponent<Student>().isDesSetting == false)
+            if (gameObject.GetComponent<Student>().m_IsDesSetting == false)
             {
                 SetDestinationFreeWalk();
             }
@@ -19,6 +24,8 @@ public class FreeWalkDesCheck : Conditional
     void SetDestinationFreeWalk()
     {
         gameObject.GetComponent<Student>().m_DestinationQueue.Clear();
+
+        //gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
 
         int _rand = Random.Range(0, 3);
 
@@ -34,7 +41,7 @@ public class FreeWalkDesCheck : Conditional
         {
             gameObject.GetComponent<Student>().m_DestinationQueue.Enqueue("FreeWalk3");
         }
-        gameObject.GetComponent<Student>().isDesSetting = true;
+        gameObject.GetComponent<Student>().m_IsDesSetting = true;
     }
 
 }

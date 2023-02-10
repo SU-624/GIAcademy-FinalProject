@@ -17,12 +17,12 @@ public class MailSystem : MonoBehaviour
 
     void Update()
     {
-        if(m_IsTurnOnIcon == true && GameTime.Instance.isChangeWeek == true)
+        if (m_IsTurnOnIcon == true && GameTime.Instance.isChangeWeek == true)
         {
             m_IsTurnOnIcon = false;
         }
 
-        if((GameTime.Instance.WeekIndex == 1 || GameTime.Instance.WeekIndex == 2) && m_IsTurnOnIcon == false)
+        if ((GameTime.Instance.FlowTime.NowWeek == 1 || GameTime.Instance.FlowTime.NowWeek == 2) && GameTime.Instance.FlowTime.NowWeek == 2 && m_IsTurnOnIcon == false)
         {
             SatisfyRequirement();
         }
@@ -32,6 +32,5 @@ public class MailSystem : MonoBehaviour
     {
         m_SendMail.Invoke();
         m_IsTurnOnIcon = true;
-        Debug.Log("메일 발송");
     }
 }

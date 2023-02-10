@@ -72,12 +72,13 @@ MonoBehaviour:
   m_Time: 0
   m_CoolTime: 5
   m_NameStudent: Su
-  isHereRestaurant: 0
-  isArrivedClass: 0
-  isDesSetting: 0
-  isInteracting: 0
+  m_IsHereRestaurant: 0
+  m_IsArrivedClass: 0
+  m_IsDesSetting: 0
+  m_IsInteracting: 0
+  m_IsCoolDown: 0
   m_RestaurantNumOfPeople: 0
-  m_Destination: ' '
+  m_Roll: 
 --- !u!114 &-4393316826473684555
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97,7 +98,7 @@ MonoBehaviour:
   logTaskChanges: 0
   group: 0
   resetValuesOnRestart: 0
-  externalBehavior: {fileID: 0}
+  externalBehavior: {fileID: 11400000, guid: 99528449098848048b2119b5d80765e0, type: 2}
   mBehaviorSource:
     behaviorName: Behavior
     behaviorDescription: 
@@ -106,7 +107,7 @@ MonoBehaviour:
       parentIndex: 
       startIndex: 
       variableStartIndex: 
-      JSONSerialization: 
+      JSONSerialization: '{"Variables":[{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":"Student","IsShared":true},{"Type":"BehaviorDesigner.Runtime.SharedString","Name":"ClassEntrance","IsShared":true},{"Type":"BehaviorDesigner.Runtime.SharedString","Name":"ClassSeat","IsShared":true},{"Type":"BehaviorDesigner.Runtime.SharedVector3","Name":"Destination","IsShared":true,"Vector3mValue":"(0,0,0)"},{"Type":"BehaviorDesigner.Runtime.SharedString","Name":"FreeWalk1","IsShared":true},{"Type":"BehaviorDesigner.Runtime.SharedString","Name":"FreeWalk2","IsShared":true},{"Type":"BehaviorDesigner.Runtime.SharedString","Name":"FreeWalk3","IsShared":true},{"Type":"BehaviorDesigner.Runtime.SharedGameObject","Name":"InteractionObject","IsShared":true},{"Type":"BehaviorDesigner.Runtime.SharedString","Name":"StudentTag","IsShared":true,"StringmValue":""}]}'
       fieldSerializationData:
         typeName: []
         fieldNameHash: 
@@ -115,8 +116,8 @@ MonoBehaviour:
         unityObjects: []
         byteData: 
         byteDataArray: 
-      Version: 
-  gizmoViewMode: 0
+      Version: 1.7.4
+  gizmoViewMode: 2
   showBehaviorDesignerGizmo: 1
 --- !u!1001 &8643904464343387826
 PrefabInstance:

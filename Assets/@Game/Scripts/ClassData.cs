@@ -8,11 +8,11 @@ namespace StatData.Runtime
     {
         [SerializeField] private string m_ClassName;
         [SerializeField] private StatModifier m_Stats;
-        [SerializeField] private Type m_ClassType;
+        [SerializeField] private StudentType m_ClassType;
 
         public string ClassName => m_ClassName;
         public StatModifier Stats => m_Stats;
-        public Type ClassType => m_ClassType;
+        public StudentType ClassType => m_ClassType;
     }
 
 

@@ -8,15 +8,21 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/@Game/Scenes/TestScene.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 1
-    path: Assets/@Game/Scenes/TitleScene.unity
-    guid: 0ce87c40c646f2641b8217212d5955b1
   - enabled: 0
     path: Assets/@Game/Scenes/PreInGameScene.unity
     guid: a4a232a52cd40fc4d9e02472b261bc2b
+  - enabled: 0
+    path: Assets/@Game/Scenes/23_01_26_GameScene.unity
+    guid: e3805ba0360aa1f4aacbdb40cff1cad3
+  - enabled: 0
+    path: Assets/@Game/Scenes/LoadingScene.unity
+    guid: 1e195a684d1dcf9469e97422032a776a
+  - enabled: 1
+    path: Assets/@Game/Scenes/TitleScene.unity
+    guid: 0ce87c40c646f2641b8217212d5955b1
   - enabled: 1
     path: Assets/@Game/Scenes/InGameScene.unity
-    guid: e3805ba0360aa1f4aacbdb40cff1cad3
+    guid: 1ac0b3e1a0966db4da2b402587b103f4
   - enabled: 1
     path: Assets/@Game/Scenes/UIScene.unity
     guid: 063ade2873d305b438b00d6c6015e050

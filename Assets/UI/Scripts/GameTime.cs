@@ -260,7 +260,6 @@ public class GameTime : MonoBehaviour
                     Debug.Log("이미지 : " + TimeBarImg.fillAmount);
                     Debug.Log("데이 : " + Week[WeekIndex]);
                 }
-
             }
             else if (Week[WeekIndex] == "셋째 주" || Week[WeekIndex] == "넷째 주")
             {

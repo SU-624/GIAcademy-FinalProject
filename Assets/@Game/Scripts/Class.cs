@@ -13,7 +13,7 @@ namespace StatData.Runtime
         public int m_ClassContentsValue => m_ClassData.Stats.StatsModifierInfo[ModifierStatType.Contents];
         public int m_ClassBalanceValue => m_ClassData.Stats.StatsModifierInfo[ModifierStatType.Balance];
             
-        public Type m_ClassType => m_ClassData.ClassType;
+        public StudentType m_ClassType => m_ClassData.ClassType;
 
         public Class()
         {

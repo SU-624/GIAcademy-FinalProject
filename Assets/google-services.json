@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "605064177360",
+    "project_id": "academy-c7f5d",
+    "storage_bucket": "academy-c7f5d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:605064177360:android:577d7de57ade3ec7dca0d5",
+        "android_client_info": {
+          "package_name": "com.academy.giacademy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "605064177360-dlcesh5nisq4kcuobda4la9oj1ss7co6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.academy.giacademy",
+            "certificate_hash": "98d5e58ce76377fbc4a1ea1f5ea9130ffcd8a5c3"
+          }
+        },
+        {
+          "client_id": "605064177360-u2ukm22d9eglcq5d2fk3podo2on89gd8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.academy.giacademy",
+            "certificate_hash": "5e807721cbd913fd6c56ba0cc81a9db90f42a369"
+          }
+        },
+        {
+          "client_id": "605064177360-dkacoq6cmjab331lrtovajf9g8q81otl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCwyJWVe2Cg1hxmwuG1n1J5tYN7AAa5SdA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "605064177360-dkacoq6cmjab331lrtovajf9g8q81otl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

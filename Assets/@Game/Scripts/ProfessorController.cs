@@ -22,12 +22,6 @@ namespace StatData.Runtime
             }
         }
 
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
-
         private void Initialized()
         {
             foreach(ProfessorData professorData in m_ProfessorDataBase.professorDatas)

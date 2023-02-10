@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using StatData.Runtime;
 
@@ -51,12 +52,18 @@ public class ClassSchedule : MonoBehaviour
     [SerializeField] private GameObject m_SelecteClassArea1;
     [SerializeField] private GameObject m_SelecteClassArea2;
     [SerializeField] private GameObject m_SelecteClassArea3;
-    [SerializeField] private GameObject m_MonthClassSpace;
 
     [SerializeField] private ClassController m_LoadClassData;
     [SerializeField] private ClassPrefab m_ClassPrefab;
     [SerializeField] private TextMeshProUGUI m_ClickClass;
+    [SerializeField] private TextMeshProUGUI m_RegularClass;
     [SerializeField] private SelecteProfessor m_ChangeData;
+    [SerializeField] private Button m_NormalSetting;            // 수업 선택창에 들어오면 기획반부터인걸 보여주기위해
+    [SerializeField] private Button m_ArtButton;                // 반을 클릭
+    [SerializeField] private Button m_ProductManagerButton;     // 
+    [SerializeField] private Button m_ProgrammingButton;        // 
+
+    [SerializeField] private RectTransform m_ScrollContent;
 
     private List<GameObject> m_ManagementSelecteClassName = new List<GameObject>(); // 수업 이름 관리하는 리스트
     private List<GameObject> m_ManagementChoiceButton = new List<GameObject>(); // 지정된 수업의 지정버튼 없애는 리스트
@@ -92,6 +99,7 @@ public class ClassSchedule : MonoBehaviour
 
     void Start()
     {
+        // 내가 가지고 있는 수업들의 목록을 각 파트별로 리스트에 넣어준다.
         for (int i = 0; i < m_LoadClassData.classData.Count; i++)
         {
             if (m_LoadClassData.classData.ElementAt(i).Value.m_ClassType == Type.Art)
@@ -127,6 +135,46 @@ public class ClassSchedule : MonoBehaviour
         m_ManagementChoiceProfessorName.Add(m_ChangeData.m_ProfessorName1);
         m_ManagementChoiceProfessorName.Add(m_ChangeData.m_ProfessorName2);
         m_ManagementChoiceProfessorName.Add(m_ChangeData.m_ProfessorName3);
+
+        m_ClassPrefab.m_SaveData.m_ClassName = "ProductManager";    // 처음 수업 선택에 들어가면 무조건 기획부터이니 셋팅을 해준다.
+    }
+
+    public void SetRectPosition()
+    {
+        float x = m_ScrollContent.anchoredPosition.x;
+        m_ScrollContent.anchoredPosition = new Vector3(x, 0, 0);
+    }
+
+    // 새로운 수업을 선택해주기 위해 선택창을 초기화 시켜줄 함수
+    public void ClearClassPanel()
+    {
+        m_NormalSetting.Select();
+
+        m_ClickClass.text = "[기획]반 스케쥴을 정해주세요.";
+
+        for (int i = 0; i < 3; i++)
+        {
+            m_ManagementSelecteClassName[i].SetActive(false);
+            m_ManagementChoiceButton[i].SetActive(true);
+            m_ManagementChoiceProfessorName[i].SetActive(false);
+
+            m_ClassPrefab.m_ArtData[i] = new SaveClassAndProfesssorData();
+            m_ClassPrefab.m_ProductManagerData[i] = new SaveClassAndProfesssorData();
+            m_ClassPrefab.m_ProgrammingData[i] = new SaveClassAndProfesssorData();
+        }
+
+        m_SelecteClassArea1.name = "ProductManagerC_Button" + "1";
+        m_SelecteClassArea2.name = "ProductManagerC_Button" + "2";
+        m_SelecteClassArea3.name = "ProductManagerC_Button" + "3";
+    }
+
+    /// TODO 버튼 색상 바꿔보기
+    private void ChangeColorButton(Button _changeButton, Color _color)
+    {
+        ColorBlock colorBlock = _changeButton.colors;
+
+        colorBlock.normalColor = _color;
+        _changeButton.colors = colorBlock;
     }
 
     // 각 클래스의 월별을 정하기 위한 
@@ -145,8 +193,16 @@ public class ClassSchedule : MonoBehaviour
 
         if (gobj.name == "ProductManagerC_Button")
         {
+            if (gobj.name == m_ProductManagerButton.name)
+            {
+                ChangeColorButton(m_ProductManagerButton, Color.red);
+                ChangeColorButton(m_ProgrammingButton, Color.white);
+                ChangeColorButton(m_ArtButton, Color.white);
+            }
+
             Debug.Log("기획반");
             m_ClickClass.text = "[기획]반 스케쥴을 정해주세요.";
+            m_RegularClass.text = "기획 정규수업";
             m_SelecteClassArea1.name = gobj.name + "1";
             m_SelecteClassArea2.name = gobj.name + "2";
             m_SelecteClassArea3.name = gobj.name + "3";
@@ -168,8 +224,16 @@ public class ClassSchedule : MonoBehaviour
 
         if (gobj.name == "ArtC_Button")
         {
+            if (gobj.name == m_ArtButton.name)
+            {
+                ChangeColorButton(m_ArtButton, Color.blue);
+                ChangeColorButton(m_ProductManagerButton, Color.white);
+                ChangeColorButton(m_ProgrammingButton, Color.white);
+            }
+
             Debug.Log("아트반");
             m_ClickClass.text = "[아트]반 스케쥴을 정해주세요.";
+            m_RegularClass.text = "아트 정규수업";
             //GameObject _button = GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
             m_SelecteClassArea1.name = gobj.name + "1";
             m_SelecteClassArea2.name = gobj.name + "2";
@@ -192,13 +256,22 @@ public class ClassSchedule : MonoBehaviour
 
         if (gobj.name == "ProgrammingC_Button")
         {
+            if (gobj.name == m_ProgrammingButton.name)
+            {
+                ChangeColorButton(m_ProgrammingButton, Color.green);
+                ChangeColorButton(m_ProductManagerButton, Color.white);
+                ChangeColorButton(m_ArtButton, Color.white);
+            }
+
+
             Debug.Log("플밍반");
             m_ClickClass.text = "[프로그래밍]반 스케쥴을 정해주세요.";
+            m_RegularClass.text = "프로그래밍 정규수업";
             //GameObject.Instantiate(m_SelecteClassArea, m_MonthClassSpace.transform);
             m_SelecteClassArea1.name = gobj.name + "1";
             m_SelecteClassArea2.name = gobj.name + "2";
             m_SelecteClassArea3.name = gobj.name + "3";
-            
+
             for (int i = 0; i < 3; i++)
             {
                 if (m_ClassPrefab.m_ProgrammingData[i].m_ClassName != null)
@@ -215,24 +288,4 @@ public class ClassSchedule : MonoBehaviour
         }
 
     }
-
-    //public void ChangeColor()
-    //{
-    //    if (this.gameObject.name == "ProductManagerC_Button")
-    //    {
-    //        Debug.Log("기획반");
-
-    //    }
-    //    if (this.gameObject.name == "ArtC_Button")
-    //    {
-    //        Debug.Log("아트반");
-
-    //    }
-    //    if (this.gameObject.name == "ProgrammingC_Button")
-    //    {
-    //        Debug.Log("플밍반");
-
-
-    //    }
-    //}
 }

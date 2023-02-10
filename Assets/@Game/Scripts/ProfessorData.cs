@@ -10,7 +10,7 @@ namespace StatData.Runtime
         [SerializeField] private int m_ProfessorSystem;
         [SerializeField] private int m_ProfessorContents;
         [SerializeField] private int m_ProfessorBalance;
-        [SerializeField] private Type m_ProfessorType;
+        [SerializeField] private StudentType m_ProfessorType;
 
 
         public string ProfessorName => m_ProfessorName;
@@ -18,6 +18,6 @@ namespace StatData.Runtime
         public int ProfessorContents => m_ProfessorContents;
         public int ProfessorBalance => m_ProfessorBalance;
 
-        public Type ProfessorType => m_ProfessorType;
+        public StudentType ProfessorType => m_ProfessorType;
     }
 }

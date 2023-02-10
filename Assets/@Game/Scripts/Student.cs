@@ -2,7 +2,7 @@ using UnityEngine;
 using StatData.Runtime;
 using Conditiondata.Runtime;
 using System.Collections.Generic;
-using BT;
+using System.Collections;
 
 /// <summary>
 /// 각 학생들이 가지고 있어야하는 정보들을 담은 클래스
@@ -12,59 +12,107 @@ using BT;
 public class Student : MonoBehaviour
 {
     public enum Doing
-    { 
+    {
         FreeWalk,
-        Study,
-        GoTo,
-        Wait,
-        Eat,
         AtRest,
+        Studying,
+        StartInteracting,
+        EndInteracting,
     }
 
     public StudentStat m_StudentData;
     public StudentCondition m_StudentCondition;
-    public Doing m_Doing { get; set; }
+
+    private Doing m_Doing;
+    public Doing DoingValue { get => m_Doing;
+        set{
+            m_Doing = value;
+
+            switch (value)
+            {
+                case Doing.FreeWalk:
+                {
+
+                }
+                break;
+
+                case Doing.AtRest:
+                {
+
+                }
+                break;
+
+                case Doing.Studying:
+                {
+
+                }
+                break;
+
+                // 상호작용 시작할 부분
+                case Doing.StartInteracting:
+                {
+                    m_IsCoolDown = true;   // 쿨타임 시작
+                }
+                break;
+            }
+        }
+    }
     //public Node m_Node;
 
-    public float m_Time = 0f;
-    public float m_CoolTime = 1f;
+    public float m_Time = 0f;       // 쿨타임의 타이머
+    public float m_CoolTime;   // 멈추길 원하는 만큼의 시간
 
     public string m_NameStudent;
 
-    public bool isHereRestaurant = false;
-    public bool isArrivedClass = false;
-    public bool isDesSetting;
-    public bool isInteracting;
-
+    public bool m_IsArrivedClass;
+    public bool m_IsDesSetting;
+    public bool m_IsInteracting;
+    public bool m_IsCoolDown;           // 쿹타임 중인가 판별
+    public bool m_IsDialoguePlaying;
     public int m_RestaurantNumOfPeople;
 
-    public string m_Destination = " ";
+    public string m_Roll;
 
     public Queue<string> m_DestinationQueue = new Queue<string>();
 
+    private void Awake()
+    {
+        m_CoolTime = 10f;
+        m_IsArrivedClass = false;
+        m_IsDesSetting = false;
+        m_IsInteracting = false;
+        m_IsCoolDown = false;
+        m_IsDialoguePlaying = false;
+    }
+
     void Update()
     {
-        m_Time += Time.deltaTime;
-
-        if (m_Time > m_CoolTime)
+        switch (m_Doing)
         {
-            m_Time = 0f;
-            //Debug.Log(m_Node);
-            //m_Node.Run();
+            // 쿨타임 적용할 부분
+            case Doing.EndInteracting:
+            {
+                m_Time += Time.deltaTime;
+
+                if (m_Time > m_CoolTime)
+                {
+                    m_Time = 0f;
+                    m_IsCoolDown = false;    // 쿨타임 끝남.
+                    m_IsInteracting = false;
+                    DoingValue = Doing.FreeWalk;
+                }
+            }
+            break;
         }
     }
 
-    public void Initialize(StudentStat _stat ,string _name, StudentCondition _studentCondition)
+
+    public void Initialize(StudentStat _stat, string _name) //, StudentCondition _studentCondition
     {
         m_Doing = Doing.FreeWalk;
         m_NameStudent = _name;
         gameObject.name = _name;
-        m_StudentCondition = _studentCondition;
-        //m_Node = _node;
         m_StudentData = _stat;
-        m_StudentData.m_StudentSystemValue = _stat.m_StudentSystemValue;
-        m_StudentData.m_StudentContentsValue = _stat.m_StudentContentsValue;
-        m_StudentData.m_StudentBalanceValue = _stat.m_StudentBalanceValue;
     }
 }
 
