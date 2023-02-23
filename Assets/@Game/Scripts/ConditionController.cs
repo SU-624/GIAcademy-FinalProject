@@ -21,18 +21,18 @@ public class ConditionController : MonoBehaviour
 
     protected virtual void Awake()
     {
-        if (m_IsInitialized == false)
-        {
-            Initialized();
-            m_IsInitialized = true;
-        }
+        //if (m_IsInitialized == false)
+        //{
+        //    Initialized();
+        //    m_IsInitialized = true;
+        //}
     }
 
-    private void Initialized()
-    {
-        foreach (ConditionData condition in m_ConditionData.studentCondition)
-        {
-            m_StudentCondtion.Add(condition.name, new StudentCondition(condition));
-        }
-    }
+    //private void Initialized()
+    //{
+    //    foreach (ConditionData condition in m_ConditionData.studentCondition)
+    //    {
+    //        m_StudentCondtion.Add(condition.name, new StudentCondition(condition));
+    //    }
+    //}
 }

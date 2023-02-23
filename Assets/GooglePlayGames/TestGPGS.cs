@@ -106,12 +106,12 @@ public class TestGPGS : MonoBehaviour
 
         if (GUILayout.Button("user.UserId"))
         {
-            log = GPGSBinder.Instance.UserId;
+            log =  FirebaseBinder.Instance.UserId;
         }
         
         if (GUILayout.Button("user.DisplayName"))
         {
-            log = GPGSBinder.Instance.DisplayName;
+            log =  FirebaseBinder.Instance.DisplayName;
         }
         
         GUILayout.Label(log);

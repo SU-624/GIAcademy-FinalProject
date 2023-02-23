@@ -12,6 +12,8 @@ public class MoveSceneManager : MonoBehaviour
 {
     public static MoveSceneManager m_Instance = null;       // Manager 변수는 싱글톤으로 사용
 
+
+    public GameObject TitleCamera;
     // 싱글톤으로 만든 변수를 안전하게 생성하고 사용하기 위한 초기화(?) 방법
     private void Awake()
     {
@@ -37,18 +39,28 @@ public class MoveSceneManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-    }
-
-
-    public void MoveToTitleScene()
-    {
-        SceneManager.LoadScene("TitleScene");
+        if(Input.GetKeyDown(KeyCode.F5))
+        {
+            MoveToInGameScene();
+        }
+        if (Input.GetKeyDown(KeyCode.F6))
+        {
+            MoveToTitleScene();
+        }
+ 
     }
 
 
     public void MoveToInGameScene()
     {
         SceneManager.LoadScene("InGameScene");
+
+        // TitleCamera.SetActive(false);
     }
+
+    public void MoveToTitleScene()
+    {
+        SceneManager.LoadScene("TitleScene");
+    }
+
 }

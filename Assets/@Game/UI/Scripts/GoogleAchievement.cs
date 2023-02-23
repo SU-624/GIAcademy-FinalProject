@@ -29,7 +29,7 @@ public class GoogleAchievement : MonoBehaviour
             Debug.Log("메일 클릭 업적 달성 테스트");
 
 
-            if (GPGSBinder.Instance.UserId != null)
+            if (Social.localUser.authenticated)
             {
                 GPGSBinder.Instance.UnlockAchievement(GPGSIds.achievement_Mail);     //구글 업적 달성
             }
@@ -42,7 +42,7 @@ public class GoogleAchievement : MonoBehaviour
         Debug.Log("첫 수업 세팅 되었ㄴ느냐!");
 
 
-        if (GPGSBinder.Instance.UserId != null)
+        if (Social.localUser.authenticated)
         {
             GPGSBinder.Instance.UnlockAchievement(GPGSIds.achievement_SetClass);     //구글 업적 달성
         }
@@ -54,7 +54,7 @@ public class GoogleAchievement : MonoBehaviour
         Debug.Log("구글 업적 창 띄우기");
 
 
-        if (GPGSBinder.Instance.UserId != null)
+        if (Social.localUser.authenticated)
         {
             GPGSBinder.Instance.ShowAchievementUI();
         }

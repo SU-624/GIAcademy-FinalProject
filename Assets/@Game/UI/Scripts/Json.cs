@@ -20,7 +20,9 @@ public class Json : MonoBehaviour
     private static Json _instance = null;
 
     const string DataFolderName = "GISaveData";
-    public AllInOneData player = new AllInOneData();
+    //public AllInOneData player = new AllInOneData();
+
+    public bool IsDataExists;
 
     public static Json Instance
     {
@@ -31,6 +33,11 @@ public class Json : MonoBehaviour
                 return null;
             }
                 return _instance;
+        }
+
+        set
+        {
+            Instance = value;
         }
     }
 
@@ -43,30 +50,52 @@ public class Json : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject);
+            if (Instance != this)
+                Destroy(this.gameObject);
         }
     }
 
     private void Start()
     {
-        if (SceneManager.GetActiveScene().name == "LoadingScene")
-        {
-            IsExistJsonFile();
-        }
-        //LoadPlayerData();
+        // AllInOneData.Instance.LoadAllJsonData();
+        LoadAllOriginalData();
     }
 
-
-    // Json 형식으로 데이터 변환
-    public void TranslateToJson()
+    private void Update()
     {
-        string str = JsonUtility.ToJson(PlayerInfo.Instance);
+        // AllInOneData.Instance.SaveAllJsonData();
+    }
 
-        Debug.Log("To Json : " + str);
+    // 제이슨 파일의 경로가 존재하는지 체크하는 함수 -> 존재하면 true / 없으면 false
+    public void CheckFolderExists()
+    {
+        var FolderPath = Path.Combine(Application.persistentDataPath, DataFolderName);
+
+        if (!Directory.Exists(FolderPath))
+        {
+            IsDataExists = false;
+        }
+        else
+        {
+            IsDataExists = true;
+        }
+    }
+
+    public void CheckFileExists()
+    {
+        var jsonFilePath = Application.persistentDataPath + "\\" + DataFolderName + "\\@GuestLogin\\PlayerData.json";
+        
+        if (!File.Exists(jsonFilePath))
+        {
+            IsDataExists = false;
+        }
+        else
+        {
+            IsDataExists = true;
+        }
     }
 
     // Json 형식의 파일을 데이터로 변환
-
     // Json파일 저장을 위한 새로운(기존의) 폴더 생성 (오픈)
     public string CreateJsonFolder(string folderPath, string folderName)
     {
@@ -74,7 +103,8 @@ public class Json : MonoBehaviour
 
         string directoryPath = Path.Combine(folderPath, folderName);      // 어플리케이션이 저장 될 저장소 위치 + 저장소 안 폴더이름
 
-        if (!Directory.Exists(directoryPath))
+        // if (!Directory.Exists(directoryPath))
+        if (IsDataExists == false)
         {
             Directory.CreateDirectory(directoryPath);       // 저장 경로에 폴더가 없으면 폴더를 생성    -> 확인 완료
         }
@@ -82,14 +112,7 @@ public class Json : MonoBehaviour
         return directoryPath;
     }
 
-    // 로그인 성공 시 딱 한번 만들어지는 한 유저의 폴더
-    // playerInfo -> 아카데미 명 값이 null이 아닐때 만들어지기
-    public void CreateUserIDFolder(string path)
-    {
-        CreateJsonFolder(path, "PlayerData");
-    }
-
-    // 원하는 폴더 안에 새로운(기존의) 파일을 생성 (오픈)
+    // 원하는 폴더 안에 새로운(기존의) 파일을 생성 (오픈) -> 현재 사용 X
     public FileStream CreateFile(string directoryPath, string fileName)
     {
         string filePath = Path.Combine(directoryPath, fileName);                     // 저장소 경로 + 파일이름
@@ -100,7 +123,7 @@ public class Json : MonoBehaviour
     }
 
     // 플레이어의 아이디, 아카데미, 원장 이름
-    public void SavePlayerData(string path)
+    public void SaveToJsonPlayerData(string path)
     {
         // .json 파일 까지의 모든 경로
         FileInfo fileInfo = new FileInfo(path + "\\PlayerData.json");
@@ -115,7 +138,6 @@ public class Json : MonoBehaviour
                 byte[] data = Encoding.UTF8.GetBytes(test);     //   string -> byte로 변환
                 fs.Write(data, 0, data.Length);
                 fs.Close();
-                // fs.Seek(0, System.IO.SeekOrigin.Begin);
             }
         }
         else
@@ -125,58 +147,33 @@ public class Json : MonoBehaviour
                 // 저장 할 데이터 class -> string 변환
                 var test = JsonConvert.SerializeObject(AllInOneData.Instance);        // 클래스 -> string 변환
 
-
                 byte[] data = Encoding.UTF8.GetBytes(test);     //   string -> byte로 변환
-
                 fs.Write(data, 0, data.Length);
                 fs.Close();
-                // fs.Seek(0, System.IO.SeekOrigin.Begin);
             }
         }
     }
 
-    // 현재 시간, 활성화된 스케줄
-    public void SaveInGameData(string path)
-    {
-        CreateFile(path, "InGameData.json");
-    }
-
-    // 활성화된 메일
-    public void SaveMailData(string path)
-    {
-        CreateFile(path, "MailData.json");
-    }
-
-    // 현재 활성화된 학생 - 스탯, , 졸업여부..
-    public void SaveStudantData(string path)
-    {
-        CreateFile(path, "StudentData.json");
-    }
-
-    // 현재 활성화된 교수 - 스탯..
-    public void SaveProffesor(string path)
-    {
-        CreateFile(path, "ProffesorData.json");
-    }
-
-    public void LoadPlayerData(string path)
-    {
-
-
-        // if(!)
-    }
-
     // 여러 데이터 저장해서 테스트 해 볼 함수
-    public void TestSaveJson()
+    public void SaveDataInTitleScene()
     {
         string FolderPath = CreateJsonFolder(Application.persistentDataPath, DataFolderName); // GiSaveData Folder
 
         string FilePath = CreateJsonFolder(FolderPath, PlayerInfo.Instance.m_PlayerID);         // UID Floder
 
-        SavePlayerData(FilePath);       // 플레이어데이터 저장
-        // SaveMailData(FilePath);
-        // SaveStudantData(FilePath);
-        // SaveProffesor(FilePath);
+        SaveToJsonPlayerData(FilePath);       // 플레이어데이터 저장
+    }
+
+    // 인게임 씬에서 저장하기 버튼 눌렀을 때
+    public void SaveAllDataInGameScene()
+    {
+        var filePath = Application.persistentDataPath + "\\" + DataFolderName + "\\" + AllInOneData.Instance.player.m_playerID;
+        // var filePath1 = Path.Combine(filePath, DataFolderName);
+        // var filePath2 = Path.Combine(filePath1, AllInOneData.Instance.player.m_playerID);        // 경로를 때려박았는데 값이 안들어가서 null 이 뜬다 왜그런진 모르지만 combine()을 써서 경로를 하나로 만들어줬다
+
+        AllInOneData.Instance.SaveAllJsonData();
+
+        SaveToJsonPlayerData(filePath);       // 플레이어데이터 저장
     }
 
     // Json 을 인게임 데이터로 넣어줄 테스트 함수
@@ -184,24 +181,27 @@ public class Json : MonoBehaviour
     {
         string FolderPath = CreateJsonFolder(Application.persistentDataPath, DataFolderName); // GiSaveData Folder
                                                                                               // string FilePath = 
-
         // JsonConvert.DeserializeObject();
-
     }
 
-    // 맨 처음에 Json 파일 존재 유무 체크
-    public void IsExistJsonFile()
+    // 맨 처음에 Json 파일 존재 유무 체크 -> 
+    public void IsExistJsonFile(GameObject Panel)
     {
-        DirectoryInfo FolderInfo = new DirectoryInfo(Application.persistentDataPath + "\\" + DataFolderName);
+        PopUpUI pop = new PopUpUI();
+        //DirectoryInfo FolderInfo = new DirectoryInfo(Application.persistentDataPath + "\\" + DataFolderName);
 
-        if (!FolderInfo.Exists)
+        CheckFolderExists();
+        CheckFileExists();
+
+        // if (!FolderInfo.Exists)
+        if (IsDataExists == false)
         {
-            // 로그인 정보가 없으므로 타이틀 씬 이동 -> 로그인 해야함
-            MoveSceneManager.m_Instance.MoveToTitleScene();
         }
         else
         {
             // 모든 데이터 로드 후 InGameScene으로 이동
+
+            pop.PopUpUIOnTitleScene(Panel);
             LoadAllJsonData();
             MoveSceneManager.m_Instance.MoveToInGameScene();
         }
@@ -227,21 +227,21 @@ public class Json : MonoBehaviour
 
             // 데이터 넣는 곳에서 문제 생김
             // 인게임씬에서 이걸 해보자 씬이 달라져서 문제가 생기는건지 뭔지
-            player = JsonConvert.DeserializeObject<AllInOneData>(str);
+            AllInOneData.Instance = JsonConvert.DeserializeObject<AllInOneData>(str);
 
-            Debug.Log(player);
+            Debug.Log(AllInOneData.Instance);
         }
     }
 
-    //제이슨 읽는거
-    public void LoadPlayerData()
+    // 
+    public void LoadAllOriginalData()
     {
-        string jsonFilePath = Application.persistentDataPath + "\\" + DataFolderName + "\\@GuestLogin\\PlayerData.json";
+        string jsonFilePath = Application.dataPath + "\\Json\\TestOriginalEventData.json";
         FileInfo playerFile = new FileInfo(jsonFilePath);
 
         using (FileStream fs = playerFile.OpenRead())
         {
-            byte[] arr = new byte[1024];
+            byte[] arr = new byte[fs.Length + 10];
 
             UTF8Encoding temp = new UTF8Encoding(true);
             string str = "";
@@ -251,12 +251,9 @@ public class Json : MonoBehaviour
                 str += temp.GetString(arr);
             }
 
-            AllInOneData player = JsonConvert.DeserializeObject<AllInOneData>(str);
+            AllOriginalJsonData.Instance = JsonConvert.DeserializeObject<AllOriginalJsonData>(str);
 
-            // string tempData =
-            //PlayerInfo playerData = (PlayerInfo)JsonToken.read
-
-            Debug.Log("");
+            Debug.Log(AllOriginalJsonData.Instance);
         }
     }
 }

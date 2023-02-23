@@ -51,14 +51,15 @@ public class InGameTest : MonoBehaviour
     [SerializeField]
     private StatController _statController;
 
-    [SerializeField] private ClassPrefab _classPrefab;
+    [SerializeField] private SelectClass _classPrefab;
+    [SerializeField] private ApplyChangeStat m_ChangeProfessorStat;
     [SerializeField] private PopOffUI _popOffClassPanel;
     [SerializeField] private Button m_ChangeColorArtButton;
     [SerializeField] private Button m_ChangeColorProductManagerButton;
     [SerializeField] private Button m_ChangeColorProgrammingButton;
 
-    public bool _isRepeatClass = false;                     // 수업 선택 후 3달동안 수업을 실행시키기 위해
-    public int _classCount = 1;                             // 수업을 총 3번만 들을 수 있게 해주기 위한 
+    //public bool _isRepeatClass = false;                     // 수업 선택 후 3달동안 수업을 실행시키기 위해
+    //public int _classCount = 1;                             // 수업을 총 3번만 들을 수 있게 해주기 위한 
 
     private List<GameObject> _studentInfoList = new List<GameObject>();
     private List<GameObject> _SelectStudentList = new List<GameObject>();
@@ -91,6 +92,8 @@ public class InGameTest : MonoBehaviour
     {
         m_ClassState = ClassState.nothing;
 
+        PlayerInfo.Instance.m_MyMoney = 10000;
+
         if (_instance == null)
         {
             _instance = this;
@@ -114,6 +117,7 @@ public class InGameTest : MonoBehaviour
                     m_ClassState = ClassState.ClassStart;
                     break;
                 }
+                student.gameObject.GetComponent<Animator>().SetBool("isStudying", true);
 
                 m_ClassState = ClassState.StudyStart;
             }
@@ -130,23 +134,6 @@ public class InGameTest : MonoBehaviour
             {
                 EndClass();
             }
-        }
-
-        if (Input.GetKeyDown(KeyCode.F1))
-        {
-            m_ClassState = ClassState.ClassStart;
-
-            _isRepeatClass = true;
-
-            foreach (var student in ObjectManager.Instance.m_StudentBehaviorList)
-            {
-                student.GetComponent<Student>().m_IsDesSetting = false;
-            }
-            _popOffClassPanel.TurnOffUI();
-
-            ClassSchedule.Instance.ChangeColorButton(m_ChangeColorArtButton, Color.white);
-            ClassSchedule.Instance.ChangeColorButton(m_ChangeColorProductManagerButton, Color.white);
-            ClassSchedule.Instance.ChangeColorButton(m_ChangeColorProgrammingButton, Color.white);
         }
     }
 
@@ -383,11 +370,11 @@ public class InGameTest : MonoBehaviour
     {
         _isSelectClassNotNull = false;
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 2; i++)
         {
-            if (_classPrefab.m_ArtData[i].m_ClassName == null ||
-                _classPrefab.m_ProductManagerData[i].m_ClassName == null ||
-                _classPrefab.m_ProgrammingData[i].m_ClassName == null)
+            if (_classPrefab.m_ArtData[i].m_SelectClassDataSave == null ||
+                _classPrefab.m_GameDesignerData[i].m_SelectClassDataSave == null ||
+                _classPrefab.m_ProgrammingData[i].m_SelectClassDataSave == null)
             {
                 _isSelectClassNotNull = false;
                 break;
@@ -402,7 +389,7 @@ public class InGameTest : MonoBehaviour
         {
             m_ClassState = ClassState.ClassStart;
 
-            _isRepeatClass = true;
+            //_isRepeatClass = true;
 
             foreach (var student in ObjectManager.Instance.m_StudentBehaviorList)
             {
@@ -410,9 +397,10 @@ public class InGameTest : MonoBehaviour
             }
             _popOffClassPanel.TurnOffUI();
 
-            ClassSchedule.Instance.ChangeColorButton(m_ChangeColorArtButton, Color.white);
-            ClassSchedule.Instance.ChangeColorButton(m_ChangeColorProductManagerButton, Color.white);
-            ClassSchedule.Instance.ChangeColorButton(m_ChangeColorProgrammingButton, Color.white);
+            // 내 소지금에서 선택한 수업만큼 돈을 빼준다.
+            PlayerInfo.Instance.m_MyMoney -= _classPrefab.m_TotalMoney;
+
+            _classPrefab.InitSelecteClass();
         }
 
     }
@@ -446,12 +434,13 @@ public class InGameTest : MonoBehaviour
             student.GetComponent<NavMeshAgent>().obstacleAvoidanceType = ObstacleAvoidanceType.MedQualityObstacleAvoidance;
         }
 
+        m_ChangeProfessorStat.ApplyProfessorStat();
         // 수업을 3번 반복했으니 이제 다시 수업 셋팅을 할 수 있게 초기화해준다.
-        if (_classCount == 3)
-        {
-            _classCount = 1;
-            _isRepeatClass = false;
-        }
+        //if (_classCount == 3)
+        //{
+        //    _classCount = 1;
+        //    _isRepeatClass = false;
+        //}
 
         Invoke("StateInit", 4f);
     }

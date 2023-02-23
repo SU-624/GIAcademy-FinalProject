@@ -45,11 +45,6 @@ public class PopUpUI : MonoBehaviour
     // UI를 켜주는 시간 조정 함수
     public void DelayTurnOnUI(/*int t*/)
     {
-        //if(t != 0)
-        //{
-        //    m_DelayTime = t;
-        //}
-
         Invoke("JustTurnOn", m_DelayTime);
     }
 
@@ -103,7 +98,6 @@ public class PopUpUI : MonoBehaviour
 
     public void JustTurnOn()
     {
-
         if (SceneManager.GetActiveScene().name == "TitleScene")
         {
             if (this.gameObject.activeSelf == false)
@@ -178,6 +172,7 @@ public class PopUpUI : MonoBehaviour
                     InGameUI.Instance.UIStack.Pop();
                     m_UI.gameObject.SetActive(true);    // 이 스크립트가 붙어있는 오브젝트 본인
                     Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
+                    Debug.Log("stack Name : " + m_UI.name);
 
                     //InGameUI.Instance.UIStack.Push(m_UI.gameObject);
                     this.gameObject.SetActive(false);   // 누르는 버튼은 꺼주기
@@ -207,7 +202,16 @@ public class PopUpUI : MonoBehaviour
         }
     }
 
-    // 펼쳐지는 메뉴 만들고 싶었는데 맘에 안듬
+    public void PopUpUIOnTitleScene(GameObject obj)
+    {
+        if (SceneManager.GetActiveScene().name == "TitleScene")
+        {
+            obj.SetActive(true);
+        }
+    }
+
+
+    // 펼쳐지는 메뉴 만듬!
     public void AutoSlideMenuUI()
     {
         if ((int)movingMenuRect.position.x != (int)target)
@@ -220,6 +224,5 @@ public class PopUpUI : MonoBehaviour
         {
             movingMenuRect.position = prevMEnuBarPos;
         }
-
     }
 }

@@ -18,8 +18,8 @@ public class StudentStat
     //public int[,] m_Familiarity;  // 내가 현재 데리고있는 학생의 수만큼 설정을 해줘야함
     public StudentType m_StudentType;      // 각 파트
 
-    // 파트별로 학생들이 가지고 있는 공통 스탯(특정 수치에 도달하면 스킬을 얻음)
     //public StatType m_StudentStatType;
+    // 파트별로 학생들이 가지고 있는 공통 스탯(특정 수치에 도달하면 스킬을 얻음)
     public int m_Sense;
     public int m_Concentraction;
     public int m_Wit;
@@ -69,19 +69,20 @@ public class StudentStat
 
 }
 
-public enum StatType
-{
-    Sense,
-    Concentration,
-    Wit,
-    Technique,
-    Insight
-}
+//public enum StatType
+//{
+//    Sense,
+//    Concentration,
+//    Wit,
+//    Technique,
+//    Insight
+//}
 
 public enum StudentType
 {
     Programming,
     Art,
     GameDesigner,
+    None,
 }
 

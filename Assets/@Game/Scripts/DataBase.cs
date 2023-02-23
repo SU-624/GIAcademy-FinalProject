@@ -9,8 +9,8 @@ namespace StatData.Runtime
     public class DataBase : ScriptableObject
     {
         public List<ProfessorData> professorDatas;
-        public List<StudentData> studentDatas;
+        //public List<StudentData> studentDatas;
         public List<ClassData> classDatas;
-        public List<ConditionData> studentCondition;
+        //public List<ConditionData> studentCondition;
     }
 }

@@ -13,8 +13,8 @@ public class PopOffUI : MonoBehaviour
     public GameObject m_UI;         // 지정할 UI
     public int m_DelayTime;
 
-    [SerializeField] private ClassPrefab m_ClassPrefab;
-    [SerializeField] private SelecteProfessor m_ProfessorPrefab;
+    //[SerializeField] private SelectClass m_ClassPrefab;
+    //[SerializeField] private SelecteProfessor m_ProfessorPrefab;
 
     [SerializeField]
     private GameObject MyUI
@@ -60,28 +60,28 @@ public class PopOffUI : MonoBehaviour
                 m_UI.SetActive(false);
 
                 // 수연이의 학생 프리팹이 존재하는지 체크
-                if (m_ClassPrefab != null)
-                {
-                    if (m_ClassPrefab.m_SelecteClassDataList != null)
-                    {
-                        m_ClassPrefab.m_SelecteClassDataList.Clear();
-                    }
+                //if (m_ClassPrefab != null)
+                //{
+                //    if (m_ClassPrefab.m_SelecteClassDataList != null)
+                //    {
+                //        m_ClassPrefab.m_SelecteClassDataList.Clear();
+                //    }
 
-                    if (m_ClassPrefab.m_SelecteClassButtonName != null)
-                    {
-                        m_ClassPrefab.m_SelecteClassButtonName.Clear();
-                    }
-                }
+                //    if (m_ClassPrefab.m_SelecteClassButtonName != null)
+                //    {
+                //        m_ClassPrefab.m_SelecteClassButtonName.Clear();
+                //    }
+                //}
 
-                if (m_ProfessorPrefab != null)
-                {
-                    m_ProfessorPrefab.m_ProfessorDataIndex = 0;
+                //if (m_ProfessorPrefab != null)
+                //{
+                //    m_ProfessorPrefab.m_ProfessorDataIndex = 0;
 
-                    if (m_ProfessorPrefab.m_ForClickNextButton != null)
-                    {
-                        m_ProfessorPrefab.m_ForClickNextButton.Clear();
-                    }
-                }
+                //    if (m_ProfessorPrefab.m_ForClickNextButton != null)
+                //    {
+                //        m_ProfessorPrefab.m_ForClickNextButton.Clear();
+                //    }
+                //}
 
                 InGameUI.Instance.UIStack.Pop();
                 Debug.Log(InGameUI.Instance.UIStack.Count);
@@ -134,28 +134,28 @@ public class PopOffUI : MonoBehaviour
                     m_UI.SetActive(false);
 
                     // 수연이의 학생 프리팹이 존재하는지 체크
-                    if (m_ClassPrefab != null)
-                    {
-                        if (m_ClassPrefab.m_SelecteClassDataList != null)
-                        {
-                            m_ClassPrefab.m_SelecteClassDataList.Clear();
-                        }
+                    //if (m_ClassPrefab != null)
+                    //{
+                    //    if (m_ClassPrefab.m_SelecteClassDataList != null)
+                    //    {
+                    //        m_ClassPrefab.m_SelecteClassDataList.Clear();
+                    //    }
 
-                        if (m_ClassPrefab.m_SelecteClassButtonName != null)
-                        {
-                            m_ClassPrefab.m_SelecteClassButtonName.Clear();
-                        }
-                    }
+                    //    if (m_ClassPrefab.m_SelecteClassButtonName != null)
+                    //    {
+                    //        m_ClassPrefab.m_SelecteClassButtonName.Clear();
+                    //    }
+                    //}
 
-                    if (m_ProfessorPrefab != null)
-                    {
-                        m_ProfessorPrefab.m_ProfessorDataIndex = 0;
+                    //if (m_ProfessorPrefab != null)
+                    //{
+                    //    m_ProfessorPrefab.m_ProfessorDataIndex = 0;
 
-                        if (m_ProfessorPrefab.m_ForClickNextButton != null)
-                        {
-                            m_ProfessorPrefab.m_ForClickNextButton.Clear();
-                        }
-                    }
+                    //    if (m_ProfessorPrefab.m_ForClickNextButton != null)
+                    //    {
+                    //        m_ProfessorPrefab.m_ForClickNextButton.Clear();
+                    //    }
+                    //}
 
                     InGameUI.Instance.UIStack.Pop();
                     Debug.Log("팝업 창 띄여진 갯수 : " + InGameUI.Instance.UIStack.Count);

@@ -18,21 +18,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 69b091789b8477a48892710c604b66da, type: 2}
   - {fileID: 11400000, guid: f42b4917f516bd146b905893f66bf02a, type: 2}
   - {fileID: 11400000, guid: fecfc6b82f11dd34aa1825c591b7e887, type: 2}
-  studentDatas:
-  - {fileID: 11400000, guid: 845f45666a0a20840a2f4d5ab5eec135, type: 2}
-  - {fileID: 11400000, guid: c1f95575dd70d1b4590aed261ba6ec96, type: 2}
-  - {fileID: 11400000, guid: 6b20683f563a4b74583a10c22cef4ab2, type: 2}
-  - {fileID: 11400000, guid: 4a48038d695549843a3f55745e4c567f, type: 2}
-  - {fileID: 11400000, guid: 3ecfa0398f9cd7c4aba6cda5b321a06d, type: 2}
-  - {fileID: 11400000, guid: d468c669a93ed8f4b87855891f6d3176, type: 2}
   classDatas:
-  - {fileID: 11400000, guid: 8a5f52eebcddc3b479012a1b118232eb, type: 2}
-  - {fileID: 11400000, guid: ca0cab65f7a4953419506bddaee25312, type: 2}
-  - {fileID: 11400000, guid: 7ff449c2a8287c54dbd2b6d60dda7924, type: 2}
-  - {fileID: 11400000, guid: 3cac4311dcffee0479ee60492ca5677f, type: 2}
-  - {fileID: 11400000, guid: 311d5e90515348243a06826070b8973b, type: 2}
-  - {fileID: 11400000, guid: 076686afd78b83c49b808468aa17562d, type: 2}
   - {fileID: 11400000, guid: 4740f0f116bfaf8489402939fd085134, type: 2}
+  - {fileID: 11400000, guid: 3cac4311dcffee0479ee60492ca5677f, type: 2}
+  - {fileID: 11400000, guid: 6d83695b69723d1439e3d19ca98523e1, type: 2}
   - {fileID: 11400000, guid: ab43e6537f060e34b9500f9388199a2f, type: 2}
-  studentCondition:
-  - {fileID: 11400000, guid: 54ec874f7eef98641a0698b4d0860858, type: 2}
+  - {fileID: 11400000, guid: 1ef074b60c6a15046bffc90333295a7e, type: 2}
+  - {fileID: 11400000, guid: 076686afd78b83c49b808468aa17562d, type: 2}
+  - {fileID: 11400000, guid: b435326087e43d74697d71b5939eac8b, type: 2}

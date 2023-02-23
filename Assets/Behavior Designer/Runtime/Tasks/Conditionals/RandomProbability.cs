@@ -12,6 +12,8 @@ namespace BehaviorDesigner.Runtime.Tasks
         [Tooltip("Do we want to use the seed?")]
         public SharedBool useSeed;
 
+        public bool m_IsSuccess;
+
         public override void OnAwake()
         {
             // If specified, use the seed provided.
@@ -25,8 +27,10 @@ namespace BehaviorDesigner.Runtime.Tasks
             // Return success if random value is less than the success probability. Otherwise return failure.
             float randomValue = Random.value;
             if (randomValue < successProbability.Value) {
+                m_IsSuccess = true;
                 return TaskStatus.Success;
             }
+            m_IsSuccess = false;
             return TaskStatus.Failure;
         }
 

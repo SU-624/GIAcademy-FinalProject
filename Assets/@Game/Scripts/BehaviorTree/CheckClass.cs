@@ -14,26 +14,27 @@ public class CheckClass : Conditional
             return TaskStatus.Failure;
         }
 
-        if (InGameTest.Instance.m_ClassState == ClassState.ClassStart)
+        if (InGameTest.Instance.m_ClassState.Equals(ClassState.ClassStart) && this.gameObject.GetComponent<Student>().DoingValue != Student.Doing.StartInteracting)
         {
             //this.gameObject.GetComponent<Student>().DoingValue = Student.Doing.Studying;
-            this.gameObject.GetComponent<NavMeshAgent>().isStopped = false;
+            //this.gameObject.GetComponent<NavMeshAgent>().isStopped = false;
 
-            if (!isClassDesSetting && !this.gameObject.GetComponent<Student>().m_IsInteracting)
+            if (!isClassDesSetting)
             {
                 SetClassDestination();
             }
-                return TaskStatus.Success;
+            return TaskStatus.Success;
             //return TaskStatus.Failure;
         }
         else if (InGameTest.Instance.m_ClassState == ClassState.Studying)
         {
+            gameObject.GetComponent<Animator>().SetBool("isStudying", true);
             return TaskStatus.Success;
         }
         else if (InGameTest.Instance.m_ClassState == ClassState.ClassEnd)
         {
             //this.gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
-
+            gameObject.GetComponent<Animator>().SetBool("isStudying", false);
             this.gameObject.GetComponent<Student>().m_Time = 0f;
             this.gameObject.GetComponent<Student>().m_IsCoolDown = false;    // ÄðÅ¸ÀÓ ³¡³².
             this.gameObject.GetComponent<Student>().m_IsInteracting = false;

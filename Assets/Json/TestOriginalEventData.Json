@@ -1,0 +1,154 @@
+{
+  "OriginalEventListData": [
+    {
+      "EventNumber": 1,
+      "EventDate": [1, 3, 1, 2],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 1,
+      "EventClassName": "수업중에 과자먹기",
+      "EventInformation": "특명 선생님의 눈을 피해 과자를 먹어라",
+      "EventRewardMoney": 100,
+      "EventRewardSpecialPoint": 5
+    },
+    {
+      "EventNumber": 2,
+      "EventDate": [ 1, 3, 2, 4 ],
+      "IsPossibleUseEvent": 0,
+      "IsFixedEvent": 1,
+      "EventClassName": "아무도 모르게 졸기",
+      "EventInformation": "개꿀잠 자고 일어나면 얼굴에 낙서가 있을지도?",
+      "EventRewardMoney": 50,
+      "EventRewardSpecialPoint": 7
+    },
+    {
+      "EventNumber": 3,
+      "EventDate": [ 1, 3, 0, 0 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 0,
+      "EventClassName": "양치하기",
+      "EventInformation": "치카치카~",
+      "EventRewardMoney": 1,
+      "EventRewardSpecialPoint": 1
+    },
+    {
+      "EventNumber": 4,
+      "EventDate": [ 1, 4, 2, 3 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 1,
+      "EventClassName": "초콜렛 나눠먹기",
+      "EventInformation": "춰퀄렛 짱맛 브랜드는?!",
+      "EventRewardMoney": 35,
+      "EventRewardSpecialPoint": 14
+    },
+    {
+      "EventNumber": 5,
+      "EventDate": [ 1, 4, 4, 3 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 1,
+      "EventClassName": "수연이랑 대화하기",
+      "EventInformation": "수연이랑 점심메뉴 얘기하기",
+      "EventRewardMoney": 270,
+      "EventRewardSpecialPoint": 8
+    },
+    {
+      "EventNumber": 6,
+      "EventDate": [ 1, 4, 1, 2 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 1,
+      "EventClassName": "창우랑 가위바위보 하기",
+      "EventInformation": "가위바위보 진 사람이 아이스크림 사기!",
+      "EventRewardMoney": 500,
+      "EventRewardSpecialPoint": 6
+    },
+    {
+      "EventNumber": 7,
+      "EventDate": [ 1, 5, 4, 1 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 1,
+      "EventClassName": "재영이 괴롭히기",
+      "EventInformation": "심심할 때 재영이 괴롭히면 얼마나 즐거운데요",
+      "EventRewardMoney": 430,
+      "EventRewardSpecialPoint": 9
+    },
+    {
+      "EventNumber": 8,
+      "EventDate": [ 1, 3, 0, 0 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 0,
+      "EventClassName": "수경이랑 종원이랑 놀기",
+      "EventInformation": "수경이랑 ~ 종원이랑 ~ *>_<*",
+      "EventRewardMoney": 170,
+      "EventRewardSpecialPoint": 7
+    },
+    {
+      "EventNumber": 9,
+      "EventDate": [ 1, 5, 4, 4 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 1,
+      "EventClassName": "민경이랑 그림그리기",
+      "EventInformation": "1분안에 그림그리기 대결?!",
+      "EventRewardMoney": 401,
+      "EventRewardSpecialPoint": 15
+    },
+    {
+      "EventNumber": 10,
+      "EventDate": [ 1, 6, 2, 4 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 1,
+      "EventClassName": "하연이랑 간식먹기",
+      "EventInformation": "꽁냥꽁냥 즐거운 하연이랑 간식 먹는 시간~",
+      "EventRewardMoney": 305,
+      "EventRewardSpecialPoint": 3
+    },
+    {
+      "EventNumber": 11,
+      "EventDate": [ 1, 6, 3, 1 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 1,
+      "EventClassName": "나이트워커 하기",
+      "EventInformation": "나이트 워커 개꿀잼 레벨 80 가자~",
+      "EventRewardMoney": 100,
+      "EventRewardSpecialPoint": 1
+    },
+    {
+      "EventNumber": 12,
+      "EventDate": [ 1, 6, 0, 0 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 0,
+      "EventClassName": "텐텐 먹고 키크기",
+      "EventInformation": "으른의 플렉스 = 텐텐 박스째로 사먹기",
+      "EventRewardMoney": 70,
+      "EventRewardSpecialPoint": 5
+    },
+    {
+      "EventNumber": 13,
+      "EventDate": [ 1, 7, 0, 0 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 0,
+      "EventClassName": "승택이랑 사탕으로 저글링하기",
+      "EventInformation": "저글링 하는 승택이 와~ ",
+      "EventRewardMoney": 20,
+      "EventRewardSpecialPoint": 10
+    },
+    {
+      "EventNumber": 14,
+      "EventDate": [ 1, 7, 1, 1 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 1,
+      "EventClassName": "지영이랑 운동…하기…",
+      "EventInformation": "운동은 국력이죠 지영이 응원해줘야지",
+      "EventRewardMoney": 1,
+      "EventRewardSpecialPoint": 7
+    },
+    {
+      "EventNumber": 15,
+      "EventDate": [ 1, 7, 0, 0 ],
+      "IsPossibleUseEvent": 1,
+      "IsFixedEvent": 0,
+      "EventClassName": "우울할때 레몬사탕 먹기",
+      "EventInformation": "우울한땐! 레몬사탕이지~!",
+      "EventRewardMoney": 0,
+      "EventRewardSpecialPoint": 3
+    }
+  ]
+}

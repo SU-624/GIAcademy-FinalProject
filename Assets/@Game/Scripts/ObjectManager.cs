@@ -67,6 +67,8 @@ public class ObjectManager : MonoBehaviour
         m_tempname.Add("이철수");
         m_tempname.Add("염미경");
         m_tempname.Add("강상연");
+        m_tempname.Add("신성현");
+        m_tempname.Add("김효선");
     }
 
     private void Start()
@@ -79,18 +81,18 @@ public class ObjectManager : MonoBehaviour
         //m_tempname.Add(_newName._studentName);
         //m_tempname = JsonConvert.DeserializeObject<List<StudentNameListClass>>(Resources.Load<TextAsset>("Json/Name").ToString());
 
-        CreateStudent(0);
-        CreateStudent(1);
-        //CreateStudent(2);
-        //CreateStudent(3);
-        //CreateStudent(0);
-        //CreateStudent(1);
+        CreateStudent(0,StudentType.Art);
+        CreateStudent(1, StudentType.Art);
+        CreateStudent(2, StudentType.GameDesigner);
+        CreateStudent(3, StudentType.GameDesigner);
+        CreateStudent(4, StudentType.Programming);
+        CreateStudent(5, StudentType.Programming);
     }
 
     // 학생 오브젝트를 필요할 때 동적으로 생성해주기 위한 함수
     // 랜덤한 숫자를 가져와서 데이터베이스에 있는 학생의 정보를 무작위로 가져온다
     // 학생을 생성할 때 파츠를 오브젝트로 생성하는게 아니라 Mesh를 바꿔주는걸로 해주기
-    public void CreateStudent(int i)
+    public void CreateStudent(int i, StudentType _type)
     {
         /// S. Monobehavior를 사용한 녀석들은 new를 하면 안된다.
         // GameObject student = new GameObject();
@@ -141,7 +143,7 @@ public class ObjectManager : MonoBehaviour
         
         RandomStat(_studentStat,i);
         _studentStat.m_Skills = null;
-        _studentStat.m_StudentType = StudentType.Art;
+        _studentStat.m_StudentType = _type;
         string _studentName = _studentStat.m_StudentName;
 
         //StudentCondition _studentCondition = new StudentCondition(m_conditionData.dataBase.studentCondition[0]);
@@ -235,58 +237,4 @@ public class ObjectManager : MonoBehaviour
         _studentStat.m_Rythm = Random.Range(1, 101);
         _studentStat.m_Sport = Random.Range(1, 101);
     }
-
-    //public Node CreateNode(Student _student)
-    //{
-    //    // 최상단 노드
-    //    Selector _root = new Selector();
-
-    //    // 최상단 노드에 들어갈 Composite노드들
-    //    Sequnce _studySeq = new Sequnce();
-    //    Sequnce _goSeq = new Sequnce();
-    //    Sequnce _eatSeq = new Sequnce();
-    //    Sequnce _restSeq = new Sequnce();
-    //    Sequnce _idelSeq = new Sequnce();
-    //    //Sequnce _freeWalkSeq = new Sequnce();
-
-    //    // 학생들의 행동을 담당할 노드들
-    //    Studing _studingLeaf = new Studing();
-    //    _studingLeaf.m_MyStudent = _student;
-
-    //    GotoRestaurant _gotoRestourantLeaf = new GotoRestaurant();
-    //    _gotoRestourantLeaf.m_MyStudent = _student;
-
-    //    Eat _eatLeaf = new Eat();
-    //    _eatLeaf.m_MyStudent = _student;
-
-    //    Rest _restLeaf = new Rest();
-    //    _restLeaf.m_MyStudent = _student;
-
-
-    //    Idel _idelLeaf = new Idel();
-    //    _idelLeaf.m_MyStudent = _student;
-
-    //    //FreeWalk _freeWalkLeaf = new FreeWalk();
-    //    //_freeWalkLeaf.m_MyStudent = _student;
-
-    //    _studySeq.AddChildNode(_studingLeaf);
-
-    //    _goSeq.AddChildNode(_gotoRestourantLeaf);
-
-    //    _eatSeq.AddChildNode(_eatLeaf);
-
-    //    _restSeq.AddChildNode(_restLeaf);
-
-    //    _idelSeq.AddChildNode(_idelLeaf);
-    //    //_freeWalkSeq.AddChildNode(_freeWalkLeaf);
-
-    //    _root.AddChildNode(_studySeq);
-    //    _root.AddChildNode(_goSeq);
-    //    _root.AddChildNode(_eatSeq);
-    //    _root.AddChildNode(_restSeq);
-    //    _root.AddChildNode(_idelSeq);
-    //    //_root.AddChildNode(_freeWalkSeq);
-
-    //    return _root;
-    //}
 }

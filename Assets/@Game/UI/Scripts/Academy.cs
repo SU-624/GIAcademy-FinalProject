@@ -7,6 +7,7 @@ using System.IO;
 using Newtonsoft.Json;
 
 using Conditiondata.Runtime;
+using UnityEngine.UI;
 
 /// <summary>
 /// 
@@ -21,6 +22,8 @@ public class Academy : MonoBehaviour
     private int m_Money;
 
     public TextMeshProUGUI m_PopupNotice;                       // 안내문구 띄워줄 변수
+    public GameObject m_SekOKButton;
+    public GameObject m_Loading_Panel;
 
     #region AcademyData
     public string MyAcademy
@@ -40,6 +43,12 @@ public class Academy : MonoBehaviour
     }
     #endregion
 
+    // 버튼에 아카데미명, 원장명 체크 후 씬변경 하는 함수 달아두기
+    private void Start()
+    {
+        m_SekOKButton.GetComponent<Button>().onClick.AddListener(SetAcademyData);
+    }
+
     // 아카데미이름 & 원장 이름 세팅 ( 현재 Title씬 - SetOK 버튼 누르면 실행)
     public void SetAcademyData()
     {
@@ -51,7 +60,7 @@ public class Academy : MonoBehaviour
             Debug.Log("AcademyName : " + MyAcademy);
             Debug.Log("DirectorName : " + MyDirector);
             PlayerInfo.Instance.m_AcademyName = MyAcademy;
-            PlayerInfo.Instance.m_DirectorName = MyDirector;
+            PlayerInfo.Instance.m_PrincipalName = MyDirector;
             ///////////////////////
 
 
@@ -77,11 +86,34 @@ public class Academy : MonoBehaviour
 
             AllInOneData.Instance.player.m_playerID = PlayerInfo.Instance.m_PlayerID;
             AllInOneData.Instance.player.m_AcademyName = MyAcademy;
-            AllInOneData.Instance.player.m_DirectorName = MyDirector;
+            AllInOneData.Instance.player.m_PrincipalName = MyDirector;
 
             AllInOneData.Instance.studentData.Add(data);
             AllInOneData.Instance.studentData.Add(data1);
             AllInOneData.Instance.studentData.Add(data2);
+
+            SceneChangeAfterCheckData();
         }
+        else
+        {
+            m_PopupNotice.text = "둘 다 입력해주세요";
+
+            // '비밀번호가 같지 않습니다' 팝업창 띄우기
+            m_PopupNotice.gameObject.SetActive(true);
+
+            m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();    // 팝업창 띄우기 
+        }
+    }
+
+    public void SceneChangeAfterCheckData()
+    {
+        // 데이터 들어갔는지 체크 후
+        if(AllInOneData.Instance.player.m_AcademyName != "" && AllInOneData.Instance.player.m_PrincipalName != "")
+        {
+            // 로딩씬 띄우고
+            m_Loading_Panel.SetActive(true);
+            // 씬변경
+            MoveSceneManager.m_Instance.MoveToInGameScene();
+        }   
     }
 }

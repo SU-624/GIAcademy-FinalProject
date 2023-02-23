@@ -8,12 +8,19 @@ namespace StatData.Runtime
         protected ClassData m_ClassData;
 
         public string m_ClassName => m_ClassData.ClassName;
-        
-        public int m_ClassSystemValue => m_ClassData.Stats.StatsModifierInfo[ModifierStatType.System];
-        public int m_ClassContentsValue => m_ClassData.Stats.StatsModifierInfo[ModifierStatType.Contents];
-        public int m_ClassBalanceValue => m_ClassData.Stats.StatsModifierInfo[ModifierStatType.Balance];
-            
+          
         public StudentType m_ClassType => m_ClassData.ClassType;
+        public ClassType m_ClassStatType => m_ClassData.ClassStatType;
+        public int m_OpenMonth => m_ClassData.OpentMonth;
+
+        public int m_Sense => m_ClassData.Sense;
+        public int m_Concentration => m_ClassData.Concentration;
+        public int m_Wit => m_ClassData.Wit;
+        public int m_Technique => m_ClassData.Technique;
+        public int m_Insight => m_ClassData.Insight;
+
+        public int m_Money => m_ClassData.Money;
+        public int m_Health => m_ClassData.Health;
 
         public Class()
         {

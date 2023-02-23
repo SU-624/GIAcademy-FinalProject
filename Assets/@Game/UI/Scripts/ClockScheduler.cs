@@ -17,14 +17,13 @@ public class ClockScheduler : MonoBehaviour
     [SerializeField] PopUpUI _TempEventPanel;
     [SerializeField] GameObject _tempEventPanelforText;
 
-
     public GameObject EventStartButton;
-    public GameObject EventPanel;
+    public PopUpUI EventSchedulePanel;      // 새로 바꾼 이벤트 선택 패널
+
+    // public PopUpUI EventPanel;
 
     int checkMonth = 3;       // 현재 Date랑 Week랑 바뀌는 시간이 달라 Date는 바꼈지만 Week는 바뀌지않아 발생하는 오류를 잡기 위해 만든 변수
-    int checkWeek = 1;
 
-    bool isReadyPopUpEvent = false;
     bool isAlreadySetEvent = false;
 
     bool IsResetEventList = true;
@@ -43,13 +42,7 @@ public class ClockScheduler : MonoBehaviour
         // 월 바뀌었을 때
         if (GameTime.Instance.FlowTime.NowDay == 1 && GameTime.Instance.FlowTime.NowWeek == 1 && checkMonth != GameTime.Instance.FlowTime.NowMonth)
         {
-            // 내가 수업 선택을 완료하고 난 다음달과 그 다음달에도 수업을 실행시켜야한다. 
-            if (InGameTest.Instance._isRepeatClass == true)
-            {
-                InGameTest.Instance.NextClassStart();
-                InGameTest.Instance._classCount++;
-            }
-            else if (InGameTest.Instance._isRepeatClass == false && checkMonth != 0)
+            if (checkMonth != 0)
             {
                 _popUpClassPanel.TurnOnUI();
             }
@@ -69,7 +62,6 @@ public class ClockScheduler : MonoBehaviour
             AutoEventPopUp();           // 정해진 날마다 자동으로 이벤트 창 팝업
         }
 
-
         // 월 바뀌었을 때
         if (GameTime.Instance.FlowTime.NowWeek == 1 && GameTime.Instance.FlowTime.NowDay == 1 && IsResetEventList == false)
         {
@@ -82,12 +74,10 @@ public class ClockScheduler : MonoBehaviour
             SwitchEventList.Instance.PrevIChoosedEvent.Clear();
         }
 
-        if(GameTime.Instance.FlowTime.NowWeek != 1 && GameTime.Instance.FlowTime.NowDay != 1)
+        if (GameTime.Instance.FlowTime.NowWeek != 1 && GameTime.Instance.FlowTime.NowDay != 1)
         {
             IsResetEventList = false;
         }
-
-        PopUpEventStartButton();    // 매 월 이벤트 세팅 시작
     }
 
     // 월마다 이벤트 창이 자동으로 뜨게 하기
@@ -117,27 +107,13 @@ public class ClockScheduler : MonoBehaviour
     public void PopUpEventStartButton()
     {
         // 월 -> 3, 6, 9, 12월 일때 분기별 수업 후 이벤트 진행 되도록
-        if (GameTime.Instance.FlowTime.NowMonth % 3 == 0)
-        {
-            if (InGameTest.Instance._isSelectClassNotNull == true && isAlreadySetEvent == false)
-            {
-                EventStartButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = GameTime.Instance.FlowTime.NowMonth.ToString();
-                _PopUpEventPanel.TurnOnUI();
 
-                isAlreadySetEvent = true;
+        EventStartButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = GameTime.Instance.FlowTime.NowMonth.ToString() + "월";
+        _PopUpEventPanel.TurnOnUI();
 
-                InGameTest.Instance._isSelectClassNotNull = false;
-            }
-        }
-        else
-        {
-            if (isAlreadySetEvent == false)
-            {
-                EventStartButton.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = GameTime.Instance.FlowTime.NowMonth.ToString();
-                _PopUpEventPanel.TurnOnUI();
+        isAlreadySetEvent = true;
 
-                isAlreadySetEvent = true;
-            }
-        }
+        InGameTest.Instance._isSelectClassNotNull = false;
+
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement;
 
 public struct NowTime
 {
@@ -48,12 +47,13 @@ public class GameTime : MonoBehaviour
     const float LimitTime2 = 30.0f;     // 3 ~ 4주 제한시간
     float PrevTime = 0;
 
-    private int Year = 1;           // 1 ~ 3년(게임모드) - 무한(무한모드)
-    private int Month = 3;          // 1 ~ 12월(12)
-    private int Week = 1;           // 1 ~ 4주(4)
-    private int Day = 1;            // 월 ~ 금(5)
+    private int Year;           // 1 ~ 3년(게임모드) - 무한(무한모드)
+    private int Month;          // 1 ~ 12월(12)
+    private int Week;          // 1 ~ 4주(4)
+    private int Day;            // 월 ~ 금(5)
 
-    Image TimeBarImg;
+    public Image TimeBarImg;
+    public Button m_ClassOpenButton;
 
     int FirstHalfPerSecond = 1;       //  (1주 - 2주) 하루의 시간 1초(한 주 총 5초)
     int SecondHalfPerSecond = 6;      // (3주 - 4주)하루의 시간은 6초                                       // 
@@ -74,6 +74,24 @@ public class GameTime : MonoBehaviour
         {
             instance = this;
         }
+
+        var json = GameObject.Find("Json");             // 씬이 다르기 때문에 Json 을 쓰려면 이렇게 해줘야 한다 
+        if (json.GetComponent<Json>().IsDataExists == true)
+        {
+            Year = AllInOneData.Instance.InGameData.year;
+            Month = AllInOneData.Instance.InGameData.month;
+            Week = AllInOneData.Instance.InGameData.week;
+            Day = AllInOneData.Instance.InGameData.day;
+        }
+        else
+        {
+            Year = 1;           // 1 ~ 3년(게임모드) - 무한(무한모드)
+            Month = 3;          // 1 ~ 12월(12)
+            Week = 1;           // 1 ~ 4주(4)
+            Day = 0;            // 월 ~ 금(5)  -> 시간이 바로 흐르므로 처음에 0으로 시작해준다.
+
+            TimeBarImg.fillAmount = 0.0f;
+        }
     }
 
     // Start is called before the first frame update
@@ -83,7 +101,7 @@ public class GameTime : MonoBehaviour
         // Debug.Log(TimeBarImg.fillAmount);
         //Debug.Log(Day);
 
-        IsGameMode = false;
+        IsGameMode = true;
         //Debug.Log(IsGameMode);
 
         // Month[11] = "12월";
@@ -100,7 +118,7 @@ public class GameTime : MonoBehaviour
         ShowGameTime();
     }
 
-    bool call = false;
+    // bool call = false;
     // Update is called once per frame
     public void Update()
     {
@@ -120,21 +138,14 @@ public class GameTime : MonoBehaviour
         //    Time.timeScale = 1;
         //}
 
+        // Debug.Log("시간이 안가나");
     }
 
     public void FlowtheTime()
     {
         m_DrawnowTime.text = Year + "년 " + Month + "월 " + Week + "주";
 
-        // test씬에서 사용하기 위해 만든 조건문. 나중에 지워주기
-        //if (SceneManager.GetActiveScene().name == "TestScene")
-        //{
-        //    TestDialogue();
-        //}
-        //else if (SceneManager.GetActiveScene().name == "InGameScene")
-        //{
-        //}
-            CheckPerSecond();
+        CheckPerSecond();
 
         // 30초 넘어갔을 때 값 변화
         if (isChangeWeek)     // 
@@ -224,7 +235,7 @@ public class GameTime : MonoBehaviour
     public void CheckPerSecond()
     {
         // 수업을 시작했을 때 캐릭터는 움직이지만 시간은 흐르지않게 할 때 PrevTime을 갱신해주지 않으면 수업 시작 시 시간이 재빠르게 흐른다.
-        if (InGameTest.Instance.m_ClassState == ClassState.ClassStart)
+        if (InGameTest.Instance.m_ClassState == ClassState.ClassStart || m_ClassOpenButton.gameObject.activeSelf == true)
         {
             PrevTime = Time.time;
         }
@@ -298,83 +309,6 @@ public class GameTime : MonoBehaviour
         }
     }
 
-    // test씬에서 사용하려고 만든 임시 함수. 테스트 후 지우기
-    public void TestDialogue()
-    {
-        // 수업을 시작했을 때 캐릭터는 움직이지만 시간은 흐르지않게 할 때 PrevTime을 갱신해주지 않으면 수업 시작 시 시간이 재빠르게 흐른다.
-        if (InGameTest.Instance.m_ClassState == ClassState.ClassStart)
-        {
-            PrevTime = Time.time;
-        }
-
-        // 수업시작 후 반에 도착할 때 까지는 시간이 흐르면 안된다. TimeScale을 멈추면 캐릭터가 움직이지 않으니 다른 방법으로,,
-        if (GameTime.Instance.IsGameMode == true && InGameTest.Instance.m_ClassState != ClassState.ClassStart)
-        {
-            if (Week == 1 || Week == 2)
-            {
-                // (1 ~ 2 주차)1초마다 시간체크
-                if (Time.time - PrevTime >= 0.5f)
-                {
-                    TimeBarImg.fillAmount += 0.2f;
-
-                    // 1초마다 더해주기
-                    ChangeDay();
-                    FlowTime.NowDay = Day;
-
-                    i += 1;
-                    FirstHalfPerSecond += 1;
-
-                    if (FirstHalfPerSecond > 2f)
-                    {
-                        TimeBarImg.fillAmount = 0.2f;
-
-                        FirstHalfPerSecond = 1;
-
-                        i = 0;
-
-                        //  Debug.Log(FirstHalfPerSecond + "초 체크 초기화");
-
-                        isChangeWeek = true;
-                    }
-                    //Debug.Log("초 : " + FirstHalfPerSecond);
-                    //Debug.Log("이미지 : " + TimeBarImg.fillAmount);
-                    //Debug.Log("데이 : " + Week);
-                }
-            }
-            else if (Week == 3 || Week == 4)
-            {
-                // (3 ~ 4 주차)6초마다 시간체크
-                if (Time.time - PrevTime >= SecondHalfPerSecond)
-                {
-                    TimeBarImg.fillAmount += 0.2f;
-
-                    i += 1;
-                    // 6초마다 더해주기
-                    ChangeDay();
-                    FlowTime.NowDay = Day;
-
-                    SecondHalfPerSecond += 6;
-
-                    if (SecondHalfPerSecond > LimitTime2)
-                    {
-                        TimeBarImg.fillAmount = 0.2f;
-
-                        SecondHalfPerSecond = 6;
-
-                        i = 0;
-
-                        // Debug.Log(SecondHalfPerSecond + "초 체크 초기화");
-
-                        isChangeWeek = true;
-                    }
-
-                    //Debug.Log(SecondHalfPerSecond);
-                    //Debug.Log(TimeBarImg.fillAmount);
-                    //Debug.Log(Day[i]);
-                }
-            }
-        }
-    }
     //
     public void DrawTimeBar(Image img)
     {

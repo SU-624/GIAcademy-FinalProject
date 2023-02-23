@@ -3,6 +3,8 @@ using StatData.Runtime;
 using Conditiondata.Runtime;
 using System.Collections.Generic;
 using System.Collections;
+using BehaviorDesigner.Runtime;
+using BehaviorDesigner.Runtime.Tasks;
 
 /// <summary>
 /// 각 학생들이 가지고 있어야하는 정보들을 담은 클래스
@@ -24,8 +26,11 @@ public class Student : MonoBehaviour
     public StudentCondition m_StudentCondition;
 
     private Doing m_Doing;
-    public Doing DoingValue { get => m_Doing;
-        set{
+    public Doing DoingValue
+    {
+        get => m_Doing;
+        set
+        {
             m_Doing = value;
 
             switch (value)
@@ -57,7 +62,6 @@ public class Student : MonoBehaviour
             }
         }
     }
-    //public Node m_Node;
 
     public float m_Time = 0f;       // 쿨타임의 타이머
     public float m_CoolTime;   // 멈추길 원하는 만큼의 시간
@@ -77,7 +81,7 @@ public class Student : MonoBehaviour
 
     private void Awake()
     {
-        m_CoolTime = 10f;
+        m_CoolTime = 5f;
         m_IsArrivedClass = false;
         m_IsDesSetting = false;
         m_IsInteracting = false;

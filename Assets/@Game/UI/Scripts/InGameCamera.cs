@@ -92,8 +92,8 @@ public class InGameCamera : MonoBehaviour
 
             camera.orthographicSize += deltaMagnitudeDiff * m_OrthoZoomSpeed;
 
-            camera.orthographicSize = Mathf.Max(camera.orthographicSize, 3f);
-            camera.orthographicSize = Mathf.Min(camera.orthographicSize, 12f);
+            camera.orthographicSize = Mathf.Max(camera.orthographicSize, 6f);
+            camera.orthographicSize = Mathf.Min(camera.orthographicSize, 15f);
         }
 
     }

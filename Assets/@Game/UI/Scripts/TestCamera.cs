@@ -22,7 +22,10 @@ public class TestCamera : MonoBehaviour
     void Update()
     {
         if (Input.GetKey(KeyCode.W))
+        {
             _TranslateCamera(0);
+
+        }
         if (Input.GetKey(KeyCode.D))
             _TranslateCamera(1);
         if (Input.GetKey(KeyCode.S))
@@ -61,12 +64,12 @@ public class TestCamera : MonoBehaviour
         float scroll = Input.GetAxis("Mouse ScrollWheel") * scrollspeed;
 
         // ����
-        if (GetComponent<Camera>().orthographicSize <= 2f && scroll > 0)
+        if (GetComponent<Camera>().orthographicSize <= 6f && scroll > 0)
         {
             float temp_Value = GetComponent<Camera>().orthographicSize;
             GetComponent<Camera>().orthographicSize = temp_Value;
         }
-        else if (GetComponent<Camera>().orthographicSize >= 12f && scroll < 0)
+        else if (GetComponent<Camera>().orthographicSize >= 15f && scroll < 0)
         {
             float temp_Value = GetComponent<Camera>().orthographicSize;
             GetComponent<Camera>().orthographicSize = temp_Value;

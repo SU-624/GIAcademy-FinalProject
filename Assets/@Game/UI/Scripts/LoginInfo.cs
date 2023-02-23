@@ -37,7 +37,8 @@ public class LoginInfo : MonoBehaviour
     {
         m_NowLogInfo = new LogData();       // 모든 로그인 데이터가 저장될 딕셔너리 초기화?
 
-        GPGSBinder.Instance.loginState += GoogleLogin;
+        // 파이어베이스 로그인 여부를 체크하는 델리게이트
+        FirebaseBinder.Instance.loginState += GoogleLogin;
     }
 
     // Update is called once per frame

@@ -59,7 +59,7 @@ public class Destination : Conditional
 
             //Debug.Log(gameObject.GetComponent<NavMeshAgent>().speed);
             //if (gameObject.GetComponent<NavMeshAgent>().velocity.magnitude <= 6f)
-            if (_dis < 2)
+            if (_dis < 3)
             {
                 if (gameObject.GetComponent<Student>().m_DestinationQueue.Count != 0)
                 {
@@ -96,6 +96,17 @@ public class Destination : Conditional
                     }
                 }
             }
+            //else
+            //{
+            //    _name = gameObject.GetComponent<BehaviorTree>().ExternalBehavior.GetVariable(m_NowDestination).ToString();
+
+            //    GameObject _tempObj = GameObject.Find(_name);
+
+            //    if (this.gameObject.transform.position.z <= _tempObj.transform.position.z)
+            //    {
+            //        m_NowDestination = " ";
+            //    }
+            //}
         }
 
         return true;

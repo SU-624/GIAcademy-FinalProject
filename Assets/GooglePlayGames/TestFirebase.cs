@@ -28,21 +28,21 @@ public class TestFirebase : MonoBehaviour
     public void IDCreateButton()
     {
         var temptext = IDField.text;
-        GPGSBinder.Instance.CreateEmailID(IDField.text, PasswordField.text);
+        FirebaseBinder.Instance.CreateEmailID(IDField.text, PasswordField.text);
     }
 
     public void IDLoginButton()
     {
-        GPGSBinder.Instance.SignInEmail(IDField.text, PasswordField.text);
+        FirebaseBinder.Instance.SignInEmail(IDField.text, PasswordField.text);
     }
 
     public void UploadTest()
     {
-        GPGSBinder.Instance.firestoreSaveTest();
+        FirebaseBinder.Instance.firestoreSaveTest();
     }
 
     public void DounloadTest()
     {
-        GPGSBinder.Instance.FirestoreLoadTest();
+        FirebaseBinder.Instance.FirestoreLoadTest();
     }
 }

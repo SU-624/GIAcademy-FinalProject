@@ -37,7 +37,7 @@ namespace StatData.Runtime
         {
             foreach(ClassData classData in m_ClassDataBase.classDatas)
             {
-                classData.Stats.Initailize();
+                //classData.Stats.Initailize();
                 m_ClassData.Add(classData.ClassName, new Class(classData));
             }
         }

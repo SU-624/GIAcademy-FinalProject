@@ -4,7 +4,6 @@ using BehaviorDesigner.Runtime.Tasks;
 using Unity.VisualScripting;
 using UnityEngine.AI;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 
 public class Interaction : Action
@@ -43,7 +42,7 @@ public class Interaction : Action
     {
         m_CoolTime = this.gameObject.GetComponent<Student>().m_IsCoolDown;
         m_IsInteracting = this.gameObject.GetComponent<Student>().m_IsInteracting;
-        
+
         m_IsPlaying = this.gameObject.GetComponent<Student>().m_IsDialoguePlaying;
         m_IsPlayingB = m_InterActionObj.GetComponent<Student>().m_IsDialoguePlaying;
 
@@ -105,6 +104,48 @@ public class Interaction : Action
 
     public void ScriptPlay()
     {
+        /// 학생들이 서로에게 다가가는 코루틴을 호출....
+
+        StartCoroutine(Move_ToAnother());
+    }
+
+    /// 서로를 가까이 다가가도록 한다.
+    IEnumerator Move_ToAnother()
+    {
+        // 나
+        ///gameObject;
+
+        // 상대편
+        ///m_InterActionObj;
+
+        float _dist = float.MaxValue;
+        float _range = 4.0f;
+
+        // 코루틴 내에서 루프를 돌면서, 일정 이하 거리가 되는지 체크한다.
+        while (_range < _dist)
+        {
+            // 두 개의 물체의 위치의 차 벡터를 만든다.
+            // A - B 를 했을 때 나오는 벡터는, B에서 A로 이동하는 벡터다.
+            Vector3 _distVec = gameObject.transform.position - m_InterActionObj.transform.position;
+
+            // 그 벡터의 길이가 곧 거리다.
+            _dist = _distVec.sqrMagnitude;
+
+            // 서로 가까워지게 만든다.
+            Vector3 _moveVec = _distVec.normalized;
+
+            // 단위벡터 * 단위시간을 하면 시간에 비례해서 적당히 움직인다.
+            m_InterActionObj.transform.Translate(_moveVec * Time.deltaTime /** movespeed*/);
+
+            // 나도 상대편 쪽으로 움직여야 한다.
+            gameObject.transform.Translate(-1.0f * _moveVec * Time.deltaTime);
+
+            yield return null;
+        }
+
+        // 여기까지 왔다면 가까워진 것이다.
+        yield return null;
+
         // 멈춰주기
         this.gameObject.GetComponent<NavMeshAgent>().isStopped = true;
         m_InterActionObj.GetComponent<NavMeshAgent>().isStopped = true;
@@ -187,7 +228,7 @@ public class Interaction : Action
         m_InterActionObj.GetComponent<Student>().m_IsInteracting = false;
 
         this.gameObject.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
-        m_InterActionObj.GetComponent<Student>().DoingValue= Student.Doing.EndInteracting;
+        m_InterActionObj.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
 
         this.gameObject.GetComponent<NavMeshAgent>().isStopped = false;
         m_InterActionObj.GetComponent<NavMeshAgent>().isStopped = false;
