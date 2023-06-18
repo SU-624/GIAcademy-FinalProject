@@ -1,0 +1,96 @@
+{
+"OriginalInJaeRecommendData" :[
+ {
+   "m_EmploymentID": 1,
+   "m_EmploymentName": "[퍼센] 던전 디자이너",
+   "m_CompanyID": 2,
+   "m_CompanyName": "Rexon",
+   "m_CompanyIcon": 2,
+   "m_CompanyGrade": 2,
+   "m_EmploymentYear": 0,
+   "m_CompanyRequirementStats": {
+      "Insight": 10,
+      "Concentration": 20,
+      "Sense": 15,
+      "Technique": 8,
+      "Wit": 24
+   },
+   "m_CompanyRequirementSkill": "Creativity/Understanding",
+   "m_CompanyUnLock": true,
+   "m_CompanyUnLockCondition": 2,
+   "m_EmploymentText": "채용 공고 내용 - 올해로 20년이라는 역사를 맞이한 거대 MMORPG 단풍나무의 스토리 확장을 이끌어나갈 시나리오 기획자 모집",
+   "m_CompanySalary": 3000,
+   "m_CompanyJob": "시나리오 디자이너",
+   "m_CompanyPart": 1
+},
+ {
+   "m_EmploymentID": 1,
+   "m_EmploymentName": "[단풍마을] 단풍마을 시나리오",
+   "m_CompanyID": 2,
+   "m_CompanyName": "Rexon",
+   "m_CompanyIcon": 2,
+   "m_CompanyGrade": 2,
+   "m_EmploymentYear": 2,
+   "m_CompanyRequirementStats": {
+      "Insight": 22,
+      "Concentration": 15,
+      "Sense": 24,
+      "Technique": 30,
+      "Wit": 24
+   },
+   "m_CompanyRequirementSkill": "PowerOfInquiry",
+   "m_CompanyUnLock": true,
+   "m_CompanyUnLockCondition": 3,
+   "m_EmploymentText": "채용 공고 내용 - 올해로 21년이라는 역사를 맞이함",
+   "m_CompanySalary": 3800,
+   "m_CompanyJob": "개발자",
+   "m_CompanyPart": 3
+},
+ {
+   "m_EmploymentID": 2,
+   "m_EmploymentName": "[고양이마을] 냥냥 펀치",
+   "m_CompanyID": 3,
+   "m_CompanyName": "Crayonton",
+   "m_CompanyIcon": 1,
+   "m_CompanyGrade": 3,
+   "m_EmploymentYear": 3,
+   "m_CompanyRequirementStats": {
+      "Insight": 34,
+      "Concentration": 11,
+      "Sense": 5,
+      "Technique": 3,
+      "Wit": 32
+   },
+   "m_CompanyRequirementSkill": "PowerOfInquiry",
+   "m_CompanyUnLock": true,
+   "m_CompanyUnLockCondition": 2,
+   "m_EmploymentText": "채용 공고 내용 - 올해로 20년이라는 함",
+   "m_CompanySalary": 4000,
+   "m_CompanyJob": "모델링",
+   "m_CompanyPart": 2
+},
+ {
+   "m_EmploymentID": 3,
+   "m_EmploymentName": "[냥냥배틀] 고양이와의 전쟁",
+   "m_CompanyID": 4,
+   "m_CompanyName": "Letmavlue",
+   "m_CompanyIcon": 3,
+   "m_CompanyGrade": 1,
+   "m_EmploymentYear": 2,
+   "m_CompanyRequirementStats": {
+      "Insight": 11,
+      "Concentration": 23,
+      "Sense": 47,
+      "Technique": 31,
+      "Wit": 27
+   },
+   "m_CompanyRequirementSkill": "PowerOfInquiry",
+   "m_CompanyUnLock": true,
+   "m_CompanyUnLockCondition": 3,
+   "m_EmploymentText": "채용 공고 내용 - 올해로 21년이라는 역사",
+   "m_CompanySalary": 2800,
+   "m_CompanyJob": "모든직군",
+   "m_CompanyPart": 0
+}
+]
+}

@@ -1,0 +1,226 @@
+{
+"OriginalBonusSkillScriptData":[
+ {
+   "Ability_ID": 1,
+   "Ability_Name": "굳건한 의지",
+   "Ability_Script_ID": 1,
+   "Ability_Script": "강철같은 의지로 게으름을 물리칠 수 있는 능력"
+ },
+ {
+   "Ability_ID": 2,
+   "Ability_Name": "불타는 열정",
+   "Ability_Script_ID": 2,
+   "Ability_Script": "꺼지지 않는 열정을 가진 능력"
+ },
+ {
+   "Ability_ID": 3,
+   "Ability_Name": "싱그러운 미소",
+   "Ability_Script_ID": 3,
+   "Ability_Script": "환한 미소로 다른 이들에게 밝음 에너지를 전달하는 능력"
+ },
+ {
+   "Ability_ID": 4,
+   "Ability_Name": "강철의 손목술사",
+   "Ability_Script_ID": 4,
+   "Ability_Script": "강철 손목으로 쉼 없이 작업할 수 있는 능력"
+ },
+ {
+   "Ability_ID": 5,
+   "Ability_Name": "망가진배꼽시계",
+   "Ability_Script_ID": 5,
+   "Ability_Script": "배고픔을 느낄 수 없어 쉼 없이 작업할 수 있는 능력"
+ },
+ {
+   "Ability_ID": 6,
+   "Ability_Name": "수상한 자",
+   "Ability_Script_ID": 6,
+   "Ability_Script": "게임잼에서 수상한 전적으로 획득한 능력"
+ },
+ {
+   "Ability_ID": 7,
+   "Ability_Name": "아카데미를 잘 아는",
+   "Ability_Script_ID": 7,
+   "Ability_Script": "아카데미에 대한 높은 정보수집력을 가진 능력"
+ },
+ {
+   "Ability_ID": 8,
+   "Ability_Name": "킹오브아카데미",
+   "Ability_Script_ID": 8,
+   "Ability_Script": "아카데미의 최강자가 될 수 있는 능력"
+ },
+ {
+   "Ability_ID": 9,
+   "Ability_Name": "인맥왕",
+   "Ability_Script_ID": 9,
+   "Ability_Script": "인맥왕이 될 수 있는 능력"
+ },
+ {
+   "Ability_ID": 10,
+   "Ability_Name": "현자",
+   "Ability_Script_ID": 10,
+   "Ability_Script": "모든 능력들을 초월한 자에게 수여되는 능력"
+ },
+ {
+   "Ability_ID": 11,
+   "Ability_Name": "반사신경",
+   "Ability_Script_ID": 11,
+   "Ability_Script": "뛰어난 반사신경을 가진 능력"
+ },
+ {
+   "Ability_ID": 12,
+   "Ability_Name": "젤댜를아십니까",
+   "Ability_Script_ID": 12,
+   "Ability_Script": "어드벤쳐 장르 마스터 능력"
+ },
+ {
+   "Ability_ID": 13,
+   "Ability_Name": "노가다가제일쉬웠어요",
+   "Ability_Script_ID": 13,
+   "Ability_Script": "RPG 장르 마스터 능력"
+ },
+ {
+   "Ability_ID": 100,
+   "Ability_Name": "빛보다 빠른 손",
+   "Ability_Script_ID": 100,
+   "Ability_Script": "엄청난 속도로 문서 작성을 할 수 있는 능력"
+ },
+ {
+   "Ability_ID": 101,
+   "Ability_Name": "사륜안",
+   "Ability_Script_ID": 101,
+   "Ability_Script": "탁월한 게임 분석 능력"
+ },
+ {
+   "Ability_ID": 102,
+   "Ability_Name": "창조주의 문서",
+   "Ability_Script_ID": 102,
+   "Ability_Script": "가독성이 훌륭한 신이 내린 문서를 작성할 수 있는 능력"
+ },
+ {
+   "Ability_ID": 103,
+   "Ability_Name": "천상의 목소리",
+   "Ability_Script_ID": 103,
+   "Ability_Script": "모든 사람의 이목을 끄는 천상의 목소리를 낼 수 있는 능력"
+ },
+ {
+   "Ability_ID": 104,
+   "Ability_Name": "불꽃 카리스마",
+   "Ability_Script_ID": 104,
+   "Ability_Script": "불꽃 튀는 카리스마로 좌중을 압도할 수 있는 능력"
+ },
+ {
+   "Ability_ID": 105,
+   "Ability_Name": "아이디어뱅크",
+   "Ability_Script_ID": 105,
+   "Ability_Script": "통통 튀는 아이디어를 뿜어내는 능력"
+ },
+ {
+   "Ability_ID": 106,
+   "Ability_Name": "엑셀늪에서 살아남은자",
+   "Ability_Script_ID": 106,
+   "Ability_Script": "엑셀의 모든 함수를 다룰 수 있는 능력"
+ },
+ {
+   "Ability_ID": 107,
+   "Ability_Name": "세계관 제패자",
+   "Ability_Script_ID": 107,
+   "Ability_Script": "모든 세계관을 통달할 수 있는 능력"
+ },
+ {
+   "Ability_ID": 108,
+   "Ability_Name": "참신함 빼면 시체",
+   "Ability_Script_ID": 108,
+   "Ability_Script": "참신함으로 무장할 수 있는 능력"
+ },
+ {
+   "Ability_ID": 200,
+   "Ability_Name": "황금손",
+   "Ability_Script_ID": 200,
+   "Ability_Script": "모든 것을 예술로 승화시킬 수 있는 빛나는 손을 가진 능력"
+ },
+ {
+   "Ability_ID": 201,
+   "Ability_Name": "기적의타블렛",
+   "Ability_Script_ID": 201,
+   "Ability_Script": "모든 것을 그릴 수 있는 기적의 타블렛을 지닌 능력"
+ },
+ {
+   "Ability_ID": 202,
+   "Ability_Name": "핀트레스트의 왕",
+   "Ability_Script_ID": 202,
+   "Ability_Script": "방대한 참고 자료를 빠르게 찾을 수 있는 능력"
+ },
+ {
+   "Ability_ID": 203,
+   "Ability_Name": "서브컬쳐 제왕",
+   "Ability_Script_ID": 203,
+   "Ability_Script": "서브 컬쳐를 사랑하여 분야의 제왕이 될 수 있는 능력"
+ },
+ {
+   "Ability_ID": 204,
+   "Ability_Name": "동체시력",
+   "Ability_Script_ID": 204,
+   "Ability_Script": "두 개의 모니터를 한눈에 볼 수 있는 능력"
+ },
+ {
+   "Ability_ID": 205,
+   "Ability_Name": "양손잡이",
+   "Ability_Script_ID": 205,
+   "Ability_Script": "2배의 속도로 작업할 수 있는 능력"
+ },
+ {
+   "Ability_ID": 206,
+   "Ability_Name": "색의 마술사",
+   "Ability_Script_ID": 206,
+   "Ability_Script": "감각적인 색조합을 이뤄낼 수 있는 능력"
+ },
+ {
+   "Ability_ID": 300,
+   "Ability_Name": "코드해체분석기",
+   "Ability_Script_ID": 300,
+   "Ability_Script": "탁월한 코드 분석 능력"
+ },
+ {
+   "Ability_ID": 301,
+   "Ability_Name": "제3의 언어능력자",
+   "Ability_Script_ID": 301,
+   "Ability_Script": "C언어가 모국어인 능력"
+ },
+ {
+   "Ability_ID": 302,
+   "Ability_Name": "금지된ChatGPTA",
+   "Ability_Script_ID": 302,
+   "Ability_Script": "AI GPTA와 끊김없는 대화를 할 수 있는 능력"
+ },
+ {
+   "Ability_ID": 303,
+   "Ability_Name": "영광의ChatGPTA",
+   "Ability_Script_ID": 303,
+   "Ability_Script": "AI GPTA의 정보를 자신의 것으로 만들 수 있는 능력"
+ },
+ {
+   "Ability_ID": 304,
+   "Ability_Name": "코드탐구자",
+   "Ability_Script_ID": 304,
+   "Ability_Script": "끊임없이 코드를 탐구하고 학습하는 능력"
+ },
+ {
+   "Ability_ID": 305,
+   "Ability_Name": "알고리즘 생성자",
+   "Ability_Script_ID": 305,
+   "Ability_Script": "탄탄한 알고리즘을 생성할 수 있는 능력"
+ },
+ {
+   "Ability_ID": 306,
+   "Ability_Name": "삐빗-AI",
+   "Ability_Script_ID": 306,
+   "Ability_Script": "특이할 정도로 에러가 나지 않는 완성도 높은 코딩 능력"
+ },
+ {
+   "Ability_ID": 307,
+   "Ability_Name": "C언어 종결자",
+   "Ability_Script_ID": 307,
+   "Ability_Script": "C언어 종결자가 가지는 능력"
+ }
+]
+}

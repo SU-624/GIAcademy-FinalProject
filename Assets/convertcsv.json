@@ -1,0 +1,54 @@
+{
+  "m_GameJamData": [
+    {
+   "m_GjamID": 2,
+   "m_GjamName": "어드벤쳐타임",
+   "m_GjamHost": "We앱스",
+   "m_GjamHostIcon": 2,
+   "m_GjamDetailInfo": "애니팡팡팡",
+   "m_GjamReward_C": 14000,
+   "m_GjamReward_S": {
+      "통찰": 3,
+      "집중": 1,
+      "감각": 2,
+      "기술": 0,
+      "재치": 0
+   },
+   "m_Awareness": 13,
+   "m_EntryFee": 4000,
+   "m_StudentHealth": 10,
+   "m_StudentPassion": 15,
+   "m_GjamMainGenre": "어드벤쳐",
+   "m_GjamSubGenre": "슈팅",
+   "m_GjamNeedStatGM": {
+      "통찰": 0,
+      "집중": 4,
+      "감각": 10,
+      "기술": 0,
+      "재치": 0
+   },
+   "m_GjamNeedStatArt": {
+      "통찰": 0,
+      "집중": 0,
+      "감각": 3,
+      "기술": 5,
+      "재치": 0
+   },
+   "m_GjamNeedStatProgramming": {
+      "통찰": 0,
+      "집중": 0,
+      "감각": 0,
+      "기술": 10,
+      "재치": 0
+   },
+   "m_UpgradeInfo": "없음",
+   "m_GjamMonth": 3,
+   "m_GjamYear": 2,
+   "m_GjamDelet": 5,
+   "m_GjamHistory": 0,
+   "m_GjamAbleGMStudent": 2,
+   "m_GjamAbleArtStudent": 2,
+   "m_GjamAbleProgrammingStudent": 2
+    }
+  ]
+}

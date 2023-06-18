@@ -15,7 +15,9 @@ namespace StatData.Runtime
 
         private void Awake()
         {
-            if(m_IsInitialized == false)
+            UISpriteLists.Instance.InitializeSpriteLoad();
+
+            if (m_IsInitialized == false)
             {
                 Initialized();
                 m_IsInitialized = true;
@@ -24,12 +26,10 @@ namespace StatData.Runtime
 
         private void Initialized()
         {
-            foreach(ProfessorData professorData in m_ProfessorDataBase.professorDatas)
+            foreach (ProfessorData professorData in m_ProfessorDataBase.professorDatas)
             {
                 m_ProfessorData.Add(professorData.ProfessorName, new ProfessorStat(professorData));
             }
         }
-
-
     }
 }

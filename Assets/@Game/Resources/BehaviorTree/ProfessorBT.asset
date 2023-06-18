@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b23f08d2ae4cba14087c1ed36193d82b, type: 3}
+  m_Name: ProfessorBT
+  m_EditorClassIdentifier: 
+  mBehaviorSource:
+    behaviorName: Professor
+    behaviorDescription: 
+    mTaskData:
+      types: []
+      parentIndex: 
+      startIndex: 
+      variableStartIndex: 
+      JSONSerialization: '{"EntryTask":{"Type":"BehaviorDesigner.Runtime.Tasks.EntryTask","NodeData":{"Offset":"(39.52081,373.9797)"},"ID":0,"Name":"Entry","Instant":true},"RootTask":{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(50,200)"},"ID":1,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-488.892456,346.5854)"},"ID":2,"Name":"\uc218\uc5c5\ud558\uae30","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"ProfCheckClass","NodeData":{"Offset":"(-120.944092,222.583984)"},"ID":3,"Name":"Prof
+        Check Class","Instant":true},{"Type":"ProfClassDestination","NodeData":{"Offset":"(26.7302856,209.793213)"},"ID":4,"Name":"Prof
+        Class Destination","Instant":true}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-235.614288,364.790344)"},"ID":5,"Name":"\ud2b9\uc218\uc774\ub3d9","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"ProfSpecialGoingCheck","NodeData":{"Offset":"(-41.56021,199.384888)"},"ID":6,"Name":"Prof
+        Special Going Check","Instant":true},{"Type":"ProfSpecialDoing","NodeData":{"Offset":"(128.709991,202.087524)"},"ID":7,"Name":"Prof
+        Special Doing","Instant":true}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(22.4391155,358.780518)"},"ID":8,"Name":"\uc0c1\ud638\uc791\uc6a9","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"ProfInteraction","NodeData":{"Offset":"(42.3115845,199.793457)"},"ID":9,"Name":"Prof
+        Interaction","Instant":true}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(279.024323,346.5854)"},"ID":10,"Name":"Freewalk","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"ProfDestination","NodeData":{"Offset":"(23.5746765,222.898315)"},"ID":11,"Name":"Prof
+        Destination","Instant":true}]}]},"Variables":[{"Type":"BehaviorDesigner.Runtime.SharedVector3","Name":"MyClassEntrance","IsShared":true,"Vector3mValue":"(0,0,0)"},{"Type":"BehaviorDesigner.Runtime.SharedVector3","Name":"MyClassSeat","IsShared":true,"Vector3mValue":"(0,0,0)"},{"Type":"BehaviorDesigner.Runtime.SharedTransform","Name":"SeatTransform","IsShared":true}]}'
+      fieldSerializationData:
+        typeName: []
+        fieldNameHash: 
+        startIndex: 
+        dataPosition: 
+        unityObjects: []
+        byteData: 
+        byteDataArray: 
+      Version: 1.7.4

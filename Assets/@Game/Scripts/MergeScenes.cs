@@ -15,6 +15,10 @@ public class MergeScenes : MonoBehaviour
     {
         //SceneManager.LoadScene("มนวร_008_test");
         SceneManager.LoadScene("UIScene", LoadSceneMode.Additive);
+        //SceneManager.LoadScene("InGameScene", LoadSceneMode.Additive);
+        //SceneManager.LoadScene("UIScene_OhSoo", LoadSceneMode.Additive);
+        // SceneManager.LoadScene("UIScene_MangGGu", LoadSceneMode.Additive);
+        //SceneManager.LoadScene("UIScene_ChangWoo", LoadSceneMode.Additive);
     }
 
 }

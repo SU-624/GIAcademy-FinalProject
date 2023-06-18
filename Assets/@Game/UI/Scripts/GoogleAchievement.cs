@@ -31,7 +31,7 @@ public class GoogleAchievement : MonoBehaviour
 
             if (Social.localUser.authenticated)
             {
-                GPGSBinder.Instance.UnlockAchievement(GPGSIds.achievement_Mail);     //备臂 诀利 崔己
+                //GPGSBinder.Instance.UnlockAchievement(GPGSIds.achievement_Mail);     //备臂 诀利 崔己
             }
 
         }
@@ -44,7 +44,7 @@ public class GoogleAchievement : MonoBehaviour
 
         if (Social.localUser.authenticated)
         {
-            GPGSBinder.Instance.UnlockAchievement(GPGSIds.achievement_SetClass);     //备臂 诀利 崔己
+           //GPGSBinder.Instance.UnlockAchievement(GPGSIds.achievement_SetClass);     //备臂 诀利 崔己
         }
 
     }
@@ -56,7 +56,7 @@ public class GoogleAchievement : MonoBehaviour
 
         if (Social.localUser.authenticated)
         {
-            GPGSBinder.Instance.ShowAchievementUI();
+           // GPGSBinder.Instance.ShowAchievementUI();
         }
 
     }

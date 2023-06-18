@@ -1,0 +1,148 @@
+{
+  "OriginalRewardEmailData": [
+    {
+      "Email_ID": 1,
+      "Email_sender_id": 500,
+      "Email_script_id": 7,
+      "Email_sender_Name": "학원종합 첫 C등급 달성을 축하합니다.",
+      "Email_script_Text": "안녕하십니까? 약소하지만 게임교육협회에서 귀하의 올해 학원종합 첫 C등급 달성기념으로 축하선물을 보내드리오니, 계속해서 게임인재양성에 힘써주시길 바랍니다. 게임교육협회는 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "bad"
+    },
+    {
+      "Email_ID": 2,
+      "Email_sender_id": 500,
+      "Email_script_id": 8,
+      "Email_sender_Name": "학원종합 C등급 유지 선물입니다.",
+      "Email_script_Text": "안녕하십니까? 게임교육협회에서 귀하의 올해 학원종합 C등급 유지 선물을 보내드리오니, 계속해서 게임인재양성에 힘써주시길 바랍니다. 게임교육협회는 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "basic"
+    },
+    {
+      "Email_ID": 3,
+      "Email_sender_id": 500,
+      "Email_script_id": 9,
+      "Email_sender_Name": "학원종합 첫 B등급 달성을 축하합니다.",
+      "Email_script_Text": "안녕하십니까? 약소하지만 게임교육협회에서 귀하의 올해 학원종합 첫 B등급 달성기념으로 축하선물을 보내드리오니, 계속해서 게임인재양성에 힘써주시길 바랍니다. 게임교육협회는 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "big smile"
+    },
+    {
+      "Email_ID": 4,
+      "Email_sender_id": 500,
+      "Email_script_id": 10,
+      "Email_sender_Name": "학원종합 B등급 유지 선물입니다.",
+      "Email_script_Text": "안녕하십니까? 게임교육협회에서 귀하의 올해 학원종합 B등급 유지 선물을 보내드리오니, 계속해서 게임인재양성에 힘써주시길 바랍니다. 게임교육협회는 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "depressed"
+    },
+    {
+      "Email_ID": 5,
+      "Email_sender_id": 500,
+      "Email_script_id": 11,
+      "Email_sender_Name": "학원종합 첫 A등급 달성을 축하합니다.",
+      "Email_script_Text": "안녕하십니까? 약소하지만 게임교육협회에서 귀하의 올해 학원종합 첫 A등급 달성기념으로 축하선물을 보내드리오니, 계속해서 게임인재양성에 힘써주시길 바랍니다. 게임교육협회는 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "happy"
+    },
+    {
+      "Email_ID": 6,
+      "Email_sender_id": 500,
+      "Email_script_id": 12,
+      "Email_sender_Name": "학원종합 A등급 유지 선물입니다.",
+      "Email_script_Text": "안녕하십니까? 게임교육협회에서 귀하의 올해 학원종합 A등급 유지 선물을 보내드리오니, 계속해서 게임인재양성에 힘써주시길 바랍니다. 게임교육협회는 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "laugh"
+    },
+    {
+      "Email_ID": 7,
+      "Email_sender_id": 500,
+      "Email_script_id": 13,
+      "Email_sender_Name": "학원종합 첫 S등급 달성을 축하합니다.",
+      "Email_script_Text": "안녕하십니까? 약소하지만 게임교육협회에서 귀하의 올해 학원종합 첫 S등급 달성기념으로 축하선물을 보내드리오니, 계속해서 게임인재양성에 힘써주시길 바랍니다. 게임교육협회는 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "smile"
+    },
+    {
+      "Email_ID": 8,
+      "Email_sender_id": 500,
+      "Email_script_id": 14,
+      "Email_sender_Name": "학원종합 S등급 유지 선물입니다.",
+      "Email_script_Text": "안녕하십니까? 게임교육협회에서 귀하의 올해 학원종합 S등급 유지 선물을 보내드리오니, 계속해서 게임인재양성에 힘써주시길 바랍니다. 게임교육협회는 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "surprise"
+    },
+    {
+      "Email_ID": 9,
+      "Email_sender_id": 500,
+      "Email_script_id": 15,
+      "Email_sender_Name": "학원종합 첫 SS등급 달성을 축하합니다.",
+      "Email_script_Text": "안녕하십니까? 약소하지만 게임교육협회에서 귀하의 올해 학원종합 첫 SS등급 달성기념으로 축하선물을 보내드리오니, 계속해서 게임인재양성에 힘써주시길 바랍니다. 게임교육협회는 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "wonder"
+    },
+    {
+      "Email_ID": 10,
+      "Email_sender_id": 500,
+      "Email_script_id": 16,
+      "Email_sender_Name": "학원종합 SS등급 유지 선물입니다.",
+      "Email_script_Text": "안녕하십니까? 게임교육협회에서 귀하의 올해 학원종합 SS등급 유지 선물을 보내드리오니, 계속해서 게임인재양성에 힘써주시길 바랍니다. 게임교육협회는 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "bad"
+    },
+    {
+      "Email_ID": 11,
+      "Email_sender_id": 500,
+      "Email_script_id": 17,
+      "Email_sender_Name": "학원종합 첫 SSS등급 달성을 축하합니다.",
+      "Email_script_Text": "안녕하십니까? 약소하지만 게임교육협회에서 귀하의 올해 학원종합 첫 SSS등급 달성기념으로 축하선물을 보내드리오니, 계속해서 게임인재양성에 힘써주시길 바랍니다. 게임교육협회는 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "basic"
+    },
+    {
+      "Email_ID": 12,
+      "Email_sender_id": 500,
+      "Email_script_id": 18,
+      "Email_sender_Name": "학원종합 SSS등급 유지 보상",
+      "Email_script_Text": "안녕하십니까? 게임교육협회에서 귀하의 올해 학원종합 SSS등급 유지 선물을 보내드리오니, 계속해서 게임인재양성에 힘써주시길 바랍니다. 게임교육협회는 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "big smile"
+    },
+    {
+      "Email_ID": 13,
+      "Email_sender_id": 500,
+      "Email_script_id": 20,
+      "Email_sender_Name": "전국학원순위 첫 3위 달성을 축하합니다.",
+      "Email_script_Text": "귀하의 첫 전국학원순위 3위 달성을 축하합니다! 게임교육협회는 게임인재 육성에 물심양면으로 힘써주시는 원장님의 노고에 감사드리며 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "depressed"
+    },
+    {
+      "Email_ID": 14,
+      "Email_sender_id": 500,
+      "Email_script_id": 21,
+      "Email_sender_Name": "전국학원순위 3위 유지 선물입니다.",
+      "Email_script_Text": "귀하의 전국학원순위 3위 유지기념으로 자그마한 선물을 보내드리겠습니다. 게임교육협회는 게임인재 육성에 물심양면으로 힘써주시는 원장님의 노고에 감사드리며 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "happy"
+    },
+    {
+      "Email_ID": 15,
+      "Email_sender_id": 500,
+      "Email_script_id": 22,
+      "Email_sender_Name": "전국학원순위 첫 2위 달성을 축하합니다.",
+      "Email_script_Text": "귀하의 첫 전국학원순위 2위 달성을 축하합니다! 게임교육협회는 게임인재 육성에 물심양면으로 힘써주시는 원장님의 노고에 감사드리며 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "laugh"
+    },
+    {
+      "Email_ID": 16,
+      "Email_sender_id": 500,
+      "Email_script_id": 23,
+      "Email_sender_Name": "전국학원순위 2위 유지 선물입니다.",
+      "Email_script_Text": "귀하의 전국학원순위 2위 유지기념으로 자그마한 선물을 보내드리겠습니다. 게임교육협회는 게임인재 육성에 물심양면으로 힘써주시는 원장님의 노고에 감사드리며 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "smile"
+    },
+    {
+      "Email_ID": 17,
+      "Email_sender_id": 500,
+      "Email_script_id": 24,
+      "Email_sender_Name": "전국학원순위 첫 1위 달성을 축하합니다.",
+      "Email_script_Text": "귀하의 첫 전국학원순위 1위 달성을 축하합니다! 게임교육협회는 게임인재 육성에 물심양면으로 힘써주시는 원장님의 노고에 감사드리며 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "surprise"
+    },
+    {
+      "Email_ID": 18,
+      "Email_sender_id": 500,
+      "Email_script_id": 25,
+      "Email_sender_Name": "전국학원순위 1위 유지 선물입니다.",
+      "Email_script_Text": "귀하의 전국학원순위 1위 유지기념으로 자그마한 선물을 보내드리겠습니다. 게임교육협회는 게임인재 육성에 물심양면으로 힘써주시는 원장님의 노고에 감사드리며 항상 여러분 뒤에서 든든한 지원군이 되겠습니다. 감사합니다.",
+      "Email_image_id": "wonder"
+    }
+  ]
+}

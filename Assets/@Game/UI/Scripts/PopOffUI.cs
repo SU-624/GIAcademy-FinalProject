@@ -38,6 +38,18 @@ public class PopOffUI : MonoBehaviour
     public void SetTurnOffUI(GameObject gObject)
     {
         gObject.SetActive(false);
+
+        if (SceneManager.GetActiveScene().name == "InGameScene")
+        {
+            if (GameTime.Instance != null)
+            {
+                GameTime.Instance.IsGameMode = true;
+            }
+
+            Time.timeScale = InGameUI.Instance.m_NowGameSpeed;
+
+            Debug.Log("시간 흐름");
+        }
     }
 
     // UI를 꺼주는 시간 조정 함수
@@ -96,7 +108,7 @@ public class PopOffUI : MonoBehaviour
                     {
                         GameTime.Instance.IsGameMode = true;
                     }
-                    Time.timeScale = 1;
+                    Time.timeScale = InGameUI.Instance.m_NowGameSpeed;
 
                     Debug.Log("시간 흐름");
                 }
@@ -106,7 +118,7 @@ public class PopOffUI : MonoBehaviour
                     {
                         GameTime.Instance.IsGameMode = true;
                     }
-                    Time.timeScale = 1;
+                    Time.timeScale = InGameUI.Instance.m_NowGameSpeed;
 
                 }
             }
@@ -126,7 +138,7 @@ public class PopOffUI : MonoBehaviour
         }
         else
         {
-            if (InGameUI.Instance.UIStack != null)
+            if (InGameUI.Instance.UIStack.Count != 0)
             {
                 // 버튼이 활성화 되어있는 지 체크
                 if (m_UI.activeSelf == true)
@@ -171,7 +183,7 @@ public class PopOffUI : MonoBehaviour
                     {
                         GameTime.Instance.IsGameMode = true;
                     }
-                    Time.timeScale = 1;
+                    Time.timeScale = InGameUI.Instance.m_NowGameSpeed;
 
                     Debug.Log("시간 흐름");
                 }
@@ -181,7 +193,7 @@ public class PopOffUI : MonoBehaviour
                     {
                         GameTime.Instance.IsGameMode = true;
                     }
-                    Time.timeScale = 1;
+                    Time.timeScale = InGameUI.Instance.m_NowGameSpeed;
 
                 }
             }

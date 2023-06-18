@@ -1,0 +1,160 @@
+{
+"OriginalEmailData":[
+ {
+   "Email_ID": 1,
+   "Email_date": "1/3/5",
+   "Email_sender_id": 2,
+   "Email_Name": "상반기 게임 트렌드 1호",
+   "Email_script_Text": "GI아카데미가 제일 트렌드 하긴 하죠?",
+   "Email_script_id": 1,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ },
+ {
+   "Email_ID": 2,
+   "Email_date": "1/3/15",
+   "Email_sender_id": 2,
+   "Email_Name": "하반기 게임 트렌드 2호",
+   "Email_script_Text": "하반기에도 GI가,,,맞죠?",
+   "Email_script_id": 2,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ },
+ {
+   "Email_ID": 3,
+   "Email_date": "1/5/3",
+   "Email_sender_id": 3,
+   "Email_Name": "훌륭한 MMORPG 제작법",
+   "Email_script_Text": "열심히 언리얼을 사용해 만들어봅시다.",
+   "Email_script_id": 3,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ },
+ {
+   "Email_ID": 4,
+   "Email_date": "1/5/16",
+   "Email_sender_id": 2,
+   "Email_Name": "상반기 게임 트렌드 3호",
+   "Email_script_Text": "말하지 않아도 알죠? GI…",
+   "Email_script_id": 4,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ },
+ {
+   "Email_ID": 5,
+   "Email_date": "1/6/8",
+   "Email_sender_id": 2,
+   "Email_Name": "하반기 게임 트렌드 4호",
+   "Email_script_Text": "이정도 됐으면 알거같은데…",
+   "Email_script_id": 5,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ },
+ {
+   "Email_ID": 6,
+   "Email_date": "1/6/24",
+   "Email_sender_id": 100,
+   "Email_Name": "최고의 기대작! 세븐링 출시 임박",
+   "Email_script_Text": "다들 줄서러 갑시다",
+   "Email_script_id": 100,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ },
+ {
+   "Email_ID": 7,
+   "Email_date": "1/7/16",
+   "Email_sender_id": 101,
+   "Email_Name": "35주년 기념 게임, 눈물의 왕국",
+   "Email_script_Text": "눈물을 머금고 제작",
+   "Email_script_id": 101,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ },
+ {
+   "Email_ID": 8,
+   "Email_date": "1/7/28",
+   "Email_sender_id": 102,
+   "Email_Name": "20주년을 맞이한 단풍마을의 업데이트",
+   "Email_script_Text": "예쁘니 보러와주세요",
+   "Email_script_id": 102,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ },
+ {
+   "Email_ID": 9,
+   "Email_date": "1/10/25",
+   "Email_sender_id": 103,
+   "Email_Name": "REXON 대규모 채용 공고 ",
+   "Email_script_Text": "취업 시즌이 시작됐습니다.",
+   "Email_script_id": 103,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ },
+ {
+   "Email_ID": 10,
+   "Email_date": "1/12/24",
+   "Email_sender_id": 104,
+   "Email_Name": "REXON 채용 쉽게 하는법",
+   "Email_script_Text": "이거 알려지면 저 짤릴 지도 몰라요",
+   "Email_script_id": 104,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ },
+ {
+   "Email_ID": 11,
+   "Email_date": "2/2/1",
+   "Email_sender_id": 105,
+   "Email_Name": "하이브이가 또? ",
+   "Email_script_Text": "연예엔터테인먼트로 글로벌하게 뻗어나가고 있는 하이브이, 게임업계에도 발을?\\n미래에 하이브이가 어떤 게임을 만들어낼지 모두의 주목을 받고 있습니다.",
+   "Email_script_id": 105,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ },
+ {
+   "Email_ID": 12,
+   "Email_date": "2/3/1",
+   "Email_sender_id": 400,
+   "Email_Name": "아카데미 운영 꿀팁1호",
+   "Email_script_Text": "나도 모르는 꿀팁이 있다니",
+   "Email_script_id": 200,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ },
+ {
+   "Email_ID": 13,
+   "Email_date": "2/3/2",
+   "Email_sender_id": 400,
+   "Email_Name": "아카데미 운영 꿀팁2호",
+   "Email_script_Text": "한번 알아봅시다.",
+   "Email_script_id": 201,
+   "Email_reward1_id": 0,
+   "Email_reward1_Amount": 0,
+   "Email_reward2_id": 0,
+   "Email_reward2_Amount": 0
+ }
+]
+}

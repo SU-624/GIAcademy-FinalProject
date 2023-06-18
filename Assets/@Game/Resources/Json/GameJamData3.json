@@ -1,0 +1,1324 @@
+{
+  "OriginalGameJamData": [
+    {
+      "m_GjamID": 1,
+      "m_GjamName": "액션쾌감",
+      "m_GjamHost": "무인도에서 살아남기",
+      "m_GjamHostIcon": 100,
+      "m_GjamDetailInfo": "호쾌한 액션! 짜릿한 쾌감",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 20,
+      "m_StudentPassion": 10,
+      "m_GjamMainGenre": "액션",
+      "m_GjamSubGenre": "RPG",
+      "m_GjamConcept": "무인도",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 3,
+      "m_GjamWeek": 2,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 10,
+        "집중": 4,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 8,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 10,
+        "집중": 6,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 100000
+    },
+    {
+      "m_GjamID": 2,
+      "m_GjamName": "용사님들을 위한",
+      "m_GjamHost": "Rexon",
+      "m_GjamHostIcon": 1,
+      "m_GjamDetailInfo": "세상을 구할 용사님들을 구합니다",
+      "m_EntryFee": 4000,
+      "m_StudentHealth": 10,
+      "m_StudentPassion": 15,
+      "m_GjamMainGenre": "RPG",
+      "m_GjamSubGenre": "어드벤쳐",
+      "m_GjamConcept": "슈퍼히어로",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 3,
+      "m_GjamWeek": 3,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 10,
+        "감각": 0,
+        "기술": 8,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 10,
+        "감각": 0,
+        "기술": 0,
+        "재치": 12
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 12,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 3,
+      "m_GjamName": "던전 탐험",
+      "m_GjamHost": "고대레거시",
+      "m_GjamHostIcon": 101,
+      "m_GjamDetailInfo": "같이 고대 던전 토벌해요!",
+      "m_EntryFee": 4500,
+      "m_StudentHealth": 15,
+      "m_StudentPassion": 17,
+      "m_GjamMainGenre": "퍼즐",
+      "m_GjamSubGenre": "어드벤쳐",
+      "m_GjamConcept": "고대 유적",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 3,
+      "m_GjamWeek": 4,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 6,
+        "기술": 0,
+        "재치": 12
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 12,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 6,
+        "기술": 0,
+        "재치": 15
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 4,
+      "m_GjamName": "동물 농장",
+      "m_GjamHost": "브레멘성가대",
+      "m_GjamHostIcon": 127,
+      "m_GjamDetailInfo": "신개념 농장 만들기, 키우기, 가꾸기",
+      "m_EntryFee": 4000,
+      "m_StudentHealth": 23,
+      "m_StudentPassion": 17,
+      "m_GjamMainGenre": "시뮬레이션",
+      "m_GjamSubGenre": "리듬",
+      "m_GjamConcept": "농장",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 4,
+      "m_GjamWeek": 1,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 12,
+        "집중": 0,
+        "감각": 15,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 16,
+        "기술": 0,
+        "재치": 10
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 25,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 5,
+      "m_GjamName": "서바이벌 사파리 ",
+      "m_GjamHost": "탕탕웨스트",
+      "m_GjamHostIcon": 102,
+      "m_GjamDetailInfo": "내 게임으로 에임 실력 확인!",
+      "m_EntryFee": 3500,
+      "m_StudentHealth": 22,
+      "m_StudentPassion": 15,
+      "m_GjamMainGenre": "RPG",
+      "m_GjamSubGenre": "리듬",
+      "m_GjamConcept": "서부 총잡이",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 4,
+      "m_GjamWeek": 3,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 17,
+        "감각": 0,
+        "기술": 13,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 15,
+        "집중": 0,
+        "감각": 0,
+        "기술": 15,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 17,
+        "집중": 0,
+        "감각": 0,
+        "기술": 8,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 6,
+      "m_GjamName": "우주 전쟁 ",
+      "m_GjamHost": "문어다리",
+      "m_GjamHostIcon": 103,
+      "m_GjamDetailInfo": "외계인들까지 사로잡을 게임 만들기",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 23,
+      "m_StudentPassion": 10,
+      "m_GjamMainGenre": "슈팅",
+      "m_GjamSubGenre": "스포츠",
+      "m_GjamConcept": "외계문명",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 4,
+      "m_GjamWeek": 4,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 10,
+        "재치": 20
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 6,
+        "집중": 24,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 15,
+        "기술": 0,
+        "재치": 15
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 7,
+      "m_GjamName": "무정부 게임대회 ",
+      "m_GjamHost": "그것이알고싶다",
+      "m_GjamHostIcon": 125,
+      "m_GjamDetailInfo": "규칙이 없는 미스터리한 게임대회",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 15,
+      "m_StudentPassion": 10,
+      "m_GjamMainGenre": "어드벤쳐",
+      "m_GjamSubGenre": "퍼즐",
+      "m_GjamConcept": "미스터리",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 5,
+      "m_GjamWeek": 1,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 22,
+        "집중": 20,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 25,
+        "재치": 15
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 36,
+        "집중": 0,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 8,
+      "m_GjamName": "뉴트로 픽셀",
+      "m_GjamHost": "사운드바운스",
+      "m_GjamHostIcon": 134,
+      "m_GjamDetailInfo": "흥겨운 뉴트로 노인코래방",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 15,
+      "m_StudentPassion": 18,
+      "m_GjamMainGenre": "리듬",
+      "m_GjamSubGenre": "슈팅",
+      "m_GjamConcept": "노래방",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 5,
+      "m_GjamWeek": 2,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 23,
+        "기술": 16,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 10,
+        "집중": 0,
+        "감각": 30,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 23,
+        "감각": 19,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 9,
+      "m_GjamName": "파쿠르",
+      "m_GjamHost": "어디에서나 살아남기",
+      "m_GjamHostIcon": 107,
+      "m_GjamDetailInfo": "현실 생존을 위한 파쿠르 게임",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 16,
+      "m_StudentPassion": 22,
+      "m_GjamMainGenre": "스포츠",
+      "m_GjamSubGenre": "시뮬레이션",
+      "m_GjamConcept": "생존",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 5,
+      "m_GjamWeek": 4,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 11,
+        "기술": 0,
+        "재치": 27
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 27,
+        "감각": 12,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 17,
+        "재치": 20
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 10,
+      "m_GjamName": "엘리멘탈 원정대",
+      "m_GjamHost": "좀보이",
+      "m_GjamHostIcon": 104,
+      "m_GjamDetailInfo": "좀비 같은 개발자를 원합니다",
+      "m_EntryFee": 4000,
+      "m_StudentHealth": 24,
+      "m_StudentPassion": 10,
+      "m_GjamMainGenre": "RPG",
+      "m_GjamSubGenre": "어드벤쳐",
+      "m_GjamConcept": "좀비",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 6,
+      "m_GjamWeek": 1,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 25,
+        "재치": 25
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 26,
+        "집중": 0,
+        "감각": 0,
+        "기술": 0,
+        "재치": 28
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 42,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 11,
+      "m_GjamName": "몬스터 매쉬 ",
+      "m_GjamHost": "비스트",
+      "m_GjamHostIcon": 105,
+      "m_GjamDetailInfo": "몬스터를 때려잡고 키워서…! 냠냠쩝쩝",
+      "m_EntryFee": 4500,
+      "m_StudentHealth": 19,
+      "m_StudentPassion": 20,
+      "m_GjamMainGenre": "액션",
+      "m_GjamSubGenre": "시뮬레이션",
+      "m_GjamConcept": "몬스터",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 6,
+      "m_GjamWeek": 3,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 25,
+        "집중": 0,
+        "감각": 38,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 36,
+        "기술": 21,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 23,
+        "집중": 0,
+        "감각": 0,
+        "기술": 26,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 12,
+      "m_GjamName": "사무라이 던전 ",
+      "m_GjamHost": "모래시계",
+      "m_GjamHostIcon": 106,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3500,
+      "m_StudentHealth": 18,
+      "m_StudentPassion": 22,
+      "m_GjamMainGenre": "퍼즐",
+      "m_GjamSubGenre": "액션",
+      "m_GjamConcept": "시간 여행",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 6,
+      "m_GjamWeek": 4,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 46,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 48,
+        "집중": 0,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 20,
+        "감각": 0,
+        "기술": 0,
+        "재치": 28
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 13,
+      "m_GjamName": "은하의 골리앗",
+      "m_GjamHost": "탐험대",
+      "m_GjamHostIcon": 108,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 4000,
+      "m_StudentHealth": 20,
+      "m_StudentPassion": 17,
+      "m_GjamMainGenre": "어드벤쳐",
+      "m_GjamSubGenre": "슈팅",
+      "m_GjamConcept": "우주 탐험",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 7,
+      "m_GjamWeek": 2,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 55,
+        "집중": 0,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 37,
+        "감각": 0,
+        "기술": 23,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 54,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 14,
+      "m_GjamName": "슈퍼스매쉬",
+      "m_GjamHost": "강백호",
+      "m_GjamHostIcon": 109,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 4500,
+      "m_StudentHealth": 10,
+      "m_StudentPassion": 20,
+      "m_GjamMainGenre": "스포츠",
+      "m_GjamSubGenre": "리듬",
+      "m_GjamConcept": "농구",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 7,
+      "m_GjamWeek": 3,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 36,
+        "재치": 30
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 15,
+        "기술": 0,
+        "재치": 45
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 30,
+        "집중": 0,
+        "감각": 30,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 15,
+      "m_GjamName": "플레이 서울",
+      "m_GjamHost": "위아더좀비",
+      "m_GjamHostIcon": 110,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3500,
+      "m_StudentHealth": 15,
+      "m_StudentPassion": 10,
+      "m_GjamMainGenre": "슈팅",
+      "m_GjamSubGenre": "스포츠",
+      "m_GjamConcept": "전쟁",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 7,
+      "m_GjamWeek": 4,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 20,
+        "감각": 42,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 18,
+        "감각": 0,
+        "기술": 42,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 29,
+        "재치": 25
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 16,
+      "m_GjamName": "핑퐁핑퐁스매쉬!",
+      "m_GjamHost": "버섯순이소장님",
+      "m_GjamHostIcon": 111,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 22,
+      "m_StudentPassion": 15,
+      "m_GjamMainGenre": "스포츠",
+      "m_GjamSubGenre": "액션",
+      "m_GjamConcept": "탁구",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 8,
+      "m_GjamWeek": 1,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 64,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 45,
+        "기술": 0,
+        "재치": 21
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 45,
+        "집중": 24,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 17,
+      "m_GjamName": "개발일지",
+      "m_GjamHost": "학부모회",
+      "m_GjamHostIcon": 116,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 16,
+      "m_StudentPassion": 15,
+      "m_GjamMainGenre": "시뮬레이션",
+      "m_GjamSubGenre": "퍼즐",
+      "m_GjamConcept": "교육",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 8,
+      "m_GjamWeek": 2,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 25,
+        "기술": 0,
+        "재치": 45
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 59,
+        "집중": 10,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 35,
+        "기술": 30,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 18,
+      "m_GjamName": "제한시간 5일 탈출",
+      "m_GjamHost": "이스케이프룸",
+      "m_GjamHostIcon": 112,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 4000,
+      "m_StudentHealth": 23,
+      "m_StudentPassion": 17,
+      "m_GjamMainGenre": "어드벤쳐",
+      "m_GjamSubGenre": "RPG",
+      "m_GjamConcept": "방탈출",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 8,
+      "m_GjamWeek": 3,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 30,
+        "집중": 0,
+        "감각": 0,
+        "기술": 40,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 65,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 20,
+        "기술": 0,
+        "재치": 50
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 19,
+      "m_GjamName": "돌굴러가유",
+      "m_GjamHost": "제르다르",
+      "m_GjamHostIcon": 113,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 4500,
+      "m_StudentHealth": 24,
+      "m_StudentPassion": 15,
+      "m_GjamMainGenre": "퍼즐",
+      "m_GjamSubGenre": "어드벤쳐",
+      "m_GjamConcept": "중력",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 9,
+      "m_GjamWeek": 1,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 30,
+        "감각": 50,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 42,
+        "집중": 0,
+        "감각": 0,
+        "기술": 36,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 38,
+        "집중": 39,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 20,
+      "m_GjamName": "유뉘티",
+      "m_GjamHost": "스팀다리미",
+      "m_GjamHostIcon": 119,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 23,
+      "m_StudentPassion": 10,
+      "m_GjamMainGenre": "리듬",
+      "m_GjamSubGenre": "스포츠",
+      "m_GjamConcept": "스팀펑크",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 9,
+      "m_GjamWeek": 3,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 47,
+        "집중": 0,
+        "감각": 0,
+        "기술": 0,
+        "재치": 32
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 15,
+        "감각": 0,
+        "기술": 0,
+        "재치": 67
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 40,
+        "집중": 0,
+        "감각": 0,
+        "기술": 40,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 21,
+      "m_GjamName": "GameDev 건틀릿",
+      "m_GjamHost": "인재원불주먹",
+      "m_GjamHostIcon": 117,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 4000,
+      "m_StudentHealth": 10,
+      "m_StudentPassion": 15,
+      "m_GjamMainGenre": "액션",
+      "m_GjamSubGenre": "슈팅",
+      "m_GjamConcept": "격투",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 9,
+      "m_GjamWeek": 4,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 52,
+        "재치": 24
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 52,
+        "기술": 24,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 55,
+        "기술": 0,
+        "재치": 23
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 22,
+      "m_GjamName": "스무고개",
+      "m_GjamHost": "필승법은 존재해",
+      "m_GjamHostIcon": 114,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3500,
+      "m_StudentHealth": 19,
+      "m_StudentPassion": 20,
+      "m_GjamMainGenre": "퍼즐",
+      "m_GjamSubGenre": "어드벤쳐",
+      "m_GjamConcept": "수수께끼",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 10,
+      "m_GjamWeek": 1,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 46,
+        "감각": 43,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 37,
+        "집중": 48,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 50,
+        "집중": 0,
+        "감각": 0,
+        "기술": 0,
+        "재치": 40
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 23,
+      "m_GjamName": "꿈이라도 좋아 ",
+      "m_GjamHost": "드리밍",
+      "m_GjamHostIcon": 129,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3500,
+      "m_StudentHealth": 19,
+      "m_StudentPassion": 10,
+      "m_GjamMainGenre": "시뮬레이션",
+      "m_GjamSubGenre": "슈팅",
+      "m_GjamConcept": "꿈",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 10,
+      "m_GjamWeek": 2,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 26,
+        "재치": 60
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 62,
+        "재치": 27
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 55,
+        "감각": 0,
+        "기술": 35,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 24,
+      "m_GjamName": "메이프릴 마을",
+      "m_GjamHost": "Rexon",
+      "m_GjamHostIcon": 1,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 10,
+      "m_StudentPassion": 10,
+      "m_GjamMainGenre": "RPG",
+      "m_GjamSubGenre": "어드벤쳐",
+      "m_GjamConcept": "검은 마법사",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 10,
+      "m_GjamWeek": 4,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 57,
+        "집중": 0,
+        "감각": 35,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 51,
+        "기술": 0,
+        "재치": 40
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 24,
+        "기술": 0,
+        "재치": 60
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 25,
+      "m_GjamName": "게임온!",
+      "m_GjamHost": "댄스브레이크",
+      "m_GjamHostIcon": 115,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 18,
+      "m_StudentPassion": 10,
+      "m_GjamMainGenre": "리듬",
+      "m_GjamSubGenre": "슈팅",
+      "m_GjamConcept": "댄스파티",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 11,
+      "m_GjamWeek": 2,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 79,
+        "집중": 0,
+        "감각": 0,
+        "기술": 0,
+        "재치": 20
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 61,
+        "집중": 0,
+        "감각": 38,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 57,
+        "집중": 0,
+        "감각": 0,
+        "기술": 42,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 26,
+      "m_GjamName": "미소녀 챌린지 ",
+      "m_GjamHost": "십더그",
+      "m_GjamHostIcon": 133,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 5000,
+      "m_StudentHealth": 13,
+      "m_StudentPassion": 20,
+      "m_GjamMainGenre": "액션",
+      "m_GjamSubGenre": "시뮬레이션",
+      "m_GjamConcept": "미소녀",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 11,
+      "m_GjamWeek": 3,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 20,
+        "감각": 0,
+        "기술": 85,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 43,
+        "감각": 0,
+        "기술": 56,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 70,
+        "감각": 35,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 27,
+      "m_GjamName": "해킹앤플레이",
+      "m_GjamHost": "Crayonton",
+      "m_GjamHostIcon": 3,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 20,
+      "m_StudentPassion": 17,
+      "m_GjamMainGenre": "시뮬레이션",
+      "m_GjamSubGenre": "퍼즐",
+      "m_GjamConcept": "미래 도시",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 11,
+      "m_GjamWeek": 4,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 62,
+        "기술": 0,
+        "재치": 28
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 89,
+        "감각": 0,
+        "기술": 0,
+        "재치": 10
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 0,
+        "재치": 87
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 28,
+      "m_GjamName": "코딩챌린지",
+      "m_GjamHost": "삐빗휴먼아미",
+      "m_GjamHostIcon": 118,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 4500,
+      "m_StudentHealth": 15,
+      "m_StudentPassion": 25,
+      "m_GjamMainGenre": "슈팅",
+      "m_GjamSubGenre": "RPG",
+      "m_GjamConcept": "AI 군대",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 12,
+      "m_GjamWeek": 1,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 24,
+        "집중": 83,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 39,
+        "감각": 66,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 65,
+        "집중": 40,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 29,
+      "m_GjamName": "머코코뉴비",
+      "m_GjamHost": "MISOGATE",
+      "m_GjamHostIcon": 8,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3500,
+      "m_StudentHealth": 22,
+      "m_StudentPassion": 10,
+      "m_GjamMainGenre": "RPG",
+      "m_GjamSubGenre": "액션",
+      "m_GjamConcept": "판타지",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 12,
+      "m_GjamWeek": 2,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 30,
+        "감각": 74,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 45,
+        "재치": 72
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 38,
+        "기술": 69,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 30,
+      "m_GjamName": "픽셀 퍼즐 파티",
+      "m_GjamHost": "퍼펙트랭귀지",
+      "m_GjamHostIcon": 123,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3500,
+      "m_StudentHealth": 20,
+      "m_StudentPassion": 19,
+      "m_GjamMainGenre": "퍼즐",
+      "m_GjamSubGenre": "리듬",
+      "m_GjamConcept": "문자",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 12,
+      "m_GjamWeek": 3,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 65,
+        "재치": 55
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 79,
+        "집중": 0,
+        "감각": 36,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 86,
+        "감각": 0,
+        "기술": 0,
+        "재치": 27
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 31,
+      "m_GjamName": "언니얼",
+      "m_GjamHost": "2077",
+      "m_GjamHostIcon": 120,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 24,
+      "m_StudentPassion": 15,
+      "m_GjamMainGenre": "액션",
+      "m_GjamSubGenre": "시뮬레이션",
+      "m_GjamConcept": "사이버펑크",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 1,
+      "m_GjamWeek": 1,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 96,
+        "집중": 0,
+        "감각": 20,
+        "기술": 0,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 38,
+        "기술": 80,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 20,
+        "집중": 0,
+        "감각": 97,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 32,
+      "m_GjamName": "착시 미로",
+      "m_GjamHost": "메이즈런닝",
+      "m_GjamHostIcon": 121,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 3000,
+      "m_StudentHealth": 19,
+      "m_StudentPassion": 17,
+      "m_GjamMainGenre": "퍼즐",
+      "m_GjamSubGenre": "리듬",
+      "m_GjamConcept": "퍼즐",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 1,
+      "m_GjamWeek": 3,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 0,
+        "집중": 36,
+        "감각": 0,
+        "기술": 79,
+        "재치": 0
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 0,
+        "집중": 60,
+        "감각": 0,
+        "기술": 0,
+        "재치": 60
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 0,
+        "집중": 0,
+        "감각": 0,
+        "기술": 55,
+        "재치": 63
+      },
+      "ParticipationReward": 0
+    },
+    {
+      "m_GjamID": 33,
+      "m_GjamName": "댄스 댄스 댄브",
+      "m_GjamHost": "스타키우기",
+      "m_GjamHostIcon": 122,
+      "m_GjamDetailInfo": "없음",
+      "m_EntryFee": 4000,
+      "m_StudentHealth": 18,
+      "m_StudentPassion": 15,
+      "m_GjamMainGenre": "리듬",
+      "m_GjamSubGenre": "스포츠",
+      "m_GjamConcept": "아이돌",
+      "m_GjamYear": 0,
+      "m_GjamMonth": 1,
+      "m_GjamWeek": 4,
+      "m_GjamTime": 0,
+      "m_GjamAI_ID": 300,
+      "m_GjamNeedStatGM": {
+        "통찰": 26,
+        "집중": 0,
+        "감각": 0,
+        "기술": 0,
+        "재치": 100
+      },
+      "m_GjamNeedStatArt": {
+        "통찰": 64,
+        "집중": 0,
+        "감각": 0,
+        "기술": 59,
+        "재치": 0
+      },
+      "m_GjamNeedStatProgramming": {
+        "통찰": 88,
+        "집중": 29,
+        "감각": 0,
+        "기술": 0,
+        "재치": 0
+      },
+      "ParticipationReward": 0
+    }
+  ]
+}

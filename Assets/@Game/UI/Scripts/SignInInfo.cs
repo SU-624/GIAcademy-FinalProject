@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Security.Cryptography;
 using System.Text;
-using PacketBase;
+//using PacketBase;
 
 /// <summary>
 /// Mang 10. 19
@@ -70,103 +70,103 @@ public class SignInInfo : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Network.Instance.ClientNet.networkMessage.Count != 0)
-        {
-            if (Network.Instance.ClientNet.networkMessage.Peek() == "아이디 사용 가능" ||
-                Network.Instance.ClientNet.networkMessage.Peek() == "아이디 중복")
-            {
-                IdCheckResult();
-            }
-            else if (Network.Instance.ClientNet.networkMessage.Peek() == "회원 가입 성공" ||
-                     Network.Instance.ClientNet.networkMessage.Peek() == "회원 가입 실패")
-            {
-                CreateIdResult();
-            }
-        }
+        //if (Network.Instance.ClientNet.networkMessage.Count != 0)
+        //{
+        //    if (Network.Instance.ClientNet.networkMessage.Peek() == "아이디 사용 가능" ||
+        //        Network.Instance.ClientNet.networkMessage.Peek() == "아이디 중복")
+        //    {
+        //        IdCheckResult();
+        //    }
+        //    else if (Network.Instance.ClientNet.networkMessage.Peek() == "회원 가입 성공" ||
+        //             Network.Instance.ClientNet.networkMessage.Peek() == "회원 가입 실패")
+        //    {
+        //        CreateIdResult();
+        //    }
+        //}
     }
 
     public void CheckID()
     {
-        m_NowLogInfo.MyID = m_InputID.text;
+        //m_NowLogInfo.MyID = m_InputID.text;
 
-        IdCheckPacket idCheckPacket = new IdCheckPacket();
-        idCheckPacket.packetId = (short)PacketId.ReqIdCheck;
-        idCheckPacket.packetError = (short)ErrorCode.None;
-        idCheckPacket.UserId = m_NowLogInfo.MyID;
+        //IdCheckPacket idCheckPacket = new IdCheckPacket();
+        //idCheckPacket.packetId = (short)PacketId.ReqIdCheck;
+        //idCheckPacket.packetError = (short)ErrorCode.None;
+        //idCheckPacket.UserId = m_NowLogInfo.MyID;
 
-        Network.Instance.ClientNet.PacketSend(idCheckPacket);
+        //Network.Instance.ClientNet.PacketSend(idCheckPacket);
     }
 
     private void IdCheckResult()
     {
-        if (Network.Instance.ClientNet.networkMessage.Peek() == "아이디 사용 가능")
-        {
-            m_PopupNotice.text = Network.Instance.ClientNet.networkMessage.Dequeue();
+        //if (Network.Instance.ClientNet.networkMessage.Peek() == "아이디 사용 가능")
+        //{
+        //    m_PopupNotice.text = Network.Instance.ClientNet.networkMessage.Dequeue();
 
-            m_PopupNotice.gameObject.SetActive(true);
-            m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();    // 팝업창 띄우기 
-        }
-        else if (Network.Instance.ClientNet.networkMessage.Peek() == "아이디 중복")
-        {
-            m_PopupNotice.text = Network.Instance.ClientNet.networkMessage.Dequeue();
+        //    m_PopupNotice.gameObject.SetActive(true);
+        //    m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();    // 팝업창 띄우기 
+        //}
+        //else if (Network.Instance.ClientNet.networkMessage.Peek() == "아이디 중복")
+        //{
+        //    m_PopupNotice.text = Network.Instance.ClientNet.networkMessage.Dequeue();
 
-            m_PopupNotice.gameObject.SetActive(true);
-            m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();    // 팝업창 띄우기 
-        }
+        //    m_PopupNotice.gameObject.SetActive(true);
+        //    m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();    // 팝업창 띄우기 
+        //}
     }
 
     public void CheckPW()
     {
-        // 비밀번호 & 비밀번호 확인 
-        if (m_InputPW.text != m_InputCheckPW.text)
-        {
-            m_PopupNotice.text = "비밀번호가 같지 않습니다";
+        //// 비밀번호 & 비밀번호 확인 
+        //if (m_InputPW.text != m_InputCheckPW.text)
+        //{
+        //    m_PopupNotice.text = "비밀번호가 같지 않습니다";
 
-            // '비밀번호가 같지 않습니다' 팝업창 띄우기
-            m_PopupNotice.gameObject.SetActive(true);
+        //    // '비밀번호가 같지 않습니다' 팝업창 띄우기
+        //    m_PopupNotice.gameObject.SetActive(true);
 
-            Debug.Log("비밀번호 다름");
+        //    Debug.Log("비밀번호 다름");
 
-            m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();    // 팝업창 띄우기 
-        }
-        else                // 여기서 데이터 저장해주기
-        {
-            m_NowLogInfo.MyID = m_InputID.text;
-            m_NowLogInfo.MyPW = m_InputPW.text;
+        //    m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();    // 팝업창 띄우기 
+        //}
+        //else                // 여기서 데이터 저장해주기
+        //{
+        //    m_NowLogInfo.MyID = m_InputID.text;
+        //    m_NowLogInfo.MyPW = m_InputPW.text;
 
-            SHA256Managed sha256Managed = new SHA256Managed();
-            byte[] encryptBytes = sha256Managed.ComputeHash(Encoding.UTF8.GetBytes(m_NowLogInfo.MyPW));
+        //    SHA256Managed sha256Managed = new SHA256Managed();
+        //    byte[] encryptBytes = sha256Managed.ComputeHash(Encoding.UTF8.GetBytes(m_NowLogInfo.MyPW));
 
-            string encryptPw = Convert.ToBase64String(encryptBytes);
+        //    string encryptPw = Convert.ToBase64String(encryptBytes);
 
-            SignUpPacket signUpPacket = new SignUpPacket();
-            signUpPacket.packetId = (short)PacketId.ReqSignUp;
-            signUpPacket.packetError = (short)ErrorCode.None;
-            signUpPacket.UserId = m_NowLogInfo.MyID;
-            signUpPacket.UserPw = encryptPw;
+        //    SignUpPacket signUpPacket = new SignUpPacket();
+        //    signUpPacket.packetId = (short)PacketId.ReqSignUp;
+        //    signUpPacket.packetError = (short)ErrorCode.None;
+        //    signUpPacket.UserId = m_NowLogInfo.MyID;
+        //    signUpPacket.UserPw = encryptPw;
 
-            Network.Instance.ClientNet.PacketSend(signUpPacket);
+        //    Network.Instance.ClientNet.PacketSend(signUpPacket);
 
-            Debug.Log("ID : " + m_NowLogInfo.MyID);
-            Debug.Log("PW : " + m_NowLogInfo.MyPW);
-        }
+        //    Debug.Log("ID : " + m_NowLogInfo.MyID);
+        //    Debug.Log("PW : " + m_NowLogInfo.MyPW);
+        //}
     }
 
     private void CreateIdResult()
     {
-        if (Network.Instance.ClientNet.networkMessage.Peek() == "회원 가입 성공")
-        {
-            m_PopupNotice.text = Network.Instance.ClientNet.networkMessage.Dequeue();
+        //if (Network.Instance.ClientNet.networkMessage.Peek() == "회원 가입 성공")
+        //{
+        //    m_PopupNotice.text = Network.Instance.ClientNet.networkMessage.Dequeue();
 
-            m_PopupNotice.gameObject.SetActive(true);
-            m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();    // 팝업창 띄우기 
-        }
-        else if (Network.Instance.ClientNet.networkMessage.Peek() == "회원 가입 실패")
-        {
-            m_PopupNotice.text = Network.Instance.ClientNet.networkMessage.Dequeue();
+        //    m_PopupNotice.gameObject.SetActive(true);
+        //    m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();    // 팝업창 띄우기 
+        //}
+        //else if (Network.Instance.ClientNet.networkMessage.Peek() == "회원 가입 실패")
+        //{
+        //    m_PopupNotice.text = Network.Instance.ClientNet.networkMessage.Dequeue();
 
-            m_PopupNotice.gameObject.SetActive(true);
-            m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();    // 팝업창 띄우기 
-        }
+        //    m_PopupNotice.gameObject.SetActive(true);
+        //    m_PopupNotice.gameObject.GetComponent<PopOffUI>().DelayTurnOffUI();    // 팝업창 띄우기 
+        //}
     }
 }

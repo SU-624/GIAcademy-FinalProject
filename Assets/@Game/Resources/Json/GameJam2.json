@@ -1,0 +1,108 @@
+{
+"OriginalGameJamData":[
+  {
+    "m_GjamID": 1,
+    "m_GjamName": "액션쾌감게임잼",
+    "m_GjamHost": "NX소프트",
+    "m_GjamHostIcon": 1,
+    "m_GjamDetailInfo": "이 게임은 액션 쾌감을 목적으로한 게임입니다.",
+    "m_GjamReward_C": 10000,
+    "m_GjamReward_S": {
+      "통찰": 0,
+      "집중": 0,
+      "감각": 10,
+      "기술": 23,
+      "재치": 5
+    },
+    "m_Awareness": 10,
+    "m_EntryFee": 3000,
+    "m_StudentHealth": 20,
+    "m_StudentPassion": 10,
+    "m_GjamMainGenre": "액션",
+    "m_GjamSubGenre": "RPG",
+    "m_GjamConcept": "미소녀",
+    "m_GjamNeedStatGM": {
+      "통찰": 10,
+      "집중": 20,
+      "감각": 0,
+      "기술": 0,
+      "재치": 0
+    },
+    "m_GjamNeedStatArt": {
+      "통찰": 2,
+      "집중": 0,
+      "감각": 10,
+      "기술": 0,
+      "재치": 0
+    },
+    "m_GjamNeedStatProgramming": {
+      "통찰": 15,
+      "집중": 12,
+      "감각": 0,
+      "기술": 0,
+      "재치": 0
+    },
+    "m_UpgradeInfo": "없음",
+    "m_GjamMonth": 4,
+    "m_GjamYear": 0,
+    "m_GjamWeek": 2,
+    "m_GjamDelet": 10,
+    "m_GjamTime": 8,
+    "m_GjamAbleGMStudent": 1,
+    "m_GjamAbleArtStudent": 1,
+    "m_GjamAbleProgrammingStudent": 1
+  },
+ {
+   "m_GjamID": 2,
+   "m_GjamName": "어드벤쳐타임",
+   "m_GjamHost": "We앱스",
+   "m_GjamHostIcon": 2,
+   "m_GjamDetailInfo": "애니팡팡팡",
+   "m_GjamReward_C": 14000,
+   "m_GjamReward_S": {
+      "통찰": 3,
+      "집중": 1,
+      "감각": 2,
+      "기술": 0,
+      "재치": 0
+   },
+   "m_Awareness": 13,
+   "m_EntryFee": 4000,
+   "m_StudentHealth": 10,
+   "m_StudentPassion": 15,
+   "m_GjamMainGenre": "어드벤쳐",
+   "m_GjamSubGenre": "슈팅",
+   "m_GjamConcept" :  "미소녀",
+   "m_GjamNeedStatGM": {
+      "통찰": 0,
+      "집중": 4,
+      "감각": 10,
+      "기술": 0,
+      "재치": 0
+   },
+   "m_GjamNeedStatArt": {
+      "통찰": 0,
+      "집중": 0,
+      "감각": 3,
+      "기술": 5,
+      "재치": 0
+   },
+   "m_GjamNeedStatProgramming": {
+      "통찰": 0,
+      "집중": 0,
+      "감각": 0,
+      "기술": 10,
+      "재치": 0
+   },
+   "m_UpgradeInfo": "없음",
+   "m_GjamMonth": 4,
+   "m_GjamYear": 1,
+   "m_GjamWeek": 4,
+   "m_GjamDelet": 5,
+   "m_GjamTime": 10,
+   "m_GjamAbleGMStudent": 1,
+   "m_GjamAbleArtStudent": 1,
+   "m_GjamAbleProgrammingStudent": 1
+}
+]
+}

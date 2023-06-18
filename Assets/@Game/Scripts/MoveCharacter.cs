@@ -87,15 +87,15 @@ public class MoveCharacter : MonoBehaviour
 
         //if (m_Student.m_Doing == Student.Doing.Study)
         //{
-        //    if (m_Student.m_StudentData.m_StudentType == StudentType.Programming)
+        //    if (m_Student.m_StudentStat.m_StudentType == StudentType.Programming)
         //    {
         //        _agent.SetDestination(m_ProgrammingRoom.transform.position);
         //    }
-        //    else if (m_Student.m_StudentData.m_StudentType == StudentType.GameDesigner)
+        //    else if (m_Student.m_StudentStat.m_StudentType == StudentType.GameDesigner)
         //    {
         //        _agent.SetDestination(m_ProductManagerRoom.transform.position);
         //    }
-        //    else if (m_Student.m_StudentData.m_StudentType == StudentType.Art)
+        //    else if (m_Student.m_StudentStat.m_StudentType == StudentType.Art)
         //    {
         //        _agent.SetDestination(m_ArtRoom.transform.position);
         //    }

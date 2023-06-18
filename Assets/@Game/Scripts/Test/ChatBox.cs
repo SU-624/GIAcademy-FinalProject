@@ -10,7 +10,7 @@ public class ChatBox : MonoBehaviour
     private static ChatBox _instance = null;
 
     // 대사들이 담긴 json파일등을 담을 리스트
-    private List<string> m_DialogueLines = new List<string>();
+    public List<string> m_DialogueLines = new List<string>();
 
     // 출력할 대사를 담을 큐
     public ConcurrentQueue<string> m_Dialogue = new ConcurrentQueue<string>();
@@ -45,6 +45,10 @@ public class ChatBox : MonoBehaviour
         m_DialogueLines.Add("역시 고양이가 짱이야!/아니 강아지가 짱이지!");
     }
 
+    /// <summary>
+    /// BT 쪽에서 대화를 직접 들고있게 해놔서 안쓰게 된 부분
+    /// by.재영
+    /// </summary>
     // 대화가 시작되면 담겨있는 대사를 특정 기호로 판별해서 잘라서 큐에 넣어주기.
     public void OnDialogue()
     {

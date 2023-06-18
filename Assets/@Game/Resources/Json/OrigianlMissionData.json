@@ -1,0 +1,172 @@
+{
+  "OriginalMissionData": [
+    {
+      "MissionID": 101,
+      "MissionStep": 1,
+      "IsQuestClear": false,
+      "MissionName": "학생 프로필 확인하기",
+      "MissionCondition": 116,
+      "ConditionAmountN": 2,
+      "Reward1Index": 100,
+      "Reward1Amount": 1000,
+      "Reward2Index": 101,
+      "Reward2Amount": 50
+    },
+    {
+      "MissionID": 102,
+      "MissionStep": 1,
+      "IsQuestClear": false,
+      "MissionName": "강사 프로필 확인하기",
+      "MissionCondition": 117,
+      "ConditionAmountN": 2,
+      "Reward1Index": 100,
+      "Reward1Amount": 1000,
+      "Reward2Index": 101,
+      "Reward2Amount": 50
+    },
+    {
+      "MissionID": 103,
+      "MissionStep": 1,
+      "IsQuestClear": false,
+      "MissionName": "게임잼 참여하기",
+      "MissionCondition": 103,
+      "ConditionAmountN": 1,
+      "Reward1Index": 100,
+      "Reward1Amount": 3000,
+      "Reward2Index": 101,
+      "Reward2Amount": 150
+    },
+    {
+      "MissionID": 201,
+      "MissionStep": 2,
+      "IsQuestClear": false,
+      "MissionName": "장르방 터치하기",
+      "MissionCondition": 119,
+      "ConditionAmountN": 10,
+      "Reward1Index": 101,
+      "Reward1Amount": 100,
+      "Reward2Index": 0,
+      "Reward2Amount": 0
+    },
+    {
+      "MissionID": 202,
+      "MissionStep": 2,
+      "IsQuestClear": false,
+      "MissionName": "장르방 수리하기",
+      "MissionCondition": 105,
+      "ConditionAmountN": 3,
+      "Reward1Index": 100,
+      "Reward1Amount": 20000,
+      "Reward2Index": 101,
+      "Reward2Amount": 500
+    },
+    {
+      "MissionID": 203,
+      "MissionStep": 2,
+      "IsQuestClear": false,
+      "MissionName": "게임쇼 참여하기",
+      "MissionCondition": 104,
+      "ConditionAmountN": 1,
+      "Reward1Index": 100,
+      "Reward1Amount": 10000,
+      "Reward2Index": 0,
+      "Reward2Amount": 0
+    },
+    {
+      "MissionID": 301,
+      "MissionStep": 3,
+      "IsQuestClear": false,
+      "MissionName": "돈을 모으자",
+      "MissionCondition": 101,
+      "ConditionAmountN": 200000,
+      "Reward1Index": 300,
+      "Reward1Amount": 250,
+      "Reward2Index": 0,
+      "Reward2Amount": 0
+    },
+    {
+      "MissionID": 302,
+      "MissionStep": 3,
+      "IsQuestClear": false,
+      "MissionName": "루비를 모으자",
+      "MissionCondition": 102,
+      "ConditionAmountN": 3000,
+      "Reward1Index": 303,
+      "Reward1Amount": 250,
+      "Reward2Index": 0,
+      "Reward2Amount": 0
+    },
+    {
+      "MissionID": 303,
+      "MissionStep": 3,
+      "IsQuestClear": false,
+      "MissionName": "장르방 터치하기",
+      "MissionCondition": 103,
+      "ConditionAmountN": 30,
+      "Reward1Index": 100,
+      "Reward1Amount": 15000,
+      "Reward2Index": 0,
+      "Reward2Amount": 0
+    },
+    {
+      "MissionID": 401,
+      "MissionStep": 4,
+      "IsQuestClear": false,
+      "MissionName": "게임잼 참여하기",
+      "MissionCondition": 103,
+      "ConditionAmountN": 2,
+      "Reward1Index": 300,
+      "Reward1Amount": 400,
+      "Reward2Index": 0,
+      "Reward2Amount": 0
+    },
+    {
+      "MissionID": 402,
+      "MissionStep": 4,
+      "IsQuestClear": false,
+      "MissionName": "게임쇼 참여하기",
+      "MissionCondition": 104,
+      "ConditionAmountN": 2,
+      "Reward1Index": 301,
+      "Reward1Amount": 400,
+      "Reward2Index": 0,
+      "Reward2Amount": 0
+    },
+    {
+      "MissionID": 405,
+      "MissionStep": 4,
+      "IsQuestClear": false,
+      "MissionName": "강사 레벨 합 30 달성",
+      "MissionCondition": 121,
+      "ConditionAmountN": 30,
+      "Reward1Index": 101,
+      "Reward1Amount": 3000,
+      "Reward2Index": 0,
+      "Reward2Amount": 0
+    },
+    {
+      "MissionID": 501,
+      "MissionStep": 5,
+      "IsQuestClear": false,
+      "MissionName": "분기순위 3위 달성",
+      "MissionCondition": 106,
+      "ConditionAmountN": 3,
+      "Reward1Index": 302,
+      "Reward1Amount": 600,
+      "Reward2Index": 0,
+      "Reward2Amount": 0
+    },
+    {
+      "MissionID": 502,
+      "MissionStep": 5,
+      "IsQuestClear": false,
+      "MissionName": "랭크 SS등급 달성",
+      "MissionCondition": 107,
+      "ConditionAmountN": 2,
+      "Reward1Index": 301,
+      "Reward1Amount": 600,
+      "Reward2Index": 0,
+      "Reward2Amount": 0
+    }
+  ]
+}

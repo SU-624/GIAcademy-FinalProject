@@ -33,6 +33,8 @@ public class PopUpUI : MonoBehaviour
     public RectTransform pointPos;
     float tempLength;
 
+    public bool isSlideMenuPanelOpend = false;
+
     public void Start()
     {
         float screenSize = Screen.width;
@@ -62,11 +64,22 @@ public class PopUpUI : MonoBehaviour
         }
         else
         {
-            InGameUI.Instance.UIStack.Push(this.gameObject);
-            Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
-            if (InGameUI.Instance.UIStack != null)
+            if (InGameUI.Instance.UIStack.Count != 0)
             {
-                this.gameObject.SetActive(true);
+                if (!InGameUI.Instance.UIStack.Contains(m_UI.gameObject))
+                {
+                    InGameUI.Instance.UIStack.Push(m_UI.gameObject);
+                }
+            }
+            else
+            {
+                InGameUI.Instance.UIStack.Push(m_UI.gameObject);
+            }
+
+            Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
+            if (InGameUI.Instance.UIStack.Count != 0)
+            {
+                m_UI.gameObject.SetActive(true);
 
                 if (m_UI.gameObject.activeSelf == false)
                 {
@@ -107,10 +120,21 @@ public class PopUpUI : MonoBehaviour
         }
         else
         {
-            InGameUI.Instance.UIStack.Push(this.gameObject);
+            if (InGameUI.Instance.UIStack.Count != 0)
+            {
+                if (!InGameUI.Instance.UIStack.Contains(this.gameObject))
+                {
+                    InGameUI.Instance.UIStack.Push(this.gameObject);
+                }
+            }
+            else
+            {
+                InGameUI.Instance.UIStack.Push(this.gameObject);
+            }
+
             Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
 
-            if (InGameUI.Instance.UIStack != null)
+            if (InGameUI.Instance.UIStack.Count != 0)
             {
                 if (this.gameObject.activeSelf == false)
                 {
@@ -162,7 +186,18 @@ public class PopUpUI : MonoBehaviour
         }
         else
         {
-            InGameUI.Instance.UIStack.Push(this.gameObject);
+            if (InGameUI.Instance.UIStack.Count != 0)
+            {
+                if (!InGameUI.Instance.UIStack.Contains(this.gameObject))
+                {
+                    InGameUI.Instance.UIStack.Push(this.gameObject);
+                }
+            }
+            else
+            {
+                InGameUI.Instance.UIStack.Push(this.gameObject);
+            }
+
             Debug.Log("stack count : " + InGameUI.Instance.UIStack.Count);
 
             if (InGameUI.Instance.UIStack.Count != 0)
@@ -214,14 +249,17 @@ public class PopUpUI : MonoBehaviour
     // 펼쳐지는 메뉴 만듬!
     public void AutoSlideMenuUI()
     {
-        if ((int)movingMenuRect.position.x != (int)target)
+        if ((int)movingMenuRect.position.x != (int)target)      // 슬라이드메뉴패널이 들어가있을때
         {
+            isSlideMenuPanelOpend = true;
             prevMEnuBarPos = movingMenuRect.position;       // 이전의 위치를 기억해서 돌아갈 자리
 
             movingMenuRect.position = new Vector3(target, movingMenuRect.position.y, movingMenuRect.position.z);
         }
         else if ((int)movingMenuRect.position.x == (int)target)
         {
+            isSlideMenuPanelOpend = false;
+
             movingMenuRect.position = prevMEnuBarPos;
         }
     }

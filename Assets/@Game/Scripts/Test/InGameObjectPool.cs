@@ -6,21 +6,24 @@ public class InGameObjectPool : MonoBehaviour
 {
     public static InGameObjectPool Instance;
 
-    [SerializeField] private List<GameObject> m_StudentPrefab = new List<GameObject>();
+    [SerializeField] private List<GameObject> m_FemaleStudentPrefab = new List<GameObject>();
+    [SerializeField] private List<GameObject> m_MaleStudentPrefab = new List<GameObject>();
     [SerializeField] private GameObject m_PoolingChatBoxPrefab;
 
     private static Transform m_PoolingChatTransform;
     
     public List<int> m_ModelID = new List<int>();
     
-    Queue<GameObject> m_PoolingStudentQueue = new Queue<GameObject>();
+    Queue<GameObject> m_PoolingFemaleStudentQueue = new Queue<GameObject>();
+    Queue<GameObject> m_PoolingMaleStudentQueue = new Queue<GameObject>();
     Queue<GameObject> m_PoolingChatQueue = new Queue<GameObject>();
 
     private void Awake()
     {
         m_PoolingChatTransform = GameObject.Find("ChatObjectPool").transform;
         Instance = this;
-        CreateStudent();
+        CreateFemaleStudent();
+        CreateMaleStudent();
         Initalize(40);
     }
 
@@ -32,16 +35,16 @@ public class InGameObjectPool : MonoBehaviour
         }
     }
 
-    private void CreateStudent()
+    private void CreateFemaleStudent()
     {
         List<int> _indexList = new List<int>();
-        int _currentNum = Random.Range(0, m_StudentPrefab.Count);
+        int _currentNum = Random.Range(0, m_FemaleStudentPrefab.Count);
 
-        for (int i = 0; i < m_StudentPrefab.Count;)
+        for (int i = 0; i < m_FemaleStudentPrefab.Count;)
         {
             if (_indexList.Contains(_currentNum))
             {
-                _currentNum = Random.Range(0, m_StudentPrefab.Count);
+                _currentNum = Random.Range(0, m_FemaleStudentPrefab.Count);
             }
             else
             {
@@ -50,13 +53,44 @@ public class InGameObjectPool : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < m_StudentPrefab.Count; i++)
+        for (int i = 0; i < m_FemaleStudentPrefab.Count; i++)
         {
-            GameObject _newStudent = Instantiate(m_StudentPrefab[_indexList[i]]);
+            GameObject _newStudent = Instantiate(m_FemaleStudentPrefab[_indexList[i]]);
+            _newStudent.name = m_FemaleStudentPrefab[_indexList[i]].name;
             m_ModelID.Add(_indexList[i]);
             _newStudent.gameObject.SetActive(false);
             _newStudent.transform.SetParent(transform);
-            m_PoolingStudentQueue.Enqueue(_newStudent);
+            m_PoolingFemaleStudentQueue.Enqueue(_newStudent);
+
+        }
+    }
+
+    private void CreateMaleStudent()
+    {
+        List<int> _indexList = new List<int>();
+        int _currentNum = Random.Range(0, m_MaleStudentPrefab.Count);
+
+        for (int i = 0; i < m_MaleStudentPrefab.Count;)
+        {
+            if (_indexList.Contains(_currentNum))
+            {
+                _currentNum = Random.Range(0, m_MaleStudentPrefab.Count);
+            }
+            else
+            {
+                _indexList.Add(_currentNum);
+                i++;
+            }
+        }
+
+        for (int i = 0; i < m_MaleStudentPrefab.Count; i++)
+        {
+            GameObject _newStudent = Instantiate(m_MaleStudentPrefab[_indexList[i]]);
+            _newStudent.name = m_MaleStudentPrefab[_indexList[i]].name;
+            m_ModelID.Add(_indexList[i]);
+            _newStudent.gameObject.SetActive(false);
+            _newStudent.transform.SetParent(transform);
+            m_PoolingMaleStudentQueue.Enqueue(_newStudent);
 
         }
     }
@@ -70,11 +104,27 @@ public class InGameObjectPool : MonoBehaviour
         return _newChatBox;
     }
 
-    public static GameObject GetStudentObject(Transform _transform)
+    public static GameObject GetFemaleStudentObject(Transform _transform)
     {
-        if (Instance.m_PoolingStudentQueue.Count > 0)
+        if (Instance.m_PoolingFemaleStudentQueue.Count > 0)
         {
-            var _obj = Instance.m_PoolingStudentQueue.Dequeue();
+            var _obj = Instance.m_PoolingFemaleStudentQueue.Dequeue();
+            _obj.transform.SetParent(_transform);
+            _obj.gameObject.SetActive(true);
+            return _obj;
+        }
+        else
+        {
+            Debug.Log("풀이 비었습니다.");
+            return null;
+        }
+    }
+
+    public static GameObject GetMaleStudentObject(Transform _transform)
+    {
+        if (Instance.m_PoolingMaleStudentQueue.Count > 0)
+        {
+            var _obj = Instance.m_PoolingMaleStudentQueue.Dequeue();
             _obj.transform.SetParent(_transform);
             _obj.gameObject.SetActive(true);
             return _obj;
@@ -104,11 +154,18 @@ public class InGameObjectPool : MonoBehaviour
         }
     }
 
-    public static void ReturnStudentObject(GameObject _student)
+    public static void ReturnFemaleStudentObject(GameObject _student)
     {
         _student.gameObject.SetActive(false);
         _student.transform.SetParent(Instance.transform);
-        Instance.m_PoolingStudentQueue.Enqueue(_student);
+        Instance.m_PoolingFemaleStudentQueue.Enqueue(_student);
+    }
+
+    public static void ReturnMaleStudentObject(GameObject _student)
+    {
+        _student.gameObject.SetActive(false);
+        _student.transform.SetParent(Instance.transform);
+        Instance.m_PoolingMaleStudentQueue.Enqueue(_student);
     }
 
     public static void ReturnChatObject(GameObject _chat)

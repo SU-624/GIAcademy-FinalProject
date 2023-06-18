@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f7261a90f59030448c2987e8d2b4b44, type: 3}
+  m_Name: "\uAE30\uD68D1"
+  m_EditorClassIdentifier: 
+  m_ClassID: 100
+  m_ClassName: "\uC804\uC728\uC744 \uB290\uB07C\uAC8C\uD560 \uC2DC\uB098\uB9AC\uC624
+    \uB514\uC790\uC778"
+  m_ClassType: 0
+  m_ClassStatType: 1
+  m_OpenYear: 0
+  m_OpenMonth: 3,8
+  m_Sense: 6
+  m_Concentration: 3
+  m_Wit: 2
+  m_Technique: 0
+  m_Insight: 0
+  m_Money: 66000
+  m_Health: 8
+  m_Passion: 10
+  m_UnLockClass: 1

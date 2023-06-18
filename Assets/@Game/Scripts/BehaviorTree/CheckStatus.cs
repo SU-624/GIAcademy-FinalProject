@@ -6,29 +6,43 @@ using BehaviorDesigner.Runtime.Tasks;
 
 public class CheckStatus : Conditional
 {
-    private float successProbability = 0.2f;
+    //private int successProbability = 20;
 
     private GameObject m_InterActionObj;
-    public bool _isSuccess;
-    bool _isTargetObjSuccess;
+    //public bool _isSuccess;
+    //bool _isTargetObjSuccess;
 
     public override void OnStart()
     {
-        SharedGameObject m_Interaction = gameObject.GetComponent<BehaviorTree>().ExternalBehavior.GetVariable("InteractionObject").ConvertTo<SharedGameObject>();
-        m_InterActionObj = m_Interaction.Value;
-        _isSuccess = RandomSeed();
-        _isTargetObjSuccess = m_InterActionObj.GetComponent<BehaviorTree>().ExternalBehavior.FindTask<CheckStatus>()._isSuccess;
+        //_isSuccess = false;
+        m_InterActionObj = this.gameObject.GetComponent<Student>().InteractingObj;
+        //_isSuccess = RandomSeed();
     }
 
     public override TaskStatus OnUpdate()
     {
+        if (InGameTest.Instance == null)
+            return TaskStatus.Failure;
+
+        //if (!_isSuccess)
+        //    return TaskStatus.Failure;
+
+        if (InGameTest.Instance.m_ClassState != ClassState.nothing)
+            return TaskStatus.Failure;
+
+        if (m_InterActionObj == null)
+            return TaskStatus.Failure;
+
+        //if (gameObject.GetComponent<Student>().DoingValue != Student.Doing.FreeWalk)
+        //    return TaskStatus.Failure;
+
         bool _coolTime = this.gameObject.GetComponent<Student>().m_IsCoolDown;
         bool _isInteracting = this.gameObject.GetComponent<Student>().m_IsInteracting;
 
         bool _isTargetObjCoolTime = m_InterActionObj.GetComponent<Student>().m_IsCoolDown;
         bool _isTargetObjInteracting = m_InterActionObj.GetComponent<Student>().m_IsInteracting;
 
-        if (_isTargetObjSuccess && _isSuccess && !_coolTime && !_isInteracting && !_isTargetObjCoolTime && !_isTargetObjInteracting)
+        if (!_coolTime && !_isInteracting && !_isTargetObjCoolTime && !_isTargetObjInteracting)
         {
             ChangeStatus();
             return TaskStatus.Success;
@@ -37,26 +51,28 @@ public class CheckStatus : Conditional
         return TaskStatus.Failure;
     }
 
-    private bool RandomSeed()
-    {
-        float randomValue = Random.value;
+    //private bool RandomSeed()
+    //{
+    //    int randomValue = Random.Range(0, 101);
 
-        if (randomValue < successProbability)
-        {
-            return true;
-        }
-        return false;
-    }
+    //    if (randomValue < successProbability)
+    //    {
+    //        return true;
+    //    }
+
+    //    this.gameObject.GetComponent<Student>().m_IsCoolDown = true;
+    //    this.gameObject.GetComponent<Student>().InteractingObj = null;
+    //    m_InterActionObj.GetComponent<Student>().InteractingObj = null;
+    //    this.gameObject.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
+    //    return false;
+    //}
 
     private void ChangeStatus()
     {
         this.gameObject.GetComponent<Student>().m_IsInteracting = true;
         m_InterActionObj.GetComponent<Student>().m_IsInteracting = true;
 
-        this.gameObject.GetComponent<Student>().m_IsDialoguePlaying = true;
-        m_InterActionObj.GetComponent<Student>().m_IsDialoguePlaying = true;
-
         this.gameObject.GetComponent<Student>().DoingValue = Student.Doing.StartInteracting;
-        m_InterActionObj.GetComponent<Student>().DoingValue = Student.Doing.StartInteracting;
+        m_InterActionObj.GetComponent<Student>().DoingValue = Student.Doing.Idle;
     }
 }

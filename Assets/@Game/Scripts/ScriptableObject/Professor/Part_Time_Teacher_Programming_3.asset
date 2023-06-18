@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abb9ef05c3f84d345a1566c8aaff9f1b, type: 3}
+  m_Name: Part_Time_Teacher_Programming_3
+  m_EditorClassIdentifier: 
+  m_ProfessorID: 303
+  m_ProfessorName: "\uAF2C\uB9C8\uC544\uAC00\uC528"
+  m_ProfessorType: 2
+  m_ProfessorSet: "\uC678\uB798"
+  m_ProfessorPower: 3
+  m_ProfessorSkills:
+  - "\uC870\uAE30\uAD50\uC721"
+  - "\uB3CC\uC794\uCE58\uB54C \uCEF4\uD4E8\uD130\uB97C \uC7A1\uC558\uC5B4\uC694.
+    \uB0A0\uB54C\uBD80\uD130 \uC2F9\uC774 \uB2EC\uB790\uB358\uAC70\uC8E0."
+  m_ProfessorPay: 0
+  m_ProfessorHealth: 100
+  m_ProfessorPassion: 100
+  m_IsUnLockProfessor: 1

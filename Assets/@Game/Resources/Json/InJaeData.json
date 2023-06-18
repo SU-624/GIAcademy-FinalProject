@@ -1,0 +1,48 @@
+{
+"OriginalInJaeRecommendData" :[
+ {
+   "m_EmploymentID": 0,
+   "m_EmploymentName": "[퍼센] 던전 디자이너",
+   "m_CompanyID": 2,
+   "m_CompanyName": "Rexon",
+   "m_CompanyIcon": 2,
+   "m_CompanyGrade": 2,
+   "m_CompanyRequirementStats":{
+      "Insight": 10,
+      "Concentration": 20,
+      "Sense": 15,
+      "Technique": 8,
+      "Wit": 24
+   },
+   "m_CompanyRequirementSkill": "Creativity/Understanding",
+   "m_CompanyUnLock": true,
+   "m_CompanyUnLockCondition": 2,
+   "m_EmploymentText": "채용 공고 내용 - 올해로 20년이라는 역사를 맞이한 거대 MMORPG 단풍나무의 스토리 확장을 이끌어나갈 시나리오 기획자 모집",
+   "m_CompanySalary": 3000,
+   "m_CompanyJob": "시나리오 디자이너",
+   "m_CompanyPart": 0
+},
+ {
+   "m_EmploymentID": 1,
+   "m_EmploymentName": "[단풍마을] 단풍마을 시나리오",
+   "m_CompanyID": 2,
+   "m_CompanyName": "Rexon",
+   "m_CompanyIcon": 2,
+   "m_CompanyGrade": 2,
+   "m_CompanyRequirementStats": {
+      "Insight": 22,
+      "Concentration": 15,
+      "Sense": 24,
+      "Technique": 30,
+      "Wit": 24
+   },
+   "m_CompanyRequirementSkill": "PowerOfInquiry",
+   "m_CompanyUnLock": true,
+   "m_CompanyUnLockCondition": 3,
+   "m_EmploymentText": "채용 공고 내용 - 올해로 21년이라는 역사를 맞이함",
+   "m_CompanySalary": 3800,
+   "m_CompanyJob": "개발자",
+   "m_CompanyPart": 2
+}
+]
+}

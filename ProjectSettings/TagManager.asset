@@ -11,6 +11,13 @@ TagManager:
   - Programming
   - Art
   - ProductManager
+  - UI
+  - CharacterInfoPanel
+  - Instructor
+  - Interacting
+  - CharacterInfoButton
+  - GenreRoomBox
+  - Clicker
   layers:
   - Default
   - TransparentFX
@@ -18,10 +25,10 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Effects
+  - CameraLimitArea
+  - ClickInfo
+  - Clicker
   - 
   - 
   - 
@@ -47,4 +54,7 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Effects
+    uniqueID: 175476271
     locked: 0

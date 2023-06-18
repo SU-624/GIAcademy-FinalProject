@@ -1,0 +1,508 @@
+{
+  "EventScriptListData": [
+    {
+      "EventScriptID": 1100000,
+      "EventScriptTextStart": "PD#저..원장님, 계속된 과소비로 학원 운영에 어려움이 생겼습니다.\n이거..저희 어머니께서 취업축하선물로 준 용돈인데요,\n학원의 재부흥을 위해 기꺼이 헌납하겠습니다./PD#앞으로는 꼭 슬기로운 소비 부탁드릴게요!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 1100001,
+      "EventScriptTextStart": "PD#저..원장님, 학원에 돈이 없어서 이번달엔 화분에 영양제를 주지 못했습니다..\n그래도 다행히 홍보매니저가 이번에 집을 판 돈을 기부하겠다고했습니다./PD#홍보매니저를 봐서라도 꼭 현명한 소비를 부탁드려요.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 1100002,
+      "EventScriptTextStart": "Prof9#안녕하세요, 전 그림쟁이 밥이라고해요.\n지나가다가 여기 학원에 불뿜는 용을 보고 미적 영감이 떠올랐습니다.\n그 영감으로 학생들을 가르쳐보고싶어요!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#새로운 아트 강사님이 오셨네요.\n이제부터 밥아저씨 강사님에게 수업을 맡길 수 있습니다."
+    },
+    {
+      "EventScriptID": 1100003,
+      "EventScriptTextStart": "PD#원장님, 이재학 강사님께서 할 말이 있으시대요./Prof3#일평생 강의하면서 학생들의 눈망울이 이렇게 초롱초롱한 걸 본 적이 없습니다.\n이곳의 강사로서 후배양성을위해 뼈를 묻고싶습니다!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#새로운 기획 강사님이 오셨네요.\n이제부터 이재학 강사님에게 수업을 맡길 수 있습니다."
+    },
+    {
+      "EventScriptID": 1100004,
+      "EventScriptTextStart": "PD#원장님, 믹헬란젤로 강사님께서 할 말이 있으시대요./Prof10#비행기에서 학생들이 생각나 다시 왔습니다.\n이탈리아로 돌아가기 아까운 기회에요./Prof10#미술거장으로서 아트는 저에게 맡겨만주세요!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#새로운 아트 강사님이 오셨네요.\n이제부터 믹헬란젤로 강사님에게 수업을 맡길 수 있습니다."
+    },
+    {
+      "EventScriptID": 1100005,
+      "EventScriptTextStart": "PD#원장님, 잡스 강사님께서 할 말이 있으시대요./Prof14#흠흠..인정하고싶지않지만 상당히 높은 수준의 학생들이었어요.\n제 심금을 울릴만큼요.\n제가 이곳의 학생들의 수준을 더 끌어올려 드리겠습니다.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#새로운 프로그래밍 강사님이 오셨네요.\n이제부터 강동완 강사님에게 수업을 맡길 수 있습니다."
+    },
+    {
+      "EventScriptID": 2100000,
+      "EventScriptTextStart": "RPGDragon#쿠오오오!!쿠왕쿠왕!!끼에에엑!!/PD#이런, RPG방의 용이 갑자기 난리치네요. 상황을 해결해야겠는데요?",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "RPGDragon#진즉에 이럴것이지.\n앞으로는 월급 밀리지마쇼.\n나도 처자식이 있소.",
+      "EventScriptTextSelect2": "RPGDragon#쩝쩝쩝..냠냠♥",
+      "EventScriptTextSelect3": "RPGDragon#낑..낑..밀린월급 달란말야..\n월급도 제때 안주면서..",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 2100001,
+      "EventScriptTextStart": "ArtRan#원장님, 시뮬레이션방에 양털이 가득해요! \n냄새가 심해지는데.. \n좀 치워주시면 안될까요?/PD#이런, 방 수리하면서 미처 양털을 치우지 못했군요. \n처리비용이 만만치 않던데.. 어떡할까요?",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "PD#자금을 마련하기에 좋은방법이네요.",
+      "EventScriptTextSelect2": "PD#자금을 마련하기에 좋은방법이네요.",
+      "EventScriptTextSelect3": "ProRan#이야~ 공짜로 단체복도 주시고 감사합니다!\n잘입을게요!",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 2100002,
+      "EventScriptTextStart": "PD#퍼즐방을 수리하다가 우연히 빛이나는 퍼즐조각을 찾았습니다.\n어디서 빠진 것 같은데.. 어디다 둘까요?",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "PD#역시 쓰레기겠죠?\n쓰고난 자리는 깨끗이하라고 교육시킬게요.",
+      "EventScriptTextSelect2": "PD#헉! 퍼즐방 로켓날개 부품이었군요.\n하마터면 로켓이 추락할 뻔 했어요./제자리에 둡시다.",
+      "EventScriptTextSelect3": "PD#흠..블록조각은 아닌것같아요.\n그냥 제가 버릴게요.",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 2100003,
+      "EventScriptTextStart": "DesignRan#슈팅방 총소리가 너무 시끄러워서 집중이 안돼요.\n방음장치좀 해주세요.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "DesignRan#네?뭐라구요?\n귀가 먹먹해서 잘 안들려요..",
+      "EventScriptTextSelect2": "DesignRan#안하는것보단 낫겠죠.\n감사해요.",
+      "EventScriptTextSelect3": "DesignRan#와! 하나도 안들려요!\n드디어 집중할 수 있겠네요.",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 2100004,
+      "EventScriptTextStart": "ArtRan#액션방 땀냄새가 너무 심해요.\n윽..토할거같아../PD#액션방에 환기를 해야될 것 같습니다,\n문을 얼마나 열어둘까요?",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "ArtRan#우욱..냄새극혐..;;",
+      "EventScriptTextSelect2": "ArtRan#이왕 연 김에 좀만 더 열어두시지..",
+      "EventScriptTextSelect3": "ArtRan#야호! 이제 땀냄새 날 일이 없겠네요.\n땀냄새보단 추운게 낫죠.",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 2100005,
+      "EventScriptTextStart": "ProRan#스포츠장르방이 제일 재밌어요!\n근데 경기장에 먹거리가 없는게 좀 아쉬워요.\n먹거리를 제공하실 생각은 없나요? 참고로 전 오징어가 좋아요.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "ProRan#역시 우리 원장님 최고!\n다이어트는..내일하면되죠!",
+      "EventScriptTextSelect2": "ProRan#오우야..그건 좀 과하지않을까요?\n학원비가 비싸지는건 아니겠죠?",
+      "EventScriptTextSelect3": "ProRan#겨우 초콜릿?\n그냥 제가 매점에서 사는게 낫겠어요.",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 2100006,
+      "EventScriptTextStart": "AdFairy#최근 어드벤쳐방의 버섯이 자꾸 없어지고있어요.\n저번에도 기획학생 몇몇이 훔치다 걸렸다구요.\n이대로 두실생각인가요?",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "AdFairy#세상에! 교육자 맞으신가요?\n그정도까지 바란건 아니라구요.",
+      "EventScriptTextSelect2": "AdFairy#좋아요. 걸리기만해봐 이녀석들.",
+      "EventScriptTextSelect3": "AdFairy#흐흐흐..그말 후회없는거죠\n그렇담 제 방식대로..",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 2100007,
+      "EventScriptTextStart": "RhythmNPC#췌킷췌킷♪원장님,YO!\n리듬방 음악이 너무 올드해YO!\n음악좀 바꿔주세요YO!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "RhythmNPC#HOLY..너무 홀리해YO..\n에이멘..",
+      "EventScriptTextSelect2": "RhythmNPC#OH!코리안 쏘울!\n이게 진짜 K-POP이지!",
+      "EventScriptTextSelect3": "RhythmNPC#Y! 신나는 흥을 주체할수가 없어YO!\n흔들어 흔들어~",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 2100008,
+      "EventScriptTextStart": "ArtRan#원장님! 원장님!\n자판기가 제 돈을 먹었어요!\n어떡해요?ㅠㅠ",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "ArtRan#원장님!!!!!!원장님!!!!!!!!\n자판기가 제 돈 먹었다구요!!/ArtRan#….엄마한테 다이를거야ㅠㅠ",
+      "EventScriptTextSelect2": "ArtRan#역시 울 원장님 짱!",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 1103000,
+      "EventScriptTextStart": "PD#어어..! 함부로 들어오시면 안..!/Creditor#이봐! 내가 빚내서 투자해줬더니 실적이 이게 뭐야!/Creditor#새로운 원장이라며? 뭔가 대책이 있긴 한거야?! 내 돈 어떡할거야!!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "믿어달라고 설득중..",
+      "EventScriptTextSelect2": "투자자들이 뿔나서 돈을 요구하는중..",
+      "EventScriptTextSelect3": "급한불을 끄기위해 비상금 털어주는중..",
+      "EventScriptTextFin": "PD#흑흑..힘내세요 원장님. 감사하게도 투자자분들이 다시한번 기회를 줬네요./PD#아자아자 파이팅!"
+    },
+    {
+      "EventScriptID": 1103001,
+      "EventScriptTextStart": "PD#원장님, 일전에 인터뷰한 바니통신에 저희 내용이 실렸습니다. 확인해보시죠./NewsP#이 시대의 발빠른 게임뉴스! 바니통신 3월호♥/NewsP#몰락의 길을 걷고있던 GI서당에 새로운 원장부임!\n인터뷰결과 딱히 바뀌는건 없을예정★/NewsP#과연 모두의 예상을 뒤엎고 과거의 영광을 되찾을 수 있을지?/NewsP#이상 바니통신 뿅!♥/PD#후..이럴때일수록 저희가 힘을 키워야합니다!/PD#그래도 조금이나마 세간의 관심을 얻었다고 볼 수 있겠네요~",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 1103002,
+      "EventScriptTextStart": "PD#원장님, 손님이 오셨습니다./Prof5#반갑습니다.바니통신에서 GI서당이 부활했다는 소식을 듣고 기쁜마음에 달려왔습니다./Prof5#비록 지금은 비루해진 학원이지만 제가 여기 출신이거든요./Prof5#젊은 시절 이곳에서 공부하며 꿈과 희망을 키웠던 때를 생각하면 너무나 기쁜 소식이 아닐 수 없었습니다./Prof5#제가 이곳에서 학생들을 가르쳐보고싶은데 어떠신지요?/PD#헉! 게임계 TOP10안에 드는 기업의 회장님께서 직접 강사를 자처하셨어요!/PD#망설일것 없이 바로 채용하도록 합시다!/Prof5#하하! 감사합니다. 최선을 다하도록하죠.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 1203000,
+      "EventScriptTextStart": "PD#원장님, 오늘 초청강사분이 오셨습니다./Prof3#음~이 불쾌한 불협화음!\n걱정마세요. 사운드의 마술사인 제가 가르쳐드리죠.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "사운드란..",
+      "EventScriptTextSelect2": "거기, 졸지마시구요.",
+      "EventScriptTextSelect3": "그래요 이 음율! 좋아요!",
+      "EventScriptTextFin": "Prof3#아~이 아름다운 선율.\n마음이 편안해지는군요."
+    },
+    {
+      "EventScriptID": 1203001,
+      "EventScriptTextStart": "PD#원장님, 오늘 초청강사분이 오셨습니다./Prof10#Buongiorno~이탈리아에서 온 믹헬란젤로라고합니다.\n제 미적 노하우를 전수해드리죠~",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "조각이란 말이죠..",
+      "EventScriptTextSelect2": "훌륭해요~엑셀렌떼!",
+      "EventScriptTextSelect3": "멋진 학생들이군요.",
+      "EventScriptTextFin": "Prof10#이탈리아말로 강의했는데 다 알아듣는군요.\n탐나는 학생들이에요."
+    },
+    {
+      "EventScriptID": 1203002,
+      "EventScriptTextStart": "PD#원장님, 오늘 초청강사분이 오셨습니다./Prof14#사과가 뭐라고 생각하시나요?\n제 고오오급철학을 가르쳐드리죠.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "오류가 나면 주석처리하세요.",
+      "EventScriptTextSelect2": "어 되네? 왜 되지?",
+      "EventScriptTextSelect3": "어 안되네? 왜 안되지?",
+      "EventScriptTextFin": "Prof14#와우, 이정도 코딩 수준을 가진 학생들이라니..!\n대단하군요!"
+    },
+    {
+      "EventScriptID": 1203003,
+      "EventScriptTextStart": "PD#오늘은 예정했던 한강벚꽃나들이 가는 날입니다.\n벚꽃들이 얼마나 예쁘게 폈을지 너무 기대돼요/PD#어서 출발하시죠!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "벚꽃나무 아래서 단체사진 찰칵!",
+      "EventScriptTextSelect2": "공원에서 맛있는거 먹는중",
+      "EventScriptTextSelect3": "돗자리 누워서 자유 만끽하는중",
+      "EventScriptTextFin": "PD#정말 즐거운 나들이었어요.\n날이 좋을땐 이렇게 나들이 가는것도 나쁘지 않을것같아요."
+    },
+    {
+      "EventScriptID": 2103000,
+      "EventScriptTextStart": "Reporter#꺄! 안녕하세요~이 시대의 발빠른 게임뉴스! 바니통신에서 인터뷰하러 왔습니다♥/Reporter#흠흠! 몰락직전 GI서당에 새로오신 경영인, 맞으시죠?~/Reporter#현 게임인재양성기관 중 제일 별.로.인 GI서당을 어떻게 운영하실 계획인지 여쭤봐도 될까요?",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "Reporter#와우! 열정이 느껴지는 답변이네요. 하지만 열정은 식기마련이죠./Reporter#인터뷰 감사합니다!",
+      "EventScriptTextSelect2": "Reporter#헐~설마 MBTI가 ISFJ?? 재미없어라~/Reporter#여튼 인터뷰 감사합니다!",
+      "EventScriptTextSelect3": "Reporter#와우! 대충해도 다 씹어먹을 자신있다.. 뭐 그런건가요?/Reporter#씹어먹히고있는 자의 처절한 왕좌되찾기! 기대되네요★/Reporter#인터뷰 감사합니다!",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 2103001,
+      "EventScriptTextStart": "DesignRan#기획반 컴퓨터가 먹통이 됐어요! 아악 내 기획서!!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "DesignRan#고쳐주셔서 감사해요. 근데 한두번이 아니네요..",
+      "EventScriptTextSelect2": "DesignRan#진짜 최악이야. 애초에 기대도 안했어요.",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 1104000,
+      "EventScriptTextStart": "EZPZ#소식듣고왔어요. 새로온 원장이라면서요?/EZPZ#힘들겠네. 이런 깡통학원 물려받아서. 호호호!/EZPZ#얼마나 갈지, 지켜볼게요. 받아요. 이거라도 없으면 힘들걸? 깔깔깔!/PD#됐으니까 가주세요!/EZPZ#어머! 무례하기는. 싫음말아요. 흥!/PD#정말 어이없네요. 꼭 저들의 코를 눌러줍시다!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 1104001,
+      "EventScriptTextStart": "PD#원장님, 우편이 하나 도착했어요./Gletter#GI서당에 새로운 원장이 부임했다는 소식을 들었네. 흠. 과연 GI서당이 명예를 회복할 수 있을지 기대가 되는구만./Gletter#지금은 건물조차 위태롭지만 인생이 그래서 재밌는거 아니겠나? 자네가 다시 한번 일으켜보게./Gletter#조만간 보지. By 협회장/PD#원장님, 이게 같이 동봉되어있네요. 역시 협회장님이세요!/PD#기대에 부응하여 꼭 보답하도록합시다!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 1104002,
+      "EventScriptTextStart": "Biopop#저어..GI가 부활했다는 소식을 듣고 찾아왔습니다./Biopop#저희는 바이오팝입니다. 비록 지금은 작은 게임회사지만 가능성은 큰 회사에요..!/Biopop#이곳에서 배출되는 인재는 나쁘지 않다고 들었습니다. 저희회사에 인재를 추천해주실 수 있나요?/PD#물론이죠! 원장님, 물불가릴때가 아니에요. 당장 컨택합시다.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#정말 즐거운 나들이었어요.\n날이 좋을땐 이렇게 나들이 가는것도 나쁘지 않을것같아요."
+    },
+    {
+      "EventScriptID": 1104003,
+      "EventScriptTextStart": "PD#원장님! 날도좋은데 오늘은 한강벚꽃나들이 어떠세요?\n학생들 분위기 환기도 시킬겸!/PD#원래 나들이는 갑자기 가야 제맛이죠!\n네?좋다구요? 와아~/PD#원장님 최고! 자, 가시죠!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "벚꽃나무 아래서 단체사진 찰칵!",
+      "EventScriptTextSelect2": "공원에서 맛있는거 먹는중",
+      "EventScriptTextSelect3": "돗자리에 누워서 자유 만끽하는 중",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 1204001,
+      "EventScriptTextStart": "PD#곧 인디게임 설명회가 시작됩니다.\n학생들을 부를게요.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "한국 인디게임을 칭찬하는중",
+      "EventScriptTextSelect2": "K-인디게임 뽕차오르는중",
+      "EventScriptTextSelect3": "좋은 아이디어 생각나는중",
+      "EventScriptTextFin": "PD#인디에 대한 열정이 대단하신 분이었어요.\n우리 학원에서도 인디게임의 큰 별이 나오겠죠?"
+    },
+    {
+      "EventScriptID": 2204002,
+      "EventScriptTextStart": "PD#오늘 저녁은 단체회식이 예정되어있습니다.\n회식장소를 어디로 정할까요?/PD#참고로 전 다 좋아요!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 3104000,
+      "EventScriptTextStart": "PD#오늘은 우리 학원과 자매결연을 맺은 최강AI학원인 쳇,GPT로 파견학습을 보내는 날입니다.\n아쉽게도 한 명만 보내달라고 요청이왔네요.\n어떤 학생을 보낼까요?",
+      "EventScriptTextMiddle": "PD#알겠습니다. 학생에게 준비하라고 해둘게요.\n파견학습은 4일간 진행됩니다.",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#원장님, 쳇,GPT로 파견학습을 갔던 학생이 돌아왔습니다./SelectedStu#오 세상에, 정말 뛰어난 AI기술이었어요! 이러다가 일자리 뺏기는건 아닌지 걱정이 많이 들었다니깐요?"
+    },
+    {
+      "EventScriptID": 3204000,
+      "EventScriptTextStart": "PD#오늘은 우리 학원과 자매결연을 맺은 내신최강! 국영수아카데미로 파견학습을 보내는 날입니다.\n많이보내는건 조금 민폐이기때문에 한 명만 보내기로 합의했습니다.\n어떤학생을 보낼까요?",
+      "EventScriptTextMiddle": "PD#알겠습니다. 학생에게 준비하라고 해둘게요.\n파견학습은 3일간 진행됩니다.",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#원장님, 국영수아카데미로 파견학습을 갔던 학생이 돌아왔습니다./SelectedStu#너무 내신위주의 수업이었어요. 뭔 게임을 교과서보고 배운담?"
+    },
+    {
+      "EventScriptID": 1105000,
+      "EventScriptTextStart": "PD#원장님!!원장님!! 학원에 있던 1대 원장님의 낡은 금고 안에서 램카드 하나를 발견했어요./PD#아무래도 원장님께서 소장하고계시던 물건인 것 같은데, 낡고 바랬지만 제 촉이 엄청난 물건이라고 말하고있어요./PD#아! 제 지인중에 골동품 수집가가 있는데 한번 여쭤볼게요.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 1105001,
+      "EventScriptTextStart": "PD#원장님, 저번에 말씀드린 수집가분이 오셨습니다./Collector#헤헤 진귀한 물품이 있다고해서 찾아왔습죠./PD#낡은 금고에서 발견한 램카드에요. 엄청난 물건인거 같은데 감정좀 부탁드려요./Collector#물론입죠~",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "돋보기들고 요리조리 보는중…",
+      "EventScriptTextSelect2": "흠…예삿물건이 아닌것 같은데..",
+      "EventScriptTextSelect3": "아니!!! 이건!!!!",
+      "EventScriptTextFin": "Collector#놀라워요! 이건 조선시대에 만들어진 저잣거리 리미티드 에디션 램카드에요!/Collector#오 세상에, 고서적에서만 보던 것을 눈으로 직접 보다니! 감격스럽군요./Collector#경매에 붙이면 아주 인기가 많을 것 같네요./PD#역시! 제 촉은 틀리지 않았어요. 경매에 붙여 학원자금을 마련해봅시다."
+    },
+    {
+      "EventScriptID": 1105002,
+      "EventScriptTextStart": "PD#원장님, 램카드 경매가 곧 진행된다고합니다. 과연 얼마에 팔릴까요?/PD#빨리 가봅시다! 너무 기대되네요★",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "자자 경매시작합니다~!",
+      "EventScriptTextSelect2": "폭발적인 인기를 얻는중",
+      "EventScriptTextSelect3": "가격이 천정부지로 솟는중",
+      "EventScriptTextFin": "PD#세상에.. 저희가 보물을 찾아버렸네요~완전 대박이에요!/PD#이정도면 학원을 한 단계 업그레이드시키는것도 가능하겠는데요?/PD#정말 잘됐어요!야호!"
+    },
+    {
+      "EventScriptID": 1105003,
+      "EventScriptTextStart": "Prof2#아브라카다브라~휴, 텔레포트는 항상 힘들다니까./Prof2#어머,안녕하세요? 혹시 일손 안필요하나 해서요./Prof2#여기 게임학원이죠? 제가 마법기획은 기가막히게 잘 하는데말이죠./PD#안그래도 기획 강사를 모집하려했는데 잘됐네요! 잘 오셨어요!/Prof2#호호~감사해요. 학생들에게 마법처럼 환상적인 기획서 쓰는법을 전수해드리죠!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 1205000,
+      "EventScriptTextStart": "SweetGirl#안녕하세요! 스.윗.트! 걸~이에요~\n해체되기 일보직전이었는데 초청해주셔서 너무 감사해요!\n최선을 다해 공연할게요ㅎㅎ",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "안녕안녕안녕하세요~♬",
+      "EventScriptTextSelect2": "처음만난 사람들도 안녕하세요~♬",
+      "EventScriptTextSelect3": "악플은 노노노~!",
+      "EventScriptTextFin": "SweetGirl#후아..오랜만에 느껴보는 뜨거운 반응과 열기!\n가수생활하면서 처음느껴봐요!\n감사합니다!!/PD#안녕안녕하세요~입에 착착 감기는 곡이네요! 스위트걸의 멋진공연으로 학생들의 사기가 많이 올라간 것 같아요!"
+    },
+    {
+      "EventScriptID": 1205001,
+      "EventScriptTextStart": "PD#오늘 특강을 맡을 졸업생이 도착했습니다./ArtRan#후배들에게 미약하지만 저의 경험과 노하우를 모두 전수하고 가겠습니다!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "AI가 너무 무섭다고 하소연하는중",
+      "EventScriptTextSelect2": "오타쿠애니그림이 돈된다고 귀띔하는중",
+      "EventScriptTextSelect3": "답은 메타버스라고 설득하는중 ",
+      "EventScriptTextFin": "ArtRan#헤헤..후배들아 화이팅!(도망쳐)"
+    },
+    {
+      "EventScriptID": 1205002,
+      "EventScriptTextStart": "PD#오늘 특강을 맡을 졸업생이 도착했습니다./ProRan#오랜만입니다 원장님.\n귀여운 후배들을 빨리 보고싶네요.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "C++은 거지같다고 욕하는중",
+      "EventScriptTextSelect2": "하드코딩했다가 털린거 자랑하는중",
+      "EventScriptTextSelect3": "팀장님도 스택오버플로 쓴다고 꼰지르는중",
+      "EventScriptTextFin": "ProRan#후배들을 어서 현업에서 봤으면 좋겠네요~\n화이팅!"
+    },
+    {
+      "EventScriptID": 1205003,
+      "EventScriptTextStart": "PD#오늘 특강을 맡을 졸업생이 도착했습니다./DesignRan#잘 지내셨죠?\n후배들에게 제가 했던 실수들을 공유해주려고요.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "졸플은 하지말라고 설득하는중",
+      "EventScriptTextSelect2": "인디게임 하지마라고 말리는중",
+      "EventScriptTextSelect3": "답은 MMORPG라고 주입시키는중",
+      "EventScriptTextFin": "DesignRan#후배들에게 한마디만 더하고갈게요.\n\"늦지않았어 플밍으로 전과해\""
+    },
+    {
+      "EventScriptID": 3105000,
+      "EventScriptTextStart": "PD#원장님, 협회에서 전국 게임꿈나무 인터뷰를 진행한다고합니다.\n한 명만 보내달라고하는데 누굴 보낼까요?",
+      "EventScriptTextMiddle": "PD#알겠습니다.\n인터뷰는 2일 후 진행됩니다.",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "SelectedStu#원장님, 게임꿈나무 인터뷰를 마치고 돌아왔습니다.\n최대한 좋게 말했으니 걱정하지마세요."
+    },
+    {
+      "EventScriptID": 1106000,
+      "EventScriptTextStart": "PD#원장님! 게임협회장님께서 깜짝방문을 하셨어요./Chairman#허허 이보게 자네, 예상외구만. 바니통신 1면이 자네얘기로 도배되어있어. \n단기간에 이만큼 실적쌓기가 쉽지않을텐데.. 비결이 뭔가?",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "Chairman#자네 아버지는 훌륭했지…고집때문에 트렌드를 따라가지못했지만./Chairman#실력만큼은 인정하네. 역시 피는 못속이구만!/Chairman#다음 실적도 기대하겠네. 내 지켜보지.",
+      "EventScriptTextSelect2": "Chairman#암, 그렇고말고. 눈치는 있는 친구구만./Chairman#내 계속 관심을 가질테니 다음 실적도 기대해봐도 좋겠지?/Chairman#실망시키지 말게나.",
+      "EventScriptTextSelect3": "Chairman#하하하! 젊은 청년이 아주 맹랑하군! 마음에 들어./Chairman#그럼 다음 실적도 기대해봐도 되겠지?/Chairman#자네 아버지처럼 날 실망시키지 않겠다고 믿겠네.",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 1106001,
+      "EventScriptTextStart": "PD#날씨도 화창하니 잠깐 짬내서 대청소하면 좋을 것 같아요!/PD#공부는 깨끗한 환경에서 더 잘되는 법이죠~",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "구석구석 깨끗하게~",
+      "EventScriptTextSelect2": "본체 위 먼지터는중",
+      "EventScriptTextSelect3": "환기를 위해 문을 활짝!",
+      "EventScriptTextFin": "PD#와! 바닥이 반짝반짝거려요!/힘들었지만 보람찬 시간이었어요."
+    },
+    {
+      "EventScriptID": 1106002,
+      "EventScriptTextStart": "NewsP#이 시대의 발빠른 게임뉴스! 바니통신 6월호♥/NewsP#대박사건! 왕의귀환인가? 몰락할것 같던 GI서당의 재림! 2분기 실적 상위권에 당당히 진입!/NewsP#경쟁게임학원들이 바짝 긴장중?! 앞날이 기대되는 상황!/NewsP#이상 바니통신 뿅!♥/PD#와우! 이제 다들 긴장좀 하겠네요. 이 기세로 쭉쭉 나아갑시다!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 2206000,
+      "EventScriptTextStart": "BTS#다나나이너마잍! 여기가 K-게임의 혁신을 일으킬 게임학원이군요!\n키야~저희 멤버들중에도 단풍잎이야기 덕후가있는데 참 잘됐어요!/BTS#여기서 팬사인회를 열 수 있어서 영광입니다.\n근데..사인회 진행방식에따라 가격이 좀 다릅니다만은..",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "BTS#흠..셀카는 포함되어있지 않으므로 사진찍으시면 고소하겠습니다.\n이봐요! 찍지마세요!",
+      "EventScriptTextSelect2": "BTS#좋아요! 셀카는 2장씩만 가능합니다. 자, 다음!",
+      "EventScriptTextSelect3": "BTS#하핫! 이정도는 되야죠! 저녁은 뭘먹을까요?",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 3206000,
+      "EventScriptTextStart": "PD#세계 3대 게임쇼인 미국 켄터키 게임쇼가 열렸습니다.\n올해 켄터키 게임쇼를 관람할 영광의 학생을 선정해주세요. ",
+      "EventScriptTextMiddle": "PD#알겠습니다.\n학생에게 준비하라고 해둘게요.\n관람은 5일간 진행됩니다.",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#원장님, 학생이 켄터키 게임쇼 관람을 마치고 돌아왔습니다./SelectedStu#OMG! 세계3대 게임쇼라고 불리는 이유가 있었어요!\n엄청난 경험이었습니다."
+    },
+    {
+      "EventScriptID": 1207001,
+      "EventScriptTextStart": "PD#오늘은 여름 계곡 MT를 가는 날입니다./DesignRan#너무너무 기대 돼!/ArtRan#최선을 다해 놀겠어요.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#원장님, 여름 계곡 MT를 무사히 다녀왔습니다./ProRan#계곡에서 새로운 사랑을 찾은 것 같아요.//DesignRan#올챙이에서 개구리가 되는 성장 게임을 만들어야겠어."
+    },
+    {
+      "EventScriptID": 3107000,
+      "EventScriptTextStart": "PD#원장님, 문화장학재단에서 주최하는 K-Game우수장학생 선발시즌입니다.\n우리학원에서는 누구로 지원해볼까요?",
+      "EventScriptTextMiddle": "PD#알겠습니다.\n면접준비 시켜둘게요.\n결과는 3일뒤에 발표됩니다.",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#원장님, 문화장학재단 우수학생선발 결과가 나왔습니다.\n결과는../PD#선정됐네요!! 정말 잘됐어요!\n이 기쁜 소식을 학생에게 전달하겠습니다./SelectedStu#저..정말인가요?! 우와 감사합니다, 원장님!!\n열심히해서 이 학원을 빛낼게요!"
+    },
+    {
+      "EventScriptID": 1108000,
+      "EventScriptTextStart": "PD#원장님! 아카데미 문 앞에 이런게 놓여져 있었어요.\n한번 살펴보세요./letter#이 편지는 영국에서 최초로 시작되어 일 년에 한 바퀴 돌면서 받는 사람에게 행운을 주었고 지금 당신에게로 옮겨진 이 편지는 4일 안에 당신 곁을 떠나야합니다./PD#으아아으악 이게 뭐람! 에퉤퉤퉤",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#크흠흠.. 앞으로는 이런게 오지 않도록 주의가 필요가 필요해보이네요."
+    },
+    {
+      "EventScriptID": 3208000,
+      "EventScriptTextStart": "PD#세계 3대 게임쇼인 독일 게임스콤이 열렸습니다.\n올해 게임스콤을 관람할 영광의 학생을 선정해주세요.",
+      "EventScriptTextMiddle": "PD#알겠습니다.\n학생에게 준비하라고 해둘게요.\n관람은 5일간 진행됩니다.",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#원장님, 학생이 게임스콤 관람을 마치고 돌아왔습니다./SelectedStu#와우! 정말 멋진 관람이었어요.\n소세지도 잔뜩먹고!\n감사합니다!"
+    },
+    {
+      "EventScriptID": 1209001,
+      "EventScriptTextStart": "Pumpkin#쿠후후 해피 할로윈!\n모두들 사탕 내놔!!!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "모두에게 사탕 뿌리는 중",
+      "EventScriptTextSelect2": "할로윈 코스튬 콘테스트 진행중",
+      "EventScriptTextSelect3": "어쩔 수 없이 할로윈 컨셉 게임 구상중",
+      "EventScriptTextFin": "PD#아하하 즐거운 할로윈 축제네요~\n학생들이 모두들 즐거워하고 있어요./PD#어머나? 할로윈 코스튬 콘테스트가 유명세를 탔어요! "
+    },
+    {
+      "EventScriptID": 3209000,
+      "EventScriptTextStart": "PD#세계 3대 게임쇼인 동경 게임박람회가 열렸습니다.\n올해 동경 게임박람회를 관람할 영광의 학생을 선정해주세요.",
+      "EventScriptTextMiddle": "PD#알겠습니다.\n학생에게 준비하라고 해둘게요.\n관람은 5일간 진행됩니다.",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#원장님, 학생이 동경 게임박람회 관람을 마치고 돌아왔습니다./SelectedStu#스바라시! 정말 최고의 행사였어요.\n많은걸 배우고왔습니다."
+    },
+    {
+      "EventScriptID": 1112000,
+      "EventScriptTextStart": "PD#원장님! 아카데미 문 앞에 이런게 놓여져 있었어요.\n한번 살펴보세요./Gift#따스한 겨울 보내세요 사랑해요.",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "PD#누가 보낸걸까요? 산타의 선물인가봐요~/PD#행복한 12월이네요."
+    },
+    {
+      "EventScriptID": 2112000,
+      "EventScriptTextStart": "Salvation#허허, 안녕하십니까? 자애로우신 주님의 이름으로 구세군 모금을 하고있습니다./Salvation#원장님, 이번 겨울 따뜻한 마음을 담아 사랑을 베풀어주시지 않으련지요?",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "Salvation#허허허, 그러실 줄 알았습니다.\n이 은혜는 널리 퍼뜨려드리죠!",
+      "EventScriptTextSelect2": "Salvation#쓰읍..좀 약하긴 하지만..\n자애로우신 주님의 이름으로 용서해드리겠습니다.",
+      "EventScriptTextSelect3": "Salvation#이런 쫌상들같으니.. 당신 지옥갈거야!! 고투헬!!",
+      "EventScriptTextFin": ""
+    },
+    {
+      "EventScriptID": 2212000,
+      "EventScriptTextStart": "PD#원장님! 크리스마스 이벤트가 예정되어있습니다. 올해엔 어떤 이벤트를 진행할까요?",
+      "EventScriptTextMiddle": "PD#알겠습니다.\n기대가 되네요!",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": "Santa#홀홀홀! 메리크리스마스~"
+    },
+    {
+      "EventScriptID": 2101000,
+      "EventScriptTextStart": "PD#큰일났어요! \n세무감사팀이 도착했어요 어떡하죠?/Auditman#세무 조사 시작하도록 하겠습니다./Auditman#찾아라!",
+      "EventScriptTextMiddle": "",
+      "EventScriptTextSelect1": "",
+      "EventScriptTextSelect2": "",
+      "EventScriptTextSelect3": "",
+      "EventScriptTextFin": ""
+    }
+  ]
+}

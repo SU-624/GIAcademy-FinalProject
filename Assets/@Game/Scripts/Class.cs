@@ -7,11 +7,13 @@ namespace StatData.Runtime
 
         protected ClassData m_ClassData;
 
+        public int m_ClassID => m_ClassData.ClassID;
         public string m_ClassName => m_ClassData.ClassName;
           
         public StudentType m_ClassType => m_ClassData.ClassType;
         public ClassType m_ClassStatType => m_ClassData.ClassStatType;
-        public int m_OpenMonth => m_ClassData.OpentMonth;
+        public string m_OpenMonth => m_ClassData.OpentMonth;
+        public string m_OpenYear => m_ClassData.OpenYear;
 
         public int m_Sense => m_ClassData.Sense;
         public int m_Concentration => m_ClassData.Concentration;
@@ -21,6 +23,8 @@ namespace StatData.Runtime
 
         public int m_Money => m_ClassData.Money;
         public int m_Health => m_ClassData.Health;
+
+        public bool m_UnLockClass => m_ClassData.UnLockClass;
 
         public Class()
         {
