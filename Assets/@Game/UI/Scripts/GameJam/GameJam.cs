@@ -2,45 +2,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+
 using Coffee.UIExtensions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public struct SaveGameJamData
-{
-    public Student m_StudentData;
-    public GameJamInfo m_GameJamInfoData;
-    public GameJamData m_GameJamData;
-}
 
 struct GenreValuePair
 {
     public GenreStat genre;
     public int value;
-}
-
-// 게임잼을 실행하고 나서 저장해야 할 정보들
-public struct GameJamData
-{
-    public double m_Score;
-    public string m_Genre;
-    public string m_Rank;
-    public string m_GameName;
-    public int m_Awareness;
-    public int m_PracticalTalent;
-    public int m_Management;
-    public int m_MakeYear;
-    public int m_MakeMonth;
-    public double m_Funny;
-    public double m_Perfection;
-    public double m_Graphic;
-    public double m_StudnetGenre;
-    public double m_TotalGenreScore;
-    public List<Student> m_GM;
-    public List<Student> m_Art;
-    public List<Student> m_Programming;
 }
 
 /// <summary>
@@ -51,48 +25,83 @@ public struct GameJamData
 /// </summary>
 public class GameJam : MonoBehaviour
 {
+    enum ResultConcept
+    {
+        슈퍼히어로,
+        대난투,
+        미소녀,
+        미래도시,
+        고대유적,
+        마법,
+        외계인,
+        서부총잡이,
+        드래곤,
+        스팀펑크,
+        시간여행,
+        비밀의숲,
+        노래방,
+        아이돌,
+        축구,
+        태권도,
+        농구,
+        꿈,
+        정치권력,
+        판타지,
+        검은마법사
+    }
+
     public delegate void ActivateGameShowButtonEventHandler(bool activate);
+
     public static event ActivateGameShowButtonEventHandler OnActivateButtonHandler;
 
     public delegate void DataChangedEventHandler();
+
     public static event DataChangedEventHandler DataChangedEvent;
 
     public delegate void SkillConditionDataChangedEventHandler();
+
     public static event SkillConditionDataChangedEventHandler SkillConditionDataChangedEvent;
 
     public static string[] GenreNameList = new string[] { "액션", "시뮬레이션", "어드벤쳐", "슈팅", "RPG", "퍼즐", "리듬", "스포츠" };
     public static string[] AbilityNameList = new string[] { "통찰", "집중", "감각", "기술", "재치" };
 
-    public int[] RiseGMStatList = new int[5];                                               // 등급에 따른 파트별 상승 스탯
-    public int[] RiseArtStatList = new int[5];                                              // 
-    public int[] RiseProgrammingStatList = new int[5];                                      //
+    public int[] RiseGameDesignerStatList = new int[5];                                                                     // 등급에 따른 파트별 상승 스탯
+    public int[] RiseArtStatList = new int[5];                                                                              // 
+    public int[] RiseProgrammingStatList = new int[5];                                                                      //
 
-    public int[] GMRequirementStatList = new int[5];
+    public int[] GameDesignerRequirementStatList = new int[5];
     public int[] ArtRequirementStatList = new int[5];
     public int[] ProgrammingRequirementStatList = new int[5];
 
-    private List<GameJamInfo> m_DummyGameJamList = new List<GameJamInfo>();                 // 원본데이터를 담고있는 리스트 중에서 조건에 해당하는 정보만 잠시 담아주는 리스트
-    private List<GameJamInfo> m_FixedGameJam = new List<GameJamInfo>();
-    private List<GameJamInfo> m_RandomGameJam = new List<GameJamInfo>();
+    private List<GameJamInfo> m_DummyGameJamList = new List<GameJamInfo>();                                                 // 원본데이터를 담고있는 리스트 중에서 조건에 해당하는 정보만 잠시 담아주는 리스트
 
-    private Dictionary<string, int> m_GameJamEntryCount = new Dictionary<string, int>();    // 각 게임잼에 몇 번을 참여했는지 
-    private Dictionary<string, int> m_NeedGMStat = new Dictionary<string, int>();           // 필수 스탯의 이름과 값을 저장해둬야한다.
+    private static List<GameJamInfo> m_FixedGameJam = new List<GameJamInfo>();
+    private static List<GameJamInfo> m_RandomGameJam = new List<GameJamInfo>();
+
+    private Dictionary<string, int> m_GameJamEntryCount = new Dictionary<string, int>();                                    // 각 게임잼에 몇 번을 참여했는지 
+
+    private Dictionary<string, int> m_NeedGameDesignerStat = new Dictionary<string, int>();                                 // 필수 스탯의 이름과 값을 저장해둬야한다.
     private Dictionary<string, int> m_NeedArtStat = new Dictionary<string, int>();
     private Dictionary<string, int> m_NeedProgrammingStat = new Dictionary<string, int>();
 
-    private SaveGameJamData m_SaveGameJamData = new SaveGameJamData();                      // 게임잼이 끝난 뒤 저장할 데이터들
+    private GameJamSaveData m_RunningGameJameData = new GameJamSaveData();                                                  // 지정한 달에 게임잼을 진행시켜줄 때 필요한 변수
 
-    private List<SaveGameJamData> m_GMStudentData = new List<SaveGameJamData>();            // 선택된 학생들의 데이터들을 담을 리스트
-    private List<SaveGameJamData> m_ArtStudentData = new List<SaveGameJamData>();
-    private List<SaveGameJamData> m_ProgrammingStudentData = new List<SaveGameJamData>();
-    private List<SaveGameJamData> m_ToBeRunning = new List<SaveGameJamData>();
-    private List<GameDifficulty> m_GameJamDifficultiesList = new List<GameDifficulty>();    // 게임잼 난이도를 판별해주기 위해 기준을 넣어 둘 리스트
+    private GameJamInfo m_NowGameJamInfo = new GameJamInfo();                                                               // 이번에 선택한 게임잼 원본 데이터들
+
+    private List<GameJamSaveData> m_ToBeRunning = new List<GameJamSaveData>();                                              // 이번달에 지정해서 다음달에 실행될 게임잼 정보
+
+    private List<GameDifficulty> m_GameJamDifficultiesList = new List<GameDifficulty>();                                    // 게임잼 난이도를 판별해주기 위해 기준을 넣어 둘 리스트
+
     private List<GameJamReward> m_GameJamRewardList = new List<GameJamReward>();
 
-    public static Dictionary<int, List<SaveGameJamData>> m_GameJamHistory = new Dictionary<int, List<SaveGameJamData>>();       // 게임잼이 한번 실행이 되면 여기에 들어간다.                      // 한번 알람이 뜬 행사는 다음에 생성시에 알람이 안뜬다.
-    private Queue<Action> eventQueue = new Queue<Action>();                                                                     // 게임잼이 실행되고 나면 게임쇼를 참가할 준비를 해줘야한다. timescale이 0일 때 이벤트를 실행하니 안돼서 Update문에서 timescale이 0 보다 클 때 실행시켜주는걸로 변경
-    private Queue<Coroutine> m_ToRunningGameJam = new Queue<Coroutine>();
+    private Student[] m_ClickStudent = new Student[3];
 
+    public static Dictionary<int, List<GameJamSaveData>> m_GameJamHistory = new Dictionary<int, List<GameJamSaveData>>();   // 게임잼이 한번 실행이 되면 여기에 들어간다.  지금까지의 모든 게임잼 결과 (완성품들)                  
+
+    private Queue<Action> eventQueue = new Queue<Action>();                                                                 // 게임잼이 실행되고 나면 게임쇼를 참가할 준비를 해줘야한다. timescale이 0일 때 이벤트를 실행하니 안돼서 Update문에서 timescale이 0 보다 클 때 실행시켜주는걸로 변경
+
+    [SerializeField] private ActivityEvent m_ActivityEvent;
+    [SerializeField] private SoundManager m_SoundManager;
     [SerializeField] private Sprite m_NotEntry;
     [SerializeField] private Sprite m_EntryComplete;
     [SerializeField] private Sprite m_Entry;
@@ -102,59 +111,65 @@ public class GameJam : MonoBehaviour
     [SerializeField] private Sprite m_DownArrow;
     [SerializeField] private Sprite[] m_RequirementStats;
     [SerializeField] private Sprite[] m_GenreSprite;
-
+    [SerializeField] private Sprite[] m_ResultConceptSprite;
     [SerializeField] private GameObject m_TutorialPanel;
     [SerializeField] private Unmask m_Unmask;
     [SerializeField] private Image m_TutorialTextImage;
     [SerializeField] private Image m_TutorialArrowImage;
     [SerializeField] private TextMeshProUGUI m_TutorialText;
+    [SerializeField] private Button m_NextButton;
     [SerializeField] private GameObject m_FoldButton;
     [SerializeField] private GameObject m_GameJamButton;
     [SerializeField] private GameObject m_BlackScreen;
     [SerializeField] private GameObject m_PDAlarm;
     [SerializeField] private TextMeshProUGUI m_AlarmText;
 
-
     private Sprite m_NoneArrow;
-    private bool m_IsGameJamEventCreation;                                                  // 조건이 만족하면 게임잼을 한번만 만들 수 있게 해주는 bool값
+    private bool m_IsGameJamEventCreation;                                  // 조건이 만족하면 게임잼을 한번만 만들 수 있게 해주는 bool값
     private bool m_IsGameJamStart;
+    private bool m_IsFirstGameJam;
     private int m_Year;
     private int m_Month;
-    private int m_Week;
-    private string m_PartName;                                                              // 게임잼에서 학생들을 선택할 때 어느파트 학생인지 확인해주는 변수, 모든 게임잼이 끝나면 다시 기획으로 바꿔주기
+    private int m_Day;
+    private string m_PartName;                                              // 게임잼에서 학생들을 선택할 때 어느파트 학생인지 확인해주는 변수, 모든 게임잼이 끝나면 다시 기획으로 바꿔주기
     private string _warningMessage;
     private int m_Requirement1 = 0;
     private int m_Requirement2 = 0;
-    private int[] m_Requirement1List = new int[3];                                          // 선택한 학생들이 가지고 있는 필수 스탯의 값들
+    private int[] m_Requirement1List = new int[3];                          // 선택한 학생들이 가지고 있는 필수 스탯의 값들
     private int[] m_Requirement2List = new int[3];
-    private int[] m_RequirementStatList1 = new int[3];
-    private int[] m_RequirementStatList2 = new int[3];
 
-    private float m_TimerText;
-    private int m_MonthLimit;                                                               // 한달에 2번밖에 참여를 할 수없음
-    private int m_EnteryCount;                                                              // 똑같은 게임잼에 몇 번 참여 했는지 
+    private int m_MonthLimit;                                               // 한달에 2번밖에 참여를 할 수없음
+    private int GameJamEntryCoolTimeCount;                                  // 한달에 2번밖에 참여를 할 수없음
+    private bool m_GameJamEntryCoolTime;                                    // 한번 게임잼에 참여하면 2일 텀을 둔다.
+    private int m_EnteryCount;                                              // 똑같은 게임잼에 몇 번 참여 했는지 
+    private int m_EntryGameJamDifficulty;
+    private float m_HighEntryFee;
+    private float m_MiddleEntryFee;
     private double Funny;
     private double Graphic;
     private double Perfection;
     private double _genreBonusScore;
     private double m_GenreScore;
     private double m_TotalGenreScore;
-    private string _rank;                                                                   // 이번 게임잼에서 받은 랭크
-    private double _average;                                                                // 이번 게임의 평균 점수
-    private string _genreName;                                                              // 만든 게임의 장르를 저장해주기 위해 잠시 넣어두는 변수
-    private string _gameJameName;                                                           // 더미리스트에 있는 목록 중 무엇을 선택했는지 저장해두는 변수
-    private int _selectGameWeek;
-    private string _rankButtonName;                                                         // 이전에 만든 게임의 랭크 버튼을 누르면 버튼의 이름을 넣어주는 변수
-    private string _genreButtonName;                                                        // 이전에 만든 게임의 장르 버튼을 누르면 버튼의 이름을 넣어주는 변수
+    private int m_MiniGameScore;
+    private string _rank;                                                   // 이번 게임잼에서 받은 랭크
+    private double _average;                                                // 이번 게임의 평균 점수
+    private string _genreName;                                              // 만든 게임의 장르를 저장해주기 위해 잠시 넣어두는 변수
+    private string _gameJameName;                                           // 더미리스트에 있는 목록 중 무엇을 선택했는지 저장해두는 변수
+    private string _rankButtonName;                                         // 이전에 만든 게임의 랭크 버튼을 누르면 버튼의 이름을 넣어주는 변수
+    private string _genreButtonName;                                        // 이전에 만든 게임의 장르 버튼을 누르면 버튼의 이름을 넣어주는 변수
 
     private int m_TutorialCount;
     private int m_ScriptCount;
     private int m_DifficultyMiddle;
     private int m_DifficultyHigh;
 
+    private GameObject m_PrevClickGameJamObj;                                   // 게임잼 버튼 스프라이트 고정을 위해 이전 클릭한 게임잼 오브젝트를 담아둘 변수
+    private GameObject m_PrevRankButtonObj;
+    private Color m_HighLightColor;
+    private Color m_RankButtonHighLightColor;
     public GameObject m_SliderBarArlam;
     public GameObject m_GameJamArlam;
-    public GameObject m_SecondContentGameJamArlam;
     public GameObject m_GameJamPrefab;
     public GameObject m_StudentPrefab;
     public GameObject m_GameJamListPrefab;
@@ -162,29 +177,70 @@ public class GameJam : MonoBehaviour
     public GameJamResult m_GameJamResultPanel;
     public FinalGameJamResult m_FinalGameJamResultPanel;
     public GameJamList m_GameJamListPanel;
-    public GameJamTimer m_Timer;                                                            // 게임잼이 실행 될 때 나오는 타이머
+    public GameJamTimer m_Timer; // 게임잼이 실행 될 때 나오는 타이머
     public SlideMenuPanel m_Slider;
     public PopUpUI m_PopUpResultPanel;
     public PopOffUI m_PopOffResultPanel;
 
     public PopUpUI m_OnNoticePanel;
     public PopOffUI m_OffNoticePanel;
+    public int MiniGameScore { get { return m_MiniGameScore; } set { m_MiniGameScore = value; } }
+    public Sprite[] RestultSprite { get { return m_ResultConceptSprite; } }
+
+    public static GameJamInfo SearchAllGameJamInfo(int ID)
+    {
+        foreach (var _random in m_RandomGameJam)
+        {
+            if (ID == _random.m_GjamID)
+            {
+                return _random;
+            }
+        }
+
+        foreach (var _fixed in m_FixedGameJam)
+        {
+            if (ID == _fixed.m_GjamID)
+            {
+                return _fixed;
+            }
+        }
+
+        Debug.Log("원본이 없는 gamejam ID");
+
+        return null;
+    }
 
     private void Start()
     {
         m_IsGameJamEventCreation = false;
+        m_GameJamEntryCoolTime = false;
         m_NoneArrow = null;
         m_PartName = "기획";
         m_MonthLimit = 2;
+        GameJamEntryCoolTimeCount = 0;
         m_GameJamHistory.Clear();
+        m_FixedGameJam.Clear();
+        m_RandomGameJam.Clear();
+
         InitDifficulyList();
         InitRewardList();
         ClassifyGameJamData();
-
         m_TutorialCount = 0;
         m_ScriptCount = 0;
         m_DifficultyMiddle = 10;
         m_DifficultyHigh = 20;
+        m_HighEntryFee = 2.4f;
+        m_MiddleEntryFee = 1.2f;
+        m_HighLightColor = new Color(1f, 0.8475146f, 0, 1f);
+        m_RankButtonHighLightColor = new Color(1f, 0.7679189f, 0f, 1f);
+
+        m_NextButton.onClick.AddListener(TutorialContinue);
+        m_NextButton.onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
+
+        if (Json.Instance.UseLoadingData)
+        {
+            DistributeGameJamData();
+        }
     }
 
     private void Update()
@@ -195,6 +251,7 @@ public class GameJam : MonoBehaviour
             m_MonthLimit = 2;
             m_DummyGameJamList.Clear();
             m_GameJamPanel.DestroyGameJamListObj();
+            SetActiveAlram(false);
         }
 
         if (eventQueue.Count > 0 && Time.timeScale >= 1f)
@@ -203,115 +260,54 @@ public class GameJam : MonoBehaviour
             m_IsGameJamStart = false;
         }
 
-        // 매 주마다 게임잼 항목에 해당하는 조건에 만족하는게 있는지 확인한다.
-        if (m_Week != GameTime.Instance.FlowTime.NowWeek)
+        if (m_ToBeRunning.Count != 0 && !m_IsGameJamStart)
         {
-            m_Year = GameTime.Instance.FlowTime.NowYear;
-            m_Month = GameTime.Instance.FlowTime.NowMonth;
-            m_Week = GameTime.Instance.FlowTime.NowWeek;
-
-            if (m_ToBeRunning.Count != 0 && !m_IsGameJamStart)
+            for (int i = 0; i < m_ToBeRunning.Count; i++)
             {
-                for (int i = 0; i < m_ToBeRunning.Count; i++)
+                if (!m_ActivityEvent.m_IsCheckGameJam)
                 {
-                    if (m_ToBeRunning[i].m_GameJamInfoData.m_GjamMonth == m_Month && m_ToBeRunning[i].m_GameJamInfoData.m_GjamWeek == m_Week)
-                    {
-                        m_SaveGameJamData = m_ToBeRunning[i];
-                        //for (int j = 0; j < m_ToBeRunning.Count; j++)
-                        //{
-                        //    if (m_ToBeRunning[j].m_GameJamInfoData.m_GjamWeek == m_Week)
-                        //    {
-                        //    }
-                        //}
+                    m_RunningGameJameData = m_ToBeRunning[i];
+                    m_ActivityEvent.m_IsCheckGameJam = true;
+                    m_IsGameJamStart = true;
+                    m_PopUpResultPanel.TurnOnUI();
+                }
+            }
+        }
 
-                        if (m_SaveGameJamData.m_GameJamInfoData.m_GjamWeek == 1 || m_SaveGameJamData.m_GameJamInfoData.m_GjamWeek == 2)
-                        {
-                            m_SaveGameJamData.m_GameJamInfoData.m_GjamTime = 10;
-
-                            StartCoroutine(CheckClassStart(9f));
-                            m_IsGameJamStart = true;
-
-                        }
-                        else
-                        {
-                            m_SaveGameJamData.m_GameJamInfoData.m_GjamTime = 100;
-                            StartCoroutine(CheckClassStart(90f));
-                            m_IsGameJamStart = true;
-                        }
-                    }
+        // 매 일마다 날짜들을 갱신해준다.
+        if (m_Day != GameTime.Instance.FlowTime.NowDay)
+        {
+            if (m_GameJamEntryCoolTime == true)
+            {
+                if (GameJamEntryCoolTimeCount == 2)
+                {
+                    m_GameJamEntryCoolTime = false;
+                    GameJamEntryCoolTimeCount = 0;
+                }
+                else
+                {
+                    GameJamEntryCoolTimeCount++;
                 }
             }
 
+            m_Year = GameTime.Instance.FlowTime.NowYear;
+            m_Month = GameTime.Instance.FlowTime.NowMonth;
+            m_Day = GameTime.Instance.FlowTime.NowDay;
         }
 
-        if (!m_IsGameJamEventCreation && PlayerInfo.Instance.IsFirstClassEnd)
+        // 1년이 지나고 3월이 되면 새로운 학생들이 들어오니 이전에 만든 게임들은 모두 지워준다.
+        if (m_Year != GameTime.Instance.FlowTime.NowYear && m_Month == 3)
         {
-            #region _예전 방식의 게임잼 공고풀 만드는 방식
-            //if (m_GameJamButton.GetComponent<Button>().interactable == false)
-            //{
-            //    m_GameJamButton.GetComponent<Button>().interactable = true;
-            //}
+            m_GameJamHistory.Clear();
+        }
 
-            //m_Year = GameTime.Instance.FlowTime.NowYear;
-            //m_Month = GameTime.Instance.FlowTime.NowMonth;
-            //m_Week = GameTime.Instance.FlowTime.NowWeek;
-
-            //int difficuly = CheckDifficulties(PlayerInfo.Instance.m_CurrentRank);
-
-            //for (int i = 0; i < m_GameJamDataList.Count; i++)
-            //{
-            //    // -2일 때는 짝수년도에 달이 맞으면 알람 뜨게 하기
-            //    if (m_GameJamDataList[i].m_GjamYear == -2 &&
-            //        m_Year % 2 == 0 &&
-            //        m_GameJamDataList[i].m_GjamMonth - 1 == m_Month && difficuly == m_GameJamDataList[i].m_GjamAI_ID)
-            //    {
-            //        m_DummyGameJamList.Add(m_GameJamDataList[i]);
-
-            //        if (!m_GameJamHistory.ContainsKey(m_GameJamDataList[i].m_GjamID))
-            //        {
-            //            //m_GameJamHistory.Add(m_GameJamDataList[i].m_GjamID, m_GameJamDataList[i].m_GjamName);
-            //            SetActiveAlram(true);
-            //        }
-            //        m_IsGameJamEventCreation = true;
-            //    }
-            //    // -1이면 홀수년도에 실행
-            //    else if (m_GameJamDataList[i].m_GjamYear == -1 &&
-            //        m_Year % 2 != 0 &&
-            //        m_GameJamDataList[i].m_GjamMonth - 1 == m_Month && difficuly == m_GameJamDataList[i].m_GjamAI_ID)
-            //    {
-            //        m_DummyGameJamList.Add(m_GameJamDataList[i]);
-
-            //        if (!m_GameJamHistory.ContainsKey(m_GameJamDataList[i].m_GjamID))
-            //        {
-            //            //m_GameJamHistory.Add(m_GameJamDataList[i].m_GjamID, m_GameJamDataList[i].m_GjamName);
-            //            SetActiveAlram(true);
-            //        }
-            //        m_IsGameJamEventCreation = true;
-            //    }
-            //    // 0은 매년 실행하는거니까 매년 해당하는 달에 알람주기
-            //    else if (m_GameJamDataList[i].m_GjamYear == 0 &&
-            //        m_GameJamDataList[i].m_GjamMonth - 1 == m_Month && difficuly == m_GameJamDataList[i].m_GjamAI_ID)
-            //    {
-            //        m_DummyGameJamList.Add(m_GameJamDataList[i]);
-
-            //        if (!m_GameJamHistory.ContainsKey(m_GameJamDataList[i].m_GjamID))
-            //        {
-            //            //m_GameJamHistory.Add(m_GameJamDataList[i].m_GjamID, m_GameJamDataList[i].m_GjamName);
-            //            SetActiveAlram(true);
-            //        }
-            //        m_IsGameJamEventCreation = true;
-            //    }
-            //}
-            #endregion
-
+        // 처음에 게임잼 버튼이 활성화되지 않도록 해야하는데...
+        if (!m_IsGameJamEventCreation && PlayerInfo.Instance.IsFirstClassEnd && m_Month != 2)
+        {
             if (m_GameJamButton.GetComponent<Button>().interactable == false)
             {
                 m_GameJamButton.GetComponent<Button>().interactable = true;
             }
-
-            m_Year = GameTime.Instance.FlowTime.NowYear;
-            m_Month = GameTime.Instance.FlowTime.NowMonth;
-            m_Week = GameTime.Instance.FlowTime.NowWeek;
 
             m_IsGameJamEventCreation = true;
 
@@ -321,7 +317,9 @@ public class GameJam : MonoBehaviour
             if (m_DummyGameJamList.Count != 0)
             {
                 MakeGameJamList();
-                if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 0 && PlayerInfo.Instance.IsFirstAcademySetting)
+
+                if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 0 &&
+                    PlayerInfo.Instance.IsFirstAcademySetting)
                 {
                     Time.timeScale = 0;
 
@@ -330,320 +328,282 @@ public class GameJam : MonoBehaviour
                     m_Unmask.gameObject.SetActive(false);
                     m_TutorialTextImage.gameObject.SetActive(false);
                     m_TutorialArrowImage.gameObject.SetActive(false);
+                    m_NextButton.gameObject.SetActive(true);
                     m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
                     m_ScriptCount++;
                     m_TutorialCount++;
                 }
             }
         }
-#if UNITY_EDITOR
-        if (PlayerInfo.Instance.IsFirstGameJam && Input.GetMouseButtonDown(0))
+        //#if UNITY_EDITOR || UNITY_EDITOR_WIN
+        //        if (PlayerInfo.Instance.IsFirstGameJam && Input.GetMouseButtonDown(0) && m_TutorialCount > 0)
+        //        {
+        //            TutorialContinue();
+        //            ClickEventManager.Instance.Sound.PlayIconTouch();
+        //        }
+        //#elif UNITY_ANDROID
+        //        if (PlayerInfo.Instance.IsFirstGameJam  && Input.touchCount == 1 && m_TutorialCount > 0)
+        //        {
+        //            Touch touch = Input.GetTouch(0); 
+        //            if (PlayerInfo.Instance.IsFirstGameJam && touch.phase == TouchPhase.Ended)
+        //            {
+        //                TutorialContinue();
+        //                ClickEventManager.Instance.Sound.PlayIconTouch();
+        //            }
+        //        }
+
+        //#endif
+    }
+
+    private void TutorialContinue()
+    {
+        if (m_TutorialCount == 1)
         {
-            if (m_TutorialCount == 1)
-            {
-                m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 2)
-            {
-                m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 3)
-            {
-                m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 4)
-            {
-                if (m_FoldButton.GetComponent<PopUpUI>().isSlideMenuPanelOpend == false)
-                {
-                    m_FoldButton.GetComponent<PopUpUI>().AutoSlideMenuUI();
-                }
-
-                m_BlackScreen.SetActive(true);
-                m_PDAlarm.SetActive(false);
-                m_Unmask.gameObject.SetActive(true);
-                m_Unmask.fitTarget = m_GameJamButton.GetComponent<RectTransform>();
-                m_TutorialTextImage.gameObject.SetActive(false);
-                m_TutorialArrowImage.gameObject.SetActive(true);
-                m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 6)
-            {
-                m_GameJamPanel.RecruitNoticePanel.transform.GetChild(0).GetComponent<ScrollRect>().vertical = false;
-                m_Unmask.fitTarget = m_GameJamPanel.m_GameJamParent.GetChild(0).GetComponent<RectTransform>();
-                m_TutorialArrowImage.gameObject.SetActive(true);
-                m_TutorialTextImage.gameObject.SetActive(false);
-                m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 130, 0);
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 8)
-            {
-                m_Unmask.fitTarget = m_GameJamPanel.m_SetStartButton.GetComponent<RectTransform>();
-                m_TutorialArrowImage.gameObject.SetActive(true);
-                m_TutorialTextImage.gameObject.SetActive(false);
-                m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 10)
-            {
-                m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 11)
-            {
-                m_Unmask.fitTarget = m_GameJamPanel.GenreRect.GetComponent<RectTransform>();
-                m_TutorialArrowImage.gameObject.SetActive(false);
-                m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_TutorialTextImage.gameObject.SetActive(true);
-                m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-350, 0, 0);
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 12)
-            {
-                m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 13)
-            {
-                m_Unmask.fitTarget = m_GameJamPanel.RewardAwarenessRect.GetComponent<RectTransform>();
-                m_TutorialArrowImage.gameObject.SetActive(false);
-                m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_TutorialTextImage.gameObject.SetActive(true);
-                m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-600, 0, 0);
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 14)
-            {
-                m_Unmask.fitTarget = m_GameJamPanel.DateRect.GetComponent<RectTransform>();
-                m_TutorialArrowImage.gameObject.SetActive(false);
-                m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_TutorialTextImage.gameObject.SetActive(true);
-                m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-350, 0, 0);
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 15)
-            {
-                m_Unmask.fitTarget = m_GameJamPanel.HealthPassionRect.GetComponent<RectTransform>();
-                m_TutorialArrowImage.gameObject.SetActive(false);
-                m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_TutorialTextImage.gameObject.SetActive(true);
-                m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 16)
-            {
-                m_Unmask.fitTarget = m_GameJamPanel.ExpectedGenreRect.GetComponent<RectTransform>();
-                m_TutorialArrowImage.gameObject.SetActive(false);
-                m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_TutorialTextImage.gameObject.SetActive(true);
-                m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-350, 0, 0);
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 17)
-            {
-                m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 18)
-            {
-                m_Unmask.fitTarget = m_GameJamPanel.ExpectedSuccessRect.GetComponent<RectTransform>();
-                m_TutorialArrowImage.gameObject.SetActive(false);
-                m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_TutorialTextImage.gameObject.SetActive(true);
-                m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-350, 0, 0);
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 19)
-            {
-                m_Unmask.fitTarget = m_GameJamPanel.PartInfoRect.GetComponent<RectTransform>();
-                m_TutorialArrowImage.gameObject.SetActive(false);
-                m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_TutorialTextImage.gameObject.SetActive(true);
-                m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-            else if (m_TutorialCount == 20)
-            {
-                m_Unmask.fitTarget = m_GameJamPanel.GMButton.GetComponent<RectTransform>();
-                m_TutorialArrowImage.gameObject.SetActive(true);
-                m_TutorialTextImage.gameObject.SetActive(false);
-                m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 250, 0);
-                m_TutorialCount++;
-            }
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
         }
-#elif UNITY_ANDROID
-        if (Input.touchCount == 1 && !EventSystem.current.IsPointerOverGameObject())
+        else if (m_TutorialCount == 2)
         {
-            Touch touch = Input.GetTouch(0); 
-            if (PlayerInfo.Instance.IsFirstGameJam && touch.phase == TouchPhase.Ended)
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 3)
+        {
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 4)
+        {
+            if (m_FoldButton.GetComponent<PopUpUI>().isSlideMenuPanelOpend == false)
             {
-                if (m_TutorialCount == 1)
-                {
-                    m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 2)
-                {
-                    m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 3)
-                {
-                    m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 4)
-                {
-                    if (m_FoldButton.GetComponent<PopUpUI>().isSlideMenuPanelOpend == false)
-                    {
-                        m_FoldButton.GetComponent<PopUpUI>().AutoSlideMenuUI();
-                    }
+                m_FoldButton.GetComponent<PopUpUI>().AutoSlideMenuUI();
+            }
 
-                    m_BlackScreen.SetActive(true);
-                    m_PDAlarm.SetActive(false);
-                    m_Unmask.gameObject.SetActive(true);
-                    m_Unmask.fitTarget = m_GameJamButton.GetComponent<RectTransform>();
-                    m_TutorialTextImage.gameObject.SetActive(false);
-                    m_TutorialArrowImage.gameObject.SetActive(true);
-                    m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 6)
+            m_BlackScreen.SetActive(true);
+            m_PDAlarm.SetActive(false);
+            m_Unmask.gameObject.SetActive(true);
+            m_Unmask.fitTarget = m_GameJamButton.GetComponent<RectTransform>();
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 6)
+        {
+            m_GameJamPanel.RecruitNoticePanel.transform.GetChild(0).GetComponent<ScrollRect>().vertical = false;
+            m_GameJamPanel.GameJamListParentObj.transform.GetChild(0).GetComponent<Button>().interactable = true;
+            m_GameJamPanel.GameJamListParentObj.transform.GetChild(1).GetComponent<Button>().interactable = true;
+            m_GameJamPanel.GameJamListParentObj.transform.GetChild(2).GetComponent<Button>().interactable = true;
+            m_GameJamPanel.GameJamListParentObj.transform.GetChild(3).GetComponent<Button>().interactable = true;
+            m_GameJamPanel.GameJamListParentObj.transform.GetChild(4).GetComponent<Button>().interactable = true;
+            m_Unmask.fitTarget = m_GameJamPanel.GameJamButtonRect;
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 130, 0);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 8)
+        {
+            m_Unmask.fitTarget = m_GameJamPanel.m_SetStartButton.GetComponent<RectTransform>();
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 10)
+        {
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 11)
+        {
+            m_Unmask.fitTarget = m_GameJamPanel.FirstRect.GetComponent<RectTransform>();
+            m_GameJamPanel.GameDesignerButton.gameObject.GetComponent<Button>().interactable = true;
+            m_GameJamPanel.ArtButton.gameObject.GetComponent<Button>().interactable = true;
+            m_GameJamPanel.ProgrammingButton.gameObject.GetComponent<Button>().interactable = true;
+            m_GameJamPanel.SelectStudentParentObj.transform.GetChild(0).GetComponent<Button>().interactable = true;
+            m_GameJamPanel.SelectStudentParentObj.transform.GetChild(1).GetComponent<Button>().interactable = true;
+            m_GameJamPanel.SelectStudentParentObj.transform.GetChild(2).GetComponent<Button>().interactable = true;
+            m_GameJamPanel.SelectStudentParentObj.transform.GetChild(3).GetComponent<Button>().interactable = true;
+            m_GameJamPanel.SelectStudentParentObj.transform.GetChild(4).GetComponent<Button>().interactable = true;
+            m_GameJamPanel.SelectStudentParentObj.transform.GetChild(5).GetComponent<Button>().interactable = true;
+            m_TutorialArrowImage.gameObject.SetActive(false);
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+            m_TutorialTextImage.gameObject.SetActive(true);
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-700, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 12)
+        {
+            m_Unmask.fitTarget = m_GameJamPanel.SecondRect.GetComponent<RectTransform>();
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-700, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 13)
+        {
+            m_Unmask.fitTarget = m_GameJamPanel.ThirdRect.GetComponent<RectTransform>();
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-350, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 14)
+        {
+            m_Unmask.fitTarget = m_GameJamPanel.PartInfoRect.GetComponent<RectTransform>();
+            m_TutorialArrowImage.gameObject.SetActive(false);
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+            m_TutorialTextImage.gameObject.SetActive(true);
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-800, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 15)
+        {
+            m_Unmask.fitTarget = m_GameJamPanel.GameDesignerButton.GetComponent<RectTransform>();
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 280, 0);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 24)
+        {
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 25)
+        {
+            Time.timeScale = 1;
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialPanel.SetActive(false);
+            PlayerInfo.Instance.IsFirstGameJam = false;
+        }
+    }
+
+    public void CollectGameJamData()
+    {
+        List<GameJamSaveData> runData = new List<GameJamSaveData>(m_ToBeRunning);
+        Dictionary<int, List<GameJamSaveData>> history = new Dictionary<int, List<GameJamSaveData>>(m_GameJamHistory);
+
+        AllInOneData.Instance.GameJamToBeRunning = runData;
+        AllInOneData.Instance.GameJamHistory = history;
+
+        Dictionary<string, int> count = new Dictionary<string, int>(m_GameJamEntryCount);
+        Dictionary<string, int> needGameDesignerStat = new Dictionary<string, int>(m_NeedGameDesignerStat);
+        Dictionary<string, int> needArtStat = new Dictionary<string, int>(m_NeedArtStat);
+        Dictionary<string, int> needProgrammingStat = new Dictionary<string, int>(m_NeedProgrammingStat);
+
+        PlayerInfo.Instance.GameJamEntryCount = count;
+        PlayerInfo.Instance.NeedGameDesignerStat = needGameDesignerStat;
+        PlayerInfo.Instance.NeedArtStat = needArtStat;
+        PlayerInfo.Instance.NeedProgrammingStat = needProgrammingStat;
+        
+        // 게임잼에서 빠진 데이터들
+        PlayerInfo.Instance._genreBonusScore = _genreBonusScore;
+        PlayerInfo.Instance._genreName = _genreName;
+        PlayerInfo.Instance.m_GenreScore = m_GenreScore;
+        PlayerInfo.Instance.m_MiniGameScore = m_MiniGameScore;
+    }
+
+    private void DistributeGameJamData()
+    {
+        List<GameJamSaveData> runData = new List<GameJamSaveData>(AllInOneData.Instance.GameJamToBeRunning);
+        Dictionary<int, List<GameJamSaveData>> history =
+            new Dictionary<int, List<GameJamSaveData>>(AllInOneData.Instance.GameJamHistory);
+
+        m_ToBeRunning = runData;
+        m_GameJamHistory = history;
+
+        Dictionary<string, int> count = new Dictionary<string, int>(AllInOneData.Instance.PlayerData.GameJamEntryCount);
+        Dictionary<string, int> needGameDesignerStat = new Dictionary<string, int>(AllInOneData.Instance.PlayerData.NeedGameDesignerStat);
+        Dictionary<string, int> needArtStat = new Dictionary<string, int>(AllInOneData.Instance.PlayerData.NeedArtStat);
+        Dictionary<string, int> needProgrammingStat = new Dictionary<string, int>(AllInOneData.Instance.PlayerData.NeedProgrammingStat);
+
+        m_GameJamEntryCount = count;
+        m_NeedGameDesignerStat = needGameDesignerStat;
+        m_NeedArtStat = needArtStat;
+        m_NeedProgrammingStat = needProgrammingStat;
+
+        InitRequirementStatArry(needGameDesignerStat, ref GameDesignerRequirementStatList);
+        InitRequirementStatArry(needArtStat, ref ArtRequirementStatList);
+        InitRequirementStatArry(needProgrammingStat, ref ProgrammingRequirementStatList);
+
+        if (runData.Count != 0)
+        {
+            for (int i = 0; i < runData.Count; i++)
+            {
+                GameJamInfo _gamejam = SearchAllGameJamInfo((int)runData[i].m_GameJamID);
+                int _month = (int)runData[i].m_MakeMonth;
+
+                if (runData[i].m_MakeWeek == 4 && runData[i].m_MakeDay >= 3)
                 {
-                    m_GameJamPanel.RecruitNoticePanel.transform.GetChild(0).GetComponent<ScrollRect>().vertical = false;
-                    m_Unmask.fitTarget = m_GameJamPanel.m_GameJamParent.GetChild(0).GetComponent<RectTransform>();
-                    m_TutorialArrowImage.gameObject.SetActive(true);
-                    m_TutorialTextImage.gameObject.SetActive(false);
-                    m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 130, 0);
-                    m_TutorialCount++;
+                    _month += 1;
                 }
-                else if (m_TutorialCount == 8)
+
+                GameObject eventPrefab = m_ActivityEvent.MakeDistributeEventPrefab(_gamejam.m_GjamName, (int)runData[i].m_MakeMonth, (int)runData[i].m_MakeWeek, (int)runData[i].m_MakeDay + 3,
+                    true, _month);
+
+                string day = eventPrefab.GetComponent<EventPrefab>().DDAyText.text;
+                eventPrefab.transform.GetComponent<EventPrefab>().m_IsGameJam = true;
+
+                if (!day.Contains("Day"))
                 {
-                    m_Unmask.fitTarget = m_GameJamPanel.m_SetStartButton.GetComponent<RectTransform>();
-                    m_TutorialArrowImage.gameObject.SetActive(true);
-                    m_TutorialTextImage.gameObject.SetActive(false);
-                    m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
-                    m_TutorialCount++;
+                    day = day.Replace("-", "");
+                    if (day == "3")
+                        m_GameJamEntryCoolTime = true;
                 }
-                else if (m_TutorialCount == 10)
+
+                m_ActivityEvent.SetEventPanelActive(true);
+
+                StartCoroutine(m_ActivityEvent.TypingText(eventPrefab, "게임잼 진행중"));
+            }
+        }
+        
+        // 게임잼에서 빠진 데이터들
+        _genreBonusScore = PlayerInfo.Instance._genreBonusScore;
+        _genreName = PlayerInfo.Instance._genreName;
+        m_GenreScore = PlayerInfo.Instance.m_GenreScore;
+        m_MiniGameScore = PlayerInfo.Instance.m_MiniGameScore;
+    }
+
+    private void InitRequirementStatArry(Dictionary<string, int> _needStat, ref int[] _requirementStatArry)
+    {
+        if (_needStat.Count > 1)
+        {
+            for (int i = 0; i < AbilityNameList.Length; i++)
+            {
+                if (AbilityNameList[i] == _needStat.ElementAt(0).Key)
                 {
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_ScriptCount++;
-                    m_TutorialCount++;
+                    _requirementStatArry[i] = _needStat.ElementAt(0).Value;
                 }
-                else if (m_TutorialCount == 11)
+
+                if (AbilityNameList[i] == _needStat.ElementAt(1).Key)
                 {
-                    m_Unmask.fitTarget = m_GameJamPanel.GenreRect.GetComponent<RectTransform>();
-                    m_TutorialArrowImage.gameObject.SetActive(false);
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_TutorialTextImage.gameObject.SetActive(true);
-                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-350, 0, 0);
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 12)
-                {
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 13)
-                {
-                    m_Unmask.fitTarget = m_GameJamPanel.RewardAwarenessRect.GetComponent<RectTransform>();
-                    m_TutorialArrowImage.gameObject.SetActive(false);
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_TutorialTextImage.gameObject.SetActive(true);
-                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-600, 0, 0);
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 14)
-                {
-                    m_Unmask.fitTarget = m_GameJamPanel.DateRect.GetComponent<RectTransform>();
-                    m_TutorialArrowImage.gameObject.SetActive(false);
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_TutorialTextImage.gameObject.SetActive(true);
-                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-350, 0, 0);
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 15)
-                {
-                    m_Unmask.fitTarget = m_GameJamPanel.HealthPassionRect.GetComponent<RectTransform>();
-                    m_TutorialArrowImage.gameObject.SetActive(false);
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_TutorialTextImage.gameObject.SetActive(true);
-                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 16)
-                {
-                    m_Unmask.fitTarget = m_GameJamPanel.ExpectedGenreRect.GetComponent<RectTransform>();
-                    m_TutorialArrowImage.gameObject.SetActive(false);
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_TutorialTextImage.gameObject.SetActive(true);
-                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-350, 0, 0);
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 17)
-                {
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 18)
-                {
-                    m_Unmask.fitTarget = m_GameJamPanel.ExpectedSuccessRect.GetComponent<RectTransform>();
-                    m_TutorialArrowImage.gameObject.SetActive(false);
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_TutorialTextImage.gameObject.SetActive(true);
-                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-350, 0, 0);
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 19)
-                {
-                    m_Unmask.fitTarget = m_GameJamPanel.PartInfoRect.GetComponent<RectTransform>();
-                    m_TutorialArrowImage.gameObject.SetActive(false);
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                    m_TutorialTextImage.gameObject.SetActive(true);
-                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 20)
-                {
-                    m_Unmask.fitTarget = m_GameJamPanel.GMButton.GetComponent<RectTransform>();
-                    m_TutorialArrowImage.gameObject.SetActive(true);
-                    m_TutorialTextImage.gameObject.SetActive(false);
-                    m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 250, 0);
-                    m_TutorialCount++;
+                    _requirementStatArry[i] = _needStat.ElementAt(1).Value;
                 }
             }
         }
-
-#endif
+        else if (_needStat.Count == 1)
+        {
+            for (int i = 0; i < AbilityNameList.Length; i++)
+            {
+                if (AbilityNameList[i] == _needStat.ElementAt(0).Key)
+                {
+                    _requirementStatArry[i] = _needStat.ElementAt(0).Value;
+                }
+            }
+        }
     }
 
     private void InitDifficulyList()
@@ -706,20 +666,24 @@ public class GameJam : MonoBehaviour
     // 데이터가 바뀔 때 실행시켜줄 이벤트들을 큐에 넣어준다. 
     public void EnqueueDataChangedEvent()
     {
-        eventQueue.Enqueue(() => DataChangedEvent?.Invoke());
+        if (!m_IsFirstGameJam)
+        {
+            eventQueue.Enqueue(() => DataChangedEvent?.Invoke());
+            m_IsFirstGameJam = true;
+        }
         eventQueue.Enqueue(() => SkillConditionDataChangedEvent?.Invoke());
     }
 
     // 고정 게임잼 데이터 풀에서 날짜에 맞는 게임잼을 가져와 내 아카데이 난이도에 따라 설정을 바꿔준다.
     private void BringFixedGameJamData()
     {
-        int difficuly = CheckDifficulties(PlayerInfo.Instance.m_CurrentRank);
+        int difficulty = CheckDifficulties(PlayerInfo.Instance.CurrentRank);
 
         for (int i = 0; i < m_FixedGameJam.Count; i++)
         {
             if (m_FixedGameJam[i].m_GjamYear == -2 &&
-                    m_Year % 2 == 0 &&
-                    m_FixedGameJam[i].m_GjamMonth - 1 == m_Month)
+            m_Year % 2 == 0 &&
+            m_FixedGameJam[i].m_GjamMonth == m_Month)
             {
                 m_DummyGameJamList.Add(m_FixedGameJam[i]);
 
@@ -730,8 +694,8 @@ public class GameJam : MonoBehaviour
             }
             // -1이면 홀수년도에 실행
             else if (m_FixedGameJam[i].m_GjamYear == -1 &&
-                m_Year % 2 != 0 &&
-                m_FixedGameJam[i].m_GjamMonth - 1 == m_Month)
+                     m_Year % 2 != 0 &&
+                     m_FixedGameJam[i].m_GjamMonth == m_Month)
             {
                 m_DummyGameJamList.Add(m_FixedGameJam[i]);
 
@@ -742,7 +706,7 @@ public class GameJam : MonoBehaviour
             }
             // 0은 매년 실행하는거니까 매년 해당하는 달에 알람주기
             else if (m_FixedGameJam[i].m_GjamYear == 0 &&
-                m_FixedGameJam[i].m_GjamMonth - 1 == m_Month)
+                     m_FixedGameJam[i].m_GjamMonth == m_Month)
             {
                 m_DummyGameJamList.Add(m_FixedGameJam[i]);
 
@@ -758,7 +722,14 @@ public class GameJam : MonoBehaviour
             return;
         }
 
-        switch (difficuly)
+        if (m_Year == 1 && m_Month == 3)
+        {
+            int _index = m_DummyGameJamList.FindIndex(x => x.m_GjamName == "액션쾌감");
+
+            m_DummyGameJamList[_index].m_GjamMonth = 3;
+        }
+
+        switch (difficulty)
         {
             // 상
             case 100:
@@ -766,28 +737,41 @@ public class GameJam : MonoBehaviour
                 // 한개는 난이도를 하, 중 하나로 지정하고
                 int _randomNum = UnityEngine.Random.Range(0, m_DummyGameJamList.Count);
                 int _difficurly = _randomNum == 0 || _randomNum == 1 ? m_DifficultyMiddle : 0;
+                float m_EntryFeeIncrease = difficulty == 0 ? m_HighEntryFee : difficulty == 1 ? m_MiddleEntryFee : 1;
 
-                Dictionary<string, int> m_GMNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatGM.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
-                Dictionary<string, int> m_ArtNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatArt.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
-                Dictionary<string, int> m_ProgrammingNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatProgramming.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
+                Dictionary<string, int> m_GameDesignerNeedStat = m_DummyGameJamList[_randomNum]
+                    .m_GjamNeedStatGameDesigner
+                    .ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
+                Dictionary<string, int> m_ArtNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatArt
+                    .ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
+                Dictionary<string, int> m_ProgrammingNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatProgramming
+                    .ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
 
-                m_DummyGameJamList[_randomNum].m_GjamNeedStatGM = m_GMNeedStat;
+                m_DummyGameJamList[_randomNum].m_GjamNeedStatGameDesigner = m_GameDesignerNeedStat;
                 m_DummyGameJamList[_randomNum].m_GjamNeedStatArt = m_ArtNeedStat;
                 m_DummyGameJamList[_randomNum].m_GjamNeedStatProgramming = m_ProgrammingNeedStat;
                 m_DummyGameJamList[_randomNum].m_GjamAI_ID = _randomNum == 0 || _randomNum == 1 ? 200 : 300;
+                m_DummyGameJamList[_randomNum].m_EntryFee *= m_EntryFeeIncrease;
+
                 // 나머지 두 개는 상으로 맞춰준다.
                 for (int i = 0; i < 2; i++)
                 {
                     if (i != _randomNum)
                     {
-                        Dictionary<string, int> m_MyDifficurlyGMNeedStat = m_DummyGameJamList[i].m_GjamNeedStatGM.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + m_DifficultyHigh : x.Value));
-                        Dictionary<string, int> m_MyDifficurlyArtNeedStat = m_DummyGameJamList[i].m_GjamNeedStatArt.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + m_DifficultyHigh : x.Value));
-                        Dictionary<string, int> m_MyDifficurlyProgrammingNeedStat = m_DummyGameJamList[i].m_GjamNeedStatProgramming.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + m_DifficultyHigh : x.Value));
+                        Dictionary<string, int> m_MyDifficurlyGameDesignerNeedStat = m_DummyGameJamList[i]
+                            .m_GjamNeedStatGameDesigner.ToDictionary((x => x.Key),
+                                (x => x.Value > 0 ? x.Value + m_DifficultyHigh : x.Value));
+                        Dictionary<string, int> m_MyDifficurlyArtNeedStat = m_DummyGameJamList[i].m_GjamNeedStatArt
+                            .ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + m_DifficultyHigh : x.Value));
+                        Dictionary<string, int> m_MyDifficurlyProgrammingNeedStat = m_DummyGameJamList[i]
+                            .m_GjamNeedStatProgramming.ToDictionary((x => x.Key),
+                                (x => x.Value > 0 ? x.Value + m_DifficultyHigh : x.Value));
 
-                        m_DummyGameJamList[i].m_GjamNeedStatGM = m_MyDifficurlyGMNeedStat;
+                        m_DummyGameJamList[i].m_GjamNeedStatGameDesigner = m_MyDifficurlyGameDesignerNeedStat;
                         m_DummyGameJamList[i].m_GjamNeedStatArt = m_MyDifficurlyArtNeedStat;
                         m_DummyGameJamList[i].m_GjamNeedStatProgramming = m_MyDifficurlyProgrammingNeedStat;
-                        m_DummyGameJamList[_randomNum].m_GjamAI_ID = 100;
+                        m_DummyGameJamList[i].m_GjamAI_ID = 100;
+                        m_DummyGameJamList[i].m_EntryFee *= m_EntryFeeIncrease;
                     }
                 }
             }
@@ -802,16 +786,24 @@ public class GameJam : MonoBehaviour
                 {
                     int _randomNum = UnityEngine.Random.Range(0, _listCount);
                     int _difficurly = _randomNum == 0 ? m_DifficultyHigh : _randomNum == 1 ? m_DifficultyMiddle : 0;
+                    float m_EntryFeeIncrease =
+                        difficulty == 0 ? m_HighEntryFee : difficulty == 1 ? m_MiddleEntryFee : 1;
 
-                    Dictionary<string, int> m_GMNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatGM.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
-                    Dictionary<string, int> m_ArtNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatArt.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
-                    Dictionary<string, int> m_ProgrammingNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatProgramming.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
+                    Dictionary<string, int> m_GameDesignerNeedStat = m_DummyGameJamList[_randomNum]
+                        .m_GjamNeedStatGameDesigner.ToDictionary((x => x.Key),
+                            (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
+                    Dictionary<string, int> m_ArtNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatArt
+                        .ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
+                    Dictionary<string, int> m_ProgrammingNeedStat = m_DummyGameJamList[_randomNum]
+                        .m_GjamNeedStatProgramming.ToDictionary((x => x.Key),
+                            (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
 
-                    m_DummyGameJamList[_randomNum].m_GjamNeedStatGM = m_GMNeedStat;
+                    m_DummyGameJamList[_randomNum].m_GjamNeedStatGameDesigner = m_GameDesignerNeedStat;
                     m_DummyGameJamList[_randomNum].m_GjamNeedStatArt = m_ArtNeedStat;
                     m_DummyGameJamList[_randomNum].m_GjamNeedStatProgramming = m_ProgrammingNeedStat;
                     m_DummyGameJamList[_randomNum].m_GjamAI_ID = _randomNum == 0 ? 100 : _randomNum == 1 ? 200 : 300;
-                    GameShow.Swap(m_DummyGameJamList, _randomNum, m_DummyGameJamList.Count - 1);
+                    m_DummyGameJamList[_randomNum].m_EntryFee *= m_EntryFeeIncrease;
+                    GameShow.Swap(m_DummyGameJamList, _randomNum, _listCount - 1);
                     _listCount -= 1;
                 }
             }
@@ -822,21 +814,31 @@ public class GameJam : MonoBehaviour
             {
                 int _randomNum = UnityEngine.Random.Range(0, m_DummyGameJamList.Count);
                 int _difficurly = _randomNum == 0 || _randomNum == 1 ? m_DifficultyMiddle : m_DifficultyHigh;
+                float m_EntryFeeIncrease = difficulty == 0 ? m_HighEntryFee : difficulty == 1 ? m_MiddleEntryFee : 1;
 
                 if (m_DummyGameJamList[_randomNum].m_GjamName == "액션쾌감" && m_Year == 1 && m_Month == 3)
                 {
                     _randomNum = UnityEngine.Random.Range(1, m_DummyGameJamList.Count);
                     _difficurly = _randomNum == 1 || _randomNum == 2 ? m_DifficultyMiddle : m_DifficultyHigh;
+                    if (_difficurly == m_DifficultyMiddle || _difficurly == m_DifficultyHigh)
+                    {
+                        _difficurly = 1;
+                    }
                 }
 
-                Dictionary<string, int> m_GMNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatGM.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
-                Dictionary<string, int> m_ArtNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatArt.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
-                Dictionary<string, int> m_ProgrammingNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatProgramming.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
+                Dictionary<string, int> m_GameDesignerNeedStat = m_DummyGameJamList[_randomNum]
+                    .m_GjamNeedStatGameDesigner
+                    .ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
+                Dictionary<string, int> m_ArtNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatArt
+                    .ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
+                Dictionary<string, int> m_ProgrammingNeedStat = m_DummyGameJamList[_randomNum].m_GjamNeedStatProgramming
+                    .ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + _difficurly : x.Value));
 
-                m_DummyGameJamList[_randomNum].m_GjamNeedStatGM = m_GMNeedStat;
+                m_DummyGameJamList[_randomNum].m_GjamNeedStatGameDesigner = m_GameDesignerNeedStat;
                 m_DummyGameJamList[_randomNum].m_GjamNeedStatArt = m_ArtNeedStat;
                 m_DummyGameJamList[_randomNum].m_GjamNeedStatProgramming = m_ProgrammingNeedStat;
                 m_DummyGameJamList[_randomNum].m_GjamAI_ID = _randomNum == 0 || _randomNum == 1 ? 200 : 300;
+                m_DummyGameJamList[_randomNum].m_EntryFee *= m_EntryFeeIncrease;
             }
             break;
         }
@@ -849,39 +851,48 @@ public class GameJam : MonoBehaviour
 
         for (int i = 0; i < m_RandomGameJam.Count; i++)
         {
-            if (m_RandomGameJam[i].m_GjamMonth - 1 == m_Month)
+            if (m_RandomGameJam[i].m_GjamMonth == m_Month)
             {
                 m_MonthRandomList.Add(m_RandomGameJam[i]);
             }
         }
+
+        if (m_MonthRandomList.Count == 0)
+            return;
 
         int _listCount = m_MonthRandomList.Count;
         int _weekend = 5;
 
         for (int i = 0; i < 2; i++)
         {
-            int randomDifficuly = UnityEngine.Random.Range(0, _listCount);
+            int randomInex = UnityEngine.Random.Range(0, _listCount);
+            int randomDifficuly = UnityEngine.Random.Range(0, 3);
             int randomWeekwnd = UnityEngine.Random.Range(1, _weekend);
             int difficuly = randomDifficuly == 0 ? m_DifficultyHigh : randomDifficuly == 1 ? m_DifficultyMiddle : 0;
+            float m_EntryFeeIncrease = difficuly == 0 ? m_HighEntryFee : difficuly == 1 ? m_MiddleEntryFee : 1;
 
-            Dictionary<string, int> m_GMNeedStat = m_MonthRandomList[randomDifficuly].m_GjamNeedStatGM.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + difficuly : x.Value));
-            Dictionary<string, int> m_ArtNeedStat = m_MonthRandomList[randomDifficuly].m_GjamNeedStatArt.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + difficuly : x.Value));
-            Dictionary<string, int> m_ProgrammingNeedStat = m_MonthRandomList[randomDifficuly].m_GjamNeedStatProgramming.ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + difficuly : x.Value));
 
-            m_MonthRandomList[randomDifficuly].m_GjamNeedStatGM = m_GMNeedStat;
-            m_MonthRandomList[randomDifficuly].m_GjamNeedStatArt = m_ArtNeedStat;
-            m_MonthRandomList[randomDifficuly].m_GjamNeedStatProgramming = m_ProgrammingNeedStat;
-            m_MonthRandomList[randomDifficuly].m_GjamYear = m_Year;
-            //m_RandomGameJam[randomDifficuly].m_GjamMonth = m_Month + 1;
-            m_MonthRandomList[randomDifficuly].m_GjamWeek = randomWeekwnd;
-            m_DummyGameJamList.Add(m_MonthRandomList[randomDifficuly]);
+            Dictionary<string, int> m_GameDesignerNeedStat = m_MonthRandomList[randomInex].m_GjamNeedStatGameDesigner
+                .ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + difficuly : x.Value));
+            Dictionary<string, int> m_ArtNeedStat = m_MonthRandomList[randomInex].m_GjamNeedStatArt
+                .ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + difficuly : x.Value));
+            Dictionary<string, int> m_ProgrammingNeedStat = m_MonthRandomList[randomInex].m_GjamNeedStatProgramming
+                .ToDictionary((x => x.Key), (x => x.Value > 0 ? x.Value + difficuly : x.Value));
 
-            if (!m_GameJamHistory.ContainsKey(m_MonthRandomList[randomDifficuly].m_GjamID))
+            m_MonthRandomList[randomInex].m_GjamNeedStatGameDesigner = m_GameDesignerNeedStat;
+            m_MonthRandomList[randomInex].m_GjamNeedStatArt = m_ArtNeedStat;
+            m_MonthRandomList[randomInex].m_GjamNeedStatProgramming = m_ProgrammingNeedStat;
+            m_MonthRandomList[randomInex].m_GjamYear = m_Year;
+            m_MonthRandomList[randomInex].m_GjamAI_ID = randomDifficuly == 0 ? 100 : randomDifficuly == 1 ? 200 : 3000;
+            m_MonthRandomList[randomInex].m_EntryFee *= m_EntryFeeIncrease;
+            m_DummyGameJamList.Add(m_MonthRandomList[randomInex]);
+
+            if (!m_GameJamHistory.ContainsKey(m_MonthRandomList[randomInex].m_GjamID))
             {
                 SetActiveAlram(true);
             }
 
-            GameShow.Swap(m_MonthRandomList, randomDifficuly, m_MonthRandomList.Count - 1);
+            GameShow.Swap(m_MonthRandomList, randomInex, _listCount - 1);
             _listCount -= 1;
             _weekend -= 1;
         }
@@ -932,7 +943,7 @@ public class GameJam : MonoBehaviour
 
         FirstGameJamIfoToRecruitNoticeInfo();
 
-        m_GameJamPanel.m_GMName.text = "";
+        m_GameJamPanel.m_GameDesignerName.text = "";
         m_GameJamPanel.m_ArtName.text = "";
         m_GameJamPanel.m_ProgrammingName.text = "";
     }
@@ -942,23 +953,12 @@ public class GameJam : MonoBehaviour
     {
         m_SliderBarArlam.SetActive(_isFirstAlram);
         m_GameJamArlam.SetActive(_isFirstAlram);
-        m_SecondContentGameJamArlam.SetActive(_isFirstAlram);
     }
 
     // 홈버튼을 눌러서 메인 화면으로 갔다면 내가 저장하고 있던 정보들도 초기화 시켜줘야한다.
     // 게임잼을 다 하고 나서 종료할 때도 이 함수 사용하기
     public void ClickHomeButtonYes()
     {
-        // 데이터 처리를 어떻게 해야할 지 고민이다..
-        m_SaveGameJamData.m_GameJamData.m_GameName = "";
-        m_SaveGameJamData.m_GameJamInfoData = null;
-        m_SaveGameJamData.m_StudentData = null;
-
-        m_SaveGameJamData.m_GameJamData.m_Awareness = 0;
-        m_SaveGameJamData.m_GameJamData.m_Management = 0;
-        m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 0;
-        m_SaveGameJamData.m_GameJamData.m_GameName = "";
-
         SetActiveAlram(false);
     }
 
@@ -973,9 +973,19 @@ public class GameJam : MonoBehaviour
             {
                 GameObject _studentInfo = Instantiate(m_StudentPrefab);
                 m_GameJamPanel.MoveObj(_studentInfo, m_GameJamPanel.m_StudentInfoParent);
+
                 _studentInfo.name = _list[i].m_StudentStat.m_StudentName;
+
+                //if (_list[i].m_StudentStat.m_UserSettingName != "")
+                //{
+                //    _studentInfo.name = _list[i].m_StudentStat.m_UserSettingName;
+                //}
+                //else
+                //{
+                //}
                 _studentInfo.GetComponent<Image>().sprite = _list[i].StudentProfileImg;
-                _studentInfo.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = _list[i].m_StudentStat.m_NumberOfEntries.ToString();
+                _studentInfo.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text =
+                    _list[i].m_StudentStat.m_NumberOfEntries.ToString();
 
                 if (_list[i].m_StudentStat.m_NumberOfEntries < 1)
                 {
@@ -1005,8 +1015,10 @@ public class GameJam : MonoBehaviour
         {
             if (x.m_StudentStat.m_NumberOfEntries > y.m_StudentStat.m_NumberOfEntries) return -1;
             else if (x.m_StudentStat.m_NumberOfEntries < y.m_StudentStat.m_NumberOfEntries) return 1;
-            else if (x.m_StudentStat.m_AbilityAmountList[_tempIndex] > y.m_StudentStat.m_AbilityAmountList[_tempIndex]) return -1;
-            else if (x.m_StudentStat.m_AbilityAmountList[_tempIndex] < y.m_StudentStat.m_AbilityAmountList[_tempIndex]) return 1;
+            else if (x.m_StudentStat.m_AbilityAmountArr[_tempIndex] >
+                     y.m_StudentStat.m_AbilityAmountArr[_tempIndex]) return -1;
+            else if (x.m_StudentStat.m_AbilityAmountArr[_tempIndex] <
+                     y.m_StudentStat.m_AbilityAmountArr[_tempIndex]) return 1;
             else return 0;
         });
 
@@ -1019,7 +1031,7 @@ public class GameJam : MonoBehaviour
         List<Student> _studentList = new List<Student>(ObjectManager.Instance.m_StudentList);
 
         Dictionary<string, int> _dict = null;
-        if (_type == StudentType.GameDesigner) _dict = m_NeedGMStat;
+        if (_type == StudentType.GameDesigner) _dict = m_NeedGameDesignerStat;
         else if (_type == StudentType.Art) _dict = m_NeedArtStat;
         else if (_type == StudentType.Programming) _dict = m_NeedProgrammingStat;
 
@@ -1060,56 +1072,29 @@ public class GameJam : MonoBehaviour
         }
         else
         {
+            if (m_GameJamEntryCoolTime == true)
+            {
+                _warningMessage = "현재 다른 게임잼이 진행중입니다!";
+                m_GameJamPanel.SetActiveEntryCountWarningPanel(true, _warningMessage);
+                StartCoroutine(SetEntryWarningPanel());
+
+                return;
+            }
+
             if (m_ToBeRunning.Count != 0)
             {
-                if (m_ToBeRunning[0].m_GameJamInfoData.m_GjamWeek == _selectGameWeek && m_ToBeRunning[0].m_GameJamInfoData.m_GjamMonth - 1 == m_Month)
-                {
-                    _warningMessage = "이미 해당 주에 실행하는 게임잼이 있습니다!";
+                GameJamInfo _info = SearchAllGameJamInfo((int)m_ToBeRunning[0].m_GameJamID);
 
-                    m_GameJamPanel.SetActiveEntryCountWarningPanel(true, _warningMessage);
-                    StartCoroutine(SetEntryWarningPanel());
-                }
-                else
-                {
-                    SetActiveAlram(false);
-
-                    for (int i = 0; i < m_DummyGameJamList.Count; i++)
-                    {
-                        if (_gameJameName == m_DummyGameJamList[i].m_GjamName)
-                        {
-                            m_SaveGameJamData.m_GameJamInfoData = m_DummyGameJamList[i];
-                        }
-                    }
-                    m_GameJamPanel.SetRecruitNoticeActive(false);
-                    m_GameJamPanel.SetSelectActive(true);
-                    m_GameJamPanel.ResetSlider();
-                    SortList(StudentType.GameDesigner);
-                    m_GameJamPanel.SetActivePartSelectedCheckBox(true, false, false);
-                    // 참가금액만큼 빼주기
-
-                    if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 9)
-                    {
-                        m_Unmask.fitTarget = m_GameJamPanel.SelectStudentRect.GetComponent<RectTransform>();
-                        m_TutorialArrowImage.gameObject.SetActive(false);
-                        m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                        m_TutorialTextImage.gameObject.SetActive(true);
-                        m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(700, 0, 0);
-                        m_ScriptCount++;
-                        m_TutorialCount++;
-                    }
-                }
-            }
-            else
-            {
                 SetActiveAlram(false);
 
                 for (int i = 0; i < m_DummyGameJamList.Count; i++)
                 {
                     if (_gameJameName == m_DummyGameJamList[i].m_GjamName)
                     {
-                        m_SaveGameJamData.m_GameJamInfoData = m_DummyGameJamList[i];
+                        m_NowGameJamInfo = m_DummyGameJamList[i];
                     }
                 }
+
                 m_GameJamPanel.SetRecruitNoticeActive(false);
                 m_GameJamPanel.SetSelectActive(true);
                 m_GameJamPanel.ResetSlider();
@@ -1120,9 +1105,59 @@ public class GameJam : MonoBehaviour
                 if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 9)
                 {
                     m_Unmask.fitTarget = m_GameJamPanel.SelectStudentRect.GetComponent<RectTransform>();
+                    m_GameJamPanel.GameDesignerButton.gameObject.GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.ArtButton.gameObject.GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.ProgrammingButton.gameObject.GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.SelectStudentParentObj.transform.GetChild(0).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.SelectStudentParentObj.transform.GetChild(1).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.SelectStudentParentObj.transform.GetChild(2).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.SelectStudentParentObj.transform.GetChild(3).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.SelectStudentParentObj.transform.GetChild(4).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.SelectStudentParentObj.transform.GetChild(5).GetComponent<Button>().interactable = false;
                     m_TutorialArrowImage.gameObject.SetActive(false);
                     m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
                     m_TutorialTextImage.gameObject.SetActive(true);
+                    m_NextButton.gameObject.SetActive(true);
+                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(700, 0, 0);
+                    m_ScriptCount++;
+                    m_TutorialCount++;
+                }
+            }
+            else
+            {
+                SetActiveAlram(false);
+
+                for (int i = 0; i < m_DummyGameJamList.Count; i++)
+                {
+                    if (_gameJameName == m_DummyGameJamList[i].m_GjamName)
+                    {
+                        m_NowGameJamInfo = m_DummyGameJamList[i];
+                    }
+                }
+
+                m_GameJamPanel.SetRecruitNoticeActive(false);
+                m_GameJamPanel.SetSelectActive(true);
+                m_GameJamPanel.ResetSlider();
+                SortList(StudentType.GameDesigner);
+                m_GameJamPanel.SetActivePartSelectedCheckBox(true, false, false);
+                // 참가금액만큼 빼주기
+
+                if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 9)
+                {
+                    m_Unmask.fitTarget = m_GameJamPanel.SelectStudentRect.GetComponent<RectTransform>();
+                    m_GameJamPanel.GameDesignerButton.gameObject.GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.ArtButton.gameObject.GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.ProgrammingButton.gameObject.GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.SelectStudentParentObj.transform.GetChild(0).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.SelectStudentParentObj.transform.GetChild(1).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.SelectStudentParentObj.transform.GetChild(2).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.SelectStudentParentObj.transform.GetChild(3).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.SelectStudentParentObj.transform.GetChild(4).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.SelectStudentParentObj.transform.GetChild(5).GetComponent<Button>().interactable = false;
+                    m_TutorialArrowImage.gameObject.SetActive(false);
+                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+                    m_TutorialTextImage.gameObject.SetActive(true);
+                    m_NextButton.gameObject.SetActive(true);
                     m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(700, 0, 0);
                     m_ScriptCount++;
                     m_TutorialCount++;
@@ -1140,7 +1175,7 @@ public class GameJam : MonoBehaviour
 
         switch (m_PartName)
         {
-            case "GMButton":
+            case "GameDesignerButton":
             {
                 SortList(StudentType.GameDesigner);
                 m_GameJamPanel.SetActivePartSelectedCheckBox(true, false, false);
@@ -1162,12 +1197,13 @@ public class GameJam : MonoBehaviour
             break;
         }
 
-        if (PlayerInfo.Instance.IsFirstGameJam && (m_TutorialCount == 21 || m_TutorialCount == 23 || m_TutorialCount == 25))
+        if (PlayerInfo.Instance.IsFirstGameJam &&
+            (m_TutorialCount == 16 || m_TutorialCount == 18 || m_TutorialCount == 20))
         {
             m_Unmask.fitTarget = m_GameJamPanel.m_StudentInfoParent.GetChild(0).GetComponent<RectTransform>();
             m_TutorialArrowImage.gameObject.SetActive(true);
             m_TutorialTextImage.gameObject.SetActive(false);
-            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 150, 0);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 170, 0);
             m_TutorialCount++;
         }
     }
@@ -1179,7 +1215,7 @@ public class GameJam : MonoBehaviour
         {
             case StudentType.GameDesigner:
             {
-                if (_list[_index].m_StudentStat.m_StudentName == m_GameJamPanel.m_GMName.text)
+                if (_list[_index].m_StudentStat.m_StudentName == m_GameJamPanel.m_GameDesignerName.text)
                 {
                     _student.transform.GetChild(0).gameObject.SetActive(true);
                 }
@@ -1202,24 +1238,32 @@ public class GameJam : MonoBehaviour
             }
             break;
         }
-
     }
 
-    private int FindStudent(StudentType _type)
+    /// TODO : 여기 부분 변경하기. 학생에 쓰는거랑 결과창 보는거랑 구분을 해줘야함
+    private int FindStudent(StudentType _type, bool _isResult, int _stat1 = 0, int _stat2 = 0)
     {
         int _sliderValue = 0;
 
-        for (int i = 0; i < (int)StudentType.Count; i++)
+        if (_isResult == false)
         {
-            if ((int)_type == i)
+            for (int i = 0; i < (int)StudentType.Count; i++)
             {
-                _sliderValue = m_Requirement1List[i] + m_Requirement2List[i];
-                break;
+                if ((int)_type == i)
+                {
+                    _sliderValue = m_Requirement1List[i] + m_Requirement2List[i];
+                    break;
+                }
             }
+        }
+        else
+        {
+            _sliderValue = _stat1 + _stat2;
         }
 
         return _sliderValue;
     }
+
     // 학생을 클릭했을 때 해당 학생의 정보와 체크 이미지를 띄워주기 위한 함수
     public void ClickStudentButton()
     {
@@ -1242,73 +1286,75 @@ public class GameJam : MonoBehaviour
 
                     if (_studentList[i].m_StudentStat.m_StudentType == StudentType.GameDesigner)
                     {
+                        m_ClickStudent[0] = _studentList[i];
 
-                        if (m_GMStudentData != null)
+                        m_GameJamPanel.SetActiveObj(m_GameJamPanel.m_GameDesignerNone, false);
+                        m_GameJamPanel.SetActiveObj(m_GameJamPanel.GameDesignerStudentPanel, true);
+
+                        string _name;
+                        if (_studentList[i].m_StudentStat.m_UserSettingName != "")
                         {
-                            m_GMStudentData.Clear();
+                            _name = _studentList[i].m_StudentStat.m_UserSettingName;
+                        }
+                        else
+                        {
+                            _name = _studentList[i].m_StudentStat.m_StudentName;
                         }
 
-                        m_SaveGameJamData.m_StudentData = _studentList[i];
-
-                        m_GMStudentData.Add(m_SaveGameJamData);
-
-                        m_GameJamPanel.SetActiveObj(m_GameJamPanel.m_GMNone, false);
-                        m_GameJamPanel.SetActiveObj(m_GameJamPanel.GMStudentPanel, true);
-
-                        string _name = _studentList[i].m_StudentStat.m_StudentName;
                         string _health = _studentList[i].m_StudentStat.m_Health.ToString();
                         string _passion = _studentList[i].m_StudentStat.m_Passion.ToString();
 
-                        StudentNeedStat(_studentList, i, m_NeedGMStat);
-                        //m_GameJamPanel.SetRequirmentStatImage(StudentType.GameDesigner, GMRequirementStatList);
+                        StudentNeedStat(_studentList, i, m_NeedGameDesignerStat);
 
                         m_GameJamPanel.ChangeStudentInfo(StudentType.GameDesigner, _name, _health, _passion,
-                           _studentList[i].m_StudentStat.m_AbilityAmountList, _studentList[i].StudentProfileImg);
+                            _studentList[i].m_StudentStat.m_AbilityAmountArr, _studentList[i].StudentProfileImg);
 
-                        int _sliderValue = FindStudent(StudentType.GameDesigner);
+                        int _sliderValue = FindStudent(StudentType.GameDesigner, false);
 
                         m_GameJamPanel.ChangeSlider(StudentType.GameDesigner, _sliderValue);
 
                         int _needValue = 0;
 
-                        if (m_NeedGMStat.Count > 1)
+                        if (m_NeedGameDesignerStat.Count > 1)
                         {
-                            _needValue = m_NeedGMStat.ElementAt(0).Value + m_NeedGMStat.ElementAt(1).Value;
-
+                            _needValue = m_NeedGameDesignerStat.ElementAt(0).Value +
+                                         m_NeedGameDesignerStat.ElementAt(1).Value;
                         }
                         else
                         {
-                            _needValue = m_NeedGMStat.ElementAt(0).Value;
-
+                            _needValue = m_NeedGameDesignerStat.ElementAt(0).Value;
                         }
+
                         m_GameJamPanel.ChangeSliderFillSprite(StudentType.GameDesigner, _sliderValue, _needValue);
                         m_GameJamPanel.CheckSelectStudent(m_GameJamPanel.m_ArtNone, m_GameJamPanel.m_ProgrammingNone);
                     }
                     else if (_studentList[i].m_StudentStat.m_StudentType == StudentType.Art)
                     {
-                        if (m_ArtStudentData != null)
-                        {
-                            m_ArtStudentData.Clear();
-                        }
-
-                        m_SaveGameJamData.m_StudentData = _studentList[i];
-
-                        m_ArtStudentData.Add(m_SaveGameJamData);
+                        m_ClickStudent[1] = _studentList[i];
 
                         m_GameJamPanel.SetActiveObj(m_GameJamPanel.m_ArtNone, false);
                         m_GameJamPanel.SetActiveObj(m_GameJamPanel.ArtStudentPanel, true);
 
-                        string _name = _studentList[i].m_StudentStat.m_StudentName;
+                        string _name;
+
+                        if (_studentList[i].m_StudentStat.m_UserSettingName != "")
+                        {
+                            _name = _studentList[i].m_StudentStat.m_UserSettingName;
+                        }
+                        else
+                        {
+                            _name = _studentList[i].m_StudentStat.m_StudentName;
+                        }
+
                         string _health = _studentList[i].m_StudentStat.m_Health.ToString();
                         string _passion = _studentList[i].m_StudentStat.m_Passion.ToString();
 
                         StudentNeedStat(_studentList, i, m_NeedArtStat);
-                        //m_GameJamPanel.SetRequirmentStatImage(StudentType.Art, ArtRequirementStatList);
 
                         m_GameJamPanel.ChangeStudentInfo(StudentType.Art, _name, _health, _passion,
-                           _studentList[i].m_StudentStat.m_AbilityAmountList, _studentList[i].StudentProfileImg);
+                            _studentList[i].m_StudentStat.m_AbilityAmountArr, _studentList[i].StudentProfileImg);
 
-                        int _sliderValue = FindStudent(StudentType.Art);
+                        int _sliderValue = FindStudent(StudentType.Art, false);
 
                         m_GameJamPanel.ChangeSlider(StudentType.Art, _sliderValue);
 
@@ -1317,41 +1363,42 @@ public class GameJam : MonoBehaviour
                         if (m_NeedArtStat.Count > 1)
                         {
                             _needValue = m_NeedArtStat.ElementAt(0).Value + m_NeedArtStat.ElementAt(1).Value;
-
                         }
                         else
                         {
                             _needValue = m_NeedArtStat.ElementAt(0).Value;
-
                         }
+
                         m_GameJamPanel.ChangeSliderFillSprite(StudentType.Art, _sliderValue, _needValue);
-                        m_GameJamPanel.CheckSelectStudent(m_GameJamPanel.m_GMNone, m_GameJamPanel.m_ProgrammingNone);
+                        m_GameJamPanel.CheckSelectStudent(m_GameJamPanel.m_GameDesignerNone,
+                            m_GameJamPanel.m_ProgrammingNone);
                     }
                     else if (_studentList[i].m_StudentStat.m_StudentType == StudentType.Programming)
                     {
-                        if (m_ProgrammingStudentData != null)
-                        {
-                            m_ProgrammingStudentData.Clear();
-                        }
-
-                        m_SaveGameJamData.m_StudentData = _studentList[i];
-
-                        m_ProgrammingStudentData.Add(m_SaveGameJamData);
+                        m_ClickStudent[2] = _studentList[i];
 
                         m_GameJamPanel.SetActiveObj(m_GameJamPanel.m_ProgrammingNone, false);
                         m_GameJamPanel.SetActiveObj(m_GameJamPanel.ProgrammingStudentPanel, true);
 
-                        string _name = _studentList[i].m_StudentStat.m_StudentName;
+                        string _name;
+                        if (_studentList[i].m_StudentStat.m_UserSettingName != "")
+                        {
+                            _name = _studentList[i].m_StudentStat.m_UserSettingName;
+                        }
+                        else
+                        {
+                            _name = _studentList[i].m_StudentStat.m_StudentName;
+                        }
+
                         string _health = _studentList[i].m_StudentStat.m_Health.ToString();
                         string _passion = _studentList[i].m_StudentStat.m_Passion.ToString();
 
                         StudentNeedStat(_studentList, i, m_NeedProgrammingStat);
-                        //m_GameJamPanel.SetRequirmentStatImage(StudentType.Programming, ProgrammingRequirementStatList);
 
                         m_GameJamPanel.ChangeStudentInfo(StudentType.Programming, _name, _health, _passion,
-                            _studentList[i].m_StudentStat.m_AbilityAmountList, _studentList[i].StudentProfileImg);
+                            _studentList[i].m_StudentStat.m_AbilityAmountArr, _studentList[i].StudentProfileImg);
 
-                        int _sliderValue = FindStudent(StudentType.Programming);
+                        int _sliderValue = FindStudent(StudentType.Programming, false);
 
                         m_GameJamPanel.ChangeSlider(StudentType.Programming, _sliderValue);
 
@@ -1359,51 +1406,53 @@ public class GameJam : MonoBehaviour
 
                         if (m_NeedProgrammingStat.Count > 1)
                         {
-                            _needValue = m_NeedProgrammingStat.ElementAt(0).Value + m_NeedProgrammingStat.ElementAt(1).Value;
-
+                            _needValue = m_NeedProgrammingStat.ElementAt(0).Value +
+                                         m_NeedProgrammingStat.ElementAt(1).Value;
                         }
                         else
                         {
                             _needValue = m_NeedProgrammingStat.ElementAt(0).Value;
-
                         }
-                        m_GameJamPanel.ChangeSliderFillSprite(StudentType.Programming, _sliderValue, _needValue);
 
-                        m_GameJamPanel.CheckSelectStudent(m_GameJamPanel.m_GMNone, m_GameJamPanel.m_ArtNone);
+                        m_GameJamPanel.ChangeSliderFillSprite(StudentType.Programming, _sliderValue, _needValue);
+                        m_GameJamPanel.CheckSelectStudent(m_GameJamPanel.m_GameDesignerNone,
+                            m_GameJamPanel.m_ArtNone);
                     }
-                }
-                else
-                {
-                    // 이미 참여한 학생이니 안된다는 경고문 띄워주기
-                    _currentObj.transform.GetChild(0).gameObject.SetActive(false);
+                    else
+                    {
+                        // 이미 참여한 학생이니 안된다는 경고문 띄워주기
+                        _currentObj.transform.GetChild(0).gameObject.SetActive(false);
+                    }
                 }
             }
         }
 
-        if (m_GameJamPanel.m_GMNone.activeSelf == false && m_GameJamPanel.m_ArtNone.activeSelf == false &&
+        if (m_GameJamPanel.m_GameDesignerNone.activeSelf == false && m_GameJamPanel.m_ArtNone.activeSelf == false &&
             m_GameJamPanel.m_ProgrammingNone.activeSelf == false)
         {
             DecideGenre();
             DeterminesRank();
         }
 
-        if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 22)
+        if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 17)
         {
             m_Unmask.fitTarget = m_GameJamPanel.ArtButton.GetComponent<RectTransform>();
             m_TutorialArrowImage.gameObject.SetActive(true);
             m_TutorialTextImage.gameObject.SetActive(false);
-            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 250, 0);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 280, 0);
             m_TutorialCount++;
         }
-        if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 24)
+
+        if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 19)
         {
             m_Unmask.fitTarget = m_GameJamPanel.ProgrammingButton.GetComponent<RectTransform>();
             m_TutorialArrowImage.gameObject.SetActive(true);
             m_TutorialTextImage.gameObject.SetActive(false);
-            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 250, 0);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 280, 0);
             m_TutorialCount++;
         }
-        if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 26)
+
+        if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 21)
         {
             m_Unmask.fitTarget = m_GameJamPanel.SelectCompleteButton.GetComponent<RectTransform>();
             m_TutorialArrowImage.gameObject.SetActive(true);
@@ -1415,11 +1464,11 @@ public class GameJam : MonoBehaviour
 
     public void ClickStartButton()
     {
-        if (m_GMStudentData.Count > 0 && m_ArtStudentData.Count > 0 && m_ProgrammingStudentData.Count > 0)
+        if (m_ClickStudent[0] != null && m_ClickStudent[1] != null && m_ClickStudent[2] != null)
         {
             m_GameJamPanel.ClickSelectCompleteButton();
 
-            if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 27)
+            if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 22)
             {
                 m_Unmask.fitTarget = m_GameJamPanel.ParticipationYesButton.GetComponent<RectTransform>();
                 m_TutorialArrowImage.gameObject.SetActive(true);
@@ -1430,11 +1479,297 @@ public class GameJam : MonoBehaviour
         }
     }
 
-    // 게임잼을 실행하는 버튼을 누르면 게임잼이 실행되며 타이머가 생성된다. 
-    public void SelectCompleteButton()
+    // 기존에 버튼으로 눌러서 껐던 화면을 코루틴으로 꺼준다.
+    public void GameJamEntry()
     {
-        int _temp = m_SaveGameJamData.m_GameJamInfoData.m_GjamTime;
-        string _name = m_SaveGameJamData.m_GameJamInfoData.m_GjamName;
+        SetActiveAlram(false);
+        SelectComplete();
+
+        for (int i = 0; i < m_ClickStudent.Length; i++)
+        {
+            m_ClickStudent[i] = null;
+        }
+
+        StartCoroutine(m_GameJamPanel.CloseParticipationPanel());
+
+        PlayerInfo.Instance.ParticipatedGameJamCount++;
+
+        if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 23)
+        {
+            m_NextButton.gameObject.SetActive(true);
+            m_TutorialPanel.SetActive(false);
+            StartCoroutine(GameJamTutorialEnd());
+        }
+    }
+
+    IEnumerator GameJamTutorialEnd()
+    {
+        yield return new WaitForSecondsRealtime(3.7f);
+
+        Time.timeScale = 0;
+        m_TutorialPanel.SetActive(true);
+        m_TutorialArrowImage.gameObject.SetActive(false);
+        m_Unmask.gameObject.SetActive(false);
+        m_TutorialTextImage.gameObject.SetActive(false);
+        m_PDAlarm.SetActive(true);
+        m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+        m_ScriptCount++;
+        m_TutorialCount++;
+    }
+
+    private int CheckResultConceptSprite(string _conceptName)
+    {
+        int _randomIndex = 0;
+
+        switch (_conceptName)
+        {
+            case "슈퍼히어로":
+            {
+                _randomIndex = (int)ResultConcept.슈퍼히어로 * 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+                return _index;
+            }
+
+            case "대난투":
+            {
+                _randomIndex = (int)ResultConcept.대난투 * 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            case "미소녀":
+            {
+                _randomIndex = (int)ResultConcept.미소녀 * 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            case "미래도시":
+            {
+                _randomIndex = (int)ResultConcept.미래도시 * 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            case "고대유적":
+            {
+                _randomIndex = (int)ResultConcept.고대유적 * 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            case "마법":
+            {
+                _randomIndex = (int)ResultConcept.마법 * 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            case "외계인":
+            {
+                _randomIndex = (int)ResultConcept.외계인 * 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            case "서부총잡이":
+            {
+                _randomIndex = (int)ResultConcept.서부총잡이 * 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            case "드래곤":
+            {
+                _randomIndex = (int)ResultConcept.드래곤 * 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            case "스팀펑크":
+            {
+                _randomIndex = (int)ResultConcept.스팀펑크 * 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            // 3개
+            case "시간여행":
+            {
+                _randomIndex = (int)ResultConcept.시간여행 * 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 3);
+
+
+                return _index;
+            }
+
+            // 1개
+            case "비밀의 숲":
+            {
+                _randomIndex = (int)ResultConcept.비밀의숲 * 2 + 1;
+                //int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+                return _randomIndex;
+            }
+
+            // 3개
+            case "노래방":
+            {
+                _randomIndex = (int)ResultConcept.노래방 * 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 3);
+
+
+                return _index;
+            }
+
+            // 3개
+            case "아이돌":
+            {
+                _randomIndex = (int)ResultConcept.아이돌 * 2 + 1;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 3);
+
+
+                return _index;
+            }
+
+            // 3개
+            case "축구":
+            {
+                _randomIndex = (int)ResultConcept.축구 * 2 + 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 3);
+
+
+                return _index;
+            }
+
+            case "태권도":
+            {
+                _randomIndex = (int)ResultConcept.태권도 * 2 + 3;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            case "농구":
+            {
+                _randomIndex = (int)ResultConcept.농구 * 2 + 3;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            case "꿈":
+            {
+                _randomIndex = (int)ResultConcept.꿈 * 2 + 3;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            case "정치권력":
+            {
+                _randomIndex = (int)ResultConcept.정치권력 * 2 + 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+
+                return _index;
+            }
+
+            case "판타지":
+            {
+                _randomIndex = (int)ResultConcept.판타지 * 2 + 2;
+                int _index = UnityEngine.Random.Range(_randomIndex, _randomIndex + 2);
+
+                return _randomIndex;
+            }
+
+            case "검은마법사":
+            {
+                return 42;
+            }
+        }
+        return 0;
+    }
+
+    // 게임잼을 실행하는게 확정이 되면 학생들의 참가횟수를 빼주고 날짜를 셋팅해준다.
+    private void SelectComplete()
+    {
+        m_ClickStudent[0].m_StudentStat.m_NumberOfEntries -= 1;
+        m_ClickStudent[1].m_StudentStat.m_NumberOfEntries -= 1;
+        m_ClickStudent[2].m_StudentStat.m_NumberOfEntries -= 1;
+
+        GameJamSaveData _newData = new GameJamSaveData();
+
+        _newData.m_MakeYear = GameTime.Instance.FlowTime.NowYear;
+        _newData.m_MakeMonth = GameTime.Instance.FlowTime.NowMonth;
+        _newData.m_MakeWeek = GameTime.Instance.FlowTime.NowWeek;
+        _newData.m_MakeDay = GameTime.Instance.FlowTime.NowDay;
+
+        _newData.m_GameDesignerStudentName = m_ClickStudent[0].m_StudentStat.m_StudentName;
+        _newData.m_ArtStudentName = m_ClickStudent[1].m_StudentStat.m_StudentName;
+        _newData.m_ProgrammingStudentName = m_ClickStudent[2].m_StudentStat.m_StudentName;
+
+        _newData.m_GameJamID = m_NowGameJamInfo.m_GjamID;
+        _newData.m_Difficulty = m_EntryGameJamDifficulty;
+
+        var (gameDesignerStatName1, gameDesignerStat1, gameDesignerStatName2, gameDesignerStat2) = FillNeedStat(m_NeedGameDesignerStat);
+        var (ArtStatName1, ArtStat1, ArtStatName2, ArtStat2) = FillNeedStat(m_NeedArtStat);
+        var (programmingStatName1, programmingStat1, programmingStatName2, programmingStat2) = FillNeedStat(m_NeedProgrammingStat);
+
+        _newData.m_GameDesignerFirstNeedStatName = gameDesignerStatName1;
+        _newData.m_GameDesignerFirstNeedStat = gameDesignerStat1;
+        _newData.m_GameDesignerSecondNeedStatName = gameDesignerStatName2;
+        _newData.m_GameDesignerSecondNeedStat = gameDesignerStat2;
+
+        _newData.m_ArtFirstNeedStatName = ArtStatName1;
+        _newData.m_ArtFirstNeedStat = ArtStat1;
+        _newData.m_ArtSecondNeedStatName = ArtStatName2;
+        _newData.m_ArtSecondNeedStat = ArtStat2;
+
+        _newData.m_ProgrammingFirstNeedStatName = programmingStatName1;
+        _newData.m_ProgrammingFirstNeedStat = programmingStat1;
+        _newData.m_ProgrammingSecondNeedStatName = programmingStatName2;
+        _newData.m_ProgrammingSecondNeedStat = programmingStat2;
+
+        _newData.m_ConceptIndex = CheckResultConceptSprite(m_NowGameJamInfo.m_GjamConcept);
+
+        _newData.m_GameDesignerEntryStudentStat1 = m_Requirement1List[0];
+        _newData.m_GameDesignerEntryStudentStat2 = m_Requirement2List[0];
+
+        _newData.m_ArtEntryStudentStat1 = m_Requirement1List[1];
+        _newData.m_ArtEntryStudentStat2 = m_Requirement2List[1];
+
+        _newData.m_ProgrammingEntryStudentStat1 = m_Requirement1List[2];
+        _newData.m_ProgrammingEntryStudentStat2 = m_Requirement2List[2];
+
+        _newData.m_SuccessPercent = m_GameJamPanel.m_ExpectedSuccesPercentgetter.text;
+
+        string _name = m_NowGameJamInfo.m_GjamName;
+        int _day = GameTime.Instance.FlowTime.NowDay + 3;
+        int _month = GameTime.Instance.FlowTime.NowMonth;
+        int _week = GameTime.Instance.FlowTime.NowWeek;
 
         if (m_GameJamEntryCount.ContainsKey(_name))
         {
@@ -1446,86 +1781,32 @@ public class GameJam : MonoBehaviour
             m_GameJamEntryCount.Add(_name, 1);
         }
 
-        if (_temp < 60)
-        {
-            m_Timer.StartGameJam("0", _temp.ToString());
-
-        }
-        else
-        {
-            m_Timer.StartGameJam((_temp % 60).ToString(), _temp.ToString());
-        }
-
-        //m_GameJamIDList.Add(m_SaveGameJamData.m_GameJamInfoData.m_GjamID);
-        m_GMStudentData[0].m_StudentData.m_StudentStat.m_NumberOfEntries -= 1;
-        m_ArtStudentData[0].m_StudentData.m_StudentStat.m_NumberOfEntries -= 1;
-        m_ProgrammingStudentData[0].m_StudentData.m_StudentStat.m_NumberOfEntries -= 1;
-
-        m_SaveGameJamData.m_GameJamData.m_GM.Add(m_GMStudentData[0].m_StudentData);
-        m_SaveGameJamData.m_GameJamData.m_Art.Add(m_ArtStudentData[0].m_StudentData);
-        m_SaveGameJamData.m_GameJamData.m_Programming.Add(m_ProgrammingStudentData[0].m_StudentData);
-        m_SaveGameJamData.m_GameJamData.m_MakeYear = GameTime.Instance.FlowTime.NowYear;
-        m_SaveGameJamData.m_GameJamData.m_MakeMonth = GameTime.Instance.FlowTime.NowMonth;
-
-        m_ToBeRunning.Add(m_SaveGameJamData);
-
-        //m_GameAndStudentData = m_SaveGameJamData;
-
         m_MonthLimit -= 1;
-        PlayerInfo.Instance.m_MyMoney -= m_SaveGameJamData.m_GameJamInfoData.m_EntryFee;
-        MonthlyReporter.Instance.m_NowMonth.ExpensesActivity += m_SaveGameJamData.m_GameJamInfoData.m_EntryFee;
-        //SetRecruitNoticeInfoContent();
-        //StartCoroutine(GameJamScheduler());
-    }
 
-    private IEnumerator CheckClassStart(float second)
-    {
-        yield return new WaitUntil(() =>
+        PlayerInfo.Instance.MyMoney -= (int)m_NowGameJamInfo.m_EntryFee;
+        MonthlyReporter.Instance.m_NowMonth.ExpensesActivity += (int)m_NowGameJamInfo.m_EntryFee;
+
+        if (_week == 4 && GameTime.Instance.FlowTime.NowDay >= 3)
         {
-            if (InGameTest.Instance.m_ClassState == ClassState.Studying)
-            {
-                StartCoroutine(GameJamScheduler(second));
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-
-        });
-    }
-
-    private IEnumerator GameJamScheduler(float second)
-    {
-        m_Timer.SetActiveSelf(true);
-
-        m_TimerText = second;
-
-        while (m_TimerText > 0)
-        {
-            m_TimerText -= Time.deltaTime;
-            string _min = Mathf.Floor(m_TimerText / 60).ToString("00");
-            string _second = (m_TimerText % 60).ToString("00");
-            m_Timer.ChangeText(_min, _second);
-            m_Timer.ChangeImageColor(new Color(1, 1, 1, 1));
-            yield return null;
-
-            if (m_TimerText <= 0.5)
-            {
-                m_Timer.SetActiveSelf(false);
-
-                //m_ResultPanel.SetActive(true);
-            }
-            else if (m_TimerText <= 5)
-            {
-                m_Timer.ChangeImageColor(new Color(255, 0, 0, 255));
-            }
+            _month += 1;
         }
 
-        if (m_TimerText <= 0)
-        {
-            m_PopUpResultPanel.TurnOnUI();
-        }
+        GameObject _eventPrefab = m_ActivityEvent.MakeEventPrefab(m_NowGameJamInfo.m_GjamName,
+            GameTime.Instance.FlowTime.NowMonth, _week, _day, true, _month);
+
+        m_ActivityEvent.SetEventPanelActive(true);
+
+        m_ToBeRunning.Add(_newData);
+        m_GameJamEntryCoolTime = true;
+        StartCoroutine(m_ActivityEvent.TypingText(_eventPrefab, "게임잼 진행중"));
+    }
+
+    private (string _statName1, int _stat1, string _statName2, int _stat2) FillNeedStat(Dictionary<string, int> _needDic)
+    {
+        if (_needDic.Count > 1)
+            return (_needDic.ElementAt(0).Key, _needDic.ElementAt(0).Value, _needDic.ElementAt(1).Key, _needDic.ElementAt(1).Value);
+        else
+            return (_needDic.ElementAt(0).Key, _needDic.ElementAt(0).Value, "", 0);
     }
 
     // 타이머가 다 끝나고 나서 결과창을 띄워줘야한다.
@@ -1533,9 +1814,9 @@ public class GameJam : MonoBehaviour
     {
         m_GameJamResultPanel.SetResultPanelMoneyAndSpecialPoint();
 
-        string _gmName = m_GMStudentData[0].m_StudentData.m_StudentStat.m_StudentName;
-        string _artName = m_ArtStudentData[0].m_StudentData.m_StudentStat.m_StudentName;
-        string _programmingName = m_ProgrammingStudentData[0].m_StudentData.m_StudentStat.m_StudentName;
+        string _gmName = m_RunningGameJameData.m_GameDesignerStudentName;
+        string _artName = m_RunningGameJameData.m_ArtStudentName;
+        string _programmingName = m_RunningGameJameData.m_ProgrammingStudentName;
 
         SetGameJamNeedStatPanel(StudentType.GameDesigner);
         SetGameJamNeedStatPanel(StudentType.Art);
@@ -1555,97 +1836,109 @@ public class GameJam : MonoBehaviour
     {
         m_GameJamResultPanel.TurnOffPanel();
 
-        // SaveGameJamData gameJamData = m_GameJamHistory[m_SaveGameJamData.m_GameJamInfoData.m_GjamID].Last();
         CalculateFinalGameJamResult();
-        int _awareness = m_SaveGameJamData.m_GameJamData.m_Awareness;
-        int _TalentDevelopment = m_SaveGameJamData.m_GameJamData.m_PracticalTalent;
-        int _management = m_SaveGameJamData.m_GameJamData.m_Management;
+        int _awareness = (int)m_RunningGameJameData.m_Awareness;
+        int _TalentDevelopment = (int)m_RunningGameJameData.m_PracticalTalent;
+        int _management = (int)m_RunningGameJameData.m_Management;
 
-        int _prevAwereness = PlayerInfo.Instance.m_Awareness;
-        int _prevTalentDevelopment = PlayerInfo.Instance.m_TalentDevelopment;
-        int _prevManagement = PlayerInfo.Instance.m_Management;
+        int _prevAwereness = PlayerInfo.Instance.Famous;
+        int _prevTalentDevelopment = PlayerInfo.Instance.TalentDevelopment;
+        int _prevManagement = PlayerInfo.Instance.Management;
 
-        int _finalAwereness = _prevAwereness + _awareness;
-        int _finalTalentDevelopment = _prevTalentDevelopment + _TalentDevelopment;
-        int _finalManagement = _prevManagement + _management;
+        float _finalAwereness = _prevAwereness + _awareness;
+        float _finalTalentDevelopment = _prevTalentDevelopment + _TalentDevelopment;
+        float _finalManagement = _prevManagement + _management;
+
+        double _finalAwerenessPercent = Math.Round(_finalAwereness / 999 * 100);
+        double _finalTalentDevelopmentPercent = Math.Round(_finalTalentDevelopment / 999 * 100);
+        double _finalManagementPercent = Math.Round(_finalManagement / 999 * 100);
 
         Sprite _awarenessArrow = _awareness > 0 ? m_UpArrow : _awareness == 0 ? m_NoneArrow : m_DownArrow;
-        Sprite _TalentDevelopmentArrow = _TalentDevelopment > 0 ? m_UpArrow : _TalentDevelopment == 0 ? m_NoneArrow : m_DownArrow;
+        Sprite _TalentDevelopmentArrow =
+            _TalentDevelopment > 0 ? m_UpArrow : _TalentDevelopment == 0 ? m_NoneArrow : m_DownArrow;
         Sprite _managementArrow = _management > 0 ? m_UpArrow : _management == 0 ? m_NoneArrow : m_DownArrow;
 
-        Sprite _FinalawarenessArrow = _finalAwereness - _prevAwereness > 0 ? m_UpArrow : _finalAwereness - _prevAwereness == 0 ? m_NoneArrow : m_DownArrow;
-        Sprite _FinalTalentDevelopmentArrow = _finalTalentDevelopment - _prevTalentDevelopment > 0 ? m_UpArrow : _finalTalentDevelopment - _prevTalentDevelopment == 0 ? m_NoneArrow : m_DownArrow;
-        Sprite _FinalmanagementArrow = _finalManagement - _prevManagement > 0 ? m_UpArrow : _finalManagement - _prevManagement == 0 ? m_NoneArrow : m_DownArrow;
+        Sprite _FinalawarenessArrow = _finalAwereness - _prevAwereness > 0 ? m_UpArrow :
+            _finalAwereness - _prevAwereness == 0 ? m_NoneArrow : m_DownArrow;
+        Sprite _FinalTalentDevelopmentArrow = _finalTalentDevelopment - _prevTalentDevelopment > 0 ? m_UpArrow :
+            _finalTalentDevelopment - _prevTalentDevelopment == 0 ? m_NoneArrow : m_DownArrow;
+        Sprite _FinalmanagementArrow = _finalManagement - _prevManagement > 0 ? m_UpArrow :
+            _finalManagement - _prevManagement == 0 ? m_NoneArrow : m_DownArrow;
 
         string _gameJamName = m_GameJamResultPanel._changeGameName;
 
+        GameJamInfo _nowMonthGameJamData = SearchAllGameJamInfo((int)m_RunningGameJameData.m_GameJamID);
+
         if (_gameJamName == "")
         {
-            string GjamName = m_SaveGameJamData.m_GameJamInfoData.m_GjamName;
-            _gameJamName = GjamName + m_GameJamEntryCount[GjamName].ToString(); ;
+            string GjamName = _nowMonthGameJamData.m_GjamName;
+            _gameJamName = GjamName + m_GameJamEntryCount[GjamName].ToString();
         }
 
-        string _date = GameTime.Instance.FlowTime.NowYear + "년 " + GameTime.Instance.FlowTime.NowMonth + "월 " + GameTime.Instance.FlowTime.NowWeek + "주차 결과";
+        string _date = GameTime.Instance.FlowTime.NowYear + "년 " + GameTime.Instance.FlowTime.NowMonth + "월 " +
+                       GameTime.Instance.FlowTime.NowWeek + "주차 결과";
         m_FinalGameJamResultPanel.SetPreInfo(_prevAwereness.ToString(), _prevTalentDevelopment.ToString(), _prevManagement.ToString());
         m_FinalGameJamResultPanel.SetChangeInfo(_awareness.ToString(), _TalentDevelopment.ToString(), _management.ToString());
         m_FinalGameJamResultPanel.SetChangeInfoArrowImage(_awarenessArrow, _TalentDevelopmentArrow, _managementArrow);
-        m_FinalGameJamResultPanel.SetSlider(_finalAwereness, _finalTalentDevelopment, _finalManagement);
+        m_FinalGameJamResultPanel.SetSlider((int)_finalAwerenessPercent, (int)_finalTalentDevelopmentPercent, (int)_finalManagementPercent);
         m_FinalGameJamResultPanel.SetFinalInfo(_finalAwereness.ToString(), _finalTalentDevelopment.ToString(), _finalManagement.ToString());
         m_FinalGameJamResultPanel.SetFinalInfoArrowImage(_FinalawarenessArrow, _FinalTalentDevelopmentArrow, _FinalmanagementArrow);
 
-        m_SaveGameJamData.m_GameJamData.m_GameName = _gameJamName;
-        m_SaveGameJamData.m_GameJamData.m_GM.Add(m_GMStudentData[0].m_StudentData);
-        m_SaveGameJamData.m_GameJamData.m_Art.Add(m_ArtStudentData[0].m_StudentData);
-        m_SaveGameJamData.m_GameJamData.m_Programming.Add(m_ProgrammingStudentData[0].m_StudentData);
-        m_SaveGameJamData.m_GameJamData.m_Genre = _genreName;
-        m_SaveGameJamData.m_GameJamData.m_Rank = _rank;
-        m_SaveGameJamData.m_GameJamData.m_Funny = Funny;
-        m_SaveGameJamData.m_GameJamData.m_Graphic = Graphic;
-        m_SaveGameJamData.m_GameJamData.m_Perfection = Perfection;
-        m_SaveGameJamData.m_GameJamData.m_TotalGenreScore = m_TotalGenreScore;
+        m_RunningGameJameData.m_GameName = _gameJamName;
+        m_RunningGameJameData.m_Genre = _genreName;
+        m_RunningGameJameData.m_Rank = _rank;
+        m_RunningGameJameData.m_Funny = Funny;
+        m_RunningGameJameData.m_Graphic = Graphic;
+        m_RunningGameJameData.m_Perfection = Perfection;
+        m_RunningGameJameData.m_TotalGenreScore = m_TotalGenreScore;
 
         // 데이터를 저장할 때 이미 한 번 진행해봤던 이벤트면 해당 아이디를 가진 리스트에 정보 저장. 아니라면 새로운 리스트 만들어서 아이디랑 저장하기
-        if (m_GameJamHistory.ContainsKey(m_SaveGameJamData.m_GameJamInfoData.m_GjamID))
+        if (m_GameJamHistory.ContainsKey(_nowMonthGameJamData.m_GjamID))
         {
-            m_GameJamHistory[m_SaveGameJamData.m_GameJamInfoData.m_GjamID].Add(m_SaveGameJamData);
+            m_GameJamHistory[_nowMonthGameJamData.m_GjamID].Add(m_RunningGameJameData);
         }
         else
         {
-            List<SaveGameJamData> m_GameJamDataList = new List<SaveGameJamData>();
-            m_GameJamDataList.Add(m_SaveGameJamData);
-            m_GameJamHistory.Add(m_SaveGameJamData.m_GameJamInfoData.m_GjamID, m_GameJamDataList);
+            List<GameJamSaveData> m_GameJamDataList = new List<GameJamSaveData>();
+            m_GameJamDataList.Add(m_RunningGameJameData);
+            m_GameJamHistory.Add(_nowMonthGameJamData.m_GjamID, m_GameJamDataList);
             OnDataChanged();
         }
 
         EnqueueDataChangedEvent();
 
-        SetRiseStat(_rank, GMRequirementStatList, RiseGMStatList);
-        SetRiseStat(_rank, ArtRequirementStatList, RiseArtStatList);
-        SetRiseStat(_rank, ProgrammingRequirementStatList, RiseProgrammingStatList);
+        SetRiseStat(_rank, GameDesignerRequirementStatList, ref RiseGameDesignerStatList);
+        SetRiseStat(_rank, ArtRequirementStatList, ref RiseArtStatList);
+        SetRiseStat(_rank, ProgrammingRequirementStatList, ref RiseProgrammingStatList);
 
-        ChangeStudentData(m_GMStudentData[0].m_StudentData.m_StudentStat.m_StudentName, RiseGMStatList);
-        ChangeStudentData(m_ArtStudentData[0].m_StudentData.m_StudentStat.m_StudentName, RiseArtStatList);
-        ChangeStudentData(m_ProgrammingStudentData[0].m_StudentData.m_StudentStat.m_StudentName, RiseProgrammingStatList);
+        ChangeStudentData(m_RunningGameJameData.m_GameDesignerStudentName, RiseGameDesignerStatList);
+        ChangeStudentData(m_RunningGameJameData.m_ArtStudentName, RiseArtStatList);
+        ChangeStudentData(m_RunningGameJameData.m_ProgrammingStudentName, RiseProgrammingStatList);
 
-        PlayerInfo.Instance.m_Awareness = _finalAwereness;
-        PlayerInfo.Instance.m_Management = _finalManagement;
-        PlayerInfo.Instance.m_TalentDevelopment = _finalTalentDevelopment;
+        PlayerInfo.Instance.Famous = (int)_finalAwereness;
+        PlayerInfo.Instance.Management = (int)_finalManagement;
+        PlayerInfo.Instance.TalentDevelopment = (int)_finalTalentDevelopment;
 
         /// 월간보고를 위한 유명, 운영, 인재양성 점수 저장
-        MonthlyReporter.Instance.m_NowMonth.ManagementScore = _finalManagement;
-        MonthlyReporter.Instance.m_NowMonth.FamousScore = _finalAwereness;
-        MonthlyReporter.Instance.m_NowMonth.TalentDevelopmentScore = _finalTalentDevelopment;
+        MonthlyReporter.Instance.m_NowMonth.ManagementScore = (int)_finalManagement;
+        MonthlyReporter.Instance.m_NowMonth.FamousScore = (int)_finalAwereness;
+        MonthlyReporter.Instance.m_NowMonth.TalentDevelopmentScore = (int)_finalTalentDevelopment;
 
-        int reward = FindRewardToDifficulty(m_SaveGameJamData.m_GameJamInfoData.m_GjamAI_ID, m_SaveGameJamData.m_GameJamData.m_Rank);
+        int reward = FindRewardToDifficulty(_nowMonthGameJamData.m_GjamAI_ID, m_RunningGameJameData.m_Rank);
 
         m_FinalGameJamResultPanel.SetResultPanel(InGameUI.Instance.m_nowAcademyName.text, _gameJamName, _date, reward.ToString());
 
         if (_rank != "미완성")
         {
-            PlayerInfo.Instance.m_MyMoney += reward;
+            PlayerInfo.Instance.MyMoney += reward;
             MonthlyReporter.Instance.m_NowMonth.IncomeActivity += reward;
         }
-        int index = m_ToBeRunning.FindIndex(x => x.m_GameJamInfoData.m_GjamWeek == m_SaveGameJamData.m_GameJamInfoData.m_GjamWeek);
+        else
+        {
+            m_SoundManager.PlayFailSound();
+        }
+
+        int index = m_ToBeRunning.FindIndex(x => x.m_GameJamID == _nowMonthGameJamData.m_GjamID);
         m_ToBeRunning.RemoveAt(index);
         //m_GameJamResultPanel.InitChangeName();
     }
@@ -1655,159 +1948,159 @@ public class GameJam : MonoBehaviour
     {
         if (_rank == "미완성")
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = -10;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 0;
-            m_SaveGameJamData.m_GameJamData.m_Management = 0;
+            m_RunningGameJameData.m_Awareness = -10;
+            m_RunningGameJameData.m_PracticalTalent = 0;
+            m_RunningGameJameData.m_Management = 0;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 50)
+        else if (m_RunningGameJameData.m_Score <= 50)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 2;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 0;
-            m_SaveGameJamData.m_GameJamData.m_Management = 0;
+            m_RunningGameJameData.m_Awareness = 2;
+            m_RunningGameJameData.m_PracticalTalent = 0;
+            m_RunningGameJameData.m_Management = 0;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 80)
+        else if (m_RunningGameJameData.m_Score <= 80)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 4;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 0;
-            m_SaveGameJamData.m_GameJamData.m_Management = 0;
+            m_RunningGameJameData.m_Awareness = 4;
+            m_RunningGameJameData.m_PracticalTalent = 0;
+            m_RunningGameJameData.m_Management = 0;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 110)
+        else if (m_RunningGameJameData.m_Score <= 110)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 6;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 1;
-            m_SaveGameJamData.m_GameJamData.m_Management = 0;
+            m_RunningGameJameData.m_Awareness = 6;
+            m_RunningGameJameData.m_PracticalTalent = 1;
+            m_RunningGameJameData.m_Management = 0;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 140)
+        else if (m_RunningGameJameData.m_Score <= 140)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 8;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 2;
-            m_SaveGameJamData.m_GameJamData.m_Management = 1;
+            m_RunningGameJameData.m_Awareness = 8;
+            m_RunningGameJameData.m_PracticalTalent = 2;
+            m_RunningGameJameData.m_Management = 1;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 170)
+        else if (m_RunningGameJameData.m_Score <= 170)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 10;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 3;
-            m_SaveGameJamData.m_GameJamData.m_Management = 2;
+            m_RunningGameJameData.m_Awareness = 10;
+            m_RunningGameJameData.m_PracticalTalent = 3;
+            m_RunningGameJameData.m_Management = 2;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 200)
+        else if (m_RunningGameJameData.m_Score <= 200)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 12;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 4;
-            m_SaveGameJamData.m_GameJamData.m_Management = 3;
+            m_RunningGameJameData.m_Awareness = 12;
+            m_RunningGameJameData.m_PracticalTalent = 4;
+            m_RunningGameJameData.m_Management = 3;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 230)
+        else if (m_RunningGameJameData.m_Score <= 230)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 14;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 5;
-            m_SaveGameJamData.m_GameJamData.m_Management = 4;
+            m_RunningGameJameData.m_Awareness = 14;
+            m_RunningGameJameData.m_PracticalTalent = 5;
+            m_RunningGameJameData.m_Management = 4;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 260)
+        else if (m_RunningGameJameData.m_Score <= 260)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 16;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 6;
-            m_SaveGameJamData.m_GameJamData.m_Management = 5;
+            m_RunningGameJameData.m_Awareness = 16;
+            m_RunningGameJameData.m_PracticalTalent = 6;
+            m_RunningGameJameData.m_Management = 5;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 290)
+        else if (m_RunningGameJameData.m_Score <= 290)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 18;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 7;
-            m_SaveGameJamData.m_GameJamData.m_Management = 6;
+            m_RunningGameJameData.m_Awareness = 18;
+            m_RunningGameJameData.m_PracticalTalent = 7;
+            m_RunningGameJameData.m_Management = 6;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 320)
+        else if (m_RunningGameJameData.m_Score <= 320)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 20;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 8;
-            m_SaveGameJamData.m_GameJamData.m_Management = 7;
+            m_RunningGameJameData.m_Awareness = 20;
+            m_RunningGameJameData.m_PracticalTalent = 8;
+            m_RunningGameJameData.m_Management = 7;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 350)
+        else if (m_RunningGameJameData.m_Score <= 350)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 22;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 9;
-            m_SaveGameJamData.m_GameJamData.m_Management = 8;
+            m_RunningGameJameData.m_Awareness = 22;
+            m_RunningGameJameData.m_PracticalTalent = 9;
+            m_RunningGameJameData.m_Management = 8;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 380)
+        else if (m_RunningGameJameData.m_Score <= 380)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 24;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 10;
-            m_SaveGameJamData.m_GameJamData.m_Management = 9;
+            m_RunningGameJameData.m_Awareness = 24;
+            m_RunningGameJameData.m_PracticalTalent = 10;
+            m_RunningGameJameData.m_Management = 9;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 410)
+        else if (m_RunningGameJameData.m_Score <= 410)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 26;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 11;
-            m_SaveGameJamData.m_GameJamData.m_Management = 10;
+            m_RunningGameJameData.m_Awareness = 26;
+            m_RunningGameJameData.m_PracticalTalent = 11;
+            m_RunningGameJameData.m_Management = 10;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 440)
+        else if (m_RunningGameJameData.m_Score <= 440)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 28;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 12;
-            m_SaveGameJamData.m_GameJamData.m_Management = 11;
+            m_RunningGameJameData.m_Awareness = 28;
+            m_RunningGameJameData.m_PracticalTalent = 12;
+            m_RunningGameJameData.m_Management = 11;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 470)
+        else if (m_RunningGameJameData.m_Score <= 470)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 30;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 13;
-            m_SaveGameJamData.m_GameJamData.m_Management = 12;
+            m_RunningGameJameData.m_Awareness = 30;
+            m_RunningGameJameData.m_PracticalTalent = 13;
+            m_RunningGameJameData.m_Management = 12;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 500)
+        else if (m_RunningGameJameData.m_Score <= 500)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 32;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 14;
-            m_SaveGameJamData.m_GameJamData.m_Management = 13;
+            m_RunningGameJameData.m_Awareness = 32;
+            m_RunningGameJameData.m_PracticalTalent = 14;
+            m_RunningGameJameData.m_Management = 13;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 530)
+        else if (m_RunningGameJameData.m_Score <= 530)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 34;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 15;
-            m_SaveGameJamData.m_GameJamData.m_Management = 14;
+            m_RunningGameJameData.m_Awareness = 34;
+            m_RunningGameJameData.m_PracticalTalent = 15;
+            m_RunningGameJameData.m_Management = 14;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 560)
+        else if (m_RunningGameJameData.m_Score <= 560)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 36;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 16;
-            m_SaveGameJamData.m_GameJamData.m_Management = 15;
+            m_RunningGameJameData.m_Awareness = 36;
+            m_RunningGameJameData.m_PracticalTalent = 16;
+            m_RunningGameJameData.m_Management = 15;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 590)
+        else if (m_RunningGameJameData.m_Score <= 590)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 38;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 17;
-            m_SaveGameJamData.m_GameJamData.m_Management = 16;
+            m_RunningGameJameData.m_Awareness = 38;
+            m_RunningGameJameData.m_PracticalTalent = 17;
+            m_RunningGameJameData.m_Management = 16;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 620)
+        else if (m_RunningGameJameData.m_Score <= 620)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 40;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 18;
-            m_SaveGameJamData.m_GameJamData.m_Management = 17;
+            m_RunningGameJameData.m_Awareness = 40;
+            m_RunningGameJameData.m_PracticalTalent = 18;
+            m_RunningGameJameData.m_Management = 17;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 650)
+        else if (m_RunningGameJameData.m_Score <= 650)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 42;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 19;
-            m_SaveGameJamData.m_GameJamData.m_Management = 18;
+            m_RunningGameJameData.m_Awareness = 42;
+            m_RunningGameJameData.m_PracticalTalent = 19;
+            m_RunningGameJameData.m_Management = 18;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 680)
+        else if (m_RunningGameJameData.m_Score <= 680)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 44;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 20;
-            m_SaveGameJamData.m_GameJamData.m_Management = 19;
+            m_RunningGameJameData.m_Awareness = 44;
+            m_RunningGameJameData.m_PracticalTalent = 20;
+            m_RunningGameJameData.m_Management = 19;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 710)
+        else if (m_RunningGameJameData.m_Score <= 710)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 46;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 21;
-            m_SaveGameJamData.m_GameJamData.m_Management = 20;
+            m_RunningGameJameData.m_Awareness = 46;
+            m_RunningGameJameData.m_PracticalTalent = 21;
+            m_RunningGameJameData.m_Management = 20;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 740)
+        else if (m_RunningGameJameData.m_Score <= 740)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 48;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 22;
-            m_SaveGameJamData.m_GameJamData.m_Management = 21;
+            m_RunningGameJameData.m_Awareness = 48;
+            m_RunningGameJameData.m_PracticalTalent = 22;
+            m_RunningGameJameData.m_Management = 21;
         }
-        else if (m_SaveGameJamData.m_GameJamData.m_Score <= 999)
+        else if (m_RunningGameJameData.m_Score <= 999)
         {
-            m_SaveGameJamData.m_GameJamData.m_Awareness = 50;
-            m_SaveGameJamData.m_GameJamData.m_PracticalTalent = 23;
-            m_SaveGameJamData.m_GameJamData.m_Management = 22;
+            m_RunningGameJameData.m_Awareness = 50;
+            m_RunningGameJameData.m_PracticalTalent = 23;
+            m_RunningGameJameData.m_Management = 22;
         }
     }
 
@@ -1818,7 +2111,8 @@ public class GameJam : MonoBehaviour
         {
             if (_statName == AbilityNameList[i])
             {
-                m_Requirement1List[(int)_list[_index].m_StudentStat.m_StudentType] = _list[_index].m_StudentStat.m_AbilityAmountList[i];
+                m_Requirement1List[(int)_list[_index].m_StudentStat.m_StudentType] =
+                    _list[_index].m_StudentStat.m_AbilityAmountArr[i];
                 break;
             }
         }
@@ -1831,7 +2125,8 @@ public class GameJam : MonoBehaviour
         {
             if (_statName == AbilityNameList[i])
             {
-                m_Requirement2List[(int)_list[_index].m_StudentStat.m_StudentType] = _list[_index].m_StudentStat.m_AbilityAmountList[i];
+                m_Requirement2List[(int)_list[_index].m_StudentStat.m_StudentType] =
+                    _list[_index].m_StudentStat.m_AbilityAmountArr[i];
                 break;
             }
         }
@@ -1980,17 +2275,19 @@ public class GameJam : MonoBehaviour
     private void SetRecruitContent(int _index, string _entryFee)
     {
         _gameJameName = m_DummyGameJamList[_index].m_GjamName;
+        m_EntryGameJamDifficulty = m_DummyGameJamList[_index].m_GjamAI_ID;
 
-        string _name = m_DummyGameJamList[_index].m_GjamName + "게임잼";
+        string _name = m_DummyGameJamList[_index].m_GjamName + " 게임잼";
         string _subName = m_DummyGameJamList[_index].m_GjamDetailInfo;
-        string _reward = FindRewardToDifficulty(m_DummyGameJamList[_index].m_GjamAI_ID).ToString();
+        string _reward = string.Format("{0:#,0}", FindRewardToDifficulty(m_DummyGameJamList[_index].m_GjamAI_ID));
         string _awareness = "2 ~ 50";
-        string _date = m_DummyGameJamList[_index].m_GjamMonth.ToString() + "월 " + m_DummyGameJamList[_index].m_GjamWeek.ToString() + "주차";
+        string _date = m_DummyGameJamList[_index].m_GjamMonth.ToString() + "월 ";
         string _health = m_DummyGameJamList[_index].m_StudentHealth.ToString();
         string _passion = m_DummyGameJamList[_index].m_StudentPassion.ToString();
         Sprite _maingenre = FindGenreSprite(m_DummyGameJamList[_index].m_GjamMainGenre);
         Sprite _subGenre = FindGenreSprite(m_DummyGameJamList[_index].m_GjamSubGenre);
-        ClassifyPartNeedStat("기획", m_DummyGameJamList[_index].m_GjamNeedStatGM);
+
+        ClassifyPartNeedStat("기획", m_DummyGameJamList[_index].m_GjamNeedStatGameDesigner);
         ClassifyPartNeedStat("아트", m_DummyGameJamList[_index].m_GjamNeedStatArt);
         ClassifyPartNeedStat("플밍", m_DummyGameJamList[_index].m_GjamNeedStatProgramming);
 
@@ -1999,16 +2296,22 @@ public class GameJam : MonoBehaviour
         m_GameJamPanel.SetHealthPlusMinus(_health, m_UpArrow, m_DownArrow);
         m_GameJamPanel.SetPassionPlusMinus(_passion, m_UpArrow, m_DownArrow);
         m_GameJamPanel.ChangeGenreSprite(_maingenre, _subGenre);
-        SetReauirementIcon(m_GameJamPanel.GMRequirementStatIcon1, m_GameJamPanel.GMRequirementStatIcon2, m_NeedGMStat);
-        SetReauirementIcon(m_GameJamPanel.ArtRequirementStatIcon1, m_GameJamPanel.ArtRequirementStatIcon2, m_NeedArtStat);
-        SetReauirementIcon(m_GameJamPanel.ProgrammingRequirementStatIcon1, m_GameJamPanel.ProgrammingRequirementStatIcon2, m_NeedProgrammingStat);
+
+        SetReauirementIcon(m_GameJamPanel.GameDesignerRequirementStatIcon1,
+            m_GameJamPanel.GameDesignerRequirementStatIcon2, m_NeedGameDesignerStat);
+        SetReauirementIcon(m_GameJamPanel.ArtRequirementStatIcon1, m_GameJamPanel.ArtRequirementStatIcon2,
+            m_NeedArtStat);
+        SetReauirementIcon(m_GameJamPanel.ProgrammingRequirementStatIcon1,
+            m_GameJamPanel.ProgrammingRequirementStatIcon2, m_NeedProgrammingStat);
 
         for (int j = 0; j < 5; j++)
         {
-            GMRequirementStatList[j] = m_DummyGameJamList[_index].m_GjamNeedStatGM[AbilityNameList[j]];
+            GameDesignerRequirementStatList[j] = m_DummyGameJamList[_index].m_GjamNeedStatGameDesigner[AbilityNameList[j]];
             ArtRequirementStatList[j] = m_DummyGameJamList[_index].m_GjamNeedStatArt[AbilityNameList[j]];
             ProgrammingRequirementStatList[j] = m_DummyGameJamList[_index].m_GjamNeedStatProgramming[AbilityNameList[j]];
         }
+
+        m_NowGameJamInfo = SearchAllGameJamInfo(m_DummyGameJamList[_index].m_GjamID);
     }
 
     // 게임잼 패널을 켰을 때 제일 처음 보여주는 정보는 리스트 맨 위에있는 정보여야 한다.
@@ -2016,119 +2319,227 @@ public class GameJam : MonoBehaviour
     {
         if (m_DummyGameJamList.Count == 0)
         {
-            //m_GameJamPanel.m_GameJamParent.GetChild(0).GetComponent<Button>().Select();
-
             if (m_GameJamPanel.GameJamCanvas.activeSelf)
             {
                 m_GameJamPanel.SetActiveGameJamCanvas(false);
             }
+
             m_Slider.SetWarningPanel.SetActive(true);
 
             StartCoroutine(SetWarningPanel());
+
+            return;
         }
-        else if (m_MonthLimit > 0)
+
+        #region _맨 위에있는 버튼에 하이라이트 해주기
+        if (m_PrevClickGameJamObj != null)
         {
-            if (!m_GameJamPanel.GameJamCanvas.activeSelf)
-            {
-                m_GameJamPanel.SetActiveGameJamCanvas(true);
-                m_Slider.SetWarningPanel.SetActive(false);
-            }
-            //SetWarningPanel();
+            Button _prevButton = m_PrevClickGameJamObj.GetComponent<Button>();
 
-            if (m_ToBeRunning.Count == 0 || m_DummyGameJamList[0].m_GjamName != m_ToBeRunning[0].m_GameJamInfoData.m_GjamName)
-            {
-                m_GameJamPanel.m_GameJamParent.GetChild(0).GetComponent<Button>().Select();
+            ColorBlock _prevButtonColor = _prevButton.colors;
 
-                string _entryFee = m_DummyGameJamList[0].m_EntryFee.ToString();
+            _prevButtonColor = ColorBlock.defaultColorBlock;
+
+            _prevButton.colors = _prevButtonColor;
+        }
+
+        m_PrevClickGameJamObj = m_GameJamPanel.m_GameJamParent.GetChild(0).gameObject;
+
+        Button _currentButton = m_GameJamPanel.m_GameJamParent.GetChild(0).gameObject.GetComponent<Button>();
+
+        ColorBlock _currentButtonColor = _currentButton.colors;
+
+        _currentButtonColor.normalColor = m_HighLightColor;
+        _currentButtonColor.highlightedColor = m_HighLightColor;
+        _currentButtonColor.pressedColor = m_HighLightColor;
+        _currentButtonColor.selectedColor = m_HighLightColor;
+
+        _currentButton.colors = _currentButtonColor;
+
+        #endregion
+
+        if (!m_GameJamPanel.GameJamCanvas.activeSelf)
+        {
+            m_GameJamPanel.SetActiveGameJamCanvas(true);
+            m_Slider.SetWarningPanel.SetActive(false);
+        }
+
+        switch (m_MonthLimit)
+        {
+            case 2:
+            {
+                /// 준비된 데이터가 없을 때 예외처리하기
+
+                string _entryFee = string.Format("{0:#,0}", m_DummyGameJamList[0].m_EntryFee);
                 string _money = m_GameJamPanel.SetCurrentMoney();
 
-                SetRecruitContent(0, _entryFee);
+                MakeRecruitContent(_entryFee, _money, 0, true, m_Entry, "참가");
 
-                // 소지하고 있는 금액이 참가기보다 적으면 빨간색으로 글자 바꿔주기
-                if (int.Parse(_entryFee) > int.Parse(_money))
+                if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 5)
                 {
-                    m_GameJamPanel.ChangeColorMoneyText(new Color(255, 0, 0, 255));
-                    m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, false, m_NotEntry);
+                    m_GameJamPanel.RecruitNoticePanel.transform.GetChild(0).GetComponent<ScrollRect>().vertical = false;
+                    m_GameJamPanel.GameJamListParentObj.transform.GetChild(0).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.GameJamListParentObj.transform.GetChild(1).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.GameJamListParentObj.transform.GetChild(2).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.GameJamListParentObj.transform.GetChild(3).GetComponent<Button>().interactable = false;
+                    m_GameJamPanel.GameJamListParentObj.transform.GetChild(4).GetComponent<Button>().interactable = false;
+                    m_Unmask.fitTarget = m_GameJamPanel.RecruitNoticePanel.GetComponent<RectTransform>();
+                    m_TutorialArrowImage.gameObject.SetActive(false);
+                    m_TutorialTextImage.gameObject.SetActive(true);
+                    m_NextButton.gameObject.SetActive(true);
+                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(700, -200, 0);
+                    m_ScriptCount++;
+                    m_TutorialCount++;
+                }
+            }
+            break;
+
+            case 1:
+            {
+                if (m_ToBeRunning.Count != 0)
+                {
+
+                    bool _isEntryGameJam = false;
+
+                    GameJamInfo _nowData = new GameJamInfo();
+                    _nowData = SearchAllGameJamInfo((int)m_ToBeRunning[0].m_GameJamID);
+
+                    // 내가 신청한 게임잼이 이미 끝났으면 그 달동안은 참가 신청 완료라고 띄워줘야한다.
+                    for (int i = 0; i < m_GameJamHistory.Count; i++)
+                    {
+                        for (int j = 0; j < m_GameJamHistory.ElementAt(i).Value.Count; j++)
+                        {
+                            GameJamInfo gameJamInfo = SearchAllGameJamInfo(m_GameJamHistory.ElementAt(i).Key);
+                            string _name = Regex.Replace(m_GameJamHistory.ElementAt(i).Value[j].m_GameName, @"\d", "");
+
+                            if (_name == m_DummyGameJamList[0].m_GjamName || gameJamInfo.m_GjamName == m_DummyGameJamList[0].m_GjamName)
+                            {
+                                string _entryFee = "-";
+                                MakeRecruitContent(_entryFee, "0", 0, false, m_EntryComplete, "참가 신청 완료");
+                                _isEntryGameJam = true;
+                            }
+                        }
+                    }
+
+                    if (!_isEntryGameJam)
+                    {
+                        if (m_DummyGameJamList[0].m_GjamName == _nowData.m_GjamName)
+                        {
+                            string _entryFee = "-";
+                            MakeRecruitContent(_entryFee, "0", 0, false, m_EntryComplete, "참가 신청 완료");
+                        }
+                        else
+                        {
+                            string _entryFee = string.Format("{0:#,0}", m_DummyGameJamList[0].m_EntryFee);
+                            string _money = m_GameJamPanel.SetCurrentMoney();
+
+                            MakeRecruitContent(_entryFee, _money, 0, true, m_Entry, "참가");
+                        }
+                    }
                 }
                 else
                 {
-                    m_GameJamPanel.ChangeColorMoneyText(new Color(0, 0, 0, 255));
-                    m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, true, m_Entry);
+                    bool _isEntryGameJam = false;
+
+                    // 내가 신청한 게임잼이 이미 끝났으면 그 달동안은 참가 신청 완료라고 띄워줘야한다.
+                    for (int i = 0; i < m_GameJamHistory.Count; i++)
+                    {
+                        for (int j = 0; j < m_GameJamHistory.ElementAt(i).Value.Count; j++)
+                        {
+                            string _name = Regex.Replace(m_GameJamHistory.ElementAt(i).Value[j].m_GameName, @"\d", "");
+                            GameJamInfo gameJamInfo = SearchAllGameJamInfo(m_GameJamHistory.ElementAt(i).Key);
+
+                            if (_name == m_DummyGameJamList[0].m_GjamName || gameJamInfo.m_GjamName == m_DummyGameJamList[0].m_GjamName)
+                            {
+                                string _entryFee = "-";
+                                MakeRecruitContent(_entryFee, "0", 0, false, m_EntryComplete, "참가 신청 완료");
+
+                                _isEntryGameJam = true;
+                            }
+                        }
+                    }
+
+                    // 만든 게임잼은 있는데 내가 방금 클릭한 게임잼이 아니라면
+                    if (_isEntryGameJam == false)
+                    {
+                        string _entryFee = string.Format("{0:#,0}", m_DummyGameJamList[0].m_EntryFee);
+                        string _money = m_GameJamPanel.SetCurrentMoney();
+                        MakeRecruitContent(_entryFee, _money, 0, true, m_Entry, "참가");
+                    }
                 }
-
-                m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, true, m_Entry);
-                m_GameJamPanel.ChangeStartButtonName("참가");
             }
-            else
+            break;
+
+            case 0:
             {
-                m_GameJamPanel.m_GameJamParent.GetChild(0).GetComponent<Button>().Select();
-
-                string _entryFee = "-";
-
-                SetRecruitContent(0, _entryFee);
-
-                m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, false, m_EntryComplete);
-                m_GameJamPanel.ChangeStartButtonName("참가 신청 완료");
-            }
-
-            m_SaveGameJamData.m_GameJamData.m_GM = new List<Student>();
-            m_SaveGameJamData.m_GameJamData.m_Art = new List<Student>();
-            m_SaveGameJamData.m_GameJamData.m_Programming = new List<Student>();
-
-            if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 5)
-            {
-                m_GameJamPanel.RecruitNoticePanel.transform.GetChild(0).GetComponent<ScrollRect>().vertical = false;
-                m_Unmask.fitTarget = m_GameJamPanel.RecruitNoticePanel.GetComponent<RectTransform>();
-                m_TutorialArrowImage.gameObject.SetActive(false);
-                m_TutorialTextImage.gameObject.SetActive(true);
-                m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
-                m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(700, -200, 0);
-                m_ScriptCount++;
-                m_TutorialCount++;
-            }
-        }
-        else // 이미 한달에 2번 게임잼에 참여했을 경우 참여불가로 만들어줘야함
-        {
-            if (!m_GameJamPanel.GameJamCanvas.activeSelf)
-            {
-                m_GameJamPanel.SetActiveGameJamCanvas(true);
-                m_Slider.SetWarningPanel.SetActive(false);
-            }
-
-            // 이번달 참여 횟수를 다 썼다고 경고 띄워주기
-            for (int i = 0; i < m_ToBeRunning.Count; i++)
-            {
-                if (m_ToBeRunning[i].m_GameJamInfoData.m_GjamName == m_DummyGameJamList[0].m_GjamName)
+                if (m_ToBeRunning.Count != 0)
                 {
-                    string _entryFee = "-";
+                    bool _isEntryGameJam = false;
 
-                    SetRecruitContent(0, _entryFee);
+                    GameJamInfo _nowData = new GameJamInfo();
+                    _nowData = SearchAllGameJamInfo((int)m_ToBeRunning[0].m_GameJamID);
 
-                    m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, false, m_EntryComplete);
-                    m_GameJamPanel.ChangeStartButtonName("참가 신청 완료");
-                    return;
+                    // 내가 신청한 게임잼이 이미 끝났으면 그 달동안은 참가 신청 완료라고 띄워줘야한다.
+                    for (int i = 0; i < m_GameJamHistory.Count; i++)
+                    {
+                        for (int j = 0; j < m_GameJamHistory.ElementAt(i).Value.Count; j++)
+                        {
+                            GameJamInfo gameJamInfo = SearchAllGameJamInfo(m_GameJamHistory.ElementAt(i).Key);
+                            string _name = Regex.Replace(m_GameJamHistory.ElementAt(i).Value[j].m_GameName, @"\d", "");
+
+                            if (_name == m_DummyGameJamList[0].m_GjamName || gameJamInfo.m_GjamName == m_DummyGameJamList[0].m_GjamName)
+                            {
+                                string _entryFee = "-";
+                                MakeRecruitContent(_entryFee, "0", 0, false, m_EntryComplete, "참가 신청 완료");
+                                _isEntryGameJam = true;
+                            }
+                        }
+                    }
+
+                    if (!_isEntryGameJam)
+                    {
+                        if (m_DummyGameJamList[0].m_GjamName == _nowData.m_GjamName)
+                        {
+                            string _entryFee = "-";
+                            MakeRecruitContent(_entryFee, "0", 0, false, m_EntryComplete, "참가 신청 완료");
+                        }
+                        else
+                        {
+                            string _entryFee = "-";
+                            MakeRecruitContent(_entryFee, "0", 0, true, m_NotEntry, "신청 불가");
+                        }
+                    }
                 }
                 else
                 {
-                    string _entryFee = "-";
+                    bool _isEntryGameJam = false;
 
-                    SetRecruitContent(0, _entryFee);
+                    // 내가 신청한 게임잼이 이미 끝났으면 그 달동안은 참가 신청 완료라고 띄워줘야한다.
+                    for (int i = 0; i < m_GameJamHistory.Count; i++)
+                    {
+                        for (int j = 0; j < m_GameJamHistory.ElementAt(i).Value.Count; j++)
+                        {
+                            GameJamInfo gameJamInfo = SearchAllGameJamInfo(m_GameJamHistory.ElementAt(i).Key);
+                            string _name = Regex.Replace(m_GameJamHistory.ElementAt(i).Value[j].m_GameName, @"\d", "");
 
-                    m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, true, m_NotEntry);
-                    m_GameJamPanel.ChangeStartButtonName("신청 불가");
+                            if (_name == m_DummyGameJamList[0].m_GjamName || gameJamInfo.m_GjamName == m_DummyGameJamList[0].m_GjamName)
+                            {
+                                string _entryFee = "-";
+                                MakeRecruitContent(_entryFee, "0", 0, false, m_EntryComplete, "참가 신청 완료");
+                                _isEntryGameJam = true;
+                            }
+                        }
+                    }
+
+                    if (_isEntryGameJam == false)
+                    {
+                        string _entryFee = "-";
+                        MakeRecruitContent(_entryFee, "0", 0, true, m_NotEntry, "신청 불가");
+                    }
                 }
-                break;
             }
-
-            //SetWarningPanel();
-
-            //string _entryFee = "-";
-
-            //SetRecruitContent(0, _entryFee);
-
-            //m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, true, m_NotEntry);
-            //m_GameJamPanel.ChangeStartButtonName("신청 불가");
-
+            break;
         }
     }
 
@@ -2140,7 +2551,6 @@ public class GameJam : MonoBehaviour
 
     IEnumerator SetEntryWarningPanel()
     {
-        _warningMessage = "참가 할 수 있는 횟수를 초과하였습니다!\n다음달을 노려보세요.";
         yield return new WaitForSecondsRealtime(3f);
         m_GameJamPanel.SetActiveEntryCountWarningPanel(false, _warningMessage);
     }
@@ -2154,7 +2564,8 @@ public class GameJam : MonoBehaviour
 
             _gameJamPrefab.name = m_DummyGameJamList[i].m_GjamName;
 
-            _gameJamPrefab.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = m_DummyGameJamList[i].m_GjamName;
+            _gameJamPrefab.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
+                m_DummyGameJamList[i].m_GjamName;
             _gameJamPrefab.GetComponent<Button>().onClick.AddListener(MakeRecruitNoticeInfo);
         }
     }
@@ -2174,21 +2585,25 @@ public class GameJam : MonoBehaviour
                     GameObject _gameJamListPrefab = Instantiate(m_GameJamListPrefab);
                     m_GameJamListPanel.MoveGameJamList(_gameJamListPrefab, m_GameJamListPanel._gamejameContentParent);
 
-                    string _gameName = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GameName;
-                    string _genreName = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Genre;
-                    string _rank = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Rank;
+                    string _gameName = m_GameJamHistory.ElementAt(i).Value[j].m_GameName;
+                    string _genreName = m_GameJamHistory.ElementAt(i).Value[j].m_Genre;
+                    string _rank = m_GameJamHistory.ElementAt(i).Value[j].m_Rank;
                     Sprite _genre = FindGenreSprite(_genreName);
+                    Sprite _concept = m_ResultConceptSprite[m_GameJamHistory.ElementAt(i).Value[j].m_ConceptIndex];
 
                     _gameJamListPrefab.name = _gameName;
                     _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameName.text = _gameName;
                     _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GenreName.text = _genreName;
                     _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_Rank.text = _rank;
                     _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GenreImage.sprite = _genre;
+                    _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameConceptImage.sprite = _concept;
 
-                    GameObject _gameList = _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.gameObject;
-                    //m_GameJamListPanel.changePrefabContent(_gameName, _genreName, _rank);
-                    _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick.AddListener(() => MakePreGameJamInfo(_gameList));
-                    _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick.AddListener(m_GameJamListPanel.ClickGameJamPrefab);
+                    GameObject _gameList = _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton
+                        .gameObject;
+                    _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick
+                        .AddListener(() => MakePreGameJamInfo(_gameList));
+                    _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick
+                        .AddListener(m_GameJamListPanel.ClickGameJamPrefab);
                 }
             }
             else
@@ -2196,62 +2611,140 @@ public class GameJam : MonoBehaviour
                 GameObject _gameJamListPrefab = Instantiate(m_GameJamListPrefab);
                 m_GameJamListPanel.MoveGameJamList(_gameJamListPrefab, m_GameJamListPanel._gamejameContentParent);
 
-                string _gameName = m_GameJamHistory.ElementAt(i).Value[0].m_GameJamData.m_GameName;
-                string _genreName = m_GameJamHistory.ElementAt(i).Value[0].m_GameJamData.m_Genre;
-                string _rank = m_GameJamHistory.ElementAt(i).Value[0].m_GameJamData.m_Rank;
+                string _gameName = m_GameJamHistory.ElementAt(i).Value[0].m_GameName;
+                string _genreName = m_GameJamHistory.ElementAt(i).Value[0].m_Genre;
+                string _rank = m_GameJamHistory.ElementAt(i).Value[0].m_Rank;
                 Sprite _genre = FindGenreSprite(_genreName);
+                Sprite _concept = m_ResultConceptSprite[m_GameJamHistory.ElementAt(i).Value[0].m_ConceptIndex];
 
                 _gameJamListPrefab.name = _gameName;
                 _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameName.text = _gameName;
                 _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GenreName.text = _genreName;
                 _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_Rank.text = _rank;
                 _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GenreImage.sprite = _genre;
+                _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameConceptImage.sprite = _concept;
 
-                GameObject _gameList = _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.gameObject;
-                //m_GameJamListPanel.changePrefabContent(_gameName, _genreName, _rank);
-                _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick.AddListener(() => MakePreGameJamInfo(_gameList));
-                _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick.AddListener(m_GameJamListPanel.ClickGameJamPrefab);
+                GameObject _gameList = _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton
+                    .gameObject;
+                _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick
+                    .AddListener(() => MakePreGameJamInfo(_gameList));
+                _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick
+                    .AddListener(m_GameJamListPanel.ClickGameJamPrefab);
+            }
+        }
+
+        #region _맨 위에있는 버튼에 하이라이트 해주기
+        if (m_PrevRankButtonObj != null)
+        {
+            Button _prevButton = m_PrevRankButtonObj.GetComponent<Button>();
+
+            ColorBlock _prevButtonColor = _prevButton.colors;
+
+            _prevButtonColor = ColorBlock.defaultColorBlock;
+
+            _prevButton.colors = _prevButtonColor;
+        }
+
+        //GameObject _currentObj = EventSystem.current.currentSelectedGameObject;
+
+        m_PrevRankButtonObj = m_GameJamListPanel.AllButton.gameObject;
+
+        Button _currentButton = m_GameJamListPanel.AllButton;
+
+        ColorBlock _currentButtonColor = _currentButton.colors;
+
+        _currentButtonColor.normalColor = m_RankButtonHighLightColor;
+        _currentButtonColor.highlightedColor = m_RankButtonHighLightColor;
+        _currentButtonColor.pressedColor = m_RankButtonHighLightColor;
+        _currentButtonColor.selectedColor = m_RankButtonHighLightColor;
+
+        _currentButton.colors = _currentButtonColor;
+        #endregion
+    }
+
+    // 내가 누른 버튼들의 정보를 셋팅해주는데 필요한 작업들을 합쳐놓은 함수
+    private void MakeRecruitContent(string _entryFee, string _money, int _index, bool _entrybuttonActive, Sprite _entrybuttonSprite, string _entrybuttonName)
+    {
+        SetRecruitContent(_index, _entryFee);
+        m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, _entrybuttonActive, _entrybuttonSprite);
+        m_GameJamPanel.ChangeStartButtonName(_entrybuttonName);
+
+        string _replaceEntryFee = _entryFee.Replace(",", "");
+
+        if (_replaceEntryFee != "-")
+        {
+            // 소지하고 있는 금액이 참가기보다 적으면 빨간색으로 글자 바꿔주기
+            if (int.Parse(_replaceEntryFee) > int.Parse(_money))
+            {
+                m_GameJamPanel.ChangeColorMoneyText(new Color(1, 0, 0, 1));
+                m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, false, m_NotEntry);
+                m_GameJamPanel.ChangeStartButtonName("신청 불가");
+            }
+            else
+            {
+                m_GameJamPanel.ChangeColorMoneyText(new Color(0, 0, 0, 1));
+                m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, true, m_Entry);
+                m_GameJamPanel.ChangeStartButtonName("참가");
             }
         }
     }
 
     // 누른 버튼의 상세 정보를 셋팅해주는 함수
+    /// TODO : 바뀐 시스템에 의한 구조 변경. 예외처리 해줘야 할 부분이 더 생겼다.
     private void MakeRecruitNoticeInfo()
     {
+        #region _버튼을 클릭했을 때 하이라이트가 남아있게 하기
+
+        if (m_PrevClickGameJamObj != null)
+        {
+            Button _prevButton = m_PrevClickGameJamObj.GetComponent<Button>();
+
+            ColorBlock _prevButtonColor = _prevButton.colors;
+
+            _prevButtonColor = ColorBlock.defaultColorBlock;
+
+            _prevButton.colors = _prevButtonColor;
+        }
+
         GameObject _currentObj = EventSystem.current.currentSelectedGameObject;
+
+        if (_currentObj == null)
+        {
+            return;
+        }
+
+        m_PrevClickGameJamObj = _currentObj;
+
+        Button _currentButton = _currentObj.GetComponent<Button>();
+
+        ColorBlock _currentButtonColor = _currentButton.colors;
+
+        _currentButtonColor.normalColor = m_HighLightColor;
+        _currentButtonColor.highlightedColor = m_HighLightColor;
+        _currentButtonColor.pressedColor = m_HighLightColor;
+        _currentButtonColor.selectedColor = m_HighLightColor;
+
+        _currentButton.colors = _currentButtonColor;
+
+        #endregion
+
         _gameJameName = _currentObj.name;
 
-        /// TODO : 게임잼 버튼을 누르면 아직 ToBeRunning이 비어있어서 Argument Out Over Range가 발생한다.
-        if (m_MonthLimit > 0)
+        switch (m_MonthLimit)
         {
-            if (m_ToBeRunning.Count == 0)
+            case 2:
             {
                 for (int i = 0; i < m_DummyGameJamList.Count; i++)
                 {
                     if (_gameJameName == m_DummyGameJamList[i].m_GjamName)
                     {
-                        string _entryFee = m_DummyGameJamList[i].m_EntryFee.ToString();
+                        string _entryFee = string.Format("{0:#,0}", m_DummyGameJamList[i].m_EntryFee);
                         string _money = m_GameJamPanel.SetCurrentMoney();
 
-
-                        SetRecruitContent(i, _entryFee);
-
-                        // 소지하고 있는 금액이 참가기보다 적으면 빨간색으로 글자 바꿔주기
-                        if (int.Parse(_entryFee) > int.Parse(_money))
-                        {
-                            m_GameJamPanel.ChangeColorMoneyText(new Color(255, 0, 0, 255));
-                            m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, false, m_NotEntry);
-                        }
-                        else
-                        {
-                            m_GameJamPanel.ChangeColorMoneyText(new Color(0, 0, 0, 255));
-                            m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, true, m_Entry);
-                        }
-
-                        m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, true, m_Entry);
-                        m_GameJamPanel.ChangeStartButtonName("참가");
+                        MakeRecruitContent(_entryFee, _money, i, true, m_Entry, "참가");
                     }
                 }
+
                 if (PlayerInfo.Instance.IsFirstGameJam && m_TutorialCount == 7)
                 {
                     m_GameJamPanel.RecruitNoticePanel.transform.GetChild(0).GetComponent<ScrollRect>().vertical = true;
@@ -2259,83 +2752,171 @@ public class GameJam : MonoBehaviour
                     m_TutorialArrowImage.gameObject.SetActive(false);
                     m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
                     m_TutorialTextImage.gameObject.SetActive(true);
+                    m_NextButton.gameObject.SetActive(true);
                     m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-1600, 0, 0);
                     m_ScriptCount++;
                     m_TutorialCount++;
                 }
             }
-            else
+            break;
+
+            case 1:
             {
-                for (int i = 0; i < m_ToBeRunning.Count; i++)
+                if (m_ToBeRunning.Count != 0)
                 {
-                    if (m_ToBeRunning[i].m_GameJamInfoData.m_GjamName != _gameJameName)
+                    for (int i = 0; i < m_ToBeRunning.Count; i++)
                     {
-                        for (int j = 0; j < m_DummyGameJamList.Count; j++)
+                        GameJamInfo _nowData = SearchAllGameJamInfo((int)m_ToBeRunning[i].m_GameJamID);
+
+                        if (_nowData.m_GjamName != _gameJameName)
                         {
-                            if (_gameJameName == m_DummyGameJamList[j].m_GjamName)
+                            for (int j = 0; j < m_DummyGameJamList.Count; j++)
                             {
-                                string _entryFee = m_DummyGameJamList[j].m_EntryFee.ToString();
-                                string _money = m_GameJamPanel.SetCurrentMoney();
-                                _selectGameWeek = m_DummyGameJamList[j].m_GjamWeek;
-
-                                SetRecruitContent(j, _entryFee);
-
-                                // 소지하고 있는 금액이 참가기보다 적으면 빨간색으로 글자 바꿔주기
-                                if (int.Parse(_entryFee) > int.Parse(_money))
+                                if (_gameJameName == m_DummyGameJamList[j].m_GjamName)
                                 {
-                                    m_GameJamPanel.ChangeColorMoneyText(new Color(1, 0, 0, 1));
-                                    m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, false, m_NotEntry);
+                                    string _entryFee = string.Format("{0:#,0}", m_DummyGameJamList[j].m_EntryFee);
+                                    string _money = m_GameJamPanel.SetCurrentMoney();
+
+                                    MakeRecruitContent(_entryFee, _money, j, true, m_Entry, "참가");
                                 }
-                                else
+                            }
+                        }
+                        else
+                        {
+                            for (int j = 0; j < m_DummyGameJamList.Count; j++)
+                            {
+                                if (_gameJameName == m_DummyGameJamList[j].m_GjamName)
                                 {
-                                    m_GameJamPanel.ChangeColorMoneyText(new Color(0, 0, 0, 1));
-                                    m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, true, m_Entry);
+                                    string _entryFee = "-";
+                                    MakeRecruitContent(_entryFee, "0", j, false, m_EntryComplete, "참가 신청 완료");
                                 }
-                                m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, true, m_Entry);
-                                m_GameJamPanel.ChangeStartButtonName("참가");
                             }
                         }
                     }
-                    else
-                    {
-                        string _entryFee = "-";
-
-                        SetRecruitContent(i, _entryFee);
-
-                        m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, false, m_EntryComplete);
-                        m_GameJamPanel.ChangeStartButtonName("참가 신청 완료");
-                    }
                 }
-            }
-        }
-        else
-        {
-            // 이번달 참여 횟수를 다 썼다고 경고 띄워주기
-            for (int i = 0; i < m_ToBeRunning.Count; i++)
-            {
-                for (int j = 0; j < m_DummyGameJamList.Count; j++)
+                else
                 {
-                    if (m_ToBeRunning[i].m_GameJamInfoData.m_GjamName == _gameJameName)
+                    bool _isEntryGameJam = false;
+
+                    // 내가 신청한 게임잼이 이미 끝났으면 그 달동안은 참가 신청 완료라고 띄워줘야한다.
+                    for (int i = 0; i < m_GameJamHistory.Count; i++)
                     {
-                        string _entryFee = "-";
+                        for (int j = 0; j < m_GameJamHistory.ElementAt(i).Value.Count; j++)
+                        {
+                            GameJamInfo gameJamInfo = SearchAllGameJamInfo(m_GameJamHistory.ElementAt(i).Key);
+                            string _name = Regex.Replace(m_GameJamHistory.ElementAt(i).Value[j].m_GameName, @"\d", "");
 
-                        SetRecruitContent(i, _entryFee);
+                            if (_name == _gameJameName || gameJamInfo.m_GjamName == _gameJameName)
+                            {
+                                int _index = m_DummyGameJamList.FindIndex(x => x.m_GjamID == m_GameJamHistory.ElementAt(i).Value[j].m_GameJamID);
+                                string _entryFee = "-";
 
-                        m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, false, m_EntryComplete);
-                        m_GameJamPanel.ChangeStartButtonName("참가 신청 완료");
-                        return;
+                                MakeRecruitContent(_entryFee, "0", _index, false, m_EntryComplete, "참가 신청 완료");
+
+                                _isEntryGameJam = true;
+                            }
+                        }
                     }
-                    else if (_gameJameName == m_DummyGameJamList[j].m_GjamName)
+
+                    // 만든 게임잼은 있는데 내가 방금 클릭한 게임잼이 아니라면
+                    if (_isEntryGameJam == false)
+                    {
+                        for (int i = 0; i < m_DummyGameJamList.Count; i++)
+                        {
+                            if (_gameJameName == m_DummyGameJamList[i].m_GjamName)
+                            {
+                                string _entryFee = string.Format("{0:#,0}", m_DummyGameJamList[i].m_EntryFee);
+                                string _money = m_GameJamPanel.SetCurrentMoney();
+
+                                MakeRecruitContent(_entryFee, _money, i, true, m_Entry, "참가");
+                            }
+                        }
+                    }
+                }
+
+            }
+            break;
+
+            case 0:
+            {
+                if (m_ToBeRunning.Count != 0)
+                {
+                    bool _isEntryGameJam = false;
+
+                    for (int j = 0; j < m_GameJamHistory.Count; j++)
+                    {
+                        for (int k = 0; k < m_GameJamHistory.ElementAt(j).Value.Count; k++)
+                        {
+                            string _name = Regex.Replace(m_GameJamHistory.ElementAt(j).Value[k].m_GameName, @"\d", "");
+                            GameJamInfo gameJamInfo = SearchAllGameJamInfo(m_GameJamHistory.ElementAt(j).Key);
+
+                            if (_name == _gameJameName || gameJamInfo.m_GjamName == _gameJameName)
+                            {
+                                int _index = m_DummyGameJamList.FindIndex(x => x.m_GjamID == m_GameJamHistory.ElementAt(j).Value[k].m_GameJamID);
+
+                                string _entryFee = "-";
+
+                                MakeRecruitContent(_entryFee, "0", _index, false, m_EntryComplete, "참가 신청 완료");
+                                _isEntryGameJam = true;
+                            }
+                        }
+                    }
+
+                    for (int j = 0; j < m_ToBeRunning.Count; j++)
+                    {
+                        GameJamInfo gameJamInfo = SearchAllGameJamInfo((int)m_ToBeRunning[j].m_GameJamID);
+
+                        if (_gameJameName == gameJamInfo.m_GjamName)
+                        {
+                            string _entryFee = "-";
+                            MakeRecruitContent(_entryFee, "0", j, false, m_EntryComplete, "참가 신청 완료");
+                            _isEntryGameJam = true;
+                        }
+                    }
+
+                    if (_isEntryGameJam == false)
                     {
                         string _entryFee = "-";
+                        int _index = m_DummyGameJamList.FindIndex(x => x.m_GjamName == _gameJameName);
 
-                        SetRecruitContent(j, _entryFee);
+                        MakeRecruitContent(_entryFee, "0", _index, true, m_NotEntry, "신청 불가");
+                    }
 
-                        m_GameJamPanel.SetButton(m_GameJamPanel.m_SetStartButton, true, m_NotEntry);
-                        m_GameJamPanel.ChangeStartButtonName("신청 불가");
+                }
+                else
+                {
+                    bool _isEntryGameJam = false;
+
+                    // 내가 신청한 게임잼이 이미 끝났으면 그 달동안은 참가 신청 완료라고 띄워줘야한다.
+                    for (int i = 0; i < m_GameJamHistory.Count; i++)
+                    {
+                        for (int j = 0; j < m_GameJamHistory.ElementAt(i).Value.Count; j++)
+                        {
+                            string _name = Regex.Replace(m_GameJamHistory.ElementAt(i).Value[j].m_GameName, @"\d", "");
+                            GameJamInfo gameJamInfo = SearchAllGameJamInfo(m_GameJamHistory.ElementAt(i).Key);
+
+                            if (_name == _gameJameName || gameJamInfo.m_GjamName == _gameJameName)
+                            {
+                                int _index = m_DummyGameJamList.FindIndex(x => x.m_GjamID == m_GameJamHistory.ElementAt(i).Value[j].m_GameJamID);
+
+                                string _entryFee = "-";
+
+                                MakeRecruitContent(_entryFee, "0", _index, false, m_EntryComplete, "참가 신청 완료");
+                                _isEntryGameJam = true;
+                            }
+                        }
+                    }
+
+                    if (_isEntryGameJam == false)
+                    {
+                        string _entryFee = "-";
+                        int _index = m_DummyGameJamList.FindIndex(x => x.m_GjamName == _gameJameName);
+
+                        MakeRecruitContent(_entryFee, "0", _index, true, m_NotEntry, "신청 불가");
                     }
                 }
             }
+            break;
         }
     }
 
@@ -2349,27 +2930,63 @@ public class GameJam : MonoBehaviour
         {
             for (int j = 0; j < m_GameJamHistory.ElementAt(i).Value.Count; j++)
             {
-                if (_gameName == m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GameName)
+                if (_gameName == m_GameJamHistory.ElementAt(i).Value[j].m_GameName)
                 {
-                    //m_GameJamListPanel.ClickGameJamPrefab();
-                    string _name = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GameName;
-                    string _year = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamInfoData.m_GjamYear.ToString();
-                    string _month = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamInfoData.m_GjamMonth.ToString();
+                    GameJamInfo _nowData = SearchAllGameJamInfo(m_GameJamHistory.ElementAt(i).Key);
 
-                    string _gmName = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GM[0].m_StudentStat.m_StudentName;
-                    string _artName = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Art[0].m_StudentStat.m_StudentName;
-                    string _programmingName = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Programming[0].m_StudentStat.m_StudentName;
-                    Sprite _gmProfile = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GM[0].StudentProfileImg;
-                    Sprite _artProfile = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Art[0].StudentProfileImg;
-                    Sprite _programmingProfile = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Programming[0].StudentProfileImg;
-                    Sprite _genreSprite = FindGenreSprite(m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Genre);
-                    string _concept = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamInfoData.m_GjamConcept;
-                    string _funny = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Funny.ToString();
-                    string _graphic = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Graphic.ToString();
-                    string _perfection = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Perfection.ToString();
-                    string _totalGenreScore = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_TotalGenreScore.ToString();
-                    string _score = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Score.ToString();
-                    string _rank = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Rank;
+                    string _year = _nowData.m_GjamYear.ToString();
+                    string _month = _nowData.m_GjamMonth.ToString();
+                    string _concept = _nowData.m_GjamConcept;
+
+                    string _name = m_GameJamHistory.ElementAt(i).Value[j].m_GameName;
+
+                    Student m_GameDesignerStudent = ObjectManager.Instance.SearchStudentInfo(m_GameJamHistory.ElementAt(i).Value[j].m_GameDesignerStudentName);
+                    Student m_ArtStudent = ObjectManager.Instance.SearchStudentInfo(m_GameJamHistory.ElementAt(i).Value[j].m_ArtStudentName);
+                    Student m_ProgrammingStudent = ObjectManager.Instance.SearchStudentInfo(m_GameJamHistory.ElementAt(i).Value[j].m_ProgrammingStudentName);
+
+                    string _gmName;
+                    string _artName;
+                    string _programmingName;
+
+                    if (m_GameDesignerStudent.m_StudentStat.m_UserSettingName != "")
+                    {
+                        _gmName = m_GameDesignerStudent.m_StudentStat.m_UserSettingName;
+                    }
+                    else
+                    {
+                        _gmName = m_GameDesignerStudent.m_StudentStat.m_StudentName;
+                    }
+
+                    if (m_ArtStudent.m_StudentStat.m_UserSettingName != "")
+                    {
+                        _artName = m_ArtStudent.m_StudentStat.m_UserSettingName;
+                    }
+                    else
+                    {
+                        _artName = m_ArtStudent.m_StudentStat.m_StudentName;
+                    }
+
+                    if (m_ProgrammingStudent.m_StudentStat.m_UserSettingName != "")
+                    {
+                        _programmingName = m_ProgrammingStudent.m_StudentStat.m_UserSettingName;
+                    }
+                    else
+                    {
+                        _programmingName = m_ProgrammingStudent.m_StudentStat.m_StudentName;
+                    }
+
+                    Sprite _gmProfile = m_GameDesignerStudent.StudentProfileImg;
+                    Sprite _artProfile = m_ArtStudent.StudentProfileImg;
+                    Sprite _programmingProfile = m_ProgrammingStudent.StudentProfileImg;
+                    Sprite _genreSprite = FindGenreSprite(m_GameJamHistory.ElementAt(i).Value[j].m_Genre);
+                    Sprite _conceptSprite = m_ResultConceptSprite[m_GameJamHistory.ElementAt(i).Value[j].m_ConceptIndex];
+
+                    string _funny = m_GameJamHistory.ElementAt(i).Value[j].m_Funny.ToString();
+                    string _graphic = m_GameJamHistory.ElementAt(i).Value[j].m_Graphic.ToString();
+                    string _perfection = m_GameJamHistory.ElementAt(i).Value[j].m_Perfection.ToString();
+                    string _totalGenreScore = m_GameJamHistory.ElementAt(i).Value[j].m_TotalGenreScore.ToString();
+                    string _score = m_GameJamHistory.ElementAt(i).Value[j].m_Score.ToString();
+                    string _rank = m_GameJamHistory.ElementAt(i).Value[j].m_Rank;
 
                     if (_year == "0")
                     {
@@ -2377,39 +2994,45 @@ public class GameJam : MonoBehaviour
                     }
 
                     m_GameJamListPanel.ChangeGameInfo(_year + "년차 " + _month + "월", _name, _name);
-                    m_GameJamListPanel.ChangeStudentInfo(_gmName, _artName, _programmingName, _gmProfile, _artProfile, _programmingProfile);
-                    m_GameJamListPanel.ChangeGameJamScorePanel(_concept, _funny, _graphic, _perfection, _totalGenreScore, _score, _rank);  /// 학생 장르점수도 추가예정
+                    m_GameJamListPanel.ChangeStudentInfo(_gmName, _artName, _programmingName, _gmProfile, _artProfile,
+                        _programmingProfile);
+                    m_GameJamListPanel.ChangeGameJamScorePanel(_concept, _funny, _graphic, _perfection,
+                        _totalGenreScore, _score, _rank); /// 학생 장르점수도 추가예정
                     m_GameJamListPanel.ChangeGenreSprite(_genreSprite);
                     m_GameJamListPanel.ChangeMVPImageGameListPanel(Funny, Graphic, Perfection);
+                    m_GameJamListPanel.ChangeConceptSprite(_conceptSprite);
 
+                    int _gmValue = FindStudent(StudentType.GameDesigner, true,
+                        (int)m_GameJamHistory.ElementAt(i).Value[j].m_GameDesignerEntryStudentStat1, (int)m_GameJamHistory.ElementAt(i).Value[j].m_GameDesignerEntryStudentStat2);
+                    int _artValue = FindStudent(StudentType.Art, true,
+                        (int)m_GameJamHistory.ElementAt(i).Value[j].m_ArtEntryStudentStat1, (int)m_GameJamHistory.ElementAt(i).Value[j].m_ArtEntryStudentStat2);
+                    int _programmingValue = FindStudent(StudentType.Programming, true,
+                        (int)m_GameJamHistory.ElementAt(i).Value[j].m_ProgrammingEntryStudentStat1, (int)m_GameJamHistory.ElementAt(i).Value[j].m_ProgrammingEntryStudentStat2);
 
-                    //int _value = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GM[0].
-
-                    int _gmValue = FindStudent(StudentType.GameDesigner);
-                    int _artValue = FindStudent(StudentType.Art);
-                    int _programmingValue = FindStudent(StudentType.Programming);
-
-                    int _gmNeedValue = m_NeedGMStat.ElementAt(0).Value + m_NeedGMStat.ElementAt(1).Value;
-                    int _artNeedValue = m_Requirement1List[1] + m_Requirement2List[1];
-                    int _programmingNeedValue = m_Requirement1List[2] + m_Requirement2List[2];
-
+                    int _gmNeedValue = SetDifficultyForPrevGame(i, j, StudentType.GameDesigner);
+                    int _artNeedValue = SetDifficultyForPrevGame(i, j, StudentType.Art);
+                    int _programmingNeedValue = SetDifficultyForPrevGame(i, j, StudentType.Programming);
 
                     m_GameJamListPanel.SetPreGameStatSliderValue(StudentType.GameDesigner, _gmValue, _gmNeedValue);
                     m_GameJamListPanel.SetPreGameStatSliderValue(StudentType.Art, _artValue, _artNeedValue);
                     m_GameJamListPanel.SetPreGameStatSliderValue(StudentType.Programming, _programmingValue, _programmingNeedValue);
-                    //m_GameJamListPanel.SetPreGameStatSliderValue(_gmValue, _artValue, _programmingValue);
-                    //m_GameJamListPanel.SetSliderBar(_gmNeedValue, _artNeedValue, _programmingNeedValue);
-                    SetReauirementIcon(m_GameJamListPanel.GMRequiredStatImage1, m_GameJamListPanel.GMRequiredStatImage2, m_NeedGMStat);
-                    SetReauirementIcon(m_GameJamListPanel.ArtRequiredStatImage1, m_GameJamListPanel.ArtRequiredStatImage2, m_NeedProgrammingStat);
-                    SetReauirementIcon(m_GameJamListPanel.ProgrammingRequiredStatImage1, m_GameJamListPanel.ProgrammingRequiredStatImage2, m_NeedArtStat);
+
+                    ChangeRequirementStatImage(m_GameJamHistory.ElementAt(i).Value[j].m_GameDesignerFirstNeedStatName, m_GameJamListPanel.GameDesignerRequiredStatImage1);
+                    ChangeRequirementStatImage(m_GameJamHistory.ElementAt(i).Value[j].m_GameDesignerSecondNeedStatName, m_GameJamListPanel.GameDesignerRequiredStatImage2);
+
+                    ChangeRequirementStatImage(m_GameJamHistory.ElementAt(i).Value[j].m_ArtFirstNeedStatName, m_GameJamListPanel.ArtRequiredStatImage1);
+                    ChangeRequirementStatImage(m_GameJamHistory.ElementAt(i).Value[j].m_ArtFirstNeedStatName, m_GameJamListPanel.ArtRequiredStatImage1);
+
+                    ChangeRequirementStatImage(m_GameJamHistory.ElementAt(i).Value[j].m_ProgrammingFirstNeedStatName, m_GameJamListPanel.ProgrammingRequiredStatImage1);
+                    ChangeRequirementStatImage(m_GameJamHistory.ElementAt(i).Value[j].m_ProgrammingSecondNeedStatName, m_GameJamListPanel.ProgrammingRequiredStatImage1);
 
                     if (_gmValue >= _gmNeedValue)
                     {
-                        m_GameJamListPanel.SetGMPreGameStatSliderColor(m_SatisfyStat);
+                        m_GameJamListPanel.SetGameDesignerPreGameStatSliderColor(m_SatisfyStat);
                     }
                     else
                     {
-                        m_GameJamListPanel.SetGMPreGameStatSliderColor(m_DissatisfactionStat);
+                        m_GameJamListPanel.SetGameDesignerPreGameStatSliderColor(m_DissatisfactionStat);
                     }
 
                     if (_artValue >= _artNeedValue)
@@ -2434,6 +3057,72 @@ public class GameJam : MonoBehaviour
         }
     }
 
+    // 이전에 만들었던 게임잼에서 요구하는 스탯의 정보를 선택했던 당시의 난이도에 맞춰 셋팅해줘야한다.
+    private int SetDifficultyForPrevGame(int _gamejamHistoryKeyIndex, int _gamejamHistoryValueIndex, StudentType _type)
+    {
+        int _needStat = 0;
+
+        GameJamInfo _findData = SearchAllGameJamInfo(m_GameJamHistory.ElementAt(_gamejamHistoryKeyIndex).Key);
+
+        if (m_GameJamHistory.ElementAt(_gamejamHistoryKeyIndex).Value[_gamejamHistoryValueIndex].m_Difficulty == 100)
+        {
+            CalculateNeedStat(_type, _findData, ref _needStat, 20);
+            return _needStat;
+        }
+        else if (m_GameJamHistory.ElementAt(_gamejamHistoryKeyIndex).Value[_gamejamHistoryValueIndex].m_Difficulty ==
+                 200)
+        {
+            CalculateNeedStat(_type, _findData, ref _needStat, 10);
+            return _needStat;
+        }
+        else
+        {
+            CalculateNeedStat(_type, _findData, ref _needStat, 0);
+            return _needStat;
+        }
+    }
+
+    // 학과별로 필수 스탯을 저장해준다.
+    private void CalculateNeedStat(StudentType _type, GameJamInfo _data, ref int _needStat, int _difficulty)
+    {
+        switch (_type)
+        {
+            case StudentType.GameDesigner:
+            {
+                for (int i = 0; i < _data.m_GjamNeedStatGameDesigner.Count; i++)
+                {
+                    if (_data.m_GjamNeedStatGameDesigner.ElementAt(i).Value != 0)
+                    {
+                        _needStat += (_data.m_GjamNeedStatGameDesigner.ElementAt(i).Value + _difficulty);
+                    }
+                }
+            }
+            break;
+            case StudentType.Art:
+            {
+                for (int i = 0; i < _data.m_GjamNeedStatArt.Count; i++)
+                {
+                    if (_data.m_GjamNeedStatArt.ElementAt(i).Value != 0)
+                    {
+                        _needStat += (_data.m_GjamNeedStatArt.ElementAt(i).Value + _difficulty);
+                    }
+                }
+            }
+            break;
+            case StudentType.Programming:
+            {
+                for (int i = 0; i < _data.m_GjamNeedStatProgramming.Count; i++)
+                {
+                    if (_data.m_GjamNeedStatProgramming.ElementAt(i).Value != 0)
+                    {
+                        _needStat += (_data.m_GjamNeedStatProgramming.ElementAt(i).Value + _difficulty);
+                    }
+                }
+            }
+            break;
+        }
+    }
+
     // 학과별로 필요한 필수 스탯들을 딕셔너리에 넣어주는 함수이다.
     private void ClassifyPartNeedStat(string _name, Dictionary<string, int> _info)
     {
@@ -2441,13 +3130,13 @@ public class GameJam : MonoBehaviour
 
         if (_name == "기획")
         {
-            m_NeedGMStat.Clear();
+            m_NeedGameDesignerStat.Clear();
         }
         else if (_name == "아트")
         {
             m_NeedArtStat.Clear();
-
         }
+
         if (_name == "플밍")
         {
             m_NeedProgrammingStat.Clear();
@@ -2462,24 +3151,25 @@ public class GameJam : MonoBehaviour
             {
                 if (_name == "기획")
                 {
-                    m_NeedGMStat.Add(_statName, _value);
+                    m_NeedGameDesignerStat.Add(_statName, _value);
                 }
                 else if (_name == "아트")
                 {
                     m_NeedArtStat.Add(_statName, _value);
-
                 }
+
                 if (_name == "플밍")
                 {
                     m_NeedProgrammingStat.Add(_statName, _value);
                 }
+
                 _tempIndex++;
             }
         }
 
         if (_name == "기획")
         {
-            FindOutRequiredStatCount(_name, _tempIndex, m_NeedGMStat);
+            FindOutRequiredStatCount(_name, _tempIndex, m_NeedGameDesignerStat);
         }
         else if (_name == "아트")
         {
@@ -2520,45 +3210,50 @@ public class GameJam : MonoBehaviour
     public void SetGameJamResultInfo()
     {
         List<Student> _studentList = ObjectManager.Instance.m_StudentList;
+        GameJamInfo _nowData = SearchAllGameJamInfo((int)m_RunningGameJameData.m_GameJamID);
 
-        string _academyName = PlayerInfo.Instance.m_AcademyName;
-        string _gameName = m_SaveGameJamData.m_GameJamInfoData.m_GjamName;
+        string _academyName = PlayerInfo.Instance.AcademyName;
+        string _gameName = _nowData.m_GjamName;
         string _placeHolder = _gameName + m_GameJamEntryCount[_gameName].ToString();
-        string _concept = m_SaveGameJamData.m_GameJamInfoData.m_GjamConcept;
+        string _concept = _nowData.m_GjamConcept;
         Sprite _genreImage = FindGenreSprite(_genreName);
+
+        m_GameJamResultPanel.ChangeConceptSprite(m_ResultConceptSprite[m_RunningGameJameData.m_ConceptIndex]);
 
         Funny = 0;
         Graphic = 0;
         Perfection = 0;
         m_TotalGenreScore = 0;
 
-        CalculateStat(_studentList, m_GMStudentData[0].m_GameJamInfoData.m_GjamNeedStatGM, m_GMStudentData, StudentType.GameDesigner);
+        CalculateStat(_studentList, m_RunningGameJameData.m_GameDesignerFirstNeedStatName, m_RunningGameJameData.m_GameDesignerSecondNeedStatName,
+            (int)m_RunningGameJameData.m_GameDesignerFirstNeedStat, (int)m_RunningGameJameData.m_GameDesignerSecondNeedStat,
+            m_RunningGameJameData.m_GameDesignerStudentName, StudentType.GameDesigner);
 
-        CalculateStat(_studentList, m_ArtStudentData[0].m_GameJamInfoData.m_GjamNeedStatArt, m_ArtStudentData, StudentType.Art);
+        CalculateStat(_studentList, m_RunningGameJameData.m_ArtFirstNeedStatName, m_RunningGameJameData.m_ArtSecondNeedStatName,
+            (int)m_RunningGameJameData.m_ArtFirstNeedStat, (int)m_RunningGameJameData.m_ArtSecondNeedStat,
+            m_RunningGameJameData.m_ArtStudentName, StudentType.Art);
 
-        CalculateStat(_studentList, m_ProgrammingStudentData[0].m_GameJamInfoData.m_GjamNeedStatProgramming, m_ProgrammingStudentData, StudentType.Programming);
+        CalculateStat(_studentList, m_RunningGameJameData.m_ProgrammingFirstNeedStatName, m_RunningGameJameData.m_ProgrammingSecondNeedStatName,
+            (int)m_RunningGameJameData.m_ProgrammingFirstNeedStat, (int)m_RunningGameJameData.m_ProgrammingSecondNeedStat,
+            m_RunningGameJameData.m_ProgrammingStudentName, StudentType.Programming);
 
         double _score = m_GenreScore + _genreBonusScore + Funny + Graphic + Perfection;
-        m_TotalGenreScore = m_GenreScore + _genreBonusScore;
+        m_TotalGenreScore = m_GenreScore + _genreBonusScore + MiniGameScore;
 
         _score = Math.Truncate(_score);
         m_TotalGenreScore = Math.Truncate(m_TotalGenreScore);
 
-        m_SaveGameJamData.m_GameJamData.m_Score = _score;
+        m_RunningGameJameData.m_Score = _score;
 
         CalculateRank(_score);
 
-        m_GameJamResultPanel.SetPlusMinus(StudentType.GameDesigner, _rank, m_GMStudentData, GMRequirementStatList);
-        m_GameJamResultPanel.SetPlusMinus(StudentType.Art, _rank, m_ArtStudentData, ArtRequirementStatList);
-        m_GameJamResultPanel.SetPlusMinus(StudentType.Programming, _rank, m_ProgrammingStudentData, ProgrammingRequirementStatList);
+        m_GameJamResultPanel.SetPlusMinus(StudentType.GameDesigner, _rank,
+            m_RunningGameJameData.m_GameDesignerStudentName, GameDesignerRequirementStatList, m_RunningGameJameData);
+        m_GameJamResultPanel.SetPlusMinus(StudentType.Art, _rank, m_RunningGameJameData.m_ArtStudentName,
+            ArtRequirementStatList, m_RunningGameJameData);
+        m_GameJamResultPanel.SetPlusMinus(StudentType.Programming, _rank,
+            m_RunningGameJameData.m_ProgrammingStudentName, ProgrammingRequirementStatList, m_RunningGameJameData);
 
-        SetReauirementIcon(m_GameJamResultPanel.GMRequirementStat1, m_GameJamResultPanel.GMRequirementStat2, m_NeedGMStat);
-        SetReauirementIcon(m_GameJamResultPanel.ArtRequirementStat1, m_GameJamResultPanel.ArtRequirementStat2, m_NeedArtStat);
-        SetReauirementIcon(m_GameJamResultPanel.ProgrammingRequirementStat1, m_GameJamResultPanel.ProgrammingRequirementStat2, m_NeedProgrammingStat);
-
-        SetReauirementIcon(m_GameJamResultPanel.NeedStatPanelGMStatIcon1, m_GameJamResultPanel.NeedStatPanelGMStatIcon2, m_NeedGMStat);
-        SetReauirementIcon(m_GameJamResultPanel.NeedStatPanelArtStatIcon1, m_GameJamResultPanel.NeedStatPanelArtStatIcon2, m_NeedArtStat);
-        SetReauirementIcon(m_GameJamResultPanel.NeedStatPanelProgrammingStatIcon1, m_GameJamResultPanel.NeedStatPanelProgrammingStatIcon2, m_NeedProgrammingStat);
         m_GameJamResultPanel.ChangeGenreSprite(_genreImage);
 
         if (_rank == "미완성")
@@ -2567,7 +3262,8 @@ public class GameJam : MonoBehaviour
         }
         else
         {
-            m_GameJamResultPanel.SetInfo(_academyName, _placeHolder, _concept, Funny.ToString(), Graphic.ToString(), Perfection.ToString(), _score.ToString(), _rank, m_TotalGenreScore.ToString());
+            m_GameJamResultPanel.SetInfo(_academyName, _placeHolder, _concept, Funny.ToString(), Graphic.ToString(),
+                Perfection.ToString(), _score.ToString(), _rank, m_TotalGenreScore.ToString());
         }
 
         m_GameJamResultPanel.ChangeMVPImageResultPanel(Funny, Graphic, Perfection);
@@ -2578,91 +3274,60 @@ public class GameJam : MonoBehaviour
     {
         if (StudentType.GameDesigner == _type)
         {
-            int _sliderValue = FindStudent(StudentType.GameDesigner);
+            int _sliderValue = FindStudent(StudentType.GameDesigner, true, (int)m_RunningGameJameData.m_GameDesignerEntryStudentStat1, (int)m_RunningGameJameData.m_GameDesignerEntryStudentStat2);
 
-            m_GameJamResultPanel.FillRequirementSlider(StudentType.GameDesigner, _sliderValue, m_NeedGMStat);
+            m_GameJamResultPanel.FillRequirementSlider(StudentType.GameDesigner, _sliderValue, (int)m_RunningGameJameData.m_GameDesignerEntryStudentStat1, (int)m_RunningGameJameData.m_GameDesignerEntryStudentStat2);
 
-            int _needValue = 0;
+            int _needValue = (int)(m_RunningGameJameData.m_GameDesignerFirstNeedStat + m_RunningGameJameData.m_GameDesignerSecondNeedStat);
 
-            if (m_NeedGMStat.Count > 1)
-            {
-                _needValue = m_NeedGMStat.ElementAt(0).Value + m_NeedGMStat.ElementAt(1).Value;
-                //m_GameJamResultPanel.FillGMRequirementSlider(_sliderValue, _needValue);
-
-            }
-            else
-            {
-                _needValue = m_NeedGMStat.ElementAt(0).Value;
-                //m_GameJamResultPanel.FillGMRequirementSlider(_sliderValue, _needValue);
-
-            }
-            m_GameJamResultPanel.ChangeColorFillImage(StudentType.GameDesigner, _sliderValue, _needValue, m_SatisfyStat, m_DissatisfactionStat);
-
+            m_GameJamResultPanel.ChangeColorFillImage(StudentType.GameDesigner, _sliderValue, _needValue, m_SatisfyStat,
+                m_DissatisfactionStat);
         }
         else if (StudentType.Art == _type)
         {
-            int _sliderValue = FindStudent(StudentType.Art);
+            int _sliderValue = FindStudent(StudentType.Art, true, (int)m_RunningGameJameData.m_ArtEntryStudentStat1, (int)m_RunningGameJameData.m_ArtEntryStudentStat2);
 
-            m_GameJamResultPanel.FillRequirementSlider(StudentType.Art, _sliderValue, m_NeedArtStat);
+            m_GameJamResultPanel.FillRequirementSlider(StudentType.Art, _sliderValue, (int)m_RunningGameJameData.m_ArtEntryStudentStat1, (int)m_RunningGameJameData.m_ArtEntryStudentStat2);
 
-            int _needValue = 0;
+            int _needValue = (int)(m_RunningGameJameData.m_ArtFirstNeedStat + m_RunningGameJameData.m_ArtSecondNeedStat);
 
-            if (m_NeedArtStat.Count > 1)
-            {
-                _needValue = m_NeedArtStat.ElementAt(0).Value + m_NeedArtStat.ElementAt(1).Value;
-                //m_GameJamResultPanel.FillArtRequirementSlider(_sliderValue, _needValue);
-            }
-            else
-            {
-                _needValue = m_NeedArtStat.ElementAt(0).Value;
-                //m_GameJamResultPanel.FillArtRequirementSlider(_sliderValue, _needValue);
-
-
-            }
-            m_GameJamResultPanel.ChangeColorFillImage(StudentType.Art, _sliderValue, _needValue, m_SatisfyStat, m_DissatisfactionStat);
+            m_GameJamResultPanel.ChangeColorFillImage(StudentType.Art, _sliderValue, _needValue, m_SatisfyStat,
+                m_DissatisfactionStat);
         }
         else if (StudentType.Programming == _type)
         {
-            int _sliderValue = FindStudent(StudentType.Programming);
+            int _sliderValue = FindStudent(StudentType.Programming, true, (int)m_RunningGameJameData.m_ProgrammingEntryStudentStat1, (int)m_RunningGameJameData.m_ProgrammingEntryStudentStat2);
 
-            m_GameJamResultPanel.FillRequirementSlider(StudentType.Programming, _sliderValue, m_NeedProgrammingStat);
+            m_GameJamResultPanel.FillRequirementSlider(StudentType.Programming, _sliderValue, (int)m_RunningGameJameData.m_ProgrammingEntryStudentStat1, (int)m_RunningGameJameData.m_ProgrammingEntryStudentStat2);
 
-            int _needValue = 0;
+            int _needValue = (int)(m_RunningGameJameData.m_ProgrammingFirstNeedStat + m_RunningGameJameData.m_ProgrammingSecondNeedStat);
 
-            if (m_NeedProgrammingStat.Count > 1)
-            {
-                _needValue = m_NeedProgrammingStat.ElementAt(0).Value + m_NeedProgrammingStat.ElementAt(1).Value;
-                //m_GameJamResultPanel.FillProagrammingRequirementSlider(_sliderValue, _needValue);
-            }
-            else
-            {
-                _needValue = m_NeedProgrammingStat.ElementAt(0).Value;
-                //m_GameJamResultPanel.FillProagrammingRequirementSlider(_sliderValue, _needValue);
-            }
-            m_GameJamResultPanel.ChangeColorFillImage(StudentType.Programming, _sliderValue, _needValue, m_SatisfyStat, m_DissatisfactionStat);
+            m_GameJamResultPanel.ChangeColorFillImage(StudentType.Programming, _sliderValue, _needValue, m_SatisfyStat,
+                m_DissatisfactionStat);
         }
     }
 
     // 총 합산한 점수를 통해 등급을 정해준다.
     private string CalculateRank(double _totalScore)
     {
-        string _successPercent = m_GameJamPanel.m_ExpectedSuccesPercentgetter.text;
+        string _successPercent = m_RunningGameJameData.m_SuccessPercent;
 
         if (_successPercent == "100%")
         {
             if (500 <= _totalScore)
             {
                 _rank = "AAA";
+                PlayerInfo.Instance.GameJamRankAUP++;
             }
             else if (300 <= _totalScore)
             {
                 _rank = "AA";
-
+                PlayerInfo.Instance.GameJamRankAUP++;
             }
             else if (100 <= _totalScore)
             {
                 _rank = "A";
-
+                PlayerInfo.Instance.GameJamRankAUP++;
             }
             else if (0 <= _totalScore)
             {
@@ -2686,12 +3351,10 @@ public class GameJam : MonoBehaviour
                 else if (300 <= _totalScore)
                 {
                     _rank = "AA";
-
                 }
                 else if (100 <= _totalScore)
                 {
                     _rank = "A";
-
                 }
                 else if (0 <= _totalScore)
                 {
@@ -2704,91 +3367,76 @@ public class GameJam : MonoBehaviour
     }
 
     // 필수 스탯은 1.8을 곱해주고 아닌 스탯은 0.4를 곱해준다.
-    private void CalculateStat(List<Student> _list, Dictionary<string, int> _partData, List<SaveGameJamData> _saveData, StudentType _type)
+    private void CalculateStat(List<Student> _list, string _statName1, string _statName2, int _stat1, int _stat2, string _studnetName, StudentType _type)
     {
         for (int i = 0; i < _list.Count;)
         {
-            if (_list[i].m_StudentStat.m_StudentName == _saveData[0].m_StudentData.m_StudentStat.m_StudentName)
+            if (_list[i].m_StudentStat.m_StudentName == _studnetName)
             {
-                FindPartDataStat(_partData, _list, i, _type);
+                if (_stat1 != 0)
+                {
+                    FindPartDataStat(_statName1, 1.8f, _list, i, _type);
+                }
+                else
+                {
+                    FindPartDataStat(_statName1, 0.4f, _list, i, _type);
+                }
+
+                if (_stat2 != 0)
+                {
+                    FindPartDataStat(_statName2, 1.8f, _list, i, _type);
+                }
+                else
+                {
+                    FindPartDataStat(_statName2, 0.4f, _list, i, _type);
+                }
+
                 _list[i].m_StudentStat.m_NumberOfEntries = 1;
+
+                Funny = Math.Truncate(Funny);
+                Graphic = Math.Truncate(Graphic);
+                Perfection = Math.Truncate(Perfection);
                 return;
             }
+
             i++;
         }
     }
 
     // 내가 선택한 학생의 스탯을 계산해준다.
-    private void FindPartDataStat(Dictionary<string, int> _partData, List<Student> _list, int _listIndex, StudentType _type)
+    private void FindPartDataStat(string _statName, float _value, List<Student> _list, int _listIndex, StudentType _type)
     {
-        for (int j = 0; j < _partData.Count; j++)
+        int _tempIndex = 0;
+
+        for (int j = 0; j < AbilityNameList.Length; j++)
         {
-            if (_partData.ElementAt(j).Value != 0)
+            if (_statName == AbilityNameList[j])
             {
-                string _statName = _partData.ElementAt(j).Key;
-                int _tempIndex = 0;
-
-                for (int i = 0; i < AbilityNameList.Length; i++)
-                {
-                    if (_statName == AbilityNameList[i])
-                    {
-                        _tempIndex = i;
-                        break;
-                    }
-                }
-
-                if (_type == StudentType.GameDesigner)
-                {
-                    Funny += _list[_listIndex].m_StudentStat.m_AbilityAmountList[_tempIndex] * 1.8; // 한줄로 만들고 싶으면 funny랑 기타 등등도 배열로 바꾸기
-                }
-                else if (_type == StudentType.Art)
-                {
-                    Graphic += _list[_listIndex].m_StudentStat.m_AbilityAmountList[_tempIndex] * 1.8;
-                }
-                else
-                {
-                    Perfection += _list[_listIndex].m_StudentStat.m_AbilityAmountList[_tempIndex] * 1.8;
-                }
-            }
-            else
-            {
-                string _statName = _partData.ElementAt(j).Key;
-                int _tempIndex = 0;
-
-                for (int i = 0; i < AbilityNameList.Length; i++)
-                {
-                    if (_statName == AbilityNameList[i])
-                    {
-                        _tempIndex = i;
-                        break;
-                    }
-                }
-
-                if (_type == StudentType.GameDesigner)
-                {
-                    Funny += _list[_listIndex].m_StudentStat.m_AbilityAmountList[_tempIndex] * 0.4; // 한줄로 만들고 싶으면 funny랑 기타 등등도 배열로 바꾸기
-                }
-                else if (_type == StudentType.Art)
-                {
-                    Graphic += _list[_listIndex].m_StudentStat.m_AbilityAmountList[_tempIndex] * 0.4;
-                }
-                else
-                {
-                    Perfection += _list[_listIndex].m_StudentStat.m_AbilityAmountList[_tempIndex] * 0.4;
-                }
+                _tempIndex = j;
+                break;
             }
         }
-        Funny = Math.Truncate(Funny);
-        Graphic = Math.Truncate(Graphic);
-        Perfection = Math.Truncate(Perfection);
+
+        if (_list[_listIndex].m_StudentStat.m_StudentType == StudentType.GameDesigner)
+        {
+            Funny += _list[_listIndex].m_StudentStat.m_AbilityAmountArr[_tempIndex] * _value; // 한줄로 만들고 싶으면 funny랑 기타 등등도 배열로 바꾸기
+        }
+        else if (_list[_listIndex].m_StudentStat.m_StudentType == StudentType.Art)
+        {
+            Graphic += _list[_listIndex].m_StudentStat.m_AbilityAmountArr[_tempIndex] * _value;
+        }
+        else
+        {
+            Perfection += _list[_listIndex].m_StudentStat.m_AbilityAmountArr[_tempIndex] * _value;
+        }
     }
 
     // 선택된 학생들의 정보로 게임의 장르를 정하는 함수
     private void DecideGenre()
     {
-        List<GenreValuePair> _GMGenreList = SortGenreDic(m_GMStudentData);
-        List<GenreValuePair> _ArtGenreList = SortGenreDic(m_ArtStudentData);
-        List<GenreValuePair> _ProgrammingGenreList = SortGenreDic(m_ProgrammingStudentData);
+        List<GenreValuePair> _GameDesignerGenreList = SortGenreDic(m_ClickStudent[0]);
+        List<GenreValuePair> _ArtGenreList = SortGenreDic(m_ClickStudent[1]);
+        List<GenreValuePair> _ProgrammingGenreList = SortGenreDic(m_ClickStudent[2]);
 
         _genreBonusScore = 15;
         m_GenreScore = 0;
@@ -2797,7 +3445,7 @@ public class GameJam : MonoBehaviour
 
         for (int i = 0; i < 2; i++)
         {
-            _list.Add(_GMGenreList[i]);
+            _list.Add(_GameDesignerGenreList[i]);
         }
 
         for (int i = 2; i < 4; i++)
@@ -2819,7 +3467,7 @@ public class GameJam : MonoBehaviour
             else return 0;
         });
 
-        FindStudentGenreStat(_GMGenreList, _list[0].genre);
+        FindStudentGenreStat(_GameDesignerGenreList, _list[0].genre);
         FindStudentGenreStat(_ArtGenreList, _list[0].genre);
         FindStudentGenreStat(_ProgrammingGenreList, _list[0].genre);
 
@@ -2827,12 +3475,12 @@ public class GameJam : MonoBehaviour
 
         _genreName = ChangeGenreListName(_list[0].genre);
 
-        if (_genreName == m_SaveGameJamData.m_GameJamInfoData.m_GjamMainGenre)
+        if (_genreName == m_NowGameJamInfo.m_GjamMainGenre)
         {
             _genreBonusScore *= 1.4f;
         }
 
-        if (_genreName == m_SaveGameJamData.m_GameJamInfoData.m_GjamSubGenre)
+        if (_genreName == m_NowGameJamInfo.m_GjamSubGenre)
         {
             _genreBonusScore *= 1.1f;
         }
@@ -2911,7 +3559,7 @@ public class GameJam : MonoBehaviour
     }
 
     // 학생들의 장르를 제일 높은 순으로 정리해서 리스트에 넣어준다.
-    private List<GenreValuePair> SortGenreDic(List<SaveGameJamData> _saveData)
+    private List<GenreValuePair> SortGenreDic(Student _student)
     {
         //Dictionary<string, int> _returnGenreValue = new Dictionary<string, int>();  // 정리된 장르를 반환해줄 딕셔너리
 
@@ -2923,7 +3571,7 @@ public class GameJam : MonoBehaviour
         {
             GenreValuePair _temp = new GenreValuePair();
             _temp.genre = (GenreStat)i;
-            _temp.value = _saveData[0].m_StudentData.m_StudentStat.m_GenreAmountList[i];
+            _temp.value = _student.m_StudentStat.m_GenreAmountArr[i];
             _list.Add(_temp);
         }
 
@@ -2941,26 +3589,38 @@ public class GameJam : MonoBehaviour
     // 학생들의 스탯과 필수스탯을 계산하여 퍼센트에 따라 완성 확률을 계산해준다.
     private void DeterminesRank()
     {
-        double _GMStat = (m_NeedGMStat.Count > 1) ? m_NeedGMStat.ElementAt(0).Value + m_NeedGMStat.ElementAt(1).Value : m_NeedGMStat.ElementAt(0).Value;
+        double _GameDesignerStat = (m_NeedGameDesignerStat.Count > 1)
+            ? m_NeedGameDesignerStat.ElementAt(0).Value + m_NeedGameDesignerStat.ElementAt(1).Value
+            : m_NeedGameDesignerStat.ElementAt(0).Value;
 
-        double _ArtStat = (m_NeedArtStat.Count > 1) ? m_NeedArtStat.ElementAt(0).Value + m_NeedArtStat.ElementAt(1).Value : m_NeedArtStat.ElementAt(0).Value;
+        double _ArtStat = (m_NeedArtStat.Count > 1)
+            ? m_NeedArtStat.ElementAt(0).Value + m_NeedArtStat.ElementAt(1).Value
+            : m_NeedArtStat.ElementAt(0).Value;
 
-        double _ProgrammingStat = (m_NeedProgrammingStat.Count > 1) ? m_NeedProgrammingStat.ElementAt(0).Value + m_NeedProgrammingStat.ElementAt(1).Value : m_NeedProgrammingStat.ElementAt(0).Value;
+        double _ProgrammingStat = (m_NeedProgrammingStat.Count > 1)
+            ? m_NeedProgrammingStat.ElementAt(0).Value + m_NeedProgrammingStat.ElementAt(1).Value
+            : m_NeedProgrammingStat.ElementAt(0).Value;
 
-        double _GMStudentStat = m_Requirement1List[(int)StudentType.GameDesigner] + m_Requirement2List[(int)StudentType.GameDesigner];
+        double _GameDesignerStudentStat = m_Requirement1List[(int)StudentType.GameDesigner] +
+                                          m_Requirement2List[(int)StudentType.GameDesigner];
         double _ArtStudentStat = m_Requirement1List[(int)StudentType.Art] + m_Requirement2List[(int)StudentType.Art];
-        double _ProgrammingStudentStat = m_Requirement1List[(int)StudentType.Programming] + m_Requirement2List[(int)StudentType.Programming];
+        double _ProgrammingStudentStat = m_Requirement1List[(int)StudentType.Programming] +
+                                         m_Requirement2List[(int)StudentType.Programming];
 
         //  80%가 넘으면 100%로 처리
-        double _GMPercent = (_GMStudentStat / _GMStat * 100 >= 80) ? 100 : _GMStudentStat / _GMStat * 100;
+        double _GameDesignerPercent = (_GameDesignerStudentStat / _GameDesignerStat * 100 >= 80)
+            ? 100
+            : _GameDesignerStudentStat / _GameDesignerStat * 100;
         double _ArtPercent = (_ArtStudentStat / _ArtStat * 100 >= 80) ? 100 : _ArtStudentStat / _ArtStat * 100;
-        double _ProgrammingPercent = (_ProgrammingStudentStat / _ProgrammingStat * 100 >= 80) ? 100 : _ProgrammingStudentStat / _ProgrammingStat * 100;
+        double _ProgrammingPercent = (_ProgrammingStudentStat / _ProgrammingStat * 100 >= 80)
+            ? 100
+            : _ProgrammingStudentStat / _ProgrammingStat * 100;
 
-        double _totalPercent = _GMPercent + _ArtPercent + _ProgrammingPercent;
+        double _totalPercent = _GameDesignerPercent + _ArtPercent + _ProgrammingPercent;
         _average = _totalPercent / 3;
 
         // 하나라도 80퍼 밑이면 완성 확률을 띄워주고 아니라면 100으로 띄워주기
-        if (_GMPercent < 80 || _ArtPercent < 80 || _ProgrammingPercent < 80)
+        if (_GameDesignerPercent < 80 || _ArtPercent < 80 || _ProgrammingPercent < 80)
         {
             _average = Math.Truncate(_average);
             m_GameJamPanel.ChangeExpectedSuccess(_average.ToString() + "%");
@@ -2978,10 +3638,11 @@ public class GameJam : MonoBehaviour
         {
             for (int j = 0; j < m_GameJamHistory.ElementAt(i).Value.Count; j++)
             {
-                if (m_GameJamResultPanel._changeGameName == m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GameName)
+                if (m_GameJamResultPanel._changeGameName == m_GameJamHistory.ElementAt(i).Value[j].m_GameName)
                 {
                     m_OnNoticePanel.TurnOnUI();
                     m_OffNoticePanel.DelayTurnOffUI();
+                    m_GameJamResultPanel.SetChangeGameName();
                 }
                 else
                 {
@@ -2994,62 +3655,86 @@ public class GameJam : MonoBehaviour
     // 등급 버튼을 눌렀을 때 나타날 애들
     public void ClickRankButton()
     {
+        #region _맨 위에있는 버튼에 하이라이트 해주기
+        if (m_PrevRankButtonObj != null)
+        {
+            Button _prevButton = m_PrevRankButtonObj.GetComponent<Button>();
+
+            ColorBlock _prevButtonColor = _prevButton.colors;
+
+            _prevButtonColor = ColorBlock.defaultColorBlock;
+
+            _prevButton.colors = _prevButtonColor;
+        }
+
         GameObject _currentObj = EventSystem.current.currentSelectedGameObject;
+
+        m_PrevRankButtonObj = _currentObj;
+
+        Button _currentButton = _currentObj.GetComponent<Button>();
+
+        ColorBlock _currentButtonColor = _currentButton.colors;
+
+        _currentButtonColor.normalColor = m_RankButtonHighLightColor;
+        _currentButtonColor.highlightedColor = m_RankButtonHighLightColor;
+        _currentButtonColor.pressedColor = m_RankButtonHighLightColor;
+        _currentButtonColor.selectedColor = m_RankButtonHighLightColor;
+
+        _currentButton.colors = _currentButtonColor;
+        #endregion
+
+        m_GameJamListPanel.ClickRankButton();
 
         _rankButtonName = _currentObj.name;
 
         bool _isActive = m_GameJamListPanel.IsInfoPanelActive();
 
-        if (!_isActive)
+        switch (_rankButtonName)
         {
-            switch (_rankButtonName)
+            case "All":
             {
-                case "All":
-                {
-                    FindRankAndGenre(_rankButtonName, _genreButtonName);
-                    Debug.Log("전체버튼");
-                }
-                break;
-
-                case "AAA":
-                {
-                    FindRankAndGenre(_rankButtonName, _genreButtonName);
-                    Debug.Log("AA버튼");
-                }
-                break;
-
-                case "AA":
-                {
-                    FindRankAndGenre(_rankButtonName, _genreButtonName);
-                }
-                break;
-
-                case "A":
-                {
-                    FindRankAndGenre(_rankButtonName, _genreButtonName);
-                }
-                break;
-
-                case "B":
-                {
-                    FindRankAndGenre(_rankButtonName, _genreButtonName);
-                }
-                break;
-
-                case "미완성":
-                {
-                    FindRankAndGenre(_rankButtonName, _genreButtonName);
-                }
-                break;
-
-                default:
-                {
-
-                }
-                break;
-
+                FindRankAndGenre(_rankButtonName, _genreButtonName);
+                Debug.Log("전체버튼");
             }
+            break;
+
+            case "AAA":
+            {
+                FindRankAndGenre(_rankButtonName, _genreButtonName);
+                Debug.Log("AA버튼");
+            }
+            break;
+
+            case "AA":
+            {
+                FindRankAndGenre(_rankButtonName, _genreButtonName);
+            }
+            break;
+
+            case "A":
+            {
+                FindRankAndGenre(_rankButtonName, _genreButtonName);
+            }
+            break;
+
+            case "B":
+            {
+                FindRankAndGenre(_rankButtonName, _genreButtonName);
+            }
+            break;
+
+            case "미완성":
+            {
+                FindRankAndGenre(_rankButtonName, _genreButtonName);
+            }
+            break;
+
+            default:
+            {
+            }
+            break;
         }
+
     }
 
     // 장르 버튼을 눌렀을 때 나타날 애들
@@ -3059,7 +3744,8 @@ public class GameJam : MonoBehaviour
 
         string _buttonName = _currentObj.name;
 
-        _genreButtonName = _currentObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text;// 버튼에 달린 한글 이름을 가져온다.
+        _genreButtonName =
+            _currentObj.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text; // 버튼에 달린 한글 이름을 가져온다.
 
         m_GameJamListPanel._genreButtonName.text = _genreButtonName;
 
@@ -3127,13 +3813,10 @@ public class GameJam : MonoBehaviour
 
                 default:
                 {
-
                 }
                 break;
-
             }
         }
-
     }
 
     // 등급과 장르별로 내가 이전에 만든 게임잼의 목록을 보고싶을 때 맞는 등급,장르의 게임잼 목록 만들어주기 위한 함수
@@ -3161,79 +3844,52 @@ public class GameJam : MonoBehaviour
                 }
                 else if (_findRank != "All" && _findGenre == "All")
                 {
-                    if (m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Rank == _findRank)
+                    if (m_GameJamHistory.ElementAt(i).Value[j].m_Rank == _findRank)
                     {
-                        GameObject _gameJamListPrefab = Instantiate(m_GameJamListPrefab);
-                        m_GameJamListPanel.MoveGameJamList(_gameJamListPrefab, m_GameJamListPanel._gamejameContentParent);
-
-                        string _gameName = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GameName;
-                        string _genreName = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Genre;
-                        string _rank = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Rank;
-                        Sprite _genre = FindGenreSprite(_genreName);
-
-                        _gameJamListPrefab.name = _gameName;
-
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameName.text = _gameName;
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GenreName.text = _genreName;
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_Rank.text = _rank;
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GenreImage.sprite = _genre;
-
-                        GameObject _gameList = _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.gameObject;
-                        //m_GameJamListPanel.changePrefabContent(_gameName, _genreName, _rank);
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick.AddListener(() => MakePreGameJamInfo(_gameList));
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick.AddListener(m_GameJamListPanel.ClickGameJamPrefab);
+                        SetPrevGameInfo(i, j);
                     }
                 }
                 else if (_findRank == "All" && _findGenre != "All")
                 {
-                    if (m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Genre == _findGenre)
-                    {
-                        GameObject _gameJamListPrefab = Instantiate(m_GameJamListPrefab);
-                        m_GameJamListPanel.MoveGameJamList(_gameJamListPrefab, m_GameJamListPanel._gamejameContentParent);
-
-                        string _gameName = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GameName;
-                        string _genreName = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Genre;
-                        string _rank = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Rank;
-                        Sprite _genre = FindGenreSprite(_genreName);
-
-                        _gameJamListPrefab.name = _gameName;
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameName.text = _gameName;
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GenreName.text = _genreName;
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_Rank.text = _rank;
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GenreImage.sprite = _genre;
-
-                        GameObject _gameList = _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.gameObject;
-                        //m_GameJamListPanel.changePrefabContent(_gameName, _genreName, _rank);
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick.AddListener(() => MakePreGameJamInfo(_gameList));
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick.AddListener(m_GameJamListPanel.ClickGameJamPrefab);
-                    }
+                    SetPrevGameInfo(i, j);
                 }
                 else if (_findRank != "All" && _findGenre != "All")
                 {
-                    if (m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Genre == _findGenre && m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Rank == _findRank)
+                    if (m_GameJamHistory.ElementAt(i).Value[j].m_Genre == _findGenre &&
+                        m_GameJamHistory.ElementAt(i).Value[j].m_Rank == _findRank)
                     {
-                        GameObject _gameJamListPrefab = Instantiate(m_GameJamListPrefab);
-                        m_GameJamListPanel.MoveGameJamList(_gameJamListPrefab, m_GameJamListPanel._gamejameContentParent);
-
-                        string _gameName = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GameName;
-                        string _genreName = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Genre;
-                        string _rank = m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Rank;
-                        Sprite _genre = FindGenreSprite(_genreName);
-
-                        _gameJamListPrefab.name = _gameName;
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameName.text = _gameName;
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GenreName.text = _genreName;
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_Rank.text = _rank;
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GenreImage.sprite = _genre;
-
-                        GameObject _gameList = _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.gameObject;
-                        //m_GameJamListPanel.changePrefabContent(_gameName, _genreName, _rank);
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick.AddListener(() => MakePreGameJamInfo(_gameList));
-                        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick.AddListener(m_GameJamListPanel.ClickGameJamPrefab);
+                        SetPrevGameInfo(i, j);
                     }
                 }
             }
         }
+    }
+
+    private void SetPrevGameInfo(int _keyIndex, int _valueIndex)
+    {
+        GameObject _gameJamListPrefab = Instantiate(m_GameJamListPrefab);
+        m_GameJamListPanel.MoveGameJamList(_gameJamListPrefab,
+            m_GameJamListPanel._gamejameContentParent);
+
+        string _gameName = m_GameJamHistory.ElementAt(_keyIndex).Value[_valueIndex].m_GameName;
+        string _genreName = m_GameJamHistory.ElementAt(_keyIndex).Value[_valueIndex].m_Genre;
+        string _rank = m_GameJamHistory.ElementAt(_keyIndex).Value[_valueIndex].m_Rank;
+        Sprite _genre = FindGenreSprite(_genreName);
+        Sprite _concept = m_ResultConceptSprite[m_GameJamHistory.ElementAt(_keyIndex).Value[_valueIndex].m_ConceptIndex];
+
+        _gameJamListPrefab.name = _gameName;
+        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameConceptImage.sprite = _concept;
+        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameName.text = _gameName;
+        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GenreName.text = _genreName;
+        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_Rank.text = _rank;
+        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GenreImage.sprite = _genre;
+
+        GameObject _gameList = _gameJamListPrefab.GetComponent<GameJamListPrefab>()
+            .m_GameListPrefabButton.gameObject;
+        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick
+            .AddListener(() => MakePreGameJamInfo(_gameList));
+        _gameJamListPrefab.GetComponent<GameJamListPrefab>().m_GameListPrefabButton.onClick
+            .AddListener(m_GameJamListPanel.ClickGameJamPrefab);
     }
 
     // 선택했던 학생의 체려과 열정, 스탯을 바꿔준다.
@@ -3241,21 +3897,24 @@ public class GameJam : MonoBehaviour
     {
         List<Student> _studentList = ObjectManager.Instance.m_StudentList;
 
+        GameJamInfo _nowData = SearchAllGameJamInfo((int)m_RunningGameJameData.m_GameJamID);
+
         for (int i = 0; i < _studentList.Count; i++)
         {
             if (_name == _studentList[i].m_StudentStat.m_StudentName)
             {
                 for (int j = 0; j < 5; j++)
                 {
-                    _studentList[i].m_StudentStat.m_AbilityAmountList[j] += _ability[j];
+                    _studentList[i].m_StudentStat.m_AbilityAmountArr[j] += _ability[j];
                 }
-                _studentList[i].m_StudentStat.m_Health += m_SaveGameJamData.m_GameJamInfoData.m_StudentHealth;
-                _studentList[i].m_StudentStat.m_Passion += m_SaveGameJamData.m_GameJamInfoData.m_StudentPassion;
+
+                _studentList[i].m_StudentStat.m_Health -= _nowData.m_StudentHealth;
+                _studentList[i].m_StudentStat.m_Passion -= _nowData.m_StudentPassion;
             }
         }
     }
 
-    private void SetRiseStat(string _rank, int[] _arr, int[] _riseArr)
+    private void SetRiseStat(string _rank, int[] _arr, ref int[] _riseArr)
     {
         switch (_rank)
         {
@@ -3343,6 +4002,21 @@ public class GameJam : MonoBehaviour
                 return _reward.Reward;
             }
         }
+
         return 0;
     }
+
+#if UNITY_EDITOR || UNITY_EDITOR_WIN
+    [ContextMenu("ResultConceptSprite")]
+    private void FillResultConceptSprite()
+    {
+        Sprite[] _allConceptSprite = Resources.LoadAll<Sprite>("GameJamConcept");
+        m_ResultConceptSprite = new Sprite[_allConceptSprite.Length];
+
+        for (int i = 0; i < m_ResultConceptSprite.Length; i++)
+        {
+            m_ResultConceptSprite[i] = _allConceptSprite[i];
+        }
+    }
+#endif
 }

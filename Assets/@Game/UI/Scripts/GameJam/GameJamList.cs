@@ -61,10 +61,10 @@ public class GameJamList : MonoBehaviour
 
     [Space(5f)]
     [Header("게임잼에 참여한 각 학과 학생들의 이름, 프로필")]
-    [SerializeField] private TextMeshProUGUI m_GMName;
+    [SerializeField] private TextMeshProUGUI m_GameDesignerName;
     [SerializeField] private TextMeshProUGUI m_ArtName;
     [SerializeField] private TextMeshProUGUI m_ProgrammingName;
-    [SerializeField] private Image m_GMImage;
+    [SerializeField] private Image m_GameDesignerImage;
     [SerializeField] private Image m_ArtImage;
     [SerializeField] private Image m_ProgrammingImage;
     [Space(5f)]
@@ -73,7 +73,7 @@ public class GameJamList : MonoBehaviour
 
     [Space(5f)]
     [Header("게임잼의 등급에 가장 기여도가 높은 학생에게 MVP를 켜준다.")]
-    [SerializeField] private Image m_GMMvp;
+    [SerializeField] private Image m_GameDesignerMvp;
     [SerializeField] private Image m_ArtMvp;
     [SerializeField] private Image m_ProgrammingMvp;
 
@@ -90,19 +90,19 @@ public class GameJamList : MonoBehaviour
 
     [Space(5f)]
     [Header("선택한 각 학과 학생들의 능력치를 나타내줄 슬라이더")]
-    [SerializeField] private Image m_GMRequiredStat1;
-    [SerializeField] private Image m_GMRequiredStat2;
+    [SerializeField] private Image m_GameDesignerRequiredStat1;
+    [SerializeField] private Image m_GameDesignerRequiredStat2;
     [SerializeField] private Image m_ArtRequiredStat1;
     [SerializeField] private Image m_ArtRequiredStat2;
     [SerializeField] private Image m_ProgrammingRequiredStat1;
     [SerializeField] private Image m_ProgrammingRequiredStat2;
-    [SerializeField] private Slider m_GMSlider;
+    [SerializeField] private Slider m_GameDesignerSlider;
     [SerializeField] private Slider m_ArtSlider;
     [SerializeField] private Slider m_ProgrammingSlider;
-    [SerializeField] private Image m_GMSliderImage;
+    [SerializeField] private Image m_GameDesignerSliderImage;
     [SerializeField] private Image m_ArtSliderImage;
     [SerializeField] private Image m_ProgrammingSliderImage;
-    [SerializeField] private Image m_GMSliderBar;
+    [SerializeField] private Image m_GameDesignerSliderBar;
     [SerializeField] private Image m_ArtSliderBar;
     [SerializeField] private Image m_ProgrammingSliderBar;
 
@@ -112,9 +112,10 @@ public class GameJamList : MonoBehaviour
     [SerializeField] private PopOffUI m_PopOffGameJamListPanel;
 
     public Transform _gamejameContentParent { get { return m_GameListContentParent; } }
+    public Button AllButton { get { return m_AllButton; } set { m_AllButton = value; } }
     public TextMeshProUGUI _genreButtonName { get { return m_FilterName; } set { m_FilterName = value; } }
-    public Image GMRequiredStatImage1 { get { return m_GMRequiredStat1; } set { m_GMRequiredStat1 = value; } }
-    public Image GMRequiredStatImage2 { get { return m_GMRequiredStat2; } set { m_GMRequiredStat2 = value; } }
+    public Image GameDesignerRequiredStatImage1 { get { return m_GameDesignerRequiredStat1; } set { m_GameDesignerRequiredStat1 = value; } }
+    public Image GameDesignerRequiredStatImage2 { get { return m_GameDesignerRequiredStat2; } set { m_GameDesignerRequiredStat2 = value; } }
     public Image ArtRequiredStatImage1 { get { return m_ArtRequiredStat1; } set { m_ArtRequiredStat1 = value; } }
     public Image ArtRequiredStatImage2 { get { return m_ArtRequiredStat2; } set { m_ArtRequiredStat2 = value; } }
     public Image ProgrammingRequiredStatImage1 { get { return m_ProgrammingRequiredStat1; } set { m_ProgrammingRequiredStat1 = value; } }
@@ -128,6 +129,7 @@ public class GameJamList : MonoBehaviour
         m_PreButton.onClick.AddListener(ClickResultScoreNextOrPreButton);
         m_NextButton.onClick.AddListener(ClickResultScoreNextOrPreButton);
         m_GenreFilter.onClick.AddListener(ClickFilter);
+        m_AllButton.Select();
     }
 
     // 뒤로 가기 버튼을 눌렀을 때 제일 처음이면 게임 결과 창으로 가게 해야한다.
@@ -148,7 +150,7 @@ public class GameJamList : MonoBehaviour
                 m_GenreFilterButtons.gameObject.SetActive(false);
                 m_GenreFilter.gameObject.SetActive(false);
 
-                m_GMMvp.gameObject.SetActive(false);
+                m_GameDesignerMvp.gameObject.SetActive(false);
                 m_ArtMvp.gameObject.SetActive(false);
                 m_ProgrammingMvp.gameObject.SetActive(false);
             }
@@ -160,6 +162,8 @@ public class GameJamList : MonoBehaviour
         {
             if (m_GameJamInfoPanel.activeSelf == true)
             {
+                m_GameScore.SetActive(true);
+                m_StudentStat.SetActive(false);
                 m_GameJamInfoPanel.SetActive(false);
                 m_GameJamList.SetActive(true);
                 m_GenreFilter.gameObject.SetActive(true);
@@ -169,7 +173,7 @@ public class GameJamList : MonoBehaviour
                 m_GenreFilterButtons.gameObject.SetActive(false);
                 m_GenreFilter.gameObject.SetActive(false);
 
-                m_GMMvp.gameObject.SetActive(false);
+                m_GameDesignerMvp.gameObject.SetActive(false);
                 m_ArtMvp.gameObject.SetActive(false);
                 m_ProgrammingMvp.gameObject.SetActive(false);
                 m_PopOffGameJamListPanel.TurnOffUI();
@@ -180,6 +184,15 @@ public class GameJamList : MonoBehaviour
     public void ChangeGenreSprite(Sprite _genre)
     {
         m_GenreImage.sprite = _genre;
+    }
+
+    public void ClickRankButton()
+    {
+        m_GameListPanel.SetActive(true);
+        m_GameJamInfoPanel.SetActive(false);
+        m_GenreFilter.gameObject.SetActive(true);
+        m_GameScore.SetActive(true);
+        m_StudentStat.SetActive(false);
     }
 
     public void ClickFilter()
@@ -230,9 +243,9 @@ public class GameJamList : MonoBehaviour
         m_GameJamListPanel.SetActive(true);
         m_GameJamList.SetActive(true);
         m_GameJamInfoPanel.SetActive(false);
-        m_GenreFilter.gameObject.SetActive(true);
-        m_CurrentMoney.text = InGameUI.Instance.m_nowMoney.text;
-        m_CurrentSpecialPoints.text = InGameUI.Instance.m_SpecialPoint.text;
+
+        m_CurrentMoney.text = string.Format("{0:#,0}", PlayerInfo.Instance.MyMoney);
+        m_CurrentSpecialPoints.text = string.Format("{0:#,0}", PlayerInfo.Instance.SpecialPoint);
     }
 
     public void clickQuitGameJamButton()
@@ -243,7 +256,7 @@ public class GameJamList : MonoBehaviour
             m_GameJamList.SetActive(true);
             m_StudentStat.SetActive(false);
 
-            m_GMMvp.gameObject.SetActive(false);
+            m_GameDesignerMvp.gameObject.SetActive(false);
             m_ArtMvp.gameObject.SetActive(false);
             m_ProgrammingMvp.gameObject.SetActive(false);
             m_GenreFilter.gameObject.SetActive(false);
@@ -259,7 +272,7 @@ public class GameJamList : MonoBehaviour
             m_GameJamList.SetActive(true);
             m_StudentStat.SetActive(false);
 
-            m_GMMvp.gameObject.SetActive(false);
+            m_GameDesignerMvp.gameObject.SetActive(false);
             m_ArtMvp.gameObject.SetActive(false);
             m_ProgrammingMvp.gameObject.SetActive(false);
             m_GenreFilter.gameObject.SetActive(false);
@@ -292,10 +305,10 @@ public class GameJamList : MonoBehaviour
 
     public void ChangeStudentInfo(string _gmName, string _artName, string _programmingName, Sprite _gmProfile, Sprite _artProfile, Sprite _programmingProfile)
     {
-        m_GMName.text = _gmName;
+        m_GameDesignerName.text = _gmName;
         m_ArtName.text = _artName;
         m_ProgrammingName.text = _programmingName;
-        m_GMImage.sprite = _gmProfile;
+        m_GameDesignerImage.sprite = _gmProfile;
         m_ArtImage.sprite = _artProfile;
         m_ProgrammingImage.sprite = _programmingProfile;
     }
@@ -320,22 +333,27 @@ public class GameJamList : MonoBehaviour
 
         if (part == "기획")
         {
-            m_GMMvp.gameObject.SetActive(true);
+            m_GameDesignerMvp.gameObject.SetActive(true);
             m_ArtMvp.gameObject.SetActive(false);
             m_ProgrammingMvp.gameObject.SetActive(false);
         }
         else if (part == "아트")
         {
-            m_GMMvp.gameObject.SetActive(false);
+            m_GameDesignerMvp.gameObject.SetActive(false);
             m_ArtMvp.gameObject.SetActive(true);
             m_ProgrammingMvp.gameObject.SetActive(false);
         }
         else
         {
-            m_GMMvp.gameObject.SetActive(false);
+            m_GameDesignerMvp.gameObject.SetActive(false);
             m_ArtMvp.gameObject.SetActive(false);
             m_ProgrammingMvp.gameObject.SetActive(true);
         }
+    }
+
+    public void ChangeConceptSprite(Sprite _concept)
+    {
+        m_GameImage.sprite = _concept;
     }
 
     public void ChangeGameJamScorePanel(string _concept, string _funny, string _graphic,
@@ -352,29 +370,30 @@ public class GameJamList : MonoBehaviour
 
     public void SetPreGameStatSliderValue(StudentType _type, int _Statvalue, int requiredStat)
     {
+        float _posX = (requiredStat / 150f) * 596f;
+
         if (_type == StudentType.GameDesigner)
         {
-            m_GMSlider.value = _Statvalue;
-
-            m_GMSliderBar.rectTransform.anchoredPosition = new Vector3(requiredStat * 7 + 2, 0, 0);  // 이 게임잼에 필요한 최소 스탯 수치를 나타내는 바
+            m_GameDesignerSlider.value = _Statvalue;
+            m_GameDesignerSliderBar.rectTransform.anchoredPosition = new Vector3(_posX, 0, 0);  // 이 게임잼에 필요한 최소 스탯 수치를 나타내는 바
         }
         else if (_type == StudentType.Art)
         {
             m_ArtSlider.value = _Statvalue;
 
-            m_ArtSliderBar.rectTransform.anchoredPosition = new Vector3(requiredStat * 7 + 2, 0, 0);
+            m_ArtSliderBar.rectTransform.anchoredPosition = new Vector3(_posX, 0, 0);
         }
         else if (_type == StudentType.Programming)
         {
             m_ProgrammingSlider.value = _Statvalue;
 
-            m_ProgrammingSliderBar.rectTransform.anchoredPosition = new Vector3(requiredStat * 7 + 2, 0, 0);
+            m_ProgrammingSliderBar.rectTransform.anchoredPosition = new Vector3(_posX, 0, 0);
         }
     }
 
-    public void SetGMPreGameStatSliderColor(Sprite _satisfy)
+    public void SetGameDesignerPreGameStatSliderColor(Sprite _satisfy)
     {
-        m_GMSliderImage.sprite = _satisfy;
+        m_GameDesignerSliderImage.sprite = _satisfy;
     }
 
     public void SetArtPreGameStatSliderColor(Sprite _satisfy)
@@ -389,7 +408,7 @@ public class GameJamList : MonoBehaviour
 
     //public void SetSliderBar(int _gmValue, int _artValue, int _programmingValue)
     //{
-    //    m_GMSliderBar.rectTransform.anchoredPosition = new Vector3(_gmValue * 6, 0, 0);
+    //    m_GameDesignerSliderBar.rectTransform.anchoredPosition = new Vector3(_gmValue * 6, 0, 0);
     //    m_ArtSliderBar.rectTransform.anchoredPosition = new Vector3(_artValue * 6, 0, 0);
     //    m_ProgrammingSliderBar.rectTransform.anchoredPosition = new Vector3(_programmingValue * 6, 0, 0);
     //}

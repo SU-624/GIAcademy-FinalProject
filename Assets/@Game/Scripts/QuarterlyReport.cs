@@ -28,7 +28,6 @@ public struct AcademyInfoForGameJam
     public string GenreBonus;
 }
 
-
 public class QuarterlyReport
 {
     private static QuarterlyReport instance = null;
@@ -47,7 +46,6 @@ public class QuarterlyReport
 
     // 고정값을 가질 총 아카데미 리스트
     private List<AcademyInfoForQaurterlyReport> m_academyList = new List<AcademyInfoForQaurterlyReport>();
-    private List<AcademyInfoForGameJam> m_gamejameAcademyList = new List<AcademyInfoForGameJam>();
 
     // 1~4분기동안 쌓일 아카데미들의 점수. 1년 후 총 랭크를 보여줄때 사용, 내 아카데미는 없음,,
     private List<KeyValuePair<string, int>> m_totalAIAcademyScores = new List<KeyValuePair<string, int>>();
@@ -61,7 +59,6 @@ public class QuarterlyReport
     private List<KeyValuePair<string, int>> m_AcademyNameToRank = new List<KeyValuePair<string, int>>();    // 순위별로 점수가 상승했는지 하락했는지 아니면 유지했는지 저장하기 위한 딕셔너리
 
     public List<AcademyInfoForQaurterlyReport> AcademyList => m_academyList;
-    public List<AcademyInfoForGameJam> GameJamAcademyList => m_gamejameAcademyList;
 
     public List<KeyValuePair<string, int>> TotalAIAcademyScores => m_totalAIAcademyScores;
     public List<KeyValuePair<string, int>> TotalAcademyScores { get { return m_TotalAcademyScores; } set { m_TotalAcademyScores = value; } }
@@ -73,15 +70,14 @@ public class QuarterlyReport
     public void Init()
     {
         m_academyList.Clear();
-        m_gamejameAcademyList.Clear();
         m_totalAIAcademyScores.Clear();
-        //m_prevAcademyRank.Clear();
         m_nowAcademyScore.Clear();
     }
 
     public void AddNewAcademy(string name, string money, string fame, string activity, string operate, string talentDevelopment)
     {
         AcademyInfoForQaurterlyReport newAcademy = new AcademyInfoForQaurterlyReport();
+
         newAcademy.AcademyName = name;
         newAcademy.Money = money;
         newAcademy.Fame = fame;
@@ -101,7 +97,6 @@ public class QuarterlyReport
         newGameJamAcademy.Graphic = _graphic;
         newGameJamAcademy.Perfection = _perfection;
         newGameJamAcademy.GenreBonus = _genreBouns;
-        m_gamejameAcademyList.Add(newGameJamAcademy);
     }
 
     // 모든 아카데미의 점수를 매기는 부분
@@ -127,21 +122,6 @@ public class QuarterlyReport
             m_totalAIAcademyScores[m_totalAIAcademyScores.IndexOf(_modifiy)] = _new;
 
             m_nowAcademyScore.Add(new KeyValuePair<string, int>(m_academyList[i].AcademyName, score));
-        }
-    }
-
-    public void GameJamAcademyScoreCal()
-    {
-        m_nowGameJamAcademyScore.Clear();
-
-        for (int i = 0; i < m_gamejameAcademyList.Count; i++)
-        {
-            int score = 0;
-            score += CalculateGameJam(m_gamejameAcademyList[i].Funny);
-            score += CalculateGameJam(m_gamejameAcademyList[i].Graphic);
-            score += CalculateGameJam(m_gamejameAcademyList[i].Perfection);
-            score += CalculateGameJam(m_gamejameAcademyList[i].GenreBonus);
-            m_nowGameJamAcademyScore.Add(new KeyValuePair<string, int>(m_gamejameAcademyList[i].AcademyName, score));
         }
     }
 
@@ -185,51 +165,6 @@ public class QuarterlyReport
 
             case "F":
             rand = Random.Range(0, 81);
-            break;
-        }
-        return rand;
-    }
-
-    private int CalculateGameJam(string rank)
-    {
-        int rand = 0;
-
-        switch (rank)
-        {
-            case "SSS":
-            rand = Random.Range(240, 301);
-            break;
-
-            case "SS":
-            rand = Random.Range(210, 271);
-            break;
-
-            case "S":
-            rand = Random.Range(180, 241);
-            break;
-
-            case "A":
-            rand = Random.Range(150, 211);
-            break;
-
-            case "B":
-            rand = Random.Range(120, 181);
-            break;
-
-            case "C":
-            rand = Random.Range(90, 151);
-            break;
-
-            case "D":
-            rand = Random.Range(60, 121);
-            break;
-
-            case "E":
-            rand = Random.Range(30, 91);
-            break;
-
-            case "F":
-            rand = Random.Range(0, 61);
             break;
         }
         return rand;

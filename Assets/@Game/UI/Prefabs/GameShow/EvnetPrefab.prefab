@@ -54,6 +54,7 @@ MonoBehaviour:
   m_DDaY: {fileID: 6983505620648942833}
   m_ActivityText: {fileID: 1905479552310124758}
   m_TimeAnimation: {fileID: 8387322318521519781}
+  m_IsGameJam: 0
 --- !u!1 &2254941204580146631
 GameObject:
   m_ObjectHideFlags: 0
@@ -454,11 +455,11 @@ RectTransform:
   m_Father: {fileID: 1699539396274899367}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0.099998474, y: 3.9000015}
-  m_SizeDelta: {x: 70, y: 40}
-  m_Pivot: {x: 0.5, y: 0}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 15, y: -36.100006}
+  m_SizeDelta: {x: 95, y: 40}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &757527579608542611
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -487,7 +488,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: D-30
+  m_text: D-Day
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 3932f36450a08364c9dac6adeb4244e6, type: 2}
   m_sharedMaterial: {fileID: 85526449926766935, guid: 3932f36450a08364c9dac6adeb4244e6, type: 2}

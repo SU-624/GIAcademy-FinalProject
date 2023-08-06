@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using StatData.Runtime;
@@ -10,15 +11,15 @@ using UnityEngine;
 /// </summary>
 public class ApplyChangeStat : MonoBehaviour
 {
-    [SerializeField] private SelectClass m_SelectClassData;
-
     private string[] m_ArtProfessorName = new string[2];
-    private string[] m_GMProfessorName = new string[2];
+    private string[] m_GameDesignerProfessorName = new string[2];
     private string[] m_ProgrammingProfessorName = new string[2];
 
     private int[] m_ArtClassHealth = new int[2];
-    private int[] m_GMClassHealth = new int[2];
+    private int[] m_GameDesignerClassHealth = new int[2];
     private int[] m_ProgrammingClassHealth = new int[2];
+
+    [SerializeField] private SelectClass m_ClassData;
 
     private Professor m_ProfessorData = new Professor();
 
@@ -28,40 +29,37 @@ public class ApplyChangeStat : MonoBehaviour
 
         for (int i = 0; i < 2; i++)
         {
-            int _index = m_SelectClassData.m_NowPlayerProfessor.ArtProfessor.IndexOf(SelectClass.m_ArtData[i].m_SelectProfessorDataSave);
+            int _index = Professor.Instance.ArtProfessor.IndexOf(SelectClass.m_ArtData[i].m_SelectProfessorDataSave);
 
-            if (m_SelectClassData.m_NowPlayerProfessor.ArtProfessor[_index].m_ProfessorNameValue == m_ArtProfessorName[i])
+            if (Professor.Instance.ArtProfessor[_index].m_ProfessorName == m_ArtProfessorName[i])
             {
-                m_SelectClassData.m_NowPlayerProfessor.ArtProfessor[_index].m_ProfessorHealth -= m_ArtClassHealth[i];
-                //i++;
-                //m_SelectClassData.m_NowPlayerProfessor.ArtProfessor[_index].m_ProfessorHealth -= 5;
-                m_SelectClassData.m_NowPlayerProfessor.ArtProfessor[_index].m_ProfessorPassion -= 3;
+                Professor.Instance.ArtProfessor[_index].m_ProfessorHealth -= m_ArtClassHealth[i];
+                //Professor.Instance.ArtProfessor[_index].m_ProfessorHealth -= 5;
+                Professor.Instance.ArtProfessor[_index].m_ProfessorPassion -= 3;
             }
         }
 
         for (int i = 0; i < 2; i++)
         {
-            int _index = m_SelectClassData.m_NowPlayerProfessor.GameManagerProfessor.IndexOf(SelectClass.m_GameDesignerData[i].m_SelectProfessorDataSave);
+            int _index = Professor.Instance.GameManagerProfessor.IndexOf(SelectClass.m_GameDesignerData[i].m_SelectProfessorDataSave);
 
-            if (m_SelectClassData.m_NowPlayerProfessor.GameManagerProfessor[_index].m_ProfessorNameValue == m_GMProfessorName[i])
+            if (Professor.Instance.GameManagerProfessor[_index].m_ProfessorName == m_GameDesignerProfessorName[i])
             {
-                m_SelectClassData.m_NowPlayerProfessor.GameManagerProfessor[_index].m_ProfessorHealth -= m_GMClassHealth[i];
-                //i++;
-                //m_SelectClassData.m_NowPlayerProfessor.GameManagerProfessor[_index].m_ProfessorHealth -= 5;
-                m_SelectClassData.m_NowPlayerProfessor.GameManagerProfessor[_index].m_ProfessorPassion -= 3;
+                Professor.Instance.GameManagerProfessor[_index].m_ProfessorHealth -= m_GameDesignerClassHealth[i];
+                //Professor.Instance.GameManagerProfessor[_index].m_ProfessorHealth -= 5;
+                Professor.Instance.GameManagerProfessor[_index].m_ProfessorPassion -= 3;
             }
         }
 
         for (int i = 0; i < 2; i++)
         {
-            int _index = m_SelectClassData.m_NowPlayerProfessor.ProgrammingProfessor.IndexOf(SelectClass.m_ProgrammingData[i].m_SelectProfessorDataSave);
+            int _index = Professor.Instance.ProgrammingProfessor.IndexOf(SelectClass.m_ProgrammingData[i].m_SelectProfessorDataSave);
 
-            if (m_SelectClassData.m_NowPlayerProfessor.ProgrammingProfessor[_index].m_ProfessorNameValue == m_ProgrammingProfessorName[i])
+            if (Professor.Instance.ProgrammingProfessor[_index].m_ProfessorName == m_ProgrammingProfessorName[i])
             {
-                m_SelectClassData.m_NowPlayerProfessor.ProgrammingProfessor[_index].m_ProfessorHealth -= m_ProgrammingClassHealth[i];
-                //i++;
-                //m_SelectClassData.m_NowPlayerProfessor.ProgrammingProfessor[_index].m_ProfessorHealth -= 5;
-                m_SelectClassData.m_NowPlayerProfessor.ProgrammingProfessor[_index].m_ProfessorPassion -= 3;
+                Professor.Instance.ProgrammingProfessor[_index].m_ProfessorHealth -= m_ProgrammingClassHealth[i];
+                //Professor.Instance.ProgrammingProfessor[_index].m_ProfessorHealth -= 5;
+                Professor.Instance.ProgrammingProfessor[_index].m_ProfessorPassion -= 3;
             }
         }
     }
@@ -70,19 +68,19 @@ public class ApplyChangeStat : MonoBehaviour
     {
         for (int i = 0; i < 2; i++)
         {
-            m_ArtProfessorName[i] = SelectClass.m_ArtData[i].m_SelectProfessorDataSave.m_ProfessorNameValue;
+            m_ArtProfessorName[i] = SelectClass.m_ArtData[i].m_SelectProfessorDataSave.m_ProfessorName;
             m_ArtClassHealth[i] = SelectClass.m_ArtData[i].m_SelectClassDataSave.m_Health;
         }
 
         for (int i = 0; i < 2; i++)
         {
-            m_GMProfessorName[i] = SelectClass.m_GameDesignerData[i].m_SelectProfessorDataSave.m_ProfessorNameValue;
-            m_GMClassHealth[i] = SelectClass.m_GameDesignerData[i].m_SelectClassDataSave.m_Health;
+            m_GameDesignerProfessorName[i] = SelectClass.m_GameDesignerData[i].m_SelectProfessorDataSave.m_ProfessorName;
+            m_GameDesignerClassHealth[i] = SelectClass.m_GameDesignerData[i].m_SelectClassDataSave.m_Health;
         }
 
         for (int i = 0; i < 2; i++)
         {
-            m_ProgrammingProfessorName[i] = SelectClass.m_ProgrammingData[i].m_SelectProfessorDataSave.m_ProfessorNameValue;
+            m_ProgrammingProfessorName[i] = SelectClass.m_ProgrammingData[i].m_SelectProfessorDataSave.m_ProfessorName;
             m_ProgrammingClassHealth[i] = SelectClass.m_ProgrammingData[i].m_SelectClassDataSave.m_Health;
         }
     }
@@ -97,22 +95,25 @@ public class ApplyChangeStat : MonoBehaviour
                 {
                     ProfessorStat nowProfessorStat = SelectClass.m_ArtData[j].m_SelectProfessorDataSave;
                     float magnification = m_ProfessorData.m_StatMagnification[nowProfessorStat.m_ProfessorPower];
+                    float increaseStat = m_ClassData.SetIncreaseClassFeeOrStat(PlayerInfo.Instance.CurrentRank, true);
 
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Insight] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Insight * magnification);
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Concentration] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Concentration * magnification);
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Sense] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Sense * magnification);
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Technique] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Technique * magnification);
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Wit] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Wit * magnification);
+                    float _personalityInsight = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 0);
+                    float _personalityConcentration = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 1);
+                    float _personalitySense = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 2);
+                    float _personalityTechnique = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 3);
+                    float _personalitywit = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 4);
+
+                    double _insight = Math.Round(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Insight * magnification * _personalityInsight * increaseStat);
+                    double _concentration = Math.Round(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Concentration * magnification * _personalityConcentration * increaseStat);
+                    double _sense = Math.Round(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Sense * magnification * _personalitySense * increaseStat);
+                    double _technique = Math.Round(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Technique * magnification * _personalityTechnique * increaseStat);
+                    double _wit = Math.Round(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Wit * magnification * _personalitywit * increaseStat);
+
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] += (int)_insight;
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += (int)_concentration;
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] += (int)_sense;
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] += (int)_technique;
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] += (int)_wit;
                 }
             }
             else if (ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_StudentType == StudentType.Programming)
@@ -122,21 +123,23 @@ public class ApplyChangeStat : MonoBehaviour
                     ProfessorStat nowProfessorStat = SelectClass.m_ProgrammingData[j].m_SelectProfessorDataSave;
                     float magnification = m_ProfessorData.m_StatMagnification[nowProfessorStat.m_ProfessorPower];
 
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Insight] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Insight * magnification);
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Concentration] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Concentration * magnification);
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Sense] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Sense * magnification);
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Technique] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Technique * magnification);
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Wit] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Wit * magnification);
+                    float _personalityInsight = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 0);
+                    float _personalityConcentration = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 1);
+                    float _personalitySense = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 2);
+                    float _personalityTechnique = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 3);
+                    float _personalitywit = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 4);
+
+                    double _insight = Math.Round(SelectClass.m_ProgrammingData[j].m_SelectClassDataSave.m_Insight * magnification * _personalityInsight);
+                    double _concentration = Math.Round(SelectClass.m_ProgrammingData[j].m_SelectClassDataSave.m_Concentration * magnification * _personalityConcentration);
+                    double _sense = Math.Round(SelectClass.m_ProgrammingData[j].m_SelectClassDataSave.m_Sense * magnification * _personalitySense);
+                    double _technique = Math.Round(SelectClass.m_ProgrammingData[j].m_SelectClassDataSave.m_Technique * magnification * _personalityTechnique);
+                    double _wit = Math.Round(SelectClass.m_ProgrammingData[j].m_SelectClassDataSave.m_Wit * magnification * _personalitywit);
+
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] += (int)_insight;
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += (int)_concentration;
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] += (int)_sense;
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] += (int)_technique;
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] += (int)_wit;
                 }
             }
             else if (ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_StudentType == StudentType.GameDesigner)
@@ -146,21 +149,23 @@ public class ApplyChangeStat : MonoBehaviour
                     ProfessorStat nowProfessorStat = SelectClass.m_GameDesignerData[j].m_SelectProfessorDataSave;
                     float magnification = m_ProfessorData.m_StatMagnification[nowProfessorStat.m_ProfessorPower];
 
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Insight] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Insight * magnification);
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Concentration] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Concentration * magnification);
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Sense] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Sense * magnification);
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Technique] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Technique * magnification);
-                    ObjectManager.Instance.m_StudentList[i].m_StudentStat
-                            .m_AbilityAmountList[(int)AbilityType.Wit] +=
-                        (int)(SelectClass.m_ArtData[j].m_SelectClassDataSave.m_Wit * magnification);
+                    float _personalityInsight = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 0);
+                    float _personalityConcentration = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 1);
+                    float _personalitySense = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 2);
+                    float _personalityTechnique = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 3);
+                    float _personalitywit = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality, 4);
+
+                    double _insight = Math.Round(SelectClass.m_GameDesignerData[j].m_SelectClassDataSave.m_Insight * magnification * _personalityInsight);
+                    double _concentration = Math.Round(SelectClass.m_GameDesignerData[j].m_SelectClassDataSave.m_Concentration * magnification * _personalityConcentration);
+                    double _sense = Math.Round(SelectClass.m_GameDesignerData[j].m_SelectClassDataSave.m_Sense * magnification * _personalitySense);
+                    double _technique = Math.Round(SelectClass.m_GameDesignerData[j].m_SelectClassDataSave.m_Technique * magnification * _personalityTechnique);
+                    double _wit = Math.Round(SelectClass.m_GameDesignerData[j].m_SelectClassDataSave.m_Wit * magnification * _personalitywit);
+
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] += (int)_insight;
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += (int)_concentration;
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] += (int)_sense;
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] += (int)_technique;
+                    ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] += (int)_wit;
                 }
             }
 
@@ -175,7 +180,7 @@ public class ApplyChangeStat : MonoBehaviour
     {
         for (int i = 0; i < 5; i++)
         {
-            ObjectManager.Instance.m_StudentList[_studentIndex].m_StudentStat.m_AbilitySkills[i] = ObjectManager.Instance.CheckStatSkills(ObjectManager.Instance.m_StudentList[_studentIndex].m_StudentStat.m_AbilityAmountList[i]);
+            ObjectManager.Instance.m_StudentList[_studentIndex].m_StudentStat.m_AbilitySkills[i] = ObjectManager.Instance.CheckStatSkills(ObjectManager.Instance.m_StudentList[_studentIndex].m_StudentStat.m_AbilityAmountArr[i]);
         }
     }
 }

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using System.Linq;
 using TMPro;
 using System;
+using Coffee.UIExtensions;
 
 public class InJaeRecommend : MonoBehaviour
 {
@@ -30,6 +31,7 @@ public class InJaeRecommend : MonoBehaviour
     [SerializeField] private Sprite m_SRankSprite;
     [SerializeField] private Sprite m_ARankSprite;
     [SerializeField] private Sprite m_BRankSprite;
+    [SerializeField] private Sprite m_CRankSprite;
     [Space(5f)]
 
     [Space(5f)]
@@ -58,9 +60,23 @@ public class InJaeRecommend : MonoBehaviour
     [SerializeField] private InJaeRecommendResult m_RecommendResultPanel;
     [SerializeField] private Sprite[] m_PartImage;
 
+    [Space(5f)]
+    [Header("튜토리얼용")]
+    [SerializeField] private GameObject m_TutorialPanel;
+    [SerializeField] private Unmask m_Unmask;
+    [SerializeField] private Image m_TutorialTextImage;
+    [SerializeField] private Image m_TutorialArrowImage;
+    [SerializeField] private TextMeshProUGUI m_TutorialText;
+    [SerializeField] private Button m_NextButton;
+    [SerializeField] private GameObject m_FoldButton;
+    [SerializeField] private GameObject m_RecommendButton;
+    [SerializeField] private GameObject m_BlackScreen;
+    [SerializeField] private GameObject m_PDAlarm;
+    [SerializeField] private TextMeshProUGUI m_AlarmText;
+
     private bool m_IsRecommendCreation;                                             // 공고를 2월이 됐을 때 한번만 만들어주기 위해서
     private bool m_IsRecommendFalseCheck;                                           // 공고를 2월 3주차 3일이 됐을 때 학생 한명이라도 취업추천을 안했다면 한번만 패널을 띄우기 위해
-    private bool m_IsRecommendResult;                                               // 공고를 2월 4주차 5일이 됐을 때 학생들의 합격 여부 패널을 한번만 띄워주려고
+    //private bool m_IsRecommendResult;                                               // 공고를 2월 4주차 5일이 됐을 때 학생들의 합격 여부 패널을 한번만 띄워주려고
     private bool _isPass;
     private int m_CompanySense;                                                   // 회사가 요구하는 수치들
     private int m_CompanyConcentration;                                           //
@@ -71,10 +87,10 @@ public class InJaeRecommend : MonoBehaviour
     private string m_CompanyName;                                                   // 내가 선택한 회사의 이름을 string값으로 가지고 있는다
     private int m_NowRecommendCount;
     private double Average;                                                         // 스탯 평균의 확률
-    private string[] GMStudentName = new string[6];                                 // 내가 선택한 학생들의 이름
+    private string[] GameDesignerStudentName = new string[6];                                 // 내가 선택한 학생들의 이름
     private string[] ArtStudentName = new string[6];                                //
     private string[] ProgrammingStudentName = new string[6];                        //
-    private Sprite[] GMStudentImgae = new Sprite[6];                                 // 내가 선택한 학생들의 이름
+    private Sprite[] GameDesignerStudentImgae = new Sprite[6];                                 // 내가 선택한 학생들의 이름
     private Sprite[] ArtStudentImgae = new Sprite[6];                                //
     private Sprite[] ProgrammingStudentImgae = new Sprite[6];
 
@@ -83,21 +99,42 @@ public class InJaeRecommend : MonoBehaviour
     private List<Student> m_SelectedStudent = new List<Student>();                  // 내가 선택한 학생들의 정보를 임시로 저장할 리스트
     private List<double> m_SelectedStudentPercent = new List<double>();             // 내가 선택한 학생의 제일 마지막으로 선택했던 학생의 데이터를 보여줘야함.
     private List<string> m_CompanyRequiredSkillName = new List<string>();            // 내가 선택한 회사의 요구 스킬 이름 목록
-    private Sprite[] GMStudentPassFail = new Sprite[6];                             // 내가 선택했던 학생들의 합격, 불합격 여부를 따져서 스프라이트를 넣어줘야한다.
+    private Sprite[] GameDesignerStudentPassFail = new Sprite[6];                             // 내가 선택했던 학생들의 합격, 불합격 여부를 따져서 스프라이트를 넣어줘야한다.
     private Sprite[] ArtStudentPassFail = new Sprite[6];
     private Sprite[] ProgrammingStudentPassFail = new Sprite[6];
+    private GameObject[] m_SkillPrefab = new GameObject[3];                         // 인재추천에 필요한 스킬 오브젝트를 생성 후 여기에 담아뒀다가 화면을 나갈 때 없애줘야한다.
+
+    private int m_PassStudentCount;
+
+    private int m_TutorialCount;
+    private int m_ScriptCount;
+
+    private int m_RecommendScript1Count;
+    private int m_RecommendScript2Count;
+    private int m_RecommendResult;
+
+    private bool m_IsScript2Play;
 
     private void Start()
     {
         m_IsRecommendCreation = false;
         m_IsRecommendFalseCheck = false;
-        m_IsRecommendResult = false;
         m_NowRecommendCount = 0;
 
         FillCompanyList(); // 인재추천 데이터를 넣는 함수
 
         m_RecommendInfoPanel.RecommendButton.onClick.AddListener(ClickRecommendButtonToPart);
         m_RecommendInfoPanel.CheckPanelOKButton.onClick.AddListener(ClickCheckPanelOKButton);
+
+        m_TutorialCount = 0;
+        m_ScriptCount = 0;
+        m_RecommendScript1Count = 0;
+        m_RecommendScript2Count = 0;
+        m_PassStudentCount = 0;
+        m_IsScript2Play = false;
+
+        m_NextButton.onClick.AddListener(TutorialContinue);
+        m_NextButton.onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
     }
 
     private void Update()
@@ -109,6 +146,9 @@ public class InJaeRecommend : MonoBehaviour
             MakeCompanyButton();
 
             m_IsRecommendCreation = true;
+
+            if (PlayerInfo.Instance.IsFirstInJaeRecommend && m_TutorialCount == 0)
+                TutorialStart();
         }
         // 학생중 한명이라도 인재추천을 안했다면 강제로 추천 화면 띄워주기
         else if (GameTime.Instance.FlowTime.NowMonth == 2 && GameTime.Instance.FlowTime.NowWeek == 3
@@ -131,18 +171,354 @@ public class InJaeRecommend : MonoBehaviour
         {
             m_RecommendAni.SetActive(false);
         }
-        else if (GameTime.Instance.FlowTime.NowMonth == 2 && GameTime.Instance.FlowTime.NowWeek == 4
-            && GameTime.Instance.FlowTime.NowDay == 5 && !m_IsRecommendResult)
+        //else if (GameTime.Instance.FlowTime.NowMonth == 2 && GameTime.Instance.FlowTime.NowWeek == 4
+        //    && GameTime.Instance.FlowTime.NowDay == 5 && !m_IsRecommendResult)
+        //{
+        //    m_IsRecommendResult = true;
+        //    m_RecommendResultPanel.PopUpResultPanel();
+        //}
+        else if (GameTime.Instance.FlowTime.NowMonth == 2 && GameTime.Instance.FlowTime.NowWeek == 4 &&
+                 GameTime.Instance.FlowTime.NowDay == 5 && m_RecommendScript1Count == 0 &&
+                 GameTime.Instance.m_IsRecommendNotice)
         {
-            m_IsRecommendResult = true;
-            m_RecommendResultPanel.PopUpResultPanel();
+            //m_IsRecommendResult = true;
+            Time.timeScale = 0;
+            m_TutorialPanel.SetActive(true);
+            m_BlackScreen.SetActive(true);
+            m_Unmask.gameObject.SetActive(false);
+            m_TutorialArrowImage.gameObject.SetActive(false);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            //m_NextButton.gameObject.SetActive(true);
+            m_PDAlarm.SetActive(true);
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().RecommendResult[0][m_RecommendScript1Count];
+            m_RecommendScript1Count++;
+
+            if (PlayerInfo.Instance.IsFirstVacation)
+            {
+                m_RecommendResult = 1;
+            }
+            else
+            {
+                // 전체 학생 중 합격한 학생 비율
+                float passPercent = (float)m_PassStudentCount / (float)18;
+                if (passPercent >= 80)
+                {
+                    m_RecommendResult = 2;
+                }
+                else
+                {
+                    m_RecommendResult = 3;
+                }
+            }
         }
         else if (GameTime.Instance.FlowTime.NowMonth == 3)
         {
             m_IsRecommendCreation = false;
             m_IsRecommendFalseCheck = false;
-            m_IsRecommendResult = false;
+            m_RecommendScript1Count = 0;
+            m_RecommendScript2Count = 0;
+            m_PassStudentCount = 0;
             m_NowRecommendCount = 0;
+        }
+
+//        if (PlayerInfo.Instance.IsFirstInJaeRecommend && m_TutorialCount > 0)
+//        {
+//#if UNITY_EDITOR
+//            if (Input.GetMouseButtonDown(0))
+//            {
+//                TutorialContinue();
+//            }
+//#elif UNITY_ANDROID
+//            if (Input.touchCount > 0)
+//            {
+//                Touch touch = Input.GetTouch(0);
+//                if (touch.phase == TouchPhase.Ended)
+//                {
+//                    TutorialContinue();
+//                }
+//            }
+//#endif
+//        }
+
+        if (GameTime.Instance.m_IsRecommendNotice && m_RecommendScript1Count > 0)
+        {
+#if UNITY_EDITOR
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (!m_IsScript2Play)
+                {
+                    RecommendContinue();
+                }
+                else
+                {
+                    RecommendResultContinue();
+                }
+            }
+#elif UNITY_ANDROID
+            if (Input.touchCount > 0)
+            {
+                Touch touch = Input.GetTouch(0);
+                if (touch.phase == TouchPhase.Ended)
+                {
+                    if (!m_IsScript2Play)
+                    {
+                        RecommendContinue();
+                    }
+                    else
+                    {
+                        RecommendResultContinue();
+                    }
+                }
+            }
+#endif
+        }
+    }
+
+    private void RecommendContinue()
+    {
+        if (m_RecommendScript1Count == 1)
+        {
+            Time.timeScale = 0;
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().RecommendResult[0][m_RecommendScript1Count];
+            m_RecommendScript1Count++;
+        }
+        else if (m_RecommendScript1Count == 2)
+        {
+            Time.timeScale = 0;
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().RecommendResult[0][m_RecommendScript1Count];
+            m_RecommendScript1Count++;
+        }
+        else if (m_RecommendScript1Count == 3)
+        {
+            Time.timeScale = 0;
+            m_TutorialPanel.SetActive(false);
+            m_RecommendResultPanel.PopUpResultPanel();
+            m_RecommendResultPanel.OKButton.onClick.AddListener(RecommendResultContinue);
+            m_RecommendScript1Count++;
+        }
+    }
+
+    private void RecommendResultContinue()
+    {
+        if (m_RecommendScript2Count < m_TutorialPanel.GetComponent<Tutorial>().RecommendResult[m_RecommendResult].Count)
+        {
+            Time.timeScale = 0;
+            m_IsScript2Play = true;
+            m_TutorialPanel.SetActive(true);
+
+            string nowScript =
+                m_TutorialPanel.GetComponent<Tutorial>().RecommendResult[m_RecommendResult][m_RecommendScript2Count];
+
+            int splitIndex1 = nowScript.IndexOf("[");
+            int splitIndex2 = nowScript.IndexOf("]");
+            int splitText = nowScript.IndexOf("아카데미명");
+
+            if (splitIndex1 != -1 && splitText != -1)
+            {
+                char lastText = PlayerInfo.Instance.AcademyName.ElementAt(PlayerInfo.Instance.AcademyName.Length - 1);
+
+                string selectText = (lastText - 0xAC00) % 28 > 0 ? "을" : "를";
+
+                m_AlarmText.text = nowScript.Substring(0, splitIndex1) + PlayerInfo.Instance.AcademyName + selectText + nowScript.Substring(splitIndex2 + 2);
+            }
+            else
+            {
+                m_AlarmText.text = nowScript;
+            }
+            m_RecommendScript2Count++;
+        }
+        else
+        {
+            m_TutorialPanel.SetActive(false);
+            m_IsScript2Play = true;
+            GameTime.Instance.m_IsRecommendNotice = false;
+            if (PlayerInfo.Instance.IsFirstVacation)
+            {
+                PlayerInfo.Instance.IsFirstVacation = false;
+            }
+
+            m_IsScript2Play = false;
+            Time.timeScale = 1;
+        }
+    }
+
+    private void TutorialStart()
+    {
+        Time.timeScale = 0;
+        m_TutorialPanel.SetActive(true);
+        m_NextButton.gameObject.SetActive(true);
+        m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+        m_ScriptCount++;
+        m_TutorialCount++;
+    }
+
+    private void TutorialContinue()
+    {
+        if (m_TutorialCount == 1)
+        {
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 2)
+        {
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 3)
+        {
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 4)
+        {
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 5)
+        {
+            if (m_FoldButton.GetComponent<PopUpUI>().isSlideMenuPanelOpend == false)
+            {
+                m_FoldButton.GetComponent<PopUpUI>().AutoSlideMenuUI();
+            }
+
+            m_BlackScreen.SetActive(true);
+            m_PDAlarm.SetActive(false);
+            m_Unmask.gameObject.SetActive(true);
+            m_Unmask.fitTarget = m_RecommendButton.GetComponent<RectTransform>();
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 6)
+        {
+            m_RecommendListPanel.PopUpRecommendListPanel();
+            m_RecommendListPanel.Companycontent.vertical = false;
+            m_RecommendListPanel.CompanyContentTransform.GetChild(0).GetComponent<Button>().interactable = false;
+            m_RecommendListPanel.CompanyContentTransform.GetChild(1).GetComponent<Button>().interactable = false;
+            m_RecommendListPanel.CompanyContentTransform.GetChild(2).GetComponent<Button>().interactable = false;
+            m_RecommendListPanel.CompanyContentTransform.GetChild(3).GetComponent<Button>().interactable = false;
+            m_RecommendListPanel.CompanyContentTransform.GetChild(4).GetComponent<Button>().interactable = false;
+
+            m_Unmask.fitTarget = m_RecommendListPanel.CompanyListRect;
+            m_TutorialArrowImage.gameObject.SetActive(false);
+            m_TutorialTextImage.gameObject.SetActive(true);
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(450, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 7)
+        {
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 8)
+        {
+            m_RecommendListPanel.CompanyContentTransform.GetChild(0).GetComponent<Button>().interactable = true;
+            m_RecommendListPanel.CompanyContentTransform.GetChild(1).GetComponent<Button>().interactable = true;
+            m_RecommendListPanel.CompanyContentTransform.GetChild(2).GetComponent<Button>().interactable = true;
+            m_RecommendListPanel.CompanyContentTransform.GetChild(3).GetComponent<Button>().interactable = true;
+            m_RecommendListPanel.CompanyContentTransform.GetChild(4).GetComponent<Button>().interactable = true;
+
+            m_Unmask.fitTarget = m_RecommendListPanel.CompanyContentTransform.GetChild(0).GetComponent<RectTransform>();
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 150, 0);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 10)
+        {
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 11)
+        {
+            m_RecommendListPanel.RecommendContentTransform.GetChild(0).GetComponent<Button>().interactable = true;
+            m_RecommendListPanel.RecommendContentTransform.GetChild(1).GetComponent<Button>().interactable = true;
+            //m_RecommendListPanel.RecommendContentTransform.GetChild(2).GetComponent<Button>().interactable = true;
+            //m_RecommendListPanel.RecommendContentTransform.GetChild(3).GetComponent<Button>().interactable = true;
+            //m_RecommendListPanel.RecommendContentTransform.GetChild(4).GetComponent<Button>().interactable = true;
+
+            m_Unmask.fitTarget = m_RecommendListPanel.RecommendContentTransform.GetChild(0).GetComponent<RectTransform>();
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 150, 0);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 13)
+        {
+            m_Unmask.fitTarget = m_RecommendInfoPanel.PartSkillInfoRect;
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(550, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 14)
+        {
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 15)
+        {
+            m_Unmask.fitTarget = m_RecommendInfoPanel.StatInfoRect;
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-500, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 16)
+        {
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 17)
+        {
+            m_Unmask.fitTarget = m_RecommendInfoPanel.StudentListRect;
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-550, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 18)
+        {
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 19)
+        {
+            m_Unmask.fitTarget = m_RecommendInfoPanel.PercentRect;
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-350, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 20)
+        {
+            m_Unmask.gameObject.SetActive(false);
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            //m_TutorialTextImage.transform.position = new Vector3(2340f / 2f, 1080f / 2f, 0);
+            m_TutorialTextImage.transform.position = new Vector3(Screen.width / 2f, Screen.height / 2f, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 21)
+        {
+            m_TutorialPanel.SetActive(false);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialCount++;
+            PlayerInfo.Instance.IsFirstInJaeRecommend = false;
         }
     }
 
@@ -248,7 +624,7 @@ public class InJaeRecommend : MonoBehaviour
     }
 
     // 회사 버튼을 만들어준다.
-    private void MakeCompanyButton()
+    public void MakeCompanyButton()
     {
         Transform _companyparent = m_RecommendListPanel.CompanyContent();
 
@@ -269,7 +645,7 @@ public class InJaeRecommend : MonoBehaviour
         for (int i = 0; i < m_SortCompany.Count; i++)
         {
             // 현재 연도와 해당 버튼의 연도가 같으면 맨 위에 생성해주기
-            if (m_SortCompany[i].IsUnLockCompany)
+            if (m_SortCompany[i].IsUnLockCompany && CheckEmployment(m_SortCompany[i].EmploymentList) == true)
             {
                 Transform _companyButtonParent = m_RecommendListPanel.CompanyContent();
                 GameObject _companyButton = Instantiate(m_CompanyPrefab, _companyButtonParent);
@@ -291,14 +667,27 @@ public class InJaeRecommend : MonoBehaviour
                     case 0: _companyButton.transform.GetChild(0).GetComponent<Image>().sprite = m_SRankSprite; break;
                     case 1: _companyButton.transform.GetChild(0).GetComponent<Image>().sprite = m_ARankSprite; break;
                     case 2: _companyButton.transform.GetChild(0).GetComponent<Image>().sprite = m_BRankSprite; break;
+                    case 3: _companyButton.transform.GetChild(0).GetComponent<Image>().sprite = m_CRankSprite; break;
                 }
                 _companyButton.GetComponent<Button>().onClick.AddListener(MakeRecommend);
             }
-            else
+        }
+    }
+
+    private bool CheckEmployment(List<Employment> _employment)
+    {
+        for (int i = 0; i < _employment.Count; i++)
+        {
+            for (int j = 0; j < _employment[i].EmploymentYear.Length; j++)
             {
-                break;
+                if (_employment[i].EmploymentYear[j] == 0 || _employment[i].EmploymentYear[j] == GameTime.Instance.FlowTime.NowYear)
+                {
+                    return true;
+                }
             }
         }
+
+        return false;
     }
 
     // 해당 회사가 가지고 있는 공고들을 보여주는 함수. 
@@ -307,6 +696,12 @@ public class InJaeRecommend : MonoBehaviour
         m_RecommendListPanel.DestroyRecommendList();
 
         GameObject _currentObj = EventSystem.current.currentSelectedGameObject;
+
+        if (_currentObj == null)
+        {
+            return;
+        }
+
         m_CompanyName = _currentObj.name;
 
         List<Employment> _sortListToPart = SortRecommendToConditions();
@@ -345,6 +740,26 @@ public class InJaeRecommend : MonoBehaviour
             m_SelectedStudent.Clear();
             m_SelectedStudentPercent.Clear();
         }
+
+        if (PlayerInfo.Instance.IsFirstInJaeRecommend && m_TutorialCount == 9)
+        {
+            m_RecommendListPanel.Companycontent.vertical = true;
+            m_RecommendListPanel.Recommendcontent.vertical = false;
+            m_RecommendListPanel.RecommendContentTransform.GetChild(0).GetComponent<Button>().interactable = false;
+            m_RecommendListPanel.RecommendContentTransform.GetChild(1).GetComponent<Button>().interactable = false;
+            //m_RecommendListPanel.RecommendContentTransform.GetChild(2).GetComponent<Button>().interactable = false;
+            //m_RecommendListPanel.RecommendContentTransform.GetChild(3).GetComponent<Button>().interactable = false;
+            //m_RecommendListPanel.RecommendContentTransform.GetChild(4).GetComponent<Button>().interactable = false;
+
+            m_Unmask.fitTarget = m_RecommendListPanel.RecommendListRect;
+            m_TutorialArrowImage.gameObject.SetActive(false);
+            m_TutorialTextImage.gameObject.SetActive(true);
+            m_NextButton.gameObject.SetActive(true);
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-800, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
     }
 
     // 내가 선택한 공고문에 맞춰 정보를 바꿔준다. 학생들은 처음 켰을 때 기획학생으로 나오게 하기
@@ -376,7 +791,7 @@ public class InJaeRecommend : MonoBehaviour
         m_RecommendInfoPanel.SetRecommendInfoListText(_companyName, _employmentName, _employmentText, _salary, _task);
         m_RecommendInfoPanel.SetRecruitmentPart(_part);
 
-        //MakeSkills(m_SortCompany[_index].EmploymentList[m_NowEmploymentIndex].CompanyRequirementSkill);
+        MakeSkills(m_SortCompany[_index].EmploymentList[m_NowEmploymentIndex].CompanyRequirementSkill);
         MakeCompanyPentagon(m_CompanySense, m_CompanyConcentration, m_CompanyWit, m_CompanyTechinque, m_CompanyInsight);
 
         // 초기화
@@ -385,7 +800,7 @@ public class InJaeRecommend : MonoBehaviour
         MakeStudentPentagon(0, 0, 0, 0, 0);
 
         MakeStudent(StudentType.GameDesigner);
-        m_RecommendInfoPanel.PartGMButton.Select();
+        m_RecommendInfoPanel.PartGameDesignerButton.Select();
 
         m_RecommendListPanel.PopOffRecommendListPanel();
         m_RecommendInfoPanel.PopUpRecommendInfoPanel();
@@ -395,7 +810,21 @@ public class InJaeRecommend : MonoBehaviour
             m_CompanyList[_companyIndex].IsNewCompany = false;
         }
 
-        MakeCompanyButton();
+        //MakeCompanyButton();
+
+        if (PlayerInfo.Instance.IsFirstInJaeRecommend && m_TutorialCount == 12)
+        {
+            m_RecommendListPanel.Recommendcontent.vertical = true;
+
+            m_Unmask.fitTarget = m_RecommendInfoPanel.RecommendInfoRect;
+            m_TutorialArrowImage.gameObject.SetActive(false);
+            m_TutorialTextImage.gameObject.SetActive(true);
+            m_NextButton.gameObject.SetActive(true);
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().InJaeRecommendTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(600, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
     }
 
     // 펜타곤을 넣어준 값으로 만들어주는 함수
@@ -415,11 +844,12 @@ public class InJaeRecommend : MonoBehaviour
     /// TODO : 학생의 보너스 스킬을 적용하는 중. 스킬 판별도 해줘야한다.
     private void MakeSkills(int[] _skillList)
     {
+        DestroySkillPrefab();
+
         string _skillName = "";
-        float _skillObjWidth = 0;           // 이전에 만든 스킬의 길이에서 23을 더 한 값을 넣어줘야 나란히 잘 나온다.
+        int _skillObjWidth = 180 + 23;           // 이전에 만든 스킬의 길이에서 23을 더 한 값을 넣어줘야 나란히 잘 나온다.
         int _x = 89;                        // 89로 되어있는 이유는 스킬을 생성해줘야 하는 위치가 89부터 시작하기 때문    
         m_CompanyRequiredSkillName.Clear();
-
         Transform _skillParent = m_RecommendInfoPanel.RequiredSkillParentTransform();
 
         for (int i = 0; i < _skillList.Length; i++)
@@ -436,8 +866,8 @@ public class InJaeRecommend : MonoBehaviour
             m_CompanyRequiredSkillName.Add(_skillName);
             _skill.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = _skillName;
             _skill.GetComponent<Image>().rectTransform.anchoredPosition = new Vector2(_x, -385);
-            _skillObjWidth = _skill.GetComponent<RectTransform>().sizeDelta.x;
-            _x = (int)_skillObjWidth + 23;
+            m_SkillPrefab[i] = _skill;
+            _x += _skillObjWidth;
         }
     }
 
@@ -522,7 +952,14 @@ public class InJaeRecommend : MonoBehaviour
 
                 CompareNameAndTurnOnCheckImage(_student);
 
-                _student.GetComponent<RecommendStudentPrefab>().m_StudentName.text = _studentList[i].m_StudentStat.m_StudentName;
+                if (_studentList[i].m_StudentStat.m_UserSettingName != "")
+                {
+                    _student.GetComponent<RecommendStudentPrefab>().m_StudentName.text = _studentList[i].m_StudentStat.m_UserSettingName;
+                }
+                else
+                {
+                    _student.GetComponent<RecommendStudentPrefab>().m_StudentName.text = _studentList[i].m_StudentStat.m_StudentName;
+                }
                 _student.GetComponent<RecommendStudentPrefab>().m_StudentImgae.sprite = _studentList[i].StudentProfileImg;
                 _student.GetComponent<Button>().onClick.AddListener(ClickStudent);
                 // 학생 이미지 교체도 해줘야 함
@@ -561,11 +998,11 @@ public class InJaeRecommend : MonoBehaviour
         {
             if (_studentList[i].m_StudentStat.m_StudentName == _clickStudent.name)
             {
-                _sense = _studentList[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense];
-                _concentration = _studentList[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration];
-                _wit = _studentList[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit];
-                _technique = _studentList[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique];
-                _insight = _studentList[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight];
+                _sense = _studentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense];
+                _concentration = _studentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration];
+                _wit = _studentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit];
+                _technique = _studentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique];
+                _insight = _studentList[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight];
 
                 if (!m_SelectedStudent.Contains(_studentList[i]))
                 {
@@ -627,11 +1064,11 @@ public class InJaeRecommend : MonoBehaviour
         double _companyrequiredTechinque = m_CompanyTechinque;
         double _companyrequiredInsight = m_CompanyInsight;
 
-        double _selectStudentSense = _student.m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense];
-        double _selectStudentConcentration = _student.m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration];
-        double _selectStudentWit = _student.m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit];
-        double _selectStudentTechinque = _student.m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique];
-        double _selectStudentInsight = _student.m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight];
+        double _selectStudentSense = _student.m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense];
+        double _selectStudentConcentration = _student.m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration];
+        double _selectStudentWit = _student.m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit];
+        double _selectStudentTechinque = _student.m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique];
+        double _selectStudentInsight = _student.m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight];
 
         double _sensePercent = (_selectStudentSense / _companyrequiredSense * 100 >= 100) ? 100 : _selectStudentSense / _companyrequiredSense * 100;
         double _concentrationPercent = (_selectStudentConcentration / _companyrequiredConcentration * 100 >= 100) ? 100 : _selectStudentConcentration / _companyrequiredConcentration * 100;
@@ -669,7 +1106,7 @@ public class InJaeRecommend : MonoBehaviour
         switch (_buttonName)
         {
             case "ArtTab": MakeStudent(StudentType.Art); break;
-            case "GMTab": MakeStudent(StudentType.GameDesigner); break;
+            case "GameDesignerTab": MakeStudent(StudentType.GameDesigner); break;
             case "ProgrammingTab": MakeStudent(StudentType.Programming); break;
         }
         m_RecommendInfoPanel.ChangeScrollRectTransform();
@@ -680,6 +1117,8 @@ public class InJaeRecommend : MonoBehaviour
     {
         int _index = m_SortCompany.FindIndex(x => x.CompanyName == m_CompanyName);
         int _part = m_SortCompany[_index].EmploymentList[m_NowEmploymentIndex].CompanyPart;
+        string _warnningMessage = "";
+
         _isPass = false;
         StudentType _type;
 
@@ -693,6 +1132,15 @@ public class InJaeRecommend : MonoBehaviour
             case 2: _type = StudentType.Art; break;
             case 3: _type = StudentType.Programming; break;
             default: _type = StudentType.None; break;
+        }
+
+        if (m_SelectedStudent.Count == 0)
+        {
+            _warnningMessage = "학생을 선택해주세요!";
+        }
+        else
+        {
+            _warnningMessage = "추천이 불가한 학생이 존재합니다!";
         }
 
         for (int i = 0; i < m_SelectedStudent.Count; i++)
@@ -722,7 +1170,7 @@ public class InJaeRecommend : MonoBehaviour
         else
         {
             // 다르다면 스킬 확인까지 안가고 그냥 추천이 불가한 학생이 있다는 경고문 띄워주기
-            m_RecommendInfoPanel.SetActiveImpossibleRecommendPanel(true);
+            m_RecommendInfoPanel.SetActiveImpossibleRecommendPanel(true, _warnningMessage);
 
             StartCoroutine(HideImpossibleRecommendPanel());
         }
@@ -731,37 +1179,44 @@ public class InJaeRecommend : MonoBehaviour
     // 추천하기 버튼을 누르면 공고 조건에 맞는 학생들을 선택했는지 확인해주는 함수(요구 스킬)
     public void ClickRecommendButtonToSkill()
     {
-        //_isPass = false;
+        _isPass = false;
 
-        //for (int i = 0; i < m_SelectedStudent.Count; i++)
-        //{
-        //    for (int j = 0; j < m_SelectedStudent[i].m_StudentStat.m_Skills.Count; i++)
-        //    {
-        //        if (m_CompanyRequiredSkillName[i] == m_SelectedStudent[i].m_StudentStat.m_Skills[i])
-        //        {
-        //            _isPass = true;
-        //        }
-        //        else
-        //        {
-        //            _isPass = false;
-        //            break;
-        //        }
-        //    }
+        if (m_CompanyRequiredSkillName.Count != 0)
+        {
+            for (int i = 0; i < m_SelectedStudent.Count; i++)
+            {
+                for (int j = 0; j < m_SelectedStudent[i].m_StudentStat.m_Skills.Count; i++)
+                {
+                    if (m_CompanyRequiredSkillName[i] == m_SelectedStudent[i].m_StudentStat.m_Skills[i])
+                    {
+                        _isPass = true;
+                    }
+                    else
+                    {
+                        _isPass = false;
+                        break;
+                    }
+                }
 
-        //    if (!_isPass)
-        //    {
-        //        break;
-        //    }
-        //}
+                if (!_isPass)
+                {
+                    break;
+                }
+            }
+        }
+        else
+        {
+            _isPass = true;
+        }
 
-        //// 스킬도 가지고 있다면... 없으면 추천 불가 학생이 있다고 띄워주기
-        //if (!_isPass)
-        //{
-        //    m_RecommendInfoPanel.SetActiveImpossibleRecommendPanel(true);
+        // 스킬도 가지고 있다면... 없으면 추천 불가 학생이 있다고 띄워주기
+        if (!_isPass)
+        {
+            m_RecommendInfoPanel.SetActiveImpossibleRecommendPanel(true, "추천 불가능한 학생이 있습니다!");
 
-        //    StartCoroutine(HideImpossibleRecommendPanel());
-        //}
-        //else
+            StartCoroutine(HideImpossibleRecommendPanel());
+        }
+        else
         {
             m_RecommendInfoPanel.SetCheckRecommendPanel();
             m_RecommendInfoPanel.DestroyCheckPanelStudentList();
@@ -792,23 +1247,33 @@ public class InJaeRecommend : MonoBehaviour
 
                 if (_percent >= 80)
                 {
-                    _student.transform.GetChild(0).GetComponent<Image>().sprite = m_UpToEightyPercentSprite;
+                    _student.GetComponent<CheckRecommendStudentPrefab>().m_PercentImage.sprite = m_UpToEightyPercentSprite;
                 }
                 else if (_percent >= 60)
                 {
-                    _student.transform.GetChild(0).GetComponent<Image>().sprite = m_UpToSixtyPercentSprite;
+                    _student.GetComponent<CheckRecommendStudentPrefab>().m_PercentImage.sprite = m_UpToSixtyPercentSprite;
                 }
                 else if (_percent >= 40)
                 {
-                    _student.transform.GetChild(0).GetComponent<Image>().sprite = m_UpToFourtyPercentSprite;
+                    _student.GetComponent<CheckRecommendStudentPrefab>().m_PercentImage.sprite = m_UpToFourtyPercentSprite;
                 }
                 else
                 {
-                    _student.transform.GetChild(0).GetComponent<Image>().sprite = m_UpToZeroPercentSprite;
+                    _student.GetComponent<CheckRecommendStudentPrefab>().m_PercentImage.sprite = m_UpToZeroPercentSprite;
                 }
 
-                _student.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = _percent + " %";
-                _student.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = m_SelectedStudent[i].m_StudentStat.m_StudentName;
+                _student.GetComponent<CheckRecommendStudentPrefab>().m_PassPercent.text = _percent + " %";
+
+                if (m_SelectedStudent[i].m_StudentStat.m_UserSettingName != "")
+                {
+                    _student.GetComponent<CheckRecommendStudentPrefab>().m_StudentName.text = m_SelectedStudent[i].m_StudentStat.m_UserSettingName;
+                }
+                else
+                {
+                    _student.GetComponent<CheckRecommendStudentPrefab>().m_StudentName.text = m_SelectedStudent[i].m_StudentStat.m_StudentName;
+                }
+
+                _student.GetComponent<CheckRecommendStudentPrefab>().m_StudentImage.sprite = m_SelectedStudent[i].StudentProfileImg;
             }
 
             // 학생 프리팹의 갯수로 앵커를 조절해줘서 4명까지는 가운데로 해주고 4명이 넘어가면 왼쪽으로 해준다.
@@ -855,6 +1320,7 @@ public class InJaeRecommend : MonoBehaviour
                     {
                         m_CompanyList[_companyIndex].EmploymentList[m_NowEmploymentIndex].PassStudent.Add(m_SelectedStudent[i]);
                         m_CompanyList[_companyIndex].PassStudentCount += 1;
+                        m_PassStudentCount++;
                     }
                     else
                     {
@@ -869,7 +1335,7 @@ public class InJaeRecommend : MonoBehaviour
 
         // content를 맨위로 올려주기
         m_RecommendInfoPanel.ChangeScrollRectTransform();
-
+        //DestroySkillPrefab();
         // 모두 선택한 후에 결과창에 띄울 학생들 이름 넣어주기
         if (m_NowRecommendCount == 18)
         {
@@ -884,6 +1350,7 @@ public class InJaeRecommend : MonoBehaviour
         }
 
         m_SelectedStudent.Clear();
+        m_SelectedStudentPercent.Clear();
     }
 
     // 결과창에 내가 선택했던 학생들의 이름을 띄워주기 위해 학생마다 각 학과의 배열에 이름을 넣어준다.
@@ -902,21 +1369,42 @@ public class InJaeRecommend : MonoBehaviour
                 {
                     if (m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_StudentType == StudentType.GameDesigner)
                     {
-                        GMStudentName[_gmIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_StudentName;
-                        GMStudentPassFail[_gmIndex] = m_Pass;
-                        GMStudentImgae[_gmIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].StudentProfileImg;
+                        if (m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_UserSettingName != "")
+                        {
+                            GameDesignerStudentName[_gmIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_UserSettingName;
+                        }
+                        else
+                        {
+                            GameDesignerStudentName[_gmIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_StudentName;
+                        }
+                        GameDesignerStudentPassFail[_gmIndex] = m_Pass;
+                        GameDesignerStudentImgae[_gmIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].StudentProfileImg;
                         _gmIndex++;
                     }
                     else if (m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_StudentType == StudentType.Art)
                     {
-                        ArtStudentName[_artIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_StudentName;
+                        if (m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_UserSettingName != "")
+                        {
+                            ArtStudentName[_artIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_UserSettingName;
+                        }
+                        else
+                        {
+                            ArtStudentName[_artIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_StudentName;
+                        }
                         ArtStudentPassFail[_artIndex] = m_Pass;
                         ArtStudentImgae[_artIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].StudentProfileImg;
                         _artIndex++;
                     }
                     else
                     {
-                        ProgrammingStudentName[_programmingIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_StudentName;
+                        if (m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_UserSettingName != "")
+                        {
+                            ProgrammingStudentName[_programmingIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_UserSettingName;
+                        }
+                        else
+                        {
+                            ProgrammingStudentName[_programmingIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_StudentName;
+                        }
                         ProgrammingStudentPassFail[_programmingIndex] = m_Pass;
                         ProgrammingStudentImgae[_programmingIndex] = m_CompanyList[i].EmploymentList[j].PassStudent[k].StudentProfileImg;
                         _programmingIndex++;
@@ -928,29 +1416,53 @@ public class InJaeRecommend : MonoBehaviour
 
                     if (m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_StudentType == StudentType.GameDesigner)
                     {
-                        GMStudentName[_gmIndex] = m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_StudentName;
-                        GMStudentPassFail[_gmIndex] = m_Fail;
+                        if (m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_UserSettingName != "")
+                        {
+                            GameDesignerStudentName[_gmIndex] = m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_UserSettingName;
+                        }
+                        else
+                        {
+                            GameDesignerStudentName[_gmIndex] = m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_StudentName;
+                        }
+                        GameDesignerStudentPassFail[_gmIndex] = m_Fail;
+                        GameDesignerStudentImgae[_gmIndex] = m_CompanyList[i].EmploymentList[j].FailStudent[k].StudentProfileImg;
                         _gmIndex++;
                     }
                     else if (m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_StudentType == StudentType.Art)
                     {
-                        ArtStudentName[_artIndex] = m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_StudentName;
+                        if (m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_UserSettingName != "")
+                        {
+                            ArtStudentName[_artIndex] = m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_UserSettingName;
+                        }
+                        else
+                        {
+                            ArtStudentName[_artIndex] = m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_StudentName;
+                        }
                         ArtStudentPassFail[_artIndex] = m_Fail;
+                        ArtStudentImgae[_artIndex] = m_CompanyList[i].EmploymentList[j].FailStudent[k].StudentProfileImg;
                         _artIndex++;
                     }
                     else
                     {
-                        ProgrammingStudentName[_programmingIndex] = m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_StudentName;
+                        if (m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_UserSettingName != "")
+                        {
+                            ProgrammingStudentName[_programmingIndex] = m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_UserSettingName;
+                        }
+                        else
+                        {
+                            ProgrammingStudentName[_programmingIndex] = m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_StudentName;
+                        }
                         ProgrammingStudentPassFail[_programmingIndex] = m_Fail;
+                        ProgrammingStudentImgae[_programmingIndex] = m_CompanyList[i].EmploymentList[j].FailStudent[k].StudentProfileImg;
                         _programmingIndex++;
                     }
                 }
             }
         }
 
-        m_RecommendResultPanel.ResultPanelStudentNameChange(GMStudentName, ArtStudentName, ProgrammingStudentName);
-        m_RecommendResultPanel.ResultPanelStudentImageChange(GMStudentImgae, ArtStudentImgae, ProgrammingStudentImgae);
-        m_RecommendResultPanel.ResultPanelStudentPassFail(GMStudentPassFail, ArtStudentPassFail, ProgrammingStudentPassFail);
+        m_RecommendResultPanel.ResultPanelStudentNameChange(GameDesignerStudentName, ArtStudentName, ProgrammingStudentName);
+        m_RecommendResultPanel.ResultPanelStudentImageChange(GameDesignerStudentImgae, ArtStudentImgae, ProgrammingStudentImgae);
+        m_RecommendResultPanel.ResultPanelStudentPassFail(GameDesignerStudentPassFail, ArtStudentPassFail, ProgrammingStudentPassFail);
     }
 
     // 결과창에서 학생을 클릭했을 때 띄워줄 상세창
@@ -969,7 +1481,14 @@ public class InJaeRecommend : MonoBehaviour
                 {
                     if (m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_StudentName == _name)
                     {
-                        m_RecommendResultPanel.SetDetailStudentName(_name);
+                        if (m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_UserSettingName != "")
+                        {
+                            m_RecommendResultPanel.SetDetailStudentName(m_CompanyList[i].EmploymentList[j].PassStudent[k].m_StudentStat.m_UserSettingName);
+                        }
+                        else
+                        {
+                            m_RecommendResultPanel.SetDetailStudentName(_name);
+                        }
                         m_RecommendResultPanel.SetDetailPanelPassFailImage(m_DetailPass);
                         m_RecommendResultPanel.SetDetailPanelStudentImage(m_CompanyList[i].EmploymentList[j].PassStudent[k].StudentProfileImg);
                         m_RecommendResultPanel.SetDetailCompanyName(m_CompanyList[i].EmploymentList[j].EmploymentName);
@@ -981,9 +1500,17 @@ public class InJaeRecommend : MonoBehaviour
                 {
                     if (m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_StudentName == _name)
                     {
-                        m_RecommendResultPanel.SetDetailStudentName(_name);   // 학생 이름
+                        if (m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_UserSettingName != "")
+                        {
+                            m_RecommendResultPanel.SetDetailStudentName(m_CompanyList[i].EmploymentList[j].FailStudent[k].m_StudentStat.m_UserSettingName);
+                        }
+                        else
+                        {
+                            m_RecommendResultPanel.SetDetailStudentName(_name);
+                        }
+                        //m_RecommendResultPanel.SetDetailStudentName(_name);   // 학생 이름
                         m_RecommendResultPanel.SetDetailPanelPassFailImage(m_DetailFail);  // 불합격 이미지
-                        m_RecommendResultPanel.SetDetailPanelStudentImage(m_CompanyList[i].EmploymentList[j].PassStudent[k].StudentProfileImg);
+                        m_RecommendResultPanel.SetDetailPanelStudentImage(m_CompanyList[i].EmploymentList[j].FailStudent[k].StudentProfileImg);
                         m_RecommendResultPanel.SetDetailCompanyName(m_CompanyList[i].EmploymentList[j].EmploymentName);  // 지원한 공고이름
                         break;
                     }
@@ -996,6 +1523,15 @@ public class InJaeRecommend : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(3f);
         m_RecommendInfoPanel.SetActiveImpossibleRecommendPanel(false);
+    }
+
+    // 만들어진 스킬이 있다면 화면을 나갈 때 스킬 프리팹을 없애줘야한다.
+    public void DestroySkillPrefab()
+    {
+        for (int i = 0; i < m_SkillPrefab.Length; i++)
+        {
+            Destroy(m_SkillPrefab[i]);
+        }
     }
 }
 

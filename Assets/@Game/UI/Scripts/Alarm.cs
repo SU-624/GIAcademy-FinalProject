@@ -37,6 +37,7 @@ public class Alarm : MonoBehaviour
         {
             TextList[m_textCount].text = AlarmMessageQ.Dequeue();
             AddAlarm(m_textCount);
+            ClickEventManager.Instance.Sound.PlayAlarmSound();
             StartCoroutine(TextErase(TextList[m_textCount], m_textCount));
             m_textCount++;
             m_activeCount++;

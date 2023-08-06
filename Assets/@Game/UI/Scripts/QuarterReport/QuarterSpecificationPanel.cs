@@ -188,32 +188,27 @@ public class QuarterSpecificationPanel : MonoBehaviour
 
     public void SetIncreaseImage(int _increase1, int _increase2, int _increase3, int _myacademy, int _other1, int _other2)
     {
-        if(_increase1 > 0 || _increase2 > 0 || _increase3 > 0 || _myacademy > 0 || _other1 > 0 || _other2 > 0)
+        m_1stAcademyScoreIncreaseIcon.sprite = m_IncreaseImage[FindSpriteIndex(_increase1)];
+        m_2ndAcademyScoreIncreaseIcon.sprite = m_IncreaseImage[FindSpriteIndex(_increase2)];
+        m_3rdAcademyScoreIncreaseIcon.sprite = m_IncreaseImage[FindSpriteIndex(_increase3)];
+        m_MyAcademyScoreIncreaseIcon1.sprite = m_IncreaseImage[FindSpriteIndex(_myacademy)];
+        m_AcademyScoreIncreaseIcon1.sprite = m_IncreaseImage[FindSpriteIndex(_other1)];
+        m_AcademyScoreIncreaseIcon2.sprite = m_IncreaseImage[FindSpriteIndex(_other2)];
+    }
+
+    public int FindSpriteIndex(int _increase)
+    {
+        if (_increase > 0)
         {
-            m_1stAcademyScoreIncreaseIcon.sprite = m_IncreaseImage[0];
-            m_2ndAcademyScoreIncreaseIcon.sprite = m_IncreaseImage[0];
-            m_3rdAcademyScoreIncreaseIcon.sprite = m_IncreaseImage[0];
-            m_MyAcademyScoreIncreaseIcon1.sprite = m_IncreaseImage[0];
-            m_AcademyScoreIncreaseIcon1.sprite = m_IncreaseImage[0];
-            m_AcademyScoreIncreaseIcon2.sprite = m_IncreaseImage[0];
+            return 0;
         }
-        else if(_increase1 < 0 || _increase2 < 0 || _increase3 < 0 || _myacademy < 0 || _other1 < 0 || _other2 < 0)
+        else if (_increase < 0)
         {
-            m_1stAcademyScoreIncreaseIcon.sprite = m_IncreaseImage[1];
-            m_2ndAcademyScoreIncreaseIcon.sprite = m_IncreaseImage[1];
-            m_3rdAcademyScoreIncreaseIcon.sprite = m_IncreaseImage[1];
-            m_MyAcademyScoreIncreaseIcon1.sprite = m_IncreaseImage[1];
-            m_AcademyScoreIncreaseIcon1.sprite = m_IncreaseImage[1];
-            m_AcademyScoreIncreaseIcon2.sprite = m_IncreaseImage[1];
+            return 1;
         }
         else
         {
-            m_1stAcademyScoreIncreaseIcon.sprite = m_IncreaseImage[2];
-            m_2ndAcademyScoreIncreaseIcon.sprite = m_IncreaseImage[2];
-            m_3rdAcademyScoreIncreaseIcon.sprite = m_IncreaseImage[2];
-            m_MyAcademyScoreIncreaseIcon1.sprite = m_IncreaseImage[2];
-            m_AcademyScoreIncreaseIcon1.sprite = m_IncreaseImage[2];
-            m_AcademyScoreIncreaseIcon2.sprite = m_IncreaseImage[2];
+            return 2;
         }
     }
 
@@ -253,8 +248,6 @@ public class QuarterSpecificationPanel : MonoBehaviour
         m_AcademyNameToMyAcademyRankPalce2.text = _academy2Name;
         m_AcademyScoreToMyAcademyRankPalce2.text = _academy2Score;
         m_AcademyScoreIncrease2.text = _academy2IncreaseScore;
-
-
     }
 
     public void ClickNextButton()

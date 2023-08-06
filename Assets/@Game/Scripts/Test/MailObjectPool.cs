@@ -73,6 +73,7 @@ public class MailObjectPool : MonoBehaviour
         {
             var _obj = Instance.m_PoolingMailQueue.Dequeue();
             _obj.transform.SetParent(_setTransform);
+            _obj.transform.SetAsFirstSibling();
             _obj.gameObject.SetActive(true);
             return _obj;
         }

@@ -36,7 +36,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: -150.70026, y: 110.2}
-  m_SizeDelta: {x: 300, y: 40}
+  m_SizeDelta: {x: 400, y: 40}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5084320493346477054
 CanvasRenderer:
@@ -503,7 +503,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5084320493568441610
 RectTransform:
   m_ObjectHideFlags: 0
@@ -580,7 +580,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5084320493682519602
 RectTransform:
   m_ObjectHideFlags: 0
@@ -676,7 +676,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: -150.70026, y: 149.59999}
-  m_SizeDelta: {x: 300, y: 40}
+  m_SizeDelta: {x: 400, y: 40}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5084320493811246188
 CanvasRenderer:
@@ -792,7 +792,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5084320493938033860
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1064,7 +1064,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: -150.70026, y: 149.59999}
-  m_SizeDelta: {x: 300, y: 40}
+  m_SizeDelta: {x: 400, y: 40}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5084320494077303122
 CanvasRenderer:
@@ -1444,13 +1444,14 @@ GameObject:
   - component: {fileID: 5084320494143129196}
   - component: {fileID: 5084320494143129198}
   - component: {fileID: 5084320494143129197}
+  - component: {fileID: 361120599}
   m_Layer: 5
   m_Name: CheckSelecteClass
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5084320494143129196
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1458,7 +1459,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5084320494143129195}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.90276, y: 0.90276, z: 0.90276}
   m_ConstrainProportionsScale: 0
@@ -1511,6 +1512,40 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &361120599
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5084320494143129195}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba5405b4db4f92a4e960f58464d98ce0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PopOffCheckClassPanel: {fileID: 0}
+  m_PopUpCheckClassPanel: {fileID: 0}
+  m_1WeekButton: {fileID: 5084320494666348957}
+  m_2WeekButton: {fileID: 5084320494208362137}
+  m_StartClassButton: {fileID: 5084320494923721306}
+  m_HideButton: {fileID: 5084320494208415370}
+  m_CurrentMoney: {fileID: 5084320493939477017}
+  m_CompleteClassPrefabParent: {fileID: 5084320493524807381}
+  m_CompleteClassPrefabParentObj: {fileID: 5084320493524807380}
+  m_TotalClassMoney: {fileID: 5084320494099990898}
+  m_1WeekGameDesignerClassName: {fileID: 5084320493811246187}
+  m_2WeekGameDesignerClassName: {fileID: 5084320494372207702}
+  m_1WeekGameDesignerClassMoney: {fileID: 5084320493526635715}
+  m_2WeekGameDesignerClassMoney: {fileID: 5084320494791658144}
+  m_1WeekArtClassName: {fileID: 5084320495409077979}
+  m_2WeekArtClassName: {fileID: 5084320493346477053}
+  m_1WeekArtClassMoney: {fileID: 5084320494966265331}
+  m_2WeekArtClassMoney: {fileID: 5084320494292091542}
+  m_1WeekProgrammingClassName: {fileID: 5084320494077303121}
+  m_2WeekProgrammingClassName: {fileID: 5084320495367951492}
+  m_1WeekProgrammingClassMoney: {fileID: 5084320494432466982}
+  m_2WeekProgrammingClassMoney: {fileID: 5084320495367676887}
 --- !u!1 &5084320494171554707
 GameObject:
   m_ObjectHideFlags: 0
@@ -1528,7 +1563,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5084320494171554708
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1678,12 +1713,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 4
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
+    m_SelectOnUp: {fileID: 5084320494208362137}
+    m_SelectOnDown: {fileID: 5084320494208362137}
+    m_SelectOnLeft: {fileID: 5084320494208362137}
+    m_SelectOnRight: {fileID: 5084320494208362137}
   m_Transition: 2
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
@@ -1708,7 +1743,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5084320494208362138}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
+        m_MethodName: PlayIconTouch
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5084320494208415370
 GameObject:
   m_ObjectHideFlags: 0
@@ -1746,8 +1793,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
   m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -1950, y: -429}
-  m_SizeDelta: {x: 185, y: 107}
+  m_AnchoredPosition: {x: -1950, y: -401}
+  m_SizeDelta: {x: 300, y: 150}
   m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &5084320494208415374
 CanvasRenderer:
@@ -1860,7 +1907,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5084320494266410663
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2091,7 +2138,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: -150.70026, y: 110.2}
-  m_SizeDelta: {x: 300, y: 40}
+  m_SizeDelta: {x: 400, y: 40}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5084320494372207703
 CanvasRenderer:
@@ -2574,18 +2621,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Navigation:
-    m_Mode: 3
+    m_Mode: -1
     m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 2
+    m_SelectOnUp: {fileID: 5084320494666348957}
+    m_SelectOnDown: {fileID: 5084320494666348957}
+    m_SelectOnLeft: {fileID: 5084320494666348957}
+    m_SelectOnRight: {fileID: 5084320494666348957}
+  m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 1, g: 0.9568628, b: 0.77647066, a: 1}
+    m_PressedColor: {r: 1, g: 1, b: 1, a: 1}
+    m_SelectedColor: {r: 1, g: 1, b: 1, a: 1}
     m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -2604,7 +2651,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5084320494666348958}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
+        m_MethodName: PlayIconTouch
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &5084320494791658158
 GameObject:
   m_ObjectHideFlags: 0
@@ -2864,6 +2923,18 @@ MonoBehaviour:
       - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: InGameTest, Assembly-CSharp
         m_MethodName: StarClass
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: SoundManager, Assembly-CSharp
+        m_MethodName: PlayIconTouch
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3145,7 +3216,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5084320495081911506
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3493,7 +3564,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: -150.70026, y: 110.2}
-  m_SizeDelta: {x: 300, y: 40}
+  m_SizeDelta: {x: 400, y: 40}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5084320495367951493
 CanvasRenderer:
@@ -3628,7 +3699,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: -150.70026, y: 149.59999}
-  m_SizeDelta: {x: 300, y: 40}
+  m_SizeDelta: {x: 400, y: 40}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &5084320495409077980
 CanvasRenderer:

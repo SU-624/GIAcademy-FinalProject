@@ -38,6 +38,12 @@ public class TestCamera : MonoBehaviour
 
     private float m_cameraOrthoSize = 28f;
 
+    public Vector3 BaseCameraPosition
+    {
+        get { return m_cameraPosition; }
+        set { m_cameraPosition = value; }
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -63,7 +69,7 @@ public class TestCamera : MonoBehaviour
 
     void FixedUpdate()
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_EDITOR_WIN
         if (IsFixed)
         {
             if (FixedObject != null)

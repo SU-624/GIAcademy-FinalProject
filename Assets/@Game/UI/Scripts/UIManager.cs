@@ -1,9 +1,11 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 
 /// <summary>
@@ -17,13 +19,20 @@ using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
     public EventScheduleSystem eventScheduleSystem;
-    public MailManagement mailManagement;
-
+    public MailManagement mailManager;
+    public GameJam gameJamManager;
+    public GameShow gameShowManager;
+    public GameObject SpeedBtn;
+    
     public void CollectDataBtn()
     {
         AllInOneData.Instance.CollectAllGameData();
+        
+        // 임시로 Firebasebinder 에도 넣어주자.
         eventScheduleSystem.CollectSuddenEvent();
-        mailManagement.CollectMailList();
+        mailManager.CollectMailList();
+        gameJamManager.CollectGameJamData();
+        gameShowManager.CollectGameShowData();
     }
     
     public void LocalSaveBtn()
@@ -33,12 +42,18 @@ public class UIManager : MonoBehaviour
     }
 
     public void LocalLoadBtn()
-    {
+    {    
+        
         
     }
 
     public void GoTitleBtn()
     {
         SceneManager.LoadScene("TitleScene");
+    }
+
+    public void SpeedBtnOn()
+    {
+        SpeedBtn.SetActive(true);
     }
 }

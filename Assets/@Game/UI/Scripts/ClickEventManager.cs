@@ -253,7 +253,7 @@ public class ClickEventManager : MonoBehaviour
                     RepairEvents[i].transform.position =
                         Camera.main.WorldToScreenPoint(InteractionManager.Instance.GenreRoomCenters[i].position);
 
-                    RepairEvents[i].transform.localScale = Vector3.one + (Vector3.one * (-Camera.main.orthographicSize + m_cameraOrthoSize) * 0.2f);
+                    RepairEvents[i].transform.localScale = Vector3.one * 2f + (Vector3.one * (-Camera.main.orthographicSize + m_cameraOrthoSize) * 0.2f);
                 }
             }
         }
@@ -267,7 +267,7 @@ public class ClickEventManager : MonoBehaviour
                     StudentEvents[i].SetActive(true);
                     StudentEvents[i].transform.position =
                         Camera.main.WorldToScreenPoint(StudentPosition[i] + new Vector3(0, 1, 0));
-                    StudentEvents[i].transform.localScale = Vector3.one + (Vector3.one * (-Camera.main.orthographicSize + m_cameraOrthoSize) * 0.2f);
+                    StudentEvents[i].transform.localScale = Vector3.one * 2f + (Vector3.one * (-Camera.main.orthographicSize + m_cameraOrthoSize) * 0.2f);
                 }
             }
         }
@@ -281,7 +281,7 @@ public class ClickEventManager : MonoBehaviour
                     InstructorEvents[i].SetActive(true);
                     InstructorEvents[i].transform.position =
                         Camera.main.WorldToScreenPoint(InstructorPosition[i] + new Vector3(1, 1, 0));
-                    InstructorEvents[i].transform.localScale = Vector3.one + (Vector3.one * (-Camera.main.orthographicSize + m_cameraOrthoSize) * 0.2f);
+                    InstructorEvents[i].transform.localScale = Vector3.one * 2f + (Vector3.one * (-Camera.main.orthographicSize + m_cameraOrthoSize) * 0.2f);
                 }
             }
         }
@@ -370,9 +370,9 @@ public class ClickEventManager : MonoBehaviour
         InteractionManager.Instance.GenreRoomList[num].Durability = 100;
         InteractionManager.Instance.GenreRoomList[num].RepairCount++;
         RepairEvents[num].SetActive(false);
-        PlayerInfo.Instance.m_MyMoney -= 10000;
-        MonthlyReporter.Instance.m_NowMonth.ExpensesEventResult += 10000;
-        StartCoroutine(MoneyFadeOutText(InteractionManager.Instance.GenreRoomCenters[num].position + new Vector3(3, 0, 0), false, "10000"));
+        PlayerInfo.Instance.MyMoney -= 30000;
+        MonthlyReporter.Instance.m_NowMonth.ExpensesEventResult += 30000;
+        StartCoroutine(MoneyFadeOutText(InteractionManager.Instance.GenreRoomCenters[num].position + new Vector3(3, 0, 0), false, "30000"));
     }
 
     public IEnumerator FadeOutText(Vector3 pos, int type, bool isIncome, params string[] text)
@@ -742,7 +742,7 @@ public class ClickEventManager : MonoBehaviour
             if (otherObject.tag == "Instructor")
             {
                 isProfessor = true;
-                otherName = otherObject.GetComponent<Instructor>().m_InstructorData.professorName;
+                otherName = otherObject.GetComponent<Instructor>().m_InstructorData.m_ProfessorName;
             }
             else
             {
@@ -810,7 +810,7 @@ public class ClickEventManager : MonoBehaviour
                 else
                 {
                     randomSpecialPoint = Random.Range(10, 22);
-                    PlayerInfo.Instance.m_SpecialPoint += randomSpecialPoint;
+                    PlayerInfo.Instance.SpecialPoint += randomSpecialPoint;
                     StartCoroutine(SPFadeOutText(StudentPosition[index], true, randomSpecialPoint.ToString()));
                     Sound.PlaySPSound();
                 }
@@ -851,31 +851,31 @@ public class ClickEventManager : MonoBehaviour
                         }
                         else if (randomSelect <= 52)
                         {
-                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense] +=
+                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] +=
                                 randomReward;
                             StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Sense, randomReward.ToString()));
                         }
                         else if (randomSelect <= 64)
                         {
-                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique] +=
+                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] +=
                                 randomReward;
                             StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Technique, randomReward.ToString()));
                         }
                         else if (randomSelect <= 76)
                         {
-                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight] +=
+                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] +=
                                 randomReward;
                             StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Insight, randomReward.ToString()));
                         }
                         else if (randomSelect <= 88)
                         {
-                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] +=
+                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] +=
                                 randomReward;
                             StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Concentration, randomReward.ToString()));
                         }
                         else
                         {
-                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit] +=
+                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] +=
                                 randomReward;
                             StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Wit, randomReward.ToString()));
                         }
@@ -887,7 +887,7 @@ public class ClickEventManager : MonoBehaviour
                     if (GameTime.Instance.FlowTime.NowMonth == 2)
                     {
                         randomSpecialPoint = Random.Range(10, 22);
-                        PlayerInfo.Instance.m_SpecialPoint += randomSpecialPoint;
+                        PlayerInfo.Instance.SpecialPoint += randomSpecialPoint;
                         StartCoroutine(SPFadeOutText(StudentPosition[index], true, randomSpecialPoint.ToString()));
                         Sound.PlaySPSound();
                     }
@@ -897,47 +897,47 @@ public class ClickEventManager : MonoBehaviour
                         if (randomSelect <= 50)
                         {
                             randomSpecialPoint = Random.Range(10, 22);
-                            PlayerInfo.Instance.m_SpecialPoint += randomSpecialPoint;
+                            PlayerInfo.Instance.SpecialPoint += randomSpecialPoint;
                             StartCoroutine(SPFadeOutText(StudentPosition[index], true, randomSpecialPoint.ToString()));
                             Sound.PlaySPSound();
                         }
                         else if (randomSelect <= 60)
                         {
-                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense] +=
+                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] +=
                                 randomStat;
-                            otherObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense] +=
+                            otherObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] +=
                                 randomStat;
                             StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Sense, randomStat.ToString()));
                         }
                         else if (randomSelect <= 70)
                         {
-                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique] +=
+                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] +=
                                 randomStat;
-                            otherObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique] +=
+                            otherObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] +=
                                 randomStat;
                             StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Technique, randomStat.ToString()));
                         }
                         else if (randomSelect <= 80)
                         {
-                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight] +=
+                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] +=
                                 randomStat;
-                            otherObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight] +=
+                            otherObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] +=
                                 randomStat;
                             StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Insight, randomStat.ToString()));
                         }
                         else if (randomSelect <= 90)
                         {
-                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] +=
+                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] +=
                                 randomStat;
-                            otherObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] +=
+                            otherObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] +=
                                 randomStat;
                             StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Concentration, randomStat.ToString()));
                         }
                         else
                         {
-                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit] +=
+                            this.gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] +=
                                 randomStat;
-                            otherObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit] +=
+                            otherObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] +=
                                 randomStat;
                             StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Wit, randomStat.ToString()));
                         }
@@ -959,19 +959,19 @@ public class ClickEventManager : MonoBehaviour
                         randomStat = Random.Range(9, 19);
                         StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(StudentPosition[index], true, (int)GenreStat.Action, randomStat.ToString()));
                         Students[index].GetComponent<Student>().m_StudentStat
-                            .m_GenreAmountList[(int)GenreStat.Action] += randomStat;
+                            .m_GenreAmountArr[(int)GenreStat.Action] += randomStat;
                     }
                     else if (randomReward <= 90)
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Concentration, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += randomStat;
                     }
                     else
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Technique, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] += randomStat;
                     }
                     break;
 
@@ -981,19 +981,19 @@ public class ClickEventManager : MonoBehaviour
                         randomStat = Random.Range(9, 19);
                         StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(StudentPosition[index], true, (int)GenreStat.Adventure, randomStat.ToString()));
                         Students[index].GetComponent<Student>().m_StudentStat
-                            .m_GenreAmountList[(int)GenreStat.Adventure] += randomStat;
+                            .m_GenreAmountArr[(int)GenreStat.Adventure] += randomStat;
                     }
                     else if (randomReward <= 90)
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Wit, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] += randomStat;
                     }
                     else
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Concentration, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += randomStat;
                     }
                     break;
 
@@ -1003,19 +1003,19 @@ public class ClickEventManager : MonoBehaviour
                         randomStat = Random.Range(9, 19);
                         StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(StudentPosition[index], true, (int)GenreStat.Puzzle, randomStat.ToString()));
                         Students[index].GetComponent<Student>().m_StudentStat
-                            .m_GenreAmountList[(int)GenreStat.Puzzle] += randomStat;
+                            .m_GenreAmountArr[(int)GenreStat.Puzzle] += randomStat;
                     }
                     else if (randomReward <= 90)
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Sense, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] += randomStat;
                     }
                     else
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Technique, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] += randomStat;
                     }
                     break;
 
@@ -1025,19 +1025,19 @@ public class ClickEventManager : MonoBehaviour
                         randomStat = Random.Range(9, 19);
                         StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(StudentPosition[index], true, (int)GenreStat.RPG, randomStat.ToString()));
                         Students[index].GetComponent<Student>().m_StudentStat
-                            .m_GenreAmountList[(int)GenreStat.RPG] += randomStat;
+                            .m_GenreAmountArr[(int)GenreStat.RPG] += randomStat;
                     }
                     else if (randomReward <= 90)
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Sense, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] += randomStat;
                     }
                     else
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Insight, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] += randomStat;
                     }
                     break;
 
@@ -1047,19 +1047,19 @@ public class ClickEventManager : MonoBehaviour
                         randomStat = Random.Range(9, 19);
                         StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(StudentPosition[index], true, (int)GenreStat.Rhythm, randomStat.ToString()));
                         Students[index].GetComponent<Student>().m_StudentStat
-                            .m_GenreAmountList[(int)GenreStat.Rhythm] += randomStat;
+                            .m_GenreAmountArr[(int)GenreStat.Rhythm] += randomStat;
                     }
                     else if (randomReward <= 90)
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Concentration, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += randomStat;
                     }
                     else
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Wit, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] += randomStat;
                     }
                     break;
 
@@ -1069,19 +1069,19 @@ public class ClickEventManager : MonoBehaviour
                         randomStat = Random.Range(9, 19);
                         StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(StudentPosition[index], true, (int)GenreStat.Shooting, randomStat.ToString()));
                         Students[index].GetComponent<Student>().m_StudentStat
-                            .m_GenreAmountList[(int)GenreStat.Shooting] += randomStat;
+                            .m_GenreAmountArr[(int)GenreStat.Shooting] += randomStat;
                     }
                     else if (randomReward <= 95)
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Insight, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] += randomStat;
                     }
                     else
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Concentration, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += randomStat;
                     }
                     break;
 
@@ -1091,19 +1091,19 @@ public class ClickEventManager : MonoBehaviour
                         randomStat = Random.Range(9, 19);
                         StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(StudentPosition[index], true, (int)GenreStat.Simulation, randomStat.ToString()));
                         Students[index].GetComponent<Student>().m_StudentStat
-                            .m_GenreAmountList[(int)GenreStat.Simulation] += randomStat;
+                            .m_GenreAmountArr[(int)GenreStat.Simulation] += randomStat;
                     }
                     else if (randomReward <= 90)
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Insight, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] += randomStat;
                     }
                     else
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Wit, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] += randomStat;
                     }
                     break;
 
@@ -1113,19 +1113,19 @@ public class ClickEventManager : MonoBehaviour
                         randomStat = Random.Range(9, 19);
                         StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(StudentPosition[index], true, (int)GenreStat.Sports, randomStat.ToString()));
                         Students[index].GetComponent<Student>().m_StudentStat
-                            .m_GenreAmountList[(int)GenreStat.Sports] += randomStat;
+                            .m_GenreAmountArr[(int)GenreStat.Sports] += randomStat;
                     }
                     else if (randomReward <= 90)
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Sense, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] += randomStat;
                     }
                     else
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Technique, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] += randomStat;
                     }
                     break;
             }
@@ -1142,7 +1142,7 @@ public class ClickEventManager : MonoBehaviour
                     if (randomReward <= 70)
                     {
                         randomStat = Random.Range(390, 5201);
-                        PlayerInfo.Instance.m_MyMoney += randomStat;
+                        PlayerInfo.Instance.MyMoney += randomStat;
                         MonthlyReporter.Instance.m_NowMonth.IncomeSell += randomStat;
                         StartCoroutine(MoneyFadeOutText(StudentPosition[index], true, randomStat.ToString()));
                         Sound.PlayMoneySound();
@@ -1150,7 +1150,7 @@ public class ClickEventManager : MonoBehaviour
                     else
                     {
                         randomStat = Random.Range(26, 170);
-                        PlayerInfo.Instance.m_SpecialPoint += randomStat;
+                        PlayerInfo.Instance.SpecialPoint += randomStat;
                         StartCoroutine(SPFadeOutText(StudentPosition[index], true, randomStat.ToString()));
                         Sound.PlaySPSound();
                     }
@@ -1160,7 +1160,7 @@ public class ClickEventManager : MonoBehaviour
                     if (randomReward <= 70)
                     {
                         randomStat = Random.Range(390, 5201);
-                        PlayerInfo.Instance.m_MyMoney += randomStat;
+                        PlayerInfo.Instance.MyMoney += randomStat;
                         MonthlyReporter.Instance.m_NowMonth.IncomeSell += randomStat;
                         StartCoroutine(MoneyFadeOutText(StudentPosition[index], true, randomStat.ToString()));
                         Sound.PlayMoneySound();
@@ -1168,7 +1168,7 @@ public class ClickEventManager : MonoBehaviour
                     else
                     {
                         randomStat = Random.Range(26, 170);
-                        PlayerInfo.Instance.m_SpecialPoint += randomStat;
+                        PlayerInfo.Instance.SpecialPoint += randomStat;
                         StartCoroutine(SPFadeOutText(StudentPosition[index], true, randomStat.ToString()));
                         Sound.PlaySPSound();
                     }
@@ -1179,38 +1179,38 @@ public class ClickEventManager : MonoBehaviour
                     {
                         randomStat = Random.Range(10, 31);
                         StartCoroutine(SPFadeOutText(StudentPosition[index], true, randomStat.ToString()));
-                        PlayerInfo.Instance.m_SpecialPoint += randomStat;
+                        PlayerInfo.Instance.SpecialPoint += randomStat;
                         Sound.PlaySPSound();
                     }
                     else if (randomReward <= 40)
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Sense, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] += randomStat;
                     }
                     else if (randomReward <= 55)
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Technique, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] += randomStat;
                     }
                     else if (randomReward <= 70)
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Insight, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] += randomStat;
                     }
                     else if (randomReward <= 85)
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Concentration, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += randomStat;
                     }
                     else
                     {
                         randomStat = Random.Range(3, 7);
                         StartCoroutine(StatBoxFadeOut(StudentPosition[index], false, (int)AbilityType.Wit, randomStat.ToString()));
-                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit] += randomStat;
+                        Students[index].GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] += randomStat;
                     }
                     break;
 
@@ -1254,7 +1254,7 @@ public class ClickEventManager : MonoBehaviour
             {
                 case (int)InteractionManager.SpotName.Pot:
                     randomIncome = Random.Range(50, 101);
-                    PlayerInfo.Instance.m_MyMoney += randomIncome;
+                    PlayerInfo.Instance.MyMoney += randomIncome;
                     MonthlyReporter.Instance.m_NowMonth.IncomeEventResult += randomIncome;
                     StartCoroutine(MoneyFadeOutText(StudentPosition[index], true, randomIncome.ToString()));
                     Sound.PlayMoneySound();
@@ -1262,7 +1262,7 @@ public class ClickEventManager : MonoBehaviour
 
                 case (int)InteractionManager.SpotName.AmusementMachine:
                     randomIncome = Random.Range(1500, 2001);
-                    PlayerInfo.Instance.m_MyMoney += randomIncome;
+                    PlayerInfo.Instance.MyMoney += randomIncome;
                     MonthlyReporter.Instance.m_NowMonth.IncomeSell += randomIncome;
                     StartCoroutine(MoneyFadeOutText(StudentPosition[index], true, randomIncome.ToString()));
                     Sound.PlayMoneySound();
@@ -1307,7 +1307,7 @@ public class ClickEventManager : MonoBehaviour
                     if (randomReward <= 70)
                     {
                         randomStat = Random.Range(390, 5201);
-                        PlayerInfo.Instance.m_MyMoney += randomStat;
+                        PlayerInfo.Instance.MyMoney += randomStat;
                         MonthlyReporter.Instance.m_NowMonth.IncomeSell += randomStat;
                         StartCoroutine(MoneyFadeOutText(InstructorPosition[index], true, randomStat.ToString()));
                         Sound.PlayMoneySound();
@@ -1315,7 +1315,7 @@ public class ClickEventManager : MonoBehaviour
                     else
                     {
                         randomStat = Random.Range(26, 170);
-                        PlayerInfo.Instance.m_SpecialPoint += randomStat;
+                        PlayerInfo.Instance.SpecialPoint += randomStat;
                         StartCoroutine(SPFadeOutText(InstructorPosition[index], true, randomStat.ToString()));
                         Sound.PlaySPSound();
                     }
@@ -1325,7 +1325,7 @@ public class ClickEventManager : MonoBehaviour
                     if (randomReward <= 70)
                     {
                         randomStat = Random.Range(390, 5201);
-                        PlayerInfo.Instance.m_MyMoney += randomStat;
+                        PlayerInfo.Instance.MyMoney += randomStat;
                         MonthlyReporter.Instance.m_NowMonth.IncomeSell += randomStat;
                         StartCoroutine(MoneyFadeOutText(InstructorPosition[index], true, randomStat.ToString()));
                         Sound.PlayMoneySound();
@@ -1333,7 +1333,7 @@ public class ClickEventManager : MonoBehaviour
                     else
                     {
                         randomStat = Random.Range(26, 170);
-                        PlayerInfo.Instance.m_SpecialPoint += randomStat;
+                        PlayerInfo.Instance.SpecialPoint += randomStat;
                         StartCoroutine(SPFadeOutText(InstructorPosition[index], true, randomStat.ToString()));
                         Sound.PlaySPSound();
                     }
@@ -1379,7 +1379,7 @@ public class ClickEventManager : MonoBehaviour
             {
                 case (int)InteractionManager.SpotName.Pot:
                     randomIncome = Random.Range(50, 101);
-                    PlayerInfo.Instance.m_MyMoney += randomIncome;
+                    PlayerInfo.Instance.MyMoney += randomIncome;
                     MonthlyReporter.Instance.m_NowMonth.IncomeEventResult += randomIncome;
                     StartCoroutine(MoneyFadeOutText(InstructorPosition[index], true, randomIncome.ToString()));
                     Sound.PlayMoneySound();
@@ -1387,7 +1387,7 @@ public class ClickEventManager : MonoBehaviour
 
                 case (int)InteractionManager.SpotName.AmusementMachine:
                     randomIncome = Random.Range(1500, 2001);
-                    PlayerInfo.Instance.m_MyMoney += randomIncome;
+                    PlayerInfo.Instance.MyMoney += randomIncome;
                     MonthlyReporter.Instance.m_NowMonth.IncomeSell += randomIncome;
                     StartCoroutine(MoneyFadeOutText(InstructorPosition[index], true, randomIncome.ToString()));
                     Sound.PlayMoneySound();

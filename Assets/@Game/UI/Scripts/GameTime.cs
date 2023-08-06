@@ -5,7 +5,7 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
-public struct NowTime
+public class NowTime
 {
     public int NowYear;
     public int NowMonth;
@@ -43,7 +43,7 @@ public class GameTime : MonoBehaviour
     public TextMeshProUGUI m_TimeText;
 
 
-    public NowTime FlowTime;
+    public NowTime FlowTime = new NowTime();
 
     const float LimitTime1 = 10.0f;      // 1 ~ 2주 제한시간
     const float LimitTime2 = 100.0f;     // 3 ~ 4주 제한시간
@@ -51,14 +51,23 @@ public class GameTime : MonoBehaviour
 
     public int Year;           // 1 ~ 3년(게임모드) - 무한(무한모드)
     public int Month;          // 1 ~ 12월(12)
-    private int Week;          // 1 ~ 4주(4)
-    private int Day;            // 월 ~ 금(5)
+    public int Week;          // 1 ~ 4주(4)
+    public int Day;            // 월 ~ 금(5)
 
     public Image TimeBarImg;
     public Button m_ClassOpenButton;
 
-    int FirstHalfPerSecond = 2;       //  (1주 - 2주) 하루의 시간 2초(한 주 총 10초)
-    int SecondHalfPerSecond = 20;      // (3주 - 4주)하루의 시간은 20초                                      
+    [SerializeField] private int FirstHalfPerSecond;       //  (1주 - 2주) 하루의 시간 2초(한 주 총 10초)
+    [SerializeField] private int SecondHalfPerSecond;      // (3주 - 4주)하루의 시간은 20초                  
+    [SerializeField] private int VacationDelay;
+    [SerializeField] private int RecommendDelay;
+
+    [SerializeField] private TreeChanger m_TreeChanger;
+
+    public int ThirdFourthWeekTime
+    {
+        get { return SecondHalfPerSecond; }
+    }
 
     public bool IsGameMode = false;                 // 메인게임화면 or UI 창 화면 체크해서 각 모드 때만 가능한 것들을 하기 위한 변수
 
@@ -73,6 +82,14 @@ public class GameTime : MonoBehaviour
 
     public Alarm AlarmControl;
 
+    public UIManager UiManager;
+    private bool _autosaveTimer;
+
+    [SerializeField] private PopUpUI m_VacationPopUp;
+
+    public bool m_IsVacationNotice = false;
+    public bool m_IsRecommendNotice = false;
+
     public void Awake()
     {
         if (instance == null)
@@ -80,21 +97,26 @@ public class GameTime : MonoBehaviour
             instance = this;
         }
 
+        m_TreeChanger = GameObject.Find("SeasonChanger").GetComponent<TreeChanger>();
+
+        if (GameObject.Find("LoadingCanvas") != null)
+        {
+            if (GameObject.Find("LoadingCanvas").activeSelf)
+            {
+                GameObject.Find("LoadingCanvas").SetActive(false);
+            }
+        }
+
         Debug.Log("GameTime");
 
-        // var json = GameObject.Find("Json");             // 씬이 다르기 때문에 Json 을 쓰려면 이렇게 해줘야 한다 
-        // if (json.GetComponent<Json>().IsSavedDataExists == true)
-        if (Json.Instance.IsSavedDataExists)
+        if (Json.Instance.UseLoadingData)
         {
             Year = AllInOneData.Instance.PlayerData.Year;
             Month = AllInOneData.Instance.PlayerData.Month;
             Week = AllInOneData.Instance.PlayerData.Week;
             Day = AllInOneData.Instance.PlayerData.Day;
 
-            // 튜토리얼 사용 정보 저장하고 불러오기
-            PlayerInfo.Instance.IsFirstClassSetting = false;
-            PlayerInfo.Instance.IsFirstGameJam = false;
-            PlayerInfo.Instance.IsFirstClassEnd = false;
+
         }
         else
         {
@@ -104,10 +126,32 @@ public class GameTime : MonoBehaviour
             Day = 1;            // 월 ~ 금(5)  -> 시간이 바로 흐르므로 처음에 0으로 시작해준다.
 
             TimeBarImg.fillAmount = 0.2f;
-            AlarmControl.AlarmMessageQ.Enqueue("1학기가 시작되었습니다.");
+            
+            // 튜토리얼용 초기화
             PlayerInfo.Instance.IsFirstClassSetting = true;
             PlayerInfo.Instance.IsFirstGameJam = true;
+            PlayerInfo.Instance.IsFirstGameShow = true;
             PlayerInfo.Instance.IsFirstClassEnd = false;
+            PlayerInfo.Instance.IsFirstVacation = true;
+            PlayerInfo.Instance.IsFirstInJaeRecommend = true;
+            PlayerInfo.Instance.IsGameJamMiniGameFirst = true;
+        }
+
+        if (Month == 4)
+        {
+            m_TreeChanger.ChangeMaterial(0);
+        }
+        else if (Month == 3 || Month == 5 || Month == 6 || Month == 7 || Month == 8 || Month == 9)
+        {
+            m_TreeChanger.ChangeMaterial(1);
+        }
+        else if (Month == 10 || Month == 11)
+        {
+            m_TreeChanger.ChangeMaterial(2);
+        }
+        else if (Month == 12 || Month == 1 || Month == 2)
+        {
+            m_TreeChanger.ChangeMaterial(3);
         }
 
     }
@@ -133,7 +177,7 @@ public class GameTime : MonoBehaviour
 
         //Debug.Log(Year + "년" + " " + Month + " " + Week);
 
-        ShowGameTime();
+        //ShowGameTime();
 
 
     }
@@ -157,7 +201,7 @@ public class GameTime : MonoBehaviour
         {
             FlowtheTime();
 
-            ShowGameTime();
+            //ShowGameTime();
         }
     }
 
@@ -215,17 +259,25 @@ public class GameTime : MonoBehaviour
         {
             Day++;
             FlowTime.NowDay = Day;
+
+            PrevTime = Time.time;
             //Debug.Log("요일 : " + Day);
         }
         else if (Day >= 5)
         {
             Day = 1;
             FlowTime.NowDay = Day;
+
+            TimeBarImg.fillAmount = 0.2f;
+            isChangeWeek = true;
+
+            PrevTime = Time.time;
         }
 
         if (Month == 2 && Week == 3 && Day == 5)
         {
             AlarmControl.AlarmMessageQ.Enqueue("인재추천 기간이 종료되었습니다.");
+            AlarmControl.AlarmMessageQ.Enqueue("방학이 시작되었습니다.");
         }
     }
 
@@ -259,6 +311,7 @@ public class GameTime : MonoBehaviour
             Month = 1;
 
             Year++;
+            //AlarmControl.AlarmMessageQ.Enqueue("겨울이 왔습니다.");
         }
         // 월 증가
         else if (Month < 12 && Week >= 4)
@@ -274,10 +327,16 @@ public class GameTime : MonoBehaviour
                 // 3월이 시작되면 학생을 생성합니다.
                 CreateStudent = false;
                 AlarmControl.AlarmMessageQ.Enqueue("1학기가 시작되었습니다.");
+                m_TreeChanger.ChangeMaterial(1);
             }
             else if (Month == 4)
             {
-                AlarmControl.AlarmMessageQ.Enqueue("봄이 왔습니다.");
+                //AlarmControl.AlarmMessageQ.Enqueue("봄이 왔습니다.");
+                m_TreeChanger.ChangeMaterial(0);
+            }
+            else if (Month == 5)
+            {
+                m_TreeChanger.ChangeMaterial(1);
             }
             else if (Month == 6)
             {
@@ -285,7 +344,7 @@ public class GameTime : MonoBehaviour
             }
             else if (Month == 7)
             {
-                AlarmControl.AlarmMessageQ.Enqueue("여름이 왔습니다.");
+                //AlarmControl.AlarmMessageQ.Enqueue("여름이 왔습니다.");
             }
             else if (Month == 9)
             {
@@ -293,26 +352,22 @@ public class GameTime : MonoBehaviour
             }
             else if (Month == 10)
             {
-                AlarmControl.AlarmMessageQ.Enqueue("가을이 왔습니다.");
+                //AlarmControl.AlarmMessageQ.Enqueue("가을이 왔습니다.");
+                m_TreeChanger.ChangeMaterial(2);
             }
             else if (Month == 12)
             {
                 AlarmControl.AlarmMessageQ.Enqueue("4학기가 시작되었습니다.");
-            }
-            else if (Month == 1)
-            {
-                AlarmControl.AlarmMessageQ.Enqueue("겨울이 왔습니다.");
+                m_TreeChanger.ChangeMaterial(3);
             }
         }
 
     }
 
-    int i = 0;
-
     public void CheckPerSecond()
     {
         // 수업을 시작했을 때 캐릭터는 움직이지만 시간은 흐르지않게 할 때 PrevTime을 갱신해주지 않으면 수업 시작 시 시간이 재빠르게 흐른다.
-        if ((InGameTest.Instance.m_ClassState == ClassState.nothing && Month == 3 && Week == 1 && Day == 1) || InGameTest.Instance.m_ClassState == ClassState.ClassStart)
+        if ((InGameTest.Instance.m_ClassState == ClassState.nothing && Month == 3 && Week == 1 && Day == 1) || InGameTest.Instance.m_ClassState == ClassState.ClassStart || m_IsVacationNotice)
         {
             PrevTime = Time.time;
         }
@@ -326,8 +381,6 @@ public class GameTime : MonoBehaviour
                 {
                     TimeBarImg.fillAmount += 0.2f;
 
-                    i += 1;
-                    FirstHalfPerSecond += 2;
 
                     // 1초마다 더해주기
                     if (FirstGameOpen == true)
@@ -339,41 +392,62 @@ public class GameTime : MonoBehaviour
                         ChangeDay();
                     }
 
-                    if (FirstHalfPerSecond > LimitTime1)
-                    {
-                        TimeBarImg.fillAmount = 0.2f;
+                    // FirstHalfPerSecond += 2;
 
-                        FirstHalfPerSecond = 2;
-
-                        i = 0;
-
-                        isChangeWeek = true;
-                    }
+                    // if (FirstHalfPerSecond > LimitTime1)
+                    // {
+                    //     FirstHalfPerSecond = 2;
+                    // }
+                    _autosaveTimer = true;
                 }
             }
             else if (Week == 3 || Week == 4)
             {
+                // 방학 시작용
+                if (Month == 2 && Week == 3 && Day == 5 && Time.time - PrevTime >= VacationDelay && !m_IsVacationNotice)
+                {
+                    m_VacationPopUp.TurnOnUI();
+                    m_IsVacationNotice = true;
+                    PrevTime = Time.time;
+                }
+                // 인재 추천 결과용
+                if (Month == 2 && Week == 4 && Day == 5 && Time.time - PrevTime >= RecommendDelay && !m_IsRecommendNotice)
+                {
+                    m_IsRecommendNotice = true;
+                }
                 // (3 ~ 4 주차)6초마다 시간체크
                 if (Time.time - PrevTime >= SecondHalfPerSecond)
                 {
                     TimeBarImg.fillAmount += 0.2f;
 
-                    i += 1;
                     // 6초마다 더해주기
                     ChangeDay();
+                    _autosaveTimer = true;
                     // FlowTime.NowDay = Day;
 
-                    SecondHalfPerSecond += 20;
+                    // SecondHalfPerSecond += 20;
 
-                    if (SecondHalfPerSecond > LimitTime2)
+                    // if (SecondHalfPerSecond > LimitTime2)
+                    // {
+                    //     SecondHalfPerSecond = 20;
+                    // }
+                }
+
+                // 2월은 오류방지를 위해 저장하지 말자.
+                if (Month != 2)
+                {
+                    // 자동 저장은 3주차, 4주차에 UI가 없고, 시간이 흐르다가 하루의 초반에 저장 (4초후)
+                    if (Time.time - PrevTime >= SecondHalfPerSecond / 5 && _autosaveTimer)
                     {
-                        TimeBarImg.fillAmount = 0.2f;
+                        if (Year == 1 && Week == 3 && Day == 1) // 게임잼 튜토 전 한번 저장할 때 용
+                        {
+                            PlayerInfo.Instance.IsFirstClassEnd = true;
+                        }
 
-                        SecondHalfPerSecond = 20;
-
-                        i = 0;
-
-                        isChangeWeek = true;
+                        UiManager.CollectDataBtn();
+                        Json.Instance.SaveDataInLocal();
+                        Debug.Log("자동저장되었습니다."); // 자동저장 UI가 있으면 좋을까?
+                        _autosaveTimer = false;
                     }
                 }
             }

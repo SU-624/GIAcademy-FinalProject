@@ -8,7 +8,7 @@ public class GameShowPanel : MonoBehaviour
 {
     public delegate void GameShowListPanelApplyButtonClicked();
     public static event GameShowListPanelApplyButtonClicked OnGameShowListPanelApplyButtonClicked;
-    
+
     public delegate void GameShowListPanelSelectButtonClicked();
     public static event GameShowListPanelSelectButtonClicked OnGameShowListPanelSelectButtonClicked;
 
@@ -60,20 +60,39 @@ public class GameShowPanel : MonoBehaviour
     [Space(5f)]
     [SerializeField] private PopUpUI m_PopUpConditionFailedPanel;
     [SerializeField] private PopOffUI m_PopOffConditionFailedPanel;
+    [Space(5f)]
+    [SerializeField] private PopUpUI m_PopUpGameShowPracticePanel;
+    [SerializeField] private PopOffUI m_PopOffGameShowPracticePanel;
+
+    [Space(5f)]
+    [Header("튜토리얼 용도")]
+    [SerializeField] private GameObject m_GameShowScrollView;
+    [SerializeField] private RectTransform m_GameShowRect;
+    [SerializeField] private RectTransform m_NameLevelRect;
+    [SerializeField] private RectTransform m_GameShowInfoRect;
+    [SerializeField] private RectTransform m_NeedElementRect;
+    [SerializeField] private RectTransform m_SelectPanelRect;
+
 
     public Button ApplyButton { get { return m_ApplyButton; } set { m_ApplyButton = value; } }
     public GameObject GameShowListContentObj { get { return m_GameShowListContentObj; } set { m_GameShowListContentObj = value; } }
     public GameObject PrevGameListContentObj { get { return m_PrevGameListContentObj; } set { m_PrevGameListContentObj = value; } }
     public Transform GameShowListContent { get { return m_GameShowListContent; } set { m_GameShowListContent = value; } }
-    public Transform PrevGameJamListContent {  get { return m_PrevGameListContent; } set { m_PrevGameListContent = value; } }
-
+    public Transform PrevGameJamListContent { get { return m_PrevGameListContent; } set { m_PrevGameListContent = value; } }
+    public GameObject GameShowScrollView { get { return m_GameShowScrollView; } set { m_GameShowScrollView = value; } }
+    public RectTransform GameShowRect { get { return m_GameShowRect; } set { m_GameShowRect = value; } }
+    public RectTransform NameLevelRect { get { return m_NameLevelRect; } set { m_NameLevelRect = value; } }
+    public RectTransform GameShowInfoRect { get { return m_GameShowInfoRect; } set { m_GameShowInfoRect = value; } }
+    public RectTransform NeedElementRect { get { return m_NeedElementRect; } set { m_NeedElementRect = value; } }
+    public Button SelectButton { get { return m_SelectButton; } set { m_SelectButton = value; } }
+    public RectTransform SelectPanelRect { get { return m_SelectPanelRect; } set { m_SelectPanelRect = value; } }
 
     public void Start()
     {
         m_ApplyButton.onClick.AddListener(OnGameShowListApplyButtonClicked);
-        
+
         m_SelectButton.onClick.AddListener(OnGameShowListSelectButtonClicked);
-        
+
         m_CloseButton.onClick.AddListener(ClickCloseButton);
     }
 
@@ -82,12 +101,13 @@ public class GameShowPanel : MonoBehaviour
         if (OnGameShowListPanelApplyButtonClicked != null)
         {
             OnGameShowListPanelApplyButtonClicked();
+            PlayerInfo.Instance.ParticipatedGameShowCount++;
         }
     }
 
     private void OnGameShowListSelectButtonClicked()
     {
-        if(OnGameShowListPanelSelectButtonClicked != null)
+        if (OnGameShowListPanelSelectButtonClicked != null)
         {
             OnGameShowListPanelSelectButtonClicked();
         }
@@ -104,9 +124,9 @@ public class GameShowPanel : MonoBehaviour
         m_GameShowJude.text = "";
         m_GameShowNeedHealth.text = "";
         m_GameShowNeedPassion.text = "";
-        m_PrevGameListPanel.SetActive(false);
-        m_IsNotPrevGameList.SetActive(false);
-        m_ApplyButton.interactable = false;
+        //m_PrevGameListPanel.SetActive(false);
+        //m_IsNotPrevGameList.SetActive(false);
+        //m_ApplyButton.interactable = false;
 
         for (int i = 0; i < 3; i++)
         {
@@ -148,6 +168,13 @@ public class GameShowPanel : MonoBehaviour
         m_PopOffConditionFailedPanel.DelayTurnOffUI();
     }
 
+    public void SetPractivePanel()
+    {
+        m_PopUpGameShowPracticePanel.TurnOnUI();
+        m_PopOffGameShowPracticePanel.DelayTurnOffUI();
+    }
+
+
     public void SetFunny(int _count, bool _flag)
     {
         for (int i = 0; i < _count; i++)
@@ -182,15 +209,8 @@ public class GameShowPanel : MonoBehaviour
 
     public void ClickSelectButton()
     {
-        if(m_PrevGameListPanel.activeSelf)
-        {
-            m_PrevGameListPanel.SetActive(false);
-        }
-        else
-        {
-            m_ApplyButton.interactable = false;
-            m_PrevGameListPanel.SetActive(true);
-        }
+        m_ApplyButton.interactable = false;
+        m_PrevGameListPanel.SetActive(true);
     }
 
     public void ClickCloseButton()

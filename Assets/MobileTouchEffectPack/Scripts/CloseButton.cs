@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEngine.UI;
 
 namespace MobileTouchEffectPack
-{ 
+{
 
-public class CloseButton : MonoBehaviour
+    public class CloseButton : MonoBehaviour
     {
         public GameObject tutorialObg;
 
-       
+
         public void CloseObj()
         {
             tutorialObg.SetActive(false);

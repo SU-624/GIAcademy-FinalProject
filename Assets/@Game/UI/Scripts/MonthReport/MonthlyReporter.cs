@@ -73,14 +73,21 @@ public class MonthlyReporter : MonoBehaviour
     private int m_sNetProfit;
     private int m_ANetProfit;
     private bool m_IsChangeMonth;
-    private int m_AcademyFee;
-    private int m_StudentCount;
+    private float m_AcademyFee;
+    private float m_StudentCount;
+    private float m_IncreaseAcademyFee;
     private int m_CheckMonthForAcademyFee;
+    private int m_CheckMonthForProfessorFee;
+    private List<IncreaseFee> m_IncreaseFeeList = new List<IncreaseFee>();  // 아카데미 등급에 따른 비용상승
+    private int m_FirstQuarterScore;
+    private int m_SecondQuarterScore;
+    private int m_ThirdQuarterScore;
+    private int m_FourthQuarterScore;
 
-    public int m_1stQuarterScore;
-    public int m_2ndQuarterScore;
-    public int m_3rdQuarterScore;
-    public int m_4thQuarterScore;
+    public int FirstQuarterScore { get { return m_FirstQuarterScore; } set { m_FirstQuarterScore = value; } }
+    public int SecondQuarterScore { get { return m_SecondQuarterScore; } set { m_SecondQuarterScore = value; } }
+    public int ThirdQuarterScore { get { return m_ThirdQuarterScore; } set { m_ThirdQuarterScore = value; } }
+    public int FourthQuarterScore { get { return m_FourthQuarterScore; } set { m_FourthQuarterScore = value; } }
 
     private void Start()
     {
@@ -88,29 +95,47 @@ public class MonthlyReporter : MonoBehaviour
         m_MonthCheck = 3;
         m_DayCheck = 1;
         m_IsChangeMonth = false;
-        m_AcademyFee = 30000;
-        m_StudentCount = 18;
+        m_AcademyFee = 10000f;
+        m_StudentCount = 18f;
         m_CheckMonthForAcademyFee = 0;
         m_sNetProfit = 100000;
         m_ANetProfit = 30000;
+        InitIncreaseFeeList();
     }
 
     private void Update()
     {
-        if (m_CheckMonthForAcademyFee != GameTime.Instance.FlowTime.NowMonth && GameTime.Instance.FlowTime.NowMonth != 2)
+        if (m_CheckMonthForAcademyFee != GameTime.Instance.FlowTime.NowMonth && GameTime.Instance.FlowTime.NowMonth != 2 && GameTime.Instance.FlowTime.NowWeek == 1 && GameTime.Instance.FlowTime.NowDay == 1)
         {
-            m_CheckMonthForAcademyFee = GameTime.Instance.FlowTime.NowMonth;
+            if (!PlayerInfo.Instance.IsFirstClassSetting)
+            {
+                m_CheckMonthForAcademyFee = GameTime.Instance.FlowTime.NowMonth;
 
-            PlayerInfo.Instance.m_MyMoney += (m_AcademyFee * m_StudentCount);
-            PlayerInfo.Instance.m_MyMoney -= InGameTest.Instance.m_ProfessorTotalSalary;
-            m_StudentCount = ObjectManager.Instance.m_StudentList.Count;
-            m_Alarm.AlarmMessageQ.Enqueue(m_StudentCount .ToString() + "명의 수업료 " + (m_AcademyFee * m_StudentCount).ToString() + "원이 들어왔습니다.");
+                m_IncreaseAcademyFee = CheckIncreaseFee(PlayerInfo.Instance.CurrentRank);
+
+                PlayerInfo.Instance.MyMoney += (int)(m_AcademyFee * m_StudentCount * m_IncreaseAcademyFee);
+
+                m_Alarm.AlarmMessageQ.Enqueue(m_StudentCount.ToString() + "명의 수업료 " + (m_AcademyFee * m_StudentCount).ToString() + "원이 들어왔습니다.");
+            }
+        }
+
+        // 교사 월급 계산해주기
+        if (m_CheckMonthForProfessorFee != GameTime.Instance.FlowTime.NowMonth && GameTime.Instance.FlowTime.NowWeek == 4 && GameTime.Instance.FlowTime.NowDay == 5)
+        {
+            m_CheckMonthForProfessorFee = GameTime.Instance.FlowTime.NowMonth;
+
+            int totalSalary = Professor.Instance.CalculateProfessorSalary();
+
+            PlayerInfo.Instance.MyMoney -= totalSalary;
+            m_NowMonth.ExpensesSalary += totalSalary;
+
+            //m_Alarm.AlarmMessageQ.Enqueue(m_StudentCount.ToString() + "교사 월급 " + (m_AcademyFee * m_StudentCount).ToString() + "원이 나갔습니다.");
         }
 
         if (!m_IsChangeMonth && m_MonthCheck != GameTime.Instance.FlowTime.NowMonth && GameTime.Instance.FlowTime.NowWeek == 1 && GameTime.Instance.FlowTime.NowDay == 1)
         {
             /// 이번달 정보를 다음달에 넘겨주기 전에 재화점수계산해서 넘기기
-            m_NowMonth.IncomeAcademyFee = m_AcademyFee * m_StudentCount;
+            m_NowMonth.IncomeAcademyFee = (int)(m_AcademyFee * m_StudentCount * m_IncreaseAcademyFee);
             m_NowMonth.TotalIncome = m_NowMonth.IncomeEventResult + m_NowMonth.IncomeActivity + m_NowMonth.IncomeSell + m_NowMonth.IncomeAcademyFee;
             m_NowMonth.TotalExpenses = m_NowMonth.ExpensesActivity + m_NowMonth.ExpensesEventCost + m_NowMonth.ExpensesEventResult + m_NowMonth.ExpensesFacility + m_NowMonth.ExpensesSalary + m_NowMonth.ExpensesTuitionFee;
             m_NowMonth.NetProfit = m_NowMonth.TotalIncome - m_NowMonth.TotalExpenses;
@@ -133,7 +158,7 @@ public class MonthlyReporter : MonoBehaviour
                 m_NowMonth.GoodsScore = 0;
             }
 
-            PlayerInfo.Instance.m_Goods += m_NowMonth.GoodsScore;
+            PlayerInfo.Instance.Goods += m_NowMonth.GoodsScore;
             m_PrevMonth = m_NowMonth;
 
             /// 3개월씩 Quarter에 더해줬다가 비워주기
@@ -150,6 +175,31 @@ public class MonthlyReporter : MonoBehaviour
             m_IsChangeMonth = false;
             m_DayCheck = GameTime.Instance.FlowTime.NowDay;
         }
+    }
+
+    // 등급에 따른 학원비 상승 비율을 초기화 해준다.
+    private void InitIncreaseFeeList()
+    {
+        m_IncreaseFeeList.Add(new IncreaseFee(Rank.SSS, 4.8f, 0));
+        m_IncreaseFeeList.Add(new IncreaseFee(Rank.SS, 4.8f, 0));
+        m_IncreaseFeeList.Add(new IncreaseFee(Rank.S, 3.6f, 0));
+        m_IncreaseFeeList.Add(new IncreaseFee(Rank.A, 3.6f, 0));
+        m_IncreaseFeeList.Add(new IncreaseFee(Rank.B, 2.4f, 0));
+        m_IncreaseFeeList.Add(new IncreaseFee(Rank.C, 2.4f, 0));
+        m_IncreaseFeeList.Add(new IncreaseFee(Rank.D, 1.2f, 0));
+    }
+
+    // 등급에 따른 학원비 상승 비율을 찾는 함수
+    private float CheckIncreaseFee(Rank _myAcademyRank)
+    {
+        foreach (IncreaseFee increase in m_IncreaseFeeList)
+        {
+            if (increase.MyAcademyRank == _myAcademyRank)
+            {
+                return increase.RisingFee;
+            }
+        }
+        return 1;
     }
 
     private void CalculateQuarter(Specification _specification)
@@ -182,19 +232,19 @@ public class MonthlyReporter : MonoBehaviour
         {
             if (GameTime.Instance.FlowTime.NowMonth == 6)
             {
-                m_1stQuarterScore = m_NowQuarter.ActivityScore + m_NowQuarter.FamousScore + m_NowQuarter.GoodsScore + m_NowQuarter.ManagementScore + m_NowQuarter.TalentDevelopmentScore;
+                m_FirstQuarterScore = m_NowQuarter.ActivityScore + m_NowQuarter.FamousScore + m_NowQuarter.GoodsScore + m_NowQuarter.ManagementScore + m_NowQuarter.TalentDevelopmentScore;
             }
             else if (GameTime.Instance.FlowTime.NowMonth == 9)
             {
-                m_2ndQuarterScore = m_NowQuarter.ActivityScore + m_NowQuarter.FamousScore + m_NowQuarter.GoodsScore + m_NowQuarter.ManagementScore + m_NowQuarter.TalentDevelopmentScore;
+                m_SecondQuarterScore = m_NowQuarter.ActivityScore + m_NowQuarter.FamousScore + m_NowQuarter.GoodsScore + m_NowQuarter.ManagementScore + m_NowQuarter.TalentDevelopmentScore;
             }
             else if (GameTime.Instance.FlowTime.NowMonth == 12)
             {
-                m_3rdQuarterScore = m_NowQuarter.ActivityScore + m_NowQuarter.FamousScore + m_NowQuarter.GoodsScore + m_NowQuarter.ManagementScore + m_NowQuarter.TalentDevelopmentScore;
+                m_ThirdQuarterScore = m_NowQuarter.ActivityScore + m_NowQuarter.FamousScore + m_NowQuarter.GoodsScore + m_NowQuarter.ManagementScore + m_NowQuarter.TalentDevelopmentScore;
             }
             else if (GameTime.Instance.FlowTime.NowMonth == 3)
             {
-                m_4thQuarterScore = m_NowQuarter.ActivityScore + m_NowQuarter.FamousScore + m_NowQuarter.GoodsScore + m_NowQuarter.ManagementScore + m_NowQuarter.TalentDevelopmentScore;
+                m_FourthQuarterScore = m_NowQuarter.ActivityScore + m_NowQuarter.FamousScore + m_NowQuarter.GoodsScore + m_NowQuarter.ManagementScore + m_NowQuarter.TalentDevelopmentScore;
             }
 
             m_PrevQuarter = m_NowQuarter;

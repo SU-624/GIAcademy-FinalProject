@@ -19,10 +19,12 @@ public class ProfInteraction : Action
     private bool m_isProfessor;
     private bool m_isLeft;
     //private bool m_IsStatusChange;
-    private Vector3 m_myDestination;
-    private Vector3 m_otherDestination;
-    private string m_myName;
-    private string m_otherName;
+    private Vector3 m_MyDestination;
+    private Vector3 m_OtherDestination;
+    private Animator m_MyAnimator;
+    private Animator m_OtherAnimator;
+    private string m_MyName;
+    private string m_OtherName;
 
     private Queue<string> m_Dialogue = new Queue<string>();
 
@@ -108,6 +110,9 @@ public class ProfInteraction : Action
             m_otherIndex = ObjectManager.Instance.m_StudentList.FindIndex(x => x.Equals(m_InterActionObj.GetComponent<Student>()));
             m_friendship = ObjectManager.Instance.m_Friendship[m_otherIndex][m_myIndex];
         }
+
+        m_MyAnimator = gameObject.GetComponent<Animator>();
+        m_OtherAnimator = gameObject.GetComponent<Animator>();
     }
 
     public void ScriptPlay()
@@ -131,8 +136,17 @@ public class ProfInteraction : Action
         float _dist = float.MaxValue;
         float _range = 15.0f;
 
-        m_myDestination = gameObject.GetComponent<NavMeshAgent>().destination;
-        m_otherDestination = m_InterActionObj.GetComponent<NavMeshAgent>().destination;
+        m_MyDestination = gameObject.GetComponent<NavMeshAgent>().destination;
+        m_OtherDestination = m_InterActionObj.GetComponent<NavMeshAgent>().destination;
+        m_MyAnimator.SetTrigger("ToWalk");
+        if (m_isProfessor)
+        {
+            m_OtherAnimator.SetTrigger("ToWalk");
+        }
+        else
+        {
+            m_OtherAnimator.SetTrigger("ToWalk1");
+        }
 
         // 코루틴 내에서 루프를 돌면서, 일정 이하 거리가 되는지 체크한다.
         while (_range < _dist)
@@ -169,6 +183,8 @@ public class ProfInteraction : Action
 
         this.gameObject.GetComponent<NavMeshAgent>().velocity = Vector3.zero;
         m_InterActionObj.GetComponent<NavMeshAgent>().velocity = Vector3.zero;
+        m_MyAnimator.SetTrigger("ToIdle");
+        m_OtherAnimator.SetTrigger("ToIdle");
 
         // 서로를 바라보게 해주기
         this.gameObject.GetComponent<Transform>().LookAt(m_InterActionObj.transform);
@@ -267,6 +283,17 @@ public class ProfInteraction : Action
             }
         }
 
+        Vector3 myPos = Camera.main.WorldToScreenPoint(this.transform.position);
+        Vector3 otherPos = Camera.main.WorldToScreenPoint(m_InterActionObj.transform.position);
+        if (myPos.x < otherPos.x)
+        {
+            m_isLeft = true;
+        }
+        else
+        {
+            m_isLeft = false;
+        }
+
         foreach (var line in m_Temp)
         {
             m_Dialogue.Enqueue(line);
@@ -285,6 +312,9 @@ public class ProfInteraction : Action
             }
 
             _chatA.GetComponent<FollowTarget>().m_Target = gameObject.transform.GetChild(0).transform;
+            
+            int randomAnim = Random.Range(1, 5);
+            m_MyAnimator.SetTrigger("ToTalk" + randomAnim);
 
             ADialogueFlow(_chatA, false);
 
@@ -303,6 +333,10 @@ public class ProfInteraction : Action
                     _chatB.GetComponent<FollowTarget>().IsLeft = true;
                 }
                 _chatB.GetComponent<FollowTarget>().m_Target = m_InterActionObj.gameObject.transform.GetChild(0).transform;
+
+                randomAnim = Random.Range(1, 5);
+                m_OtherAnimator.SetTrigger("ToTalk" + randomAnim);
+
                 ADialogueFlow(_chatB, true);
 
                 yield return new WaitForSeconds(3f);
@@ -325,112 +359,98 @@ public class ProfInteraction : Action
             int randomSelect = Random.Range(1, 101);
             int randomFriendship = 0;
 
-            // 아는사이
-            if (m_friendship < 150)
+            if (m_isProfessor)
             {
-                if (randomReward <= 40) // 임시 변경
+                ScriptEnd();
+            }
+            else
+            {
+                // 아는사이
+                if (m_friendship < 150)
                 {
-                    // 보상 X
-                    ScriptEnd();
-                }
-                else if (randomReward <= 90)
-                {
-                    // 학생과의 친밀도 증가
-                    if (!m_isProfessor)
+                    if (randomReward <= 40) // 임시 변경
                     {
+                        // 보상 X
+                        ScriptEnd();
+                    }
+                    else if (randomReward <= 90)
+                    {
+                        // 학생과의 친밀도 증가
                         randomFriendship = Random.Range(20, 61);
                         ObjectManager.Instance.m_Friendship[m_otherIndex][m_myIndex] += randomFriendship;
+                        ScriptEnd();
                     }
-                    ScriptEnd();
-                }
-                else
-                {
-                    if (!m_isProfessor)
+                    else
                     {
                         ClickEventManager.Instance.StudentSpecialEvent(m_InterActionObj.GetComponent<Student>(),
                             this.gameObject.transform.position, ClickEventType.Interaction);
+
+                        StartCoroutine(CoScriptEnd());
                     }
 
-                    StartCoroutine(CoScriptEnd());
                 }
-
-            }
-            // 친한사이
-            else if (m_friendship < 300)
-            {
-                if (randomReward <= 30)
+                // 친한사이
+                else if (m_friendship < 300)
                 {
-                    // 보상 X
-                    ScriptEnd();
-                }
-                else if (randomReward <= 80)
-                {
-                    if (randomSelect <= 80)
+                    if (randomReward <= 30)
                     {
-                        // 학생과의 친밀도 증가
-                        if (!m_isProfessor)
+                        // 보상 X
+                        ScriptEnd();
+                    }
+                    else if (randomReward <= 80)
+                    {
+                        if (randomSelect <= 80)
                         {
+                            // 학생과의 친밀도 증가
                             randomFriendship = Random.Range(30, 81);
                             ObjectManager.Instance.m_Friendship[m_otherIndex][m_myIndex] += randomFriendship;
                             if (m_friendship + randomFriendship >= 300)
                             {
-                                GameTime.Instance.AlarmControl.AlarmMessageQ.Enqueue("<color=#00EAFF>" + m_myName + "</color> 와(과)" +
-                                    "<color=#00EAFF>" + m_otherName + "</color> 이 베프가 되었습니다!");
+                                GameTime.Instance.AlarmControl.AlarmMessageQ.Enqueue("<color=#00EAFF>" + m_MyName + "</color> 와(과)" +
+                                    "<color=#00EAFF>" + m_OtherName + "</color> 이 베프가 되었습니다!");
                             }
                         }
+                        else
+                        {
+                            // 열정
+                            int randomPassion = Random.Range(3, 9);
+                            this.gameObject.GetComponent<Instructor>().m_InstructorData.m_ProfessorPassion += randomPassion;
+                            m_InterActionObj.GetComponent<Student>().m_StudentStat.m_Passion += randomPassion;
+                        }
+                        ScriptEnd();
                     }
                     else
                     {
-                        // 열정
-                        if (!m_isProfessor)
-                        {
-                            int randomPassion = Random.Range(3, 9);
-                            this.gameObject.GetComponent<Instructor>().m_InstructorData.m_ProfessorPassion +=
-                                randomPassion;
-                            m_InterActionObj.GetComponent<Student>().m_StudentStat.m_Passion += randomPassion;
-                        }
-                    }
-                    ScriptEnd();
-                }
-                else
-                {
-                    if (!m_isProfessor)
-                    {
                         ClickEventManager.Instance.StudentSpecialEvent(m_InterActionObj.GetComponent<Student>(),
                             this.gameObject.transform.position, ClickEventType.Interaction);
-                    }
 
-                    StartCoroutine(CoScriptEnd());
+                        StartCoroutine(CoScriptEnd());
+                    }
                 }
-            }
-            // 베프
-            else
-            {
-                if (randomReward <= 20)
+                // 베프
+                else
                 {
-                    // 보상 X
-                    ScriptEnd();
-                }
-                else if (randomReward <= 60)
-                {
-                    if (!m_isProfessor)
+                    if (randomReward <= 20)
+                    {
+                        // 보상 X
+                        ScriptEnd();
+                    }
+                    else if (randomReward <= 60)
                     {
                         int randomPassion = Random.Range(7, 16);
                         this.gameObject.GetComponent<Instructor>().m_InstructorData.m_ProfessorPassion += randomPassion;
                         m_InterActionObj.GetComponent<Student>().m_StudentStat.m_Passion += randomPassion;
-                    }
 
-                    ScriptEnd();
-                }
-                else
-                {
-                    if (!m_isProfessor)
+                        ScriptEnd();
+                    }
+                    else
                     {
                         ClickEventManager.Instance.StudentSpecialEvent(m_InterActionObj.GetComponent<Student>(), this.gameObject.transform.position, ClickEventType.Interaction);
+                        StartCoroutine(CoScriptEnd());
                     }
-                    StartCoroutine(CoScriptEnd());
                 }
             }
+
         }
 
         m_IsDialogueEnd = true;
@@ -473,27 +493,32 @@ public class ProfInteraction : Action
     // 대화마다 정해진 초를 넣어주기.
     void ScriptEnd()
     {
+        m_MyAnimator.SetTrigger("ToIdle");
+        m_OtherAnimator.SetTrigger("ToIdle");
 
         if (m_isProfessor)
         {
             m_InterActionObj.GetComponent<Instructor>().m_IsInteracting = false;
             m_InterActionObj.GetComponent<Instructor>().DoingValue = Instructor.Doing.EndInteracting;
+            m_InterActionObj.GetComponent<Instructor>().m_IsCoolDown = true;
             //m_InterActionObj.GetComponent<Instructor>().InteractingObj = null;
         }
         else
         {
             m_InterActionObj.GetComponent<Student>().m_IsInteracting = false;
             m_InterActionObj.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
+            m_InterActionObj.GetComponent<Student>().m_IsCoolDown = true;
             //m_InterActionObj.GetComponent<Student>().InteractingObj = null;
         }
 
         m_InterActionObj.GetComponent<NavMeshAgent>().isStopped = false;
-        m_InterActionObj.GetComponent<NavMeshAgent>().SetDestination(m_otherDestination);
+        m_InterActionObj.GetComponent<NavMeshAgent>().SetDestination(m_OtherDestination);
 
         this.gameObject.GetComponent<Instructor>().m_IsInteracting = false;
         this.gameObject.GetComponent<Instructor>().DoingValue = Instructor.Doing.EndInteracting;
+        this.gameObject.GetComponent<Instructor>().m_IsCoolDown = true;
         this.gameObject.GetComponent<NavMeshAgent>().isStopped = false;
-        this.gameObject.GetComponent<NavMeshAgent>().SetDestination(m_myDestination);
+        this.gameObject.GetComponent<NavMeshAgent>().SetDestination(m_MyDestination);
         //this.gameObject.GetComponent<Instructor>().InteractingObj = null;
 
         StopCoroutine(m_DialogueIEnumerator);
@@ -504,26 +529,31 @@ public class ProfInteraction : Action
         //yield return new WaitForSeconds(5f);
         yield return new WaitUntil(() => ClickEventManager.Instance.StudentPosition.Find(x => x.Equals(this.gameObject.transform.position)) == Vector3.zero);
 
+        m_MyAnimator.SetTrigger("ToIdle");
+        m_OtherAnimator.SetTrigger("ToIdle");
 
         if (m_isProfessor)
         {
             m_InterActionObj.GetComponent<Instructor>().m_IsInteracting = false;
             m_InterActionObj.GetComponent<Instructor>().DoingValue = Instructor.Doing.EndInteracting;
+            m_InterActionObj.GetComponent<Instructor>().m_IsCoolDown = true;
             //m_InterActionObj.GetComponent<Instructor>().InteractingObj = null;
         }
         else
         {
             m_InterActionObj.GetComponent<Student>().m_IsInteracting = false;
             m_InterActionObj.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
+            m_InterActionObj.GetComponent<Student>().m_IsCoolDown = true;
             //m_InterActionObj.GetComponent<Student>().InteractingObj = null;
         }
         m_InterActionObj.GetComponent<NavMeshAgent>().isStopped = false;
-        m_InterActionObj.GetComponent<NavMeshAgent>().SetDestination(m_otherDestination);
+        m_InterActionObj.GetComponent<NavMeshAgent>().SetDestination(m_OtherDestination);
 
         this.gameObject.GetComponent<Instructor>().m_IsInteracting = false;
         this.gameObject.GetComponent<Instructor>().DoingValue = Instructor.Doing.EndInteracting;
+        this.gameObject.GetComponent<Instructor>().m_IsCoolDown = true;
         this.gameObject.GetComponent<NavMeshAgent>().isStopped = false;
-        this.gameObject.GetComponent<NavMeshAgent>().SetDestination(m_myDestination);
+        this.gameObject.GetComponent<NavMeshAgent>().SetDestination(m_MyDestination);
         //this.gameObject.GetComponent<Instructor>().InteractingObj = null;
 
         StopCoroutine(m_DialogueIEnumerator);

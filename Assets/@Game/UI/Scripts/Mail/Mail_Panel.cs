@@ -23,7 +23,7 @@ public class Mail_Panel : MonoBehaviour
     [SerializeField] private GameObject m_NotNewMail;           // 새로운 메일이 없으면 "신규메일이 없습니다"를 띄워주기 위한 오브젝트
     [SerializeField] private GameObject m_Filter;               // 타입별로 메일을 볼 수있게 하기위한 오브젝트
     [SerializeField] private PopOffUI m_CloseMailPanel;
-    [SerializeField] private Button m_BackButton;
+    [SerializeField] private GameObject m_BackButton;
 
     /// ReadMailContent
     [Space(5f)]
@@ -89,7 +89,10 @@ public class Mail_Panel : MonoBehaviour
     {
         m_MailTitle.text = mailTitle;
         m_FromMail.text = fromMail;
-        m_MainContent.text = mailContent;
+        Vector2 _text = m_MainContent.GetPreferredValues(mailContent);
+        _text.x = 1000f;
+        m_MainContent.rectTransform.sizeDelta = _text;
+        m_MainContent.text = mailContent.Replace("[유저아카데미명]", PlayerInfo.Instance.AcademyName);
     }
 
     public void SetMonthlyReportMailContnet(string monthReportMailTitle, string monthReportMailFrom, string dateReportMail,
@@ -101,17 +104,17 @@ public class Mail_Panel : MonoBehaviour
         m_FromReportMail.text = monthReportMailFrom;
         m_DateReportMail.text = dateReportMail;
 
-        m_IncomeEventResult.text = incomeEventResult;
-        m_IncomeSell.text = incomeSell;
-        m_IncomeActivityIncome.text = incomeActivityIncome;
-        m_IncomeAcademyFee.text = incomeAcademyFee;
+        m_IncomeEventResult.text = string.Format("{0:#,0}", incomeEventResult);
+        m_IncomeSell.text = string.Format("{0:#,0}", incomeSell);
+        m_IncomeActivityIncome.text = string.Format("{0:#,0}", incomeActivityIncome);
+        m_IncomeAcademyFee.text = string.Format("{0:#,0}", incomeAcademyFee);
 
-        m_ExpensesEventResult.text = expensesEventResult;
-        m_ExpensesEventCost.text = expensesEventCost;
-        m_ExpensesActivityExpenditure.text = expensesActivityExpenditure;
-        m_ExpensesSalary.text = expensesSalary;
-        m_ExpensesFacility.text = expensesFacility;
-        m_ExpensesTuitionFee.text = expensesTuitionFee;
+        m_ExpensesEventResult.text = string.Format("{0:#,0}", expensesEventResult);
+        m_ExpensesEventCost.text = string.Format("{0:#,0}", expensesEventCost);
+        m_ExpensesActivityExpenditure.text = string.Format("{0:#,0}", expensesActivityExpenditure);
+        m_ExpensesSalary.text = string.Format("{0:#,0}", expensesSalary);
+        m_ExpensesFacility.text = string.Format("{0:#,0}", expensesFacility);
+        m_ExpensesTuitionFee.text = string.Format("{0:#,0}", expensesTuitionFee);
 
         m_GoodsScore.text = goodsScore;
         m_FamousScore.text = famousScore;
@@ -124,18 +127,17 @@ public class Mail_Panel : MonoBehaviour
 
     public void SetMonthlyReportTotalCostMailContent(string totalIncome, string totalExpenses, string totalMonthlyRevenue)
     {
-        m_TotalIncome.text = totalIncome;
-        m_TotalExpenses.text = totalExpenses;
-        m_MonthlyRevenue.text = totalMonthlyRevenue;
+        m_TotalIncome.text = string.Format("{0:#,0}", totalIncome);
+        m_TotalExpenses.text = string.Format("{0:#,0}", totalExpenses);
+        m_MonthlyRevenue.text = string.Format("{0:#,0}", totalMonthlyRevenue);
     }
 
     public void SetReward(bool _flag1, bool _flag2, string _reward1, string _reward2)
     {
         m_Reward1Name.SetActive(_flag1);
         m_Reward2Name.SetActive(_flag2);
-        //m_Reward.SetActive(_flag);
-        m_Reward1.text = _reward1;
-        m_Reward2.text = _reward2;
+        m_Reward1.text = string.Format("{0:#,0}", _reward1);
+        m_Reward2.text = string.Format("{0:#,0}", _reward2);
     }
 
     public string GetTitleName()
@@ -154,9 +156,14 @@ public class Mail_Panel : MonoBehaviour
         m_MonthlyReportRect.verticalNormalizedPosition = 1f;
     }
 
-    public void ClickMailPanelBackButton()
+    public void ClickMailPanelCloseButton()
     {
         m_CloseMailPanel.TurnOffUI();
+    }
+
+    public void SetBackButtonActive(bool _isActive)
+    {
+        m_BackButton.SetActive(_isActive);
     }
 
     public void SetNotNewMailPanel(bool _flag)

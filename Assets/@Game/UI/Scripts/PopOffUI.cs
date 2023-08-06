@@ -55,7 +55,15 @@ public class PopOffUI : MonoBehaviour
     // UI를 꺼주는 시간 조정 함수
     public void DelayTurnOffUI()
     {
-        Invoke("TurnOffUI", m_DelayTime);
+        StartCoroutine(TurnOffTimer(m_DelayTime));
+        //Invoke("TurnOffUI", m_DelayTime);
+    }
+
+    private IEnumerator TurnOffTimer(int time)
+    {
+        yield return new WaitForSecondsRealtime(time);
+
+        TurnOffUI();
     }
 
     public void BackButton()
@@ -112,7 +120,7 @@ public class PopOffUI : MonoBehaviour
 
                     Debug.Log("시간 흐름");
                 }
-                else if(SceneManager.GetActiveScene().name == "TestScene")
+                else if (SceneManager.GetActiveScene().name == "TestScene")
                 {
                     if (GameTime.Instance != null)
                     {
@@ -184,6 +192,8 @@ public class PopOffUI : MonoBehaviour
                         GameTime.Instance.IsGameMode = true;
                     }
                     Time.timeScale = InGameUI.Instance.m_NowGameSpeed;
+                    //if (GameTime.Instance.m_IsRecommendNotice)
+                    //    Time.timeScale = 0;
 
                     Debug.Log("시간 흐름");
                 }
@@ -199,17 +209,17 @@ public class PopOffUI : MonoBehaviour
             }
         }
     }
-        // 선택 완료를 눌렀을 때
-        //public void SelecteComplete()
-        //{
-        //    if (m_UI.activeSelf == true)
-        //    {
-        //        m_UI.SetActive(false);
+    // 선택 완료를 눌렀을 때
+    //public void SelecteComplete()
+    //{
+    //    if (m_UI.activeSelf == true)
+    //    {
+    //        m_UI.SetActive(false);
 
-        //        if (m_ClassPrefab.m_SelecteClassDataList != null)
-        //        {
-        //            m_ClassPrefab.m_SelecteClassDataList.Clear();
-        //        }
-        //    }
-        //}
+    //        if (m_ClassPrefab.m_SelecteClassDataList != null)
+    //        {
+    //            m_ClassPrefab.m_SelecteClassDataList.Clear();
+    //        }
+    //    }
+    //}
 }

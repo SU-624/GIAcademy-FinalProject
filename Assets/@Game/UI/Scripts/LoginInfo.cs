@@ -105,7 +105,7 @@ public class LoginInfo : MonoBehaviour
         // 5.15 woodpie9 PlayerID 정보 삭제
         //PlayerInfo.Instance.m_PlayerID = m_NowLogInfo.MyID;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_EDITOR_WIN
         // var json = GameObject.Find("Json");             // 씬이 다르기 때문에 Json 을 쓰려면 이렇게 해줘야 한다 
         // json.GetComponent<Json>().SaveDataInSetAcademyPanel();
         //Json.Instance.SaveDataInSetAcademyPanel();

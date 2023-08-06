@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1777440046396470825}
   - component: {fileID: 1777440046396470871}
   - component: {fileID: 1777440046396470824}
+  - component: {fileID: 3840905332096704274}
   m_Layer: 5
   m_Name: ArrowImage
   m_TagString: Untagged
@@ -76,6 +77,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3840905332096704274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1777440046396470826}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38bd5511ab661764db2e30037cb7edde, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1777440046851316393
 GameObject:
   m_ObjectHideFlags: 0
@@ -176,7 +189,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 2
+  m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -278,7 +291,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 38def1744d9789b46882de45c5bbbabf, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0058dcc7918a180438f6529d55957c40, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -399,7 +412,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1777440048068274312
 RectTransform:
   m_ObjectHideFlags: 0
@@ -486,7 +499,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1777440048120053464}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -580,10 +593,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd91c9ec6cbd9db44b966acd89b4468a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  StartTutorial: []
   NameTutorial: []
   ClassTutorial: []
   GameJamTutorial: []
   GameShowTutorial: []
+  InJaeRecommendTutorial: []
+  VacationTutorial: []
+  UpgradeTutorial: []
 --- !u!1001 &7766970548107257064
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -597,7 +614,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4962577233106873957, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 700
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 4962577233106873957, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -605,11 +622,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4962577233106873957, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -280
+      value: -384
+      objectReference: {fileID: 0}
+    - target: {fileID: 4962577233132375658, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 900
+      objectReference: {fileID: 0}
+    - target: {fileID: 4962577233132375659, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
+      propertyPath: m_text
+      value: 'aaa
+
+        aaa
+
+        aa'
       objectReference: {fileID: 0}
     - target: {fileID: 4962577233132375659, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
       propertyPath: m_fontSize
       value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 4962577233132375659, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
+      propertyPath: m_margin.x
+      value: 35.173584
+      objectReference: {fileID: 0}
+    - target: {fileID: 4962577233132375659, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
+      propertyPath: m_margin.z
+      value: 13.678467
       objectReference: {fileID: 0}
     - target: {fileID: 4962577233132375659, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
       propertyPath: m_fontAsset
@@ -625,7 +662,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4962577233132375659, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
       propertyPath: m_lineSpacing
-      value: -10
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4962577233132375659, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
       propertyPath: m_wordSpacing
@@ -663,6 +700,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -83
       objectReference: {fileID: 0}
+    - target: {fileID: 4962577233249157822, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: a4b7eb99f70eaae40bb45445b5c082f9, type: 3}
     - target: {fileID: 4962577233249157822, guid: 68a6037e81772654ba3ba7b178a8bcea, type: 3}
       propertyPath: m_Maskable
       value: 0

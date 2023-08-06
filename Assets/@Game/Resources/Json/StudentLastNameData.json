@@ -1,0 +1,476 @@
+{
+"OriginalStudentLastNameData":[
+ {
+   "Name": "승택",
+   "IsMale": true
+ },
+ {
+   "Name": "재영",
+   "IsMale": true
+ },
+ {
+   "Name": "창우",
+   "IsMale": true
+ },
+ {
+   "Name": "종원",
+   "IsMale": true
+ },
+ {
+   "Name": "민준",
+   "IsMale": true
+ },
+ {
+   "Name": "현우",
+   "IsMale": true
+ },
+ {
+   "Name": "지훈",
+   "IsMale": true
+ },
+ {
+   "Name": "도현",
+   "IsMale": true
+ },
+ {
+   "Name": "서준",
+   "IsMale": true
+ },
+ {
+   "Name": "정우",
+   "IsMale": true
+ },
+ {
+   "Name": "건우",
+   "IsMale": true
+ },
+ {
+   "Name": "도윤",
+   "IsMale": true
+ },
+ {
+   "Name": "우진",
+   "IsMale": true
+ },
+ {
+   "Name": "주원",
+   "IsMale": true
+ },
+ {
+   "Name": "민재",
+   "IsMale": true
+ },
+ {
+   "Name": "재원",
+   "IsMale": true
+ },
+ {
+   "Name": "준우",
+   "IsMale": true
+ },
+ {
+   "Name": "승현",
+   "IsMale": true
+ },
+ {
+   "Name": "현준",
+   "IsMale": true
+ },
+ {
+   "Name": "진우",
+   "IsMale": true
+ },
+ {
+   "Name": "민성",
+   "IsMale": true
+ },
+ {
+   "Name": "승우",
+   "IsMale": true
+ },
+ {
+   "Name": "선우",
+   "IsMale": true
+ },
+ {
+   "Name": "준영",
+   "IsMale": true
+ },
+ {
+   "Name": "지호",
+   "IsMale": true
+ },
+ {
+   "Name": "승민",
+   "IsMale": true
+ },
+ {
+   "Name": "성민",
+   "IsMale": true
+ },
+ {
+   "Name": "동현",
+   "IsMale": true
+ },
+ {
+   "Name": "시우",
+   "IsMale": true
+ },
+ {
+   "Name": "지환",
+   "IsMale": true
+ },
+ {
+   "Name": "재현",
+   "IsMale": true
+ },
+ {
+   "Name": "민규",
+   "IsMale": true
+ },
+ {
+   "Name": "준호",
+   "IsMale": true
+ },
+ {
+   "Name": "준혁",
+   "IsMale": true
+ },
+ {
+   "Name": "성현",
+   "IsMale": true
+ },
+ {
+   "Name": "태현",
+   "IsMale": true
+ },
+ {
+   "Name": "정민",
+   "IsMale": true
+ },
+ {
+   "Name": "민석",
+   "IsMale": true
+ },
+ {
+   "Name": "민수",
+   "IsMale": true
+ },
+ {
+   "Name": "성준",
+   "IsMale": true
+ },
+ {
+   "Name": "재윤",
+   "IsMale": true
+ },
+ {
+   "Name": "준서",
+   "IsMale": true
+ },
+ {
+   "Name": "정훈",
+   "IsMale": true
+ },
+ {
+   "Name": "도훈",
+   "IsMale": true
+ },
+ {
+   "Name": "하준",
+   "IsMale": true
+ },
+ {
+   "Name": "정현",
+   "IsMale": true
+ },
+ {
+   "Name": "태윤",
+   "IsMale": true
+ },
+ {
+   "Name": "경민",
+   "IsMale": true
+ },
+ {
+   "Name": "강민",
+   "IsMale": true
+ },
+ {
+   "Name": "태영",
+   "IsMale": true
+ },
+ {
+   "Name": "태훈",
+   "IsMale": true
+ },
+ {
+   "Name": "유준",
+   "IsMale": true
+ },
+ {
+   "Name": "재훈",
+   "IsMale": true
+ },
+ {
+   "Name": "예준",
+   "IsMale": true
+ },
+ {
+   "Name": "주호",
+   "IsMale": true
+ },
+ {
+   "Name": "동우",
+   "IsMale": true
+ },
+ {
+   "Name": "지한",
+   "IsMale": true
+ },
+ {
+   "Name": "태호",
+   "IsMale": true
+ },
+ {
+   "Name": "민호",
+   "IsMale": true
+ },
+ {
+   "Name": "지영",
+   "IsMale": false
+ },
+ {
+   "Name": "지원",
+   "IsMale": false
+ },
+ {
+   "Name": "수연",
+   "IsMale": false
+ },
+ {
+   "Name": "성윤",
+   "IsMale": false
+ },
+ {
+   "Name": "민경",
+   "IsMale": false
+ },
+ {
+   "Name": "수경",
+   "IsMale": false
+ },
+ {
+   "Name": "하연",
+   "IsMale": false
+ },
+ {
+   "Name": "수빈",
+   "IsMale": false
+ },
+ {
+   "Name": "서연",
+   "IsMale": false
+ },
+ {
+   "Name": "서현",
+   "IsMale": false
+ },
+ {
+   "Name": "서윤",
+   "IsMale": false
+ },
+ {
+   "Name": "지윤",
+   "IsMale": false
+ },
+ {
+   "Name": "유진",
+   "IsMale": false
+ },
+ {
+   "Name": "서영",
+   "IsMale": false
+ },
+ {
+   "Name": "지안",
+   "IsMale": false
+ },
+ {
+   "Name": "채원",
+   "IsMale": false
+ },
+ {
+   "Name": "수현",
+   "IsMale": false
+ },
+ {
+   "Name": "민정",
+   "IsMale": false
+ },
+ {
+   "Name": "지현",
+   "IsMale": false
+ },
+ {
+   "Name": "민서",
+   "IsMale": false
+ },
+ {
+   "Name": "도연",
+   "IsMale": false
+ },
+ {
+   "Name": "민주",
+   "IsMale": false
+ },
+ {
+   "Name": "지우",
+   "IsMale": false
+ },
+ {
+   "Name": "정원",
+   "IsMale": false
+ },
+ {
+   "Name": "유정",
+   "IsMale": false
+ },
+ {
+   "Name": "윤서",
+   "IsMale": false
+ },
+ {
+   "Name": "지유",
+   "IsMale": false
+ },
+ {
+   "Name": "주연",
+   "IsMale": false
+ },
+ {
+   "Name": "나경",
+   "IsMale": false
+ },
+ {
+   "Name": "수진",
+   "IsMale": false
+ },
+ {
+   "Name": "수민",
+   "IsMale": false
+ },
+ {
+   "Name": "시연",
+   "IsMale": false
+ },
+ {
+   "Name": "소연",
+   "IsMale": false
+ },
+ {
+   "Name": "규리",
+   "IsMale": false
+ },
+ {
+   "Name": "연우",
+   "IsMale": false
+ },
+ {
+   "Name": "나연",
+   "IsMale": false
+ },
+ {
+   "Name": "보경",
+   "IsMale": false
+ },
+ {
+   "Name": "수정",
+   "IsMale": false
+ },
+ {
+   "Name": "유나",
+   "IsMale": false
+ },
+ {
+   "Name": "나윤",
+   "IsMale": false
+ },
+ {
+   "Name": "수아",
+   "IsMale": false
+ },
+ {
+   "Name": "시현",
+   "IsMale": false
+ },
+ {
+   "Name": "지수",
+   "IsMale": false
+ },
+ {
+   "Name": "혜원",
+   "IsMale": false
+ },
+ {
+   "Name": "예진",
+   "IsMale": false
+ },
+ {
+   "Name": "연주",
+   "IsMale": false
+ },
+ {
+   "Name": "시은",
+   "IsMale": false
+ },
+ {
+   "Name": "지혜",
+   "IsMale": false
+ },
+ {
+   "Name": "나영",
+   "IsMale": false
+ },
+ {
+   "Name": "다연",
+   "IsMale": false
+ },
+ {
+   "Name": "예원",
+   "IsMale": false
+ },
+ {
+   "Name": "은정",
+   "IsMale": false
+ },
+ {
+   "Name": "윤아",
+   "IsMale": false
+ },
+ {
+   "Name": "주희",
+   "IsMale": false
+ },
+ {
+   "Name": "은영",
+   "IsMale": false
+ },
+ {
+   "Name": "서하",
+   "IsMale": false
+ },
+ {
+   "Name": "다현",
+   "IsMale": false
+ },
+ {
+   "Name": "태희",
+   "IsMale": false
+ },
+ {
+   "Name": "보나",
+   "IsMale": false
+ }
+]
+}

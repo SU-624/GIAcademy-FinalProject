@@ -12,9 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f7261a90f59030448c2987e8d2b4b44, type: 3}
   m_Name: "\uAE30\uD68D3"
   m_EditorClassIdentifier: 
-  m_ClassID: 102
-  m_ClassName: "\uC0AC\uB78C\uC740 \uC774\uB984\uC744 \uB0A8\uAE30\uACE0 \uAC8C\uC784\uC740
-    \uC74C\uC545\uC744 \uB0A8\uAE34\uB2E4"
+  m_ClassID: 1102
+  m_ClassName: "BGM\uC73C\uB85C \uAC8C\uC784 \uC811\uC18D\uD558\uAC8C \uD558\uB294\uBC95"
   m_ClassType: 0
   m_ClassStatType: 1
   m_OpenYear: 0
@@ -24,7 +23,7 @@ MonoBehaviour:
   m_Wit: 0
   m_Technique: 0
   m_Insight: 0
-  m_Money: 72000
+  m_Money: 12000
   m_Health: 7
   m_Passion: 11
   m_UnLockClass: 1

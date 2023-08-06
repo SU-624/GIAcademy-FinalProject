@@ -18,10 +18,10 @@ public class CheckSelecteClass : MonoBehaviour
     [SerializeField] private GameObject m_CompleteClassPrefabParentObj;
     [SerializeField] private TextMeshProUGUI m_TotalClassMoney;
 
-    [SerializeField] private TextMeshProUGUI m_1WeekGMClassName;
-    [SerializeField] private TextMeshProUGUI m_2WeekGMClassName;
-    [SerializeField] private TextMeshProUGUI m_1WeekGMClassMoney;
-    [SerializeField] private TextMeshProUGUI m_2WeekGMClassMoney;
+    [SerializeField] private TextMeshProUGUI m_1WeekGameDesignerClassName;
+    [SerializeField] private TextMeshProUGUI m_2WeekGameDesignerClassName;
+    [SerializeField] private TextMeshProUGUI m_1WeekGameDesignerClassMoney;
+    [SerializeField] private TextMeshProUGUI m_2WeekGameDesignerClassMoney;
 
     [SerializeField] private TextMeshProUGUI m_1WeekArtClassName;
     [SerializeField] private TextMeshProUGUI m_2WeekArtClassName;
@@ -50,7 +50,7 @@ public class CheckSelecteClass : MonoBehaviour
 
     public void SetCurrentMoney(string _money)
     {
-        m_CurrentMoney.text = _money;
+        m_CurrentMoney.text =  _money;
     }
 
     public void PopUpCheckClassPanel()
@@ -63,13 +63,13 @@ public class CheckSelecteClass : MonoBehaviour
         m_PopOffCheckClassPanel.TurnOffUI();
     }
 
-    public void SetGMData(string _1WeekName, string _2WeekName, string _1WeekMoney, string _2WeekMoney)
+    public void SetGameDesignerData(string _1WeekName, string _2WeekName, string _1WeekMoney, string _2WeekMoney)
     {
-        m_1WeekGMClassName.text = _1WeekName;
-        m_2WeekGMClassName.text = _2WeekName;
+        m_1WeekGameDesignerClassName.text = _1WeekName;
+        m_2WeekGameDesignerClassName.text = _2WeekName;
 
-        m_1WeekGMClassMoney.text = _1WeekMoney;
-        m_2WeekGMClassMoney.text = _2WeekMoney;
+        m_1WeekGameDesignerClassMoney.text = _1WeekMoney;
+        m_2WeekGameDesignerClassMoney.text = _2WeekMoney;
     }
 
     public void SetArtData(string _1WeekName, string _2WeekName, string _1WeekMoney, string _2WeekMoney)

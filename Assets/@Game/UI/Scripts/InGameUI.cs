@@ -34,32 +34,14 @@ public class InGameUI : MonoBehaviour
             instance = this;
         }
 
-        var json = GameObject.Find("Json");             // 씬이 다르기 때문에 Json 을 쓰려면 이렇게 해줘야 한다 
+        //var json = GameObject.Find("Json");             // 씬이 다르기 때문에 Json 을 쓰려면 이렇게 해줘야 한다 
         // 저장 데이터가 있다면... 
-        if (json.GetComponent<Json>().IsSavedDataExists == true)
+        if (Json.Instance.UseLoadingData)
         {
-            PlayerInfo.Instance.m_SpecialPoint = AllInOneData.Instance.PlayerData.SpecialPoint;
-            PlayerInfo.Instance.m_MyMoney = AllInOneData.Instance.PlayerData.Money;
+            m_nowMoney.text = string.Format("{0:#,0}", PlayerInfo.Instance.MyMoney);
 
-            PlayerInfo.Instance.m_AcademyName = AllInOneData.Instance.PlayerData.AcademyName;
-            PlayerInfo.Instance.m_TeacherName = AllInOneData.Instance.PlayerData.PrincipalName;
-
-            PlayerInfo.Instance.m_Awareness = AllInOneData.Instance.PlayerData.Famous;
-            PlayerInfo.Instance.m_Management = AllInOneData.Instance.PlayerData.Management;
-            PlayerInfo.Instance.m_TalentDevelopment = AllInOneData.Instance.PlayerData.TalentDevelopment;
-            PlayerInfo.Instance.m_Activity = AllInOneData.Instance.PlayerData.Activity;
-            PlayerInfo.Instance.m_Goods = AllInOneData.Instance.PlayerData.Goods;
-            //PlayerInfo.Instance.m_CurrentRank = AllInOneData.Instance.player.CurrentRank;
-
-            m_nowMoney.text = AllInOneData.Instance.PlayerData.Money.ToString();
-
-            m_nowAcademyName.text = AllInOneData.Instance.PlayerData.AcademyName;
-            m_nowDirectorName.text = AllInOneData.Instance.PlayerData.PrincipalName;
-
-            //m_nowAwareness.text = AllInOneData.Instance.player.m_Famous.ToString();
-            //m_nowTalentDevelopment.text = AllInOneData.Instance.player.m_TalentDevelopment.ToString();
-            //m_nowManagement.text = AllInOneData.Instance.player.m_Management.ToString();
-
+            m_nowAcademyName.text = PlayerInfo.Instance.AcademyName;
+            m_nowDirectorName.text = PlayerInfo.Instance.PrincipalName;
 
             switch (AllInOneData.Instance.PlayerData.Day)
             {
@@ -86,14 +68,14 @@ public class InGameUI : MonoBehaviour
         }
         else
         {
-            m_nowMoney.text = PlayerInfo.Instance.m_MyMoney.ToString();
+            m_nowMoney.text = string.Format("{0:#,0}", PlayerInfo.Instance.MyMoney);
 
             m_nowAcademyName.text = "";
             m_nowDirectorName.text = "";
 
-            //m_nowAwareness.text = PlayerInfo.Instance.m_Awareness.ToString();
-            //m_nowTalentDevelopment.text = PlayerInfo.Instance.m_TalentDevelopment.ToString();
-            //m_nowManagement.text = PlayerInfo.Instance.m_Management.ToString();
+            //m_nowAwareness.text = PlayerInfo.Instance.Famous.ToString();
+            //m_nowTalentDevelopment.text = PlayerInfo.Instance.TalentDevelopment.ToString();
+            //m_nowManagement.text = PlayerInfo.Instance.Management.ToString();
 
             m_TimeBar.fillAmount = 0.2f;
         }
@@ -133,7 +115,7 @@ public class InGameUI : MonoBehaviour
 
     public Image m_TimeBar;
 
-    public GameObject SettingPanel;
+    public Button SettingPanelButton;                 // Inspector 창에서 연결
     public GameObject SaveButton;
 
     public GameObject tempPlusMoneyButton;
@@ -156,21 +138,38 @@ public class InGameUI : MonoBehaviour
     public TextMeshProUGUI TempUIstackInfo;
 
     [Space(10f)]
-    [SerializeField] private Button QuestOpenButton;         // 퀘스트 패널을 열기 위한 버튼
+    [SerializeField] private Button MissionOpenButton;         // 퀘스트 패널을 열기 위한 버튼
+    [SerializeField] private Image MissionAlarmImg;         // 퀘스트 패널을 열기 위한 버튼
+    [SerializeField] private RectTransform MissionAlarmEffect;         // 퀘스트 패널을 열기 위한 버튼
 
     public Button GetQuestOpenButton
     {
-        get { return QuestOpenButton; }
-        set { QuestOpenButton = value; }
+        get { return MissionOpenButton; }
+        set { MissionOpenButton = value; }
+    }
+
+    public Image GetMissionAlarmImg
+    {
+        get { return MissionAlarmImg; }
+        set { MissionAlarmImg = value; }
+    }
+
+    public RectTransform GetMissionAlarmEffect
+    {
+        get { return MissionAlarmEffect; }
+        set { MissionAlarmEffect = value; }
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        MissionAlarmImg.gameObject.SetActive(false);
+        MissionAlarmEffect.gameObject.SetActive(false);
+
         // UI에 그릴 데이터 로드 & 기본값 설정
         // m_nowAcademyName.text = PlayerInfo.Instance.m_AcademyName;
         // m_nowDirectorName.text = PlayerInfo.Instance.m_DirectorName;
-        // m_nowMoney.text = PlayerInfo.Instance.m_MyMoney.ToString();
+        // m_nowMoney.text = PlayerInfo.Instance.MyMoney.ToString();
 
         // UIStack = new Stack<GameObject>();
         Debug.Log("stack count : " + UIStack.Count);
@@ -194,13 +193,13 @@ public class InGameUI : MonoBehaviour
     {
         GameTime.Instance.DrawTimeBar(m_TimeBar);       // 하루(6초) 체크
 
-        m_nowMoney.text = PlayerInfo.Instance.m_MyMoney.ToString();
-        m_SpecialPoint.text = PlayerInfo.Instance.m_SpecialPoint.ToString();
+        m_nowMoney.text = string.Format("{0:#,0}", PlayerInfo.Instance.MyMoney);
+        m_SpecialPoint.text = string.Format("{0:#,0}", PlayerInfo.Instance.SpecialPoint);
         m_TestDay.text = GameTime.Instance.FlowTime.NowDay.ToString();
 
-        //m_nowAwareness.text = PlayerInfo.Instance.m_Awareness.ToString();
-        //m_nowTalentDevelopment.text = PlayerInfo.Instance.m_TalentDevelopment.ToString();
-        //m_nowManagement.text = PlayerInfo.Instance.m_Management.ToString();
+        //m_nowAwareness.text = PlayerInfo.Instance.Famous.ToString();
+        //m_nowTalentDevelopment.text = PlayerInfo.Instance.TalentDevelopment.ToString();
+        //m_nowManagement.text = PlayerInfo.Instance.Management.ToString();
 
         if (!m_IsPopUpRank && GameTime.Instance.FlowTime.NowYear != 1 && GameTime.Instance.FlowTime.NowMonth == 3 && GameTime.Instance.FlowTime.NowWeek == 3 && GameTime.Instance.FlowTime.NowDay == 2)
         {
@@ -274,12 +273,12 @@ public class InGameUI : MonoBehaviour
 
         if (_NowClick.name == tempPlusMoneyButton.name)
         {
-            PlayerInfo.Instance.m_MyMoney += 300;
+            PlayerInfo.Instance.MyMoney += 300;
 
-            PlayerInfo.Instance.m_SpecialPoint += 10000;
+            PlayerInfo.Instance.SpecialPoint += 10000;
         }
 
-        Debug.Log("현재 소지금 : " + PlayerInfo.Instance.m_MyMoney);
+        Debug.Log("현재 소지금 : " + PlayerInfo.Instance.MyMoney);
     }
 
     // 이벤트 시스템 UI 그리는 부분

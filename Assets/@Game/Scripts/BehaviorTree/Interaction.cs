@@ -24,10 +24,12 @@ public class Interaction : Action
     private bool m_isProfessor;
     private bool m_isLeft;
     //private bool m_IsStatusChange;
-    private Vector3 m_myDestination;
-    private Vector3 m_otherDestination;
-    private string m_myName;
-    private string m_otherName;
+    private Vector3 m_MyDestination;
+    private Vector3 m_OtherDestination;
+    private string m_MyName;
+    private string m_OtherName;
+    private Animator m_MyAnimator;
+    private Animator m_OtherAnimator;
 
     private int m_RandomNumTalkAniIndex;
 
@@ -101,7 +103,7 @@ public class Interaction : Action
     {
         this.gameObject.GetComponent<Student>().m_IsInteracting = true;
         this.gameObject.GetComponent<Student>().DoingValue = Student.Doing.StartInteracting;
-        m_myName = this.gameObject.GetComponent<Student>().m_StudentStat.m_StudentName;
+        m_MyName = this.gameObject.GetComponent<Student>().m_StudentStat.m_StudentName;
         m_myIndex = ObjectManager.Instance.m_StudentList.FindIndex(x => x.Equals(this.gameObject.GetComponent<Student>()));
 
         if (m_isProfessor)
@@ -109,16 +111,19 @@ public class Interaction : Action
             m_InterActionObj.GetComponent<Instructor>().m_IsInteracting = true;
             m_InterActionObj.GetComponent<Instructor>().DoingValue = Instructor.Doing.StartInteracting;
             m_otherIndex = 18 + ObjectManager.Instance.m_InstructorList.FindIndex(x => x.Equals(m_InterActionObj.GetComponent<Instructor>()));
-            m_otherName = m_InterActionObj.GetComponent<Instructor>().m_InstructorData.professorName;
+            m_OtherName = m_InterActionObj.GetComponent<Instructor>().m_InstructorData.m_ProfessorName;
         }
         else
         {
             m_InterActionObj.GetComponent<Student>().m_IsInteracting = true;
             m_InterActionObj.GetComponent<Student>().DoingValue = Student.Doing.StartInteracting;
             m_otherIndex = ObjectManager.Instance.m_StudentList.FindIndex(x => x.Equals(m_InterActionObj.GetComponent<Student>()));
-            m_otherName = m_InterActionObj.GetComponent<Student>().m_StudentStat.m_StudentName;
+            m_OtherName = m_InterActionObj.GetComponent<Student>().m_StudentStat.m_StudentName;
         }
         m_friendship = ObjectManager.Instance.m_Friendship[m_myIndex][m_otherIndex];
+
+        m_MyAnimator = gameObject.GetComponent<Animator>();
+        m_OtherAnimator = m_InterActionObj.GetComponent<Animator>();
     }
 
     public void ScriptPlay()
@@ -139,18 +144,27 @@ public class Interaction : Action
 
         Debug.Log(this.gameObject.name + "이동 시작");
 
-        float _dist = float.MaxValue;
+        Vector3 _distVec = gameObject.transform.position - m_InterActionObj.transform.position;
+        float _dist = _distVec.sqrMagnitude;
         float _range = 15.0f;
 
-        m_myDestination = gameObject.GetComponent<NavMeshAgent>().destination;
-        m_otherDestination = m_InterActionObj.GetComponent<NavMeshAgent>().destination;
-
+        m_MyDestination = gameObject.GetComponent<NavMeshAgent>().destination;
+        m_OtherDestination = m_InterActionObj.GetComponent<NavMeshAgent>().destination;
+        m_MyAnimator.SetTrigger("ToWalk1");
+        if (m_isProfessor)
+        {
+            m_OtherAnimator.SetTrigger("ToWalk");
+        }
+        else
+        {
+            m_OtherAnimator.SetTrigger("ToWalk1");
+        }
         // 코루틴 내에서 루프를 돌면서, 일정 이하 거리가 되는지 체크한다.
         while (_range < _dist)
         {
             // 두 개의 물체의 위치의 차 벡터를 만든다.
             // A - B 를 했을 때 나오는 벡터는, B에서 A로 이동하는 벡터다.
-            Vector3 _distVec = gameObject.transform.position - m_InterActionObj.transform.position;
+            _distVec = gameObject.transform.position - m_InterActionObj.transform.position;
 
             //// 그 벡터의 길이가 곧 거리다.
             _dist = _distVec.sqrMagnitude;
@@ -180,6 +194,10 @@ public class Interaction : Action
 
         this.gameObject.GetComponent<NavMeshAgent>().velocity = Vector3.zero;
         m_InterActionObj.GetComponent<NavMeshAgent>().velocity = Vector3.zero;
+        m_MyAnimator.SetTrigger("ToIdle");
+        m_OtherAnimator.SetTrigger("ToIdle");
+        //m_MyAnimator.SetBool("IdleToWalk", false);
+        //m_OtherAnimator.SetBool("IdleToWalk", false);
 
         // 서로를 바라보게 해주기
         this.gameObject.GetComponent<Transform>().LookAt(m_InterActionObj.transform);
@@ -378,35 +396,6 @@ public class Interaction : Action
             m_isLeft = false;
         }
 
-        m_RandomNumTalkAniIndex = Random.Range(0, 2);
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsIdelToTalk", true);
-            gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-        }
-        else if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToTalk", true);
-            gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-        }
-
-
-        if (!m_isProfessor)
-        {
-            if (m_InterActionObj.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-            {
-                m_InterActionObj.GetComponent<Animator>().SetBool("IsIdelToTalk", true);
-                gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-            }
-            else if (m_InterActionObj.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-            {
-                m_InterActionObj.GetComponent<Animator>().SetBool("IsWalkToTalk", true);
-                m_InterActionObj.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-            }
-        }
-
-
-
         foreach (var line in m_Temp)
         {
             m_Dialogue.Enqueue(line);
@@ -425,6 +414,10 @@ public class Interaction : Action
             }
 
             _chatA.GetComponent<FollowTarget>().m_Target = gameObject.transform.GetChild(0).transform;
+            
+
+            int randomAnim = Random.Range(1, 5);
+            m_MyAnimator.SetTrigger("ToTalk" + randomAnim);
 
             ADialogueFlow(_chatA, false);
 
@@ -443,7 +436,12 @@ public class Interaction : Action
                     _chatB.GetComponent<FollowTarget>().IsLeft = true;
                 }
                 _chatB.GetComponent<FollowTarget>().m_Target = m_InterActionObj.gameObject.transform.GetChild(0).transform;
+                
+                randomAnim = Random.Range(1, 5);
+                m_OtherAnimator.SetTrigger("ToTalk" + randomAnim);
+
                 ADialogueFlow(_chatB, true);
+
 
                 yield return new WaitForSeconds(3f);
 
@@ -523,8 +521,8 @@ public class Interaction : Action
 
                         if (m_friendship + randomFriendship >= 300)
                         {
-                            GameTime.Instance.AlarmControl.AlarmMessageQ.Enqueue("<color=#00EAFF>" + m_myName + "</color> 와(과)" +
-                                "<color=#00EAFF>" + m_otherName + "</color> 이 베프가 되었습니다!");
+                            GameTime.Instance.AlarmControl.AlarmMessageQ.Enqueue("<color=#00EAFF>" + m_MyName + "</color> 와(과)" +
+                                "<color=#00EAFF>" + m_OtherName + "</color> 이 베프가 되었습니다!");
                         }
                     }
                     else
@@ -539,7 +537,7 @@ public class Interaction : Action
                         {
                             // 2차 재화
                             randomSpecialPoint = Random.Range(7, 15);
-                            PlayerInfo.Instance.m_SpecialPoint += randomSpecialPoint;
+                            PlayerInfo.Instance.SpecialPoint += randomSpecialPoint;
                         }
                     }
                     ScriptEnd();
@@ -570,7 +568,7 @@ public class Interaction : Action
                     {
                         // 2차 재화
                         randomSpecialPoint = Random.Range(7, 16);
-                        PlayerInfo.Instance.m_SpecialPoint += randomSpecialPoint;
+                        PlayerInfo.Instance.SpecialPoint += randomSpecialPoint;
                     }
                     ScriptEnd();
                 }
@@ -623,41 +621,34 @@ public class Interaction : Action
     // 대화마다 정해진 초를 넣어주기.
     void ScriptEnd()
     {
+        m_MyAnimator.SetTrigger("ToIdle");
+        m_OtherAnimator.SetTrigger("ToIdle");
+
         m_InterActionObj.GetComponent<NavMeshAgent>().isStopped = false;
-        m_InterActionObj.GetComponent<NavMeshAgent>().SetDestination(m_otherDestination);
+        m_InterActionObj.GetComponent<NavMeshAgent>().SetDestination(m_OtherDestination);
         if (m_isProfessor)
         {
             m_InterActionObj.GetComponent<Instructor>().m_IsInteracting = false;
+            m_InterActionObj.GetComponent<Instructor>().m_IsCoolDown = true;
             m_InterActionObj.GetComponent<Instructor>().DoingValue = Instructor.Doing.EndInteracting;
             //m_InterActionObj.GetComponent<Instructor>().InteractingObj = null;
         }
         else
         {
             m_InterActionObj.GetComponent<Student>().m_IsInteracting = false;
+            m_InterActionObj.GetComponent<Student>().m_IsCoolDown = true;
             m_InterActionObj.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
             //m_InterActionObj.GetComponent<Student>().InteractingObj = null;
         }
 
         this.gameObject.GetComponent<Student>().m_IsInteracting = false;
+        this.gameObject.GetComponent<Student>().m_IsCoolDown = true;
         this.gameObject.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
         this.gameObject.GetComponent<NavMeshAgent>().isStopped = false;
         //this.gameObject.GetComponent<Student>().InteractingObj = null;
-        this.gameObject.GetComponent<NavMeshAgent>().SetDestination(m_myDestination);
+        this.gameObject.GetComponent<NavMeshAgent>().SetDestination(m_MyDestination);
 
         m_isProfessor = false;
-
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Talking1") || gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Talking3"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToTalk", false);
-            gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-        }
-
-        if (m_InterActionObj.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Talking1") || m_InterActionObj.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Talking3"))
-        {
-            m_InterActionObj.GetComponent<Animator>().SetBool("IsWalkToTalk", false);
-            m_InterActionObj.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-        }
-
 
         StopCoroutine(m_DialogueIEnumerator);
     }
@@ -667,43 +658,34 @@ public class Interaction : Action
         //yield return new WaitForSeconds(5f);
         yield return new WaitUntil(() => ClickEventManager.Instance.StudentPosition.Find(x => x.Equals(this.gameObject.transform.position)) == Vector3.zero);
 
+        m_MyAnimator.SetTrigger("ToIdle");
+        m_OtherAnimator.SetTrigger("ToIdle");
+
         m_InterActionObj.GetComponent<NavMeshAgent>().isStopped = false;
-        m_InterActionObj.GetComponent<NavMeshAgent>().SetDestination(m_otherDestination);
+        m_InterActionObj.GetComponent<NavMeshAgent>().SetDestination(m_OtherDestination);
         if (m_isProfessor)
         {
             m_InterActionObj.GetComponent<Instructor>().m_IsInteracting = false;
+            m_InterActionObj.GetComponent<Instructor>().m_IsCoolDown = true;
             m_InterActionObj.GetComponent<Instructor>().DoingValue = Instructor.Doing.EndInteracting;
             //m_InterActionObj.GetComponent<Instructor>().InteractingObj = null;
         }
         else
         {
             m_InterActionObj.GetComponent<Student>().m_IsInteracting = false;
+            m_InterActionObj.GetComponent<Student>().m_IsCoolDown = true;
             m_InterActionObj.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
             //m_InterActionObj.GetComponent<Student>().InteractingObj = null;
         }
 
         this.gameObject.GetComponent<Student>().m_IsInteracting = false;
         this.gameObject.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
+        this.gameObject.GetComponent<Student>().m_IsCoolDown = true;
         this.gameObject.GetComponent<NavMeshAgent>().isStopped = false;
-        this.gameObject.GetComponent<Student>().InteractingObj = null;
-        this.gameObject.GetComponent<NavMeshAgent>().SetDestination(m_myDestination);
+        //this.gameObject.GetComponent<Student>().InteractingObj = null;
+        this.gameObject.GetComponent<NavMeshAgent>().SetDestination(m_MyDestination);
 
         m_isProfessor = false;
-
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Talking1") || gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Talking3"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToTalk", false);
-            gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-        }
-
-        if (!m_isProfessor)
-        {
-            if (m_InterActionObj.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Talking1") || m_InterActionObj.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Talking3"))
-            {
-                m_InterActionObj.GetComponent<Animator>().SetBool("IsWalkToTalk", false);
-                m_InterActionObj.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-            }
-        }
 
 
         StopCoroutine(m_DialogueIEnumerator);

@@ -223,7 +223,7 @@ public class EachClass
 //                    m_ManagementChoiceButton[i].SetActive(false);
 //                    m_ManagementChoiceProfessorName[i].SetActive(true);
 //                    m_ManagementSelecteClassName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ProductManagerData[i].m_SelecteClassDataSave.m_ClassName;
-//                    m_ManagementChoiceProfessorName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ProductManagerData[i].m_SelecteProfessorDataSave.m_ProfessorNameValue;
+//                    m_ManagementChoiceProfessorName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ProductManagerData[i].m_SelecteProfessorDataSave.m_ProfessorName;
 //                }
 //            }
 //            m_ClassPrefab.m_SaveData.m_ClassName = "ProductManager";
@@ -254,7 +254,7 @@ public class EachClass
 //                    m_ManagementChoiceButton[i].SetActive(false);
 //                    m_ManagementChoiceProfessorName[i].SetActive(true);
 //                    m_ManagementSelecteClassName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ArtData[i].m_SelecteClassDataSave.m_ClassName;
-//                    m_ManagementChoiceProfessorName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ArtData[i].m_SelecteProfessorDataSave.m_ProfessorNameValue;
+//                    m_ManagementChoiceProfessorName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ArtData[i].m_SelecteProfessorDataSave.m_ProfessorName;
 //                }
 //            }
 
@@ -287,7 +287,7 @@ public class EachClass
 //                    m_ManagementChoiceButton[i].SetActive(false);
 //                    m_ManagementChoiceProfessorName[i].SetActive(true);
 //                    m_ManagementSelecteClassName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ProgrammingData[i].m_SelecteClassDataSave.m_ClassName;
-//                    m_ManagementChoiceProfessorName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ProgrammingData[i].m_SelecteProfessorDataSave.m_ProfessorNameValue;
+//                    m_ManagementChoiceProfessorName[i].GetComponent<TextMeshProUGUI>().text = m_ClassPrefab.m_ProgrammingData[i].m_SelecteProfessorDataSave.m_ProfessorName;
 //                }
 //            }
 

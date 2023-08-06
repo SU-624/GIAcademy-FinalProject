@@ -23,7 +23,7 @@ MonoBehaviour:
   m_Wit: 3
   m_Technique: 0
   m_Insight: 0
-  m_Money: 60000
+  m_Money: 10000
   m_Health: 5
   m_Passion: 7
   m_UnLockClass: 1

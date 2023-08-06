@@ -7,7 +7,9 @@ using TMPro;
 public class GameShowAnimationPanel : MonoBehaviour
 {
     [SerializeField] private GameObject m_AnimationObj;
+    [SerializeField] private GameObject m_GoodAnimationEffectObj;
     [SerializeField] private GameObject m_SatisfactionStatusObj;
+    [SerializeField] private GameObject m_JudgementAniObj;
     [SerializeField] private GameObject m_StudentFaceObj;
     [SerializeField] private GameObject m_StudentGoodFace1;
     [SerializeField] private GameObject m_StudentGoodFace2;
@@ -25,18 +27,20 @@ public class GameShowAnimationPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_JudgesScript;
     [SerializeField] private Animator m_EmojiAnimPlay;
     [SerializeField] private Animator m_JudgesScriptAnimPlay;
+    [SerializeField] private Animator[] m_JudgesAnimPlay;
 
-    private string m_EmojiAnimationTrigger = "RePlay";
-    private string m_JudgesScriptAnimationTrigger = "RePlay";
+    //private string m_EmojiAnimationTrigger = "RePlay";
+    //private string m_JudgesScriptAnimationTrigger = "RePlay";
 
     public void SetAcademyName(string _academyName)
     {
         m_MyAcademyName.text = _academyName;
     }
 
-    public void ChangeSpriteAnimation(Sprite _animation)
+    public void ChangeSpriteAnimation(Sprite _animation,bool _flag = false)
     {
         m_Animation.sprite = _animation;
+        m_GoodAnimationEffectObj.SetActive(_flag);
     }
 
     public void ChangeEvalutionResponseScore(string _score)
@@ -56,6 +60,25 @@ public class GameShowAnimationPanel : MonoBehaviour
         m_JudgesScript.text = _script;
 
         m_JudgesScriptAnimPlay.Play("JudgesScriptAnim", 0, 0f);
+    }
+
+    public void StopAnimation()
+    {
+        m_JudgesScriptAnimPlay.StopPlayback();
+        m_EmojiAnimPlay.StopPlayback();
+
+        for (int i = 0; i < m_JudgesAnimPlay.Length; i++)
+        {
+            m_JudgesAnimPlay[i].StopPlayback();
+        }
+    }
+
+    public void StartJudesAnim()
+    {
+        for (int i = 0; i < m_JudgesAnimPlay.Length; i++)
+        {
+            m_JudgesAnimPlay[i].Play(m_JudgesAnimPlay[i].name, 0, 0f);
+        }
     }
 
     public void ChangeStudentFaceImage(Sprite _student1, Sprite _student2, Sprite _student3)
@@ -91,13 +114,17 @@ public class GameShowAnimationPanel : MonoBehaviour
     {
         m_AnimationObj.SetActive(false);
         m_SatisfactionStatusObj.SetActive(true);
+        m_JudgementAniObj.SetActive(true);
         m_StudentFaceObj.SetActive(true);
     }
 
     public void InitPanel()
     {
         m_AnimationObj.SetActive(true);
+        m_GoodAnimationEffectObj.SetActive(false);
         m_SatisfactionStatusObj.SetActive(false);
+        m_JudgementAniObj.SetActive(false);
+
         m_StudentFaceObj.SetActive(false);
     }
 }

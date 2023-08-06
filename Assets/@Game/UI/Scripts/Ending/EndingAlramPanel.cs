@@ -6,6 +6,8 @@ using TMPro;
 
 public class EndingAlramPanel : MonoBehaviour
 {
+    [SerializeField] private EndingPanel m_EndingPanel;
+    [SerializeField] private Button m_EndingButton;
     [SerializeField] private Image m_FadeInOutImage;
     [SerializeField] private TextMeshProUGUI m_AlramText;
     [SerializeField] private Button m_ChangeEndingScene;
@@ -23,40 +25,43 @@ public class EndingAlramPanel : MonoBehaviour
 
     public void Start()
     {
+        _fadeOutImageColor = Color.black;
+        _fadeInImageColor = Color.black;
+
+        _fadeOutImageColor.a = 0f;
+        _fadeInImageColor.a = 1f;
+
         m_ChangeEndingScene.onClick.AddListener(ClickEndingSceneButton);
-        InitEndingSceneFadeImage();
     }
 
-    public void InitEndingSceneFadeImage()
-    {
-        _fadeOutImageColor = m_FadeInOutImage.color;
-        _fadeOutImageColor.a = 1f;
-    }
-
-    IEnumerator PopUpEndinganel()
+    public IEnumerator PopUpEndinganel()
     {
         m_FadeInOutImage.color = _fadeOutImageColor;
 
-        yield return StartCoroutine(FadeOutPanel());
-
-        m_PopUpEndingPanel.TurnOnUI();
-
         yield return StartCoroutine(FadeInPanel());
+
+        m_FadeInOutImage.color = _fadeInImageColor;
+
+        yield return StartCoroutine(FadeOutPanel());
     }
 
     IEnumerator FadeOutPanel()
     {
+        m_PopUpEndingPanel.TurnOnUI();
+
         while (m_FadeInOutImage.color.a > 0f)
         {
             m_FadeInOutImage.color = new Color(m_FadeInOutImage.color.r, m_FadeInOutImage.color.g, m_FadeInOutImage.color.b, m_FadeInOutImage.color.a - (Time.unscaledDeltaTime / m_FadeTime));
             yield return null;
         }
+        m_EndingPanelScript.GetComponent<EndingPanel>().enabled = true;
+        m_EndingPanel.SetScript();
+
+        m_PopoffEndingAlramPanel.TurnOffUI();
     }
 
     IEnumerator FadeInPanel()
     {
-        yield return new WaitForSecondsRealtime(7f);
-
         while (1f > m_FadeInOutImage.color.a)
         {
             m_FadeInOutImage.color = new Color(m_FadeInOutImage.color.r, m_FadeInOutImage.color.g, m_FadeInOutImage.color.b, m_FadeInOutImage.color.a + (Time.unscaledDeltaTime / m_FadeTime));
@@ -64,14 +69,6 @@ public class EndingAlramPanel : MonoBehaviour
         }
 
         yield return new WaitForSecondsRealtime(2f);
-
-        _fadeInImageColor.a = 0f;
-        m_FadeInOutImage.color = _fadeInImageColor;
-        m_EndingPanelScript.GetComponent<EndingPanel>().enabled = true;
-
-        InitEndingSceneFadeImage();
-
-        m_PopoffEndingAlramPanel.TurnOffUI();
     }
 
     public void SetEndingAlramPanel(bool _flag)
@@ -89,6 +86,7 @@ public class EndingAlramPanel : MonoBehaviour
     public void ClickEndingSceneButton()
     {
         StartCoroutine(PopUpEndinganel());
+        m_EndingButton.interactable = false;
     }
 
 }

@@ -4,7 +4,9 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
+using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// 2023. 03. 15 Mang
@@ -100,6 +102,11 @@ public class CharacterInfoPanel : MonoBehaviour
     [Header("학생의 친밀도 페이지에 정보를 넣기 위해 필요한 변수")]
     [SerializeField] private RectTransform ParentFriendshipPrefab;
     [SerializeField] private List<StudentFriendshipPrefab> FriendshipInfoList;
+
+    [Space(5f)]
+    [Header("학생의 이름 변경")]
+    [SerializeField] private Button RenameButton;
+    [SerializeField] private TMP_InputField InputName;
 
     Dictionary<int, int> FriendshipDic = new Dictionary<int, int>();
     Dictionary<Instructor, int> TeacherFriendshipDic = new Dictionary<Instructor, int>();
@@ -395,18 +402,21 @@ public class CharacterInfoPanel : MonoBehaviour
         set { ParentFriendshipPrefab = value; }
     }
 
+    public Student TempStudent;
+
     #endregion
 
-    // Start is called before the first frame update
-    void Start()
-    {
 
-    }
+    //// Start is called before the first frame update
+    //void Start()
+    //{
 
-    // Update is called once per frame
-    void Update()
-    {
-    }
+    //}
+
+    //// Update is called once per frame
+    //void Update()
+    //{
+    //}
 
     public void Initialize()
     {
@@ -422,35 +432,72 @@ public class CharacterInfoPanel : MonoBehaviour
 
         LeftArrowButton.onClick.AddListener(IfClickArrowButton);
         RightArrowButton.onClick.AddListener(IfClickArrowButton);
+
+        RenameButton.onClick.AddListener(IfClickRenameButton);
+    }
+
+    private void IfClickRenameButton()
+    {
+        TempStudent.m_StudentStat.m_UserSettingName = InputName.text;
+        CharacterName1.text = InputName.text;
+        CharacterName2.text = InputName.text;
+        InputName.text = "";
     }
 
     // 캐릭터의 기본 정보를 담아서 보여줄 함수
     public void ShowStudentBasicInfo(GameObject CharacterObj)
     {
+        TempStudent = CharacterObj.GetComponent<Student>();
         Student _temp = CharacterObj.GetComponent<Student>();
         StudentStat tempStat = _temp.m_StudentStat;
         StudentType tempType = _temp.m_StudentStat.m_StudentType;
 
-        int sense = tempStat.m_AbilityAmountList[(int)AbilityType.Sense];
-        int concentration = tempStat.m_AbilityAmountList[(int)AbilityType.Concentration];
-        int wit = tempStat.m_AbilityAmountList[(int)AbilityType.Wit];
-        int technique = tempStat.m_AbilityAmountList[(int)AbilityType.Technique];
-        int insight = tempStat.m_AbilityAmountList[(int)AbilityType.Insight];
+        int sense = tempStat.m_AbilityAmountArr[(int)AbilityType.Sense];
+        int concentration = tempStat.m_AbilityAmountArr[(int)AbilityType.Concentration];
+        int wit = tempStat.m_AbilityAmountArr[(int)AbilityType.Wit];
+        int technique = tempStat.m_AbilityAmountArr[(int)AbilityType.Technique];
+        int insight = tempStat.m_AbilityAmountArr[(int)AbilityType.Insight];
 
         // 학생의 개인 성격 띄우기
         string peronalityInfoScript = ObjectManager.Instance.GetPersonalityScript(tempStat.m_Personality);
         StudentPersonalityName.text = tempStat.m_Personality;
         StudentPersonalityInfo.text = peronalityInfoScript;
 
-        CharacterName1.text = CharacterObj.name;                 // 캐릭터 이름
-        CharacterName2.text = CharacterObj.name;                 // 캐릭터 이름
+        string tempPersonalityName = StudentPersonalityName.text;
+
+        if (tempPersonalityName.Any(x => Char.IsWhiteSpace(x) == true))
+        {
+            tempPersonalityName = Regex.Replace(StudentPersonalityName.text, @"\s+", String.Empty);
+        }
+
+        for (int i = 0; i < UISpriteLists.Instance.GetStudentPersonalitySpriteList.Count; i++)
+        {
+            if (StudentPersonalityName.text == UISpriteLists.Instance.GetStudentPersonalitySpriteList[i].name)
+            {
+                StudentPersonalityImg.sprite = UISpriteLists.Instance.GetStudentPersonalitySpriteList[i];
+            }
+        }
+
+        CharacterImg1.sprite = _temp.StudentProfileImg;
+        CharacterImg2.sprite = _temp.StudentProfileImg;
+
+        if (tempStat.m_UserSettingName != "")
+        {
+            CharacterName1.text = tempStat.m_UserSettingName;
+            CharacterName2.text = tempStat.m_UserSettingName;
+        }
+        else
+        {
+            CharacterName1.text = tempStat.m_StudentName;
+            CharacterName2.text = tempStat.m_StudentName;
+        }
 
         StudentInfoPage1.gameObject.SetActive(true);
         LeftArrowButton.gameObject.SetActive(false);
         StudentStatPage2.gameObject.SetActive(false);
         RightArrowButton.gameObject.SetActive(true);
 
-        MakeStudentStatPentagon(sense, concentration, wit, technique, insight);
+        MakeStudentStatPentagon(sense, insight, technique, wit, concentration);
 
         float x = ParentFriendshipPrefab.anchoredPosition.x;
         ParentFriendshipPrefab.anchoredPosition = new Vector3(x, 0, 0);
@@ -458,35 +505,35 @@ public class CharacterInfoPanel : MonoBehaviour
         switch (tempType)                                       // 캐릭터 학과
         {
             case StudentType.GameDesigner:
-                {
-                    GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_tab_selected];
-                    ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
-                    ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
+            {
+                GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_tab_selected];
+                ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
+                ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
 
-                    DepartmentImg1.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_icon_info];
-                    DepartmentImg2.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_icon_info];
-                }
-                break;
+                DepartmentImg1.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_icon_info];
+                DepartmentImg2.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_icon_info];
+            }
+            break;
             case StudentType.Art:
-                {
-                    GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
-                    ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_selected];
-                    ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
+            {
+                GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
+                ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_selected];
+                ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
 
-                    DepartmentImg1.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_icon_info];
-                    DepartmentImg2.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_icon_info];
-                }
-                break;
+                DepartmentImg1.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_icon_info];
+                DepartmentImg2.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_icon_info];
+            }
+            break;
             case StudentType.Programming:
-                {
-                    GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
-                    ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
-                    ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_selected];
+            {
+                GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
+                ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
+                ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_selected];
 
-                    DepartmentImg1.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.programming_icon2_icon];
-                    DepartmentImg2.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.programming_icon2_icon];
-                }
-                break;
+                DepartmentImg1.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.programming_icon2_icon];
+                DepartmentImg2.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.programming_icon2_icon];
+            }
+            break;
         }
 
         // 캐릭터 연차
@@ -510,21 +557,21 @@ public class CharacterInfoPanel : MonoBehaviour
         int tempLevel = 0;
 
         // 학생이 가진 다섯가지 기본 스탯
-        SenseValue.text = tempStat.m_AbilityAmountList[(int)AbilityType.Sense].ToString();
-        ConcentrationValue.text = tempStat.m_AbilityAmountList[(int)AbilityType.Concentration].ToString();
-        WitValue.text = tempStat.m_AbilityAmountList[(int)AbilityType.Wit].ToString();
-        TechnologyValue.text = tempStat.m_AbilityAmountList[(int)AbilityType.Technique].ToString();
-        InsightValue.text = tempStat.m_AbilityAmountList[(int)AbilityType.Insight].ToString();
+        SenseValue.text = tempStat.m_AbilityAmountArr[(int)AbilityType.Sense].ToString();
+        ConcentrationValue.text = tempStat.m_AbilityAmountArr[(int)AbilityType.Concentration].ToString();
+        WitValue.text = tempStat.m_AbilityAmountArr[(int)AbilityType.Wit].ToString();
+        TechnologyValue.text = tempStat.m_AbilityAmountArr[(int)AbilityType.Technique].ToString();
+        InsightValue.text = tempStat.m_AbilityAmountArr[(int)AbilityType.Insight].ToString();
 
-        RPGStatValue.text = tempStat.m_GenreAmountList[(int)GenreStat.RPG].ToString();
-        ActionStatValue.text = tempStat.m_GenreAmountList[(int)GenreStat.Action].ToString();
-        SimulationStatValue.text = tempStat.m_GenreAmountList[(int)GenreStat.Simulation].ToString();
-        ShootingStatValue.text = tempStat.m_GenreAmountList[(int)GenreStat.Shooting].ToString();
+        RPGStatValue.text = tempStat.m_GenreAmountArr[(int)GenreStat.RPG].ToString();
+        ActionStatValue.text = tempStat.m_GenreAmountArr[(int)GenreStat.Action].ToString();
+        SimulationStatValue.text = tempStat.m_GenreAmountArr[(int)GenreStat.Simulation].ToString();
+        ShootingStatValue.text = tempStat.m_GenreAmountArr[(int)GenreStat.Shooting].ToString();
 
-        RhythmStatValue.text = tempStat.m_GenreAmountList[(int)GenreStat.Rhythm].ToString();
-        AdventureStatValue.text = tempStat.m_GenreAmountList[(int)GenreStat.Adventure].ToString();
-        PuzzleStatValue.text = tempStat.m_GenreAmountList[(int)GenreStat.Puzzle].ToString();
-        SportsStatValue.text = tempStat.m_GenreAmountList[(int)GenreStat.Sports].ToString();
+        RhythmStatValue.text = tempStat.m_GenreAmountArr[(int)GenreStat.Rhythm].ToString();
+        AdventureStatValue.text = tempStat.m_GenreAmountArr[(int)GenreStat.Adventure].ToString();
+        PuzzleStatValue.text = tempStat.m_GenreAmountArr[(int)GenreStat.Puzzle].ToString();
+        SportsStatValue.text = tempStat.m_GenreAmountArr[(int)GenreStat.Sports].ToString();
 
         SenseCheck.gameObject.SetActive(true);
         ConcentrationCheck.gameObject.SetActive(false);
@@ -535,30 +582,30 @@ public class CharacterInfoPanel : MonoBehaviour
         switch (tempStat.m_StudentType)
         {
             case StudentType.GameDesigner:
-                {
-                    tempLevel = SetSkillLevel(tempStat.m_AbilityAmountList[(int)AbilityType.Sense]);
+            {
+                tempLevel = SetSkillLevel(tempStat.m_AbilityAmountArr[(int)AbilityType.Sense]);
 
-                    DetailedStatName.text = "창의력";
-                    DetailedStatValue.text = "Lv. " + tempLevel;
-                    StatGradeImg.sprite = SetSkillLevelImg(tempLevel);
-                }
-                break;
+                DetailedStatName.text = "창의력";
+                DetailedStatValue.text = "Lv. " + tempLevel;
+                StatGradeImg.sprite = SetSkillLevelImg(tempLevel);
+            }
+            break;
             case StudentType.Art:
-                {
-                    tempLevel = SetSkillLevel(tempStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                    DetailedStatName.text = "표현력";
-                    DetailedStatValue.text = "Lv. " + tempLevel;
-                    StatGradeImg.sprite = SetSkillLevelImg(tempLevel);
-                }
-                break;
+            {
+                tempLevel = SetSkillLevel(tempStat.m_AbilityAmountArr[(int)AbilityType.Sense]);
+                DetailedStatName.text = "표현력";
+                DetailedStatValue.text = "Lv. " + tempLevel;
+                StatGradeImg.sprite = SetSkillLevelImg(tempLevel);
+            }
+            break;
             case StudentType.Programming:
-                {
-                    tempLevel = SetSkillLevel(tempStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                    StatGradeImg.sprite = SetSkillLevelImg(tempLevel);
-                    DetailedStatName.text = "활용력";
-                    DetailedStatValue.text = "Lv. " + tempLevel;
-                }
-                break;
+            {
+                tempLevel = SetSkillLevel(tempStat.m_AbilityAmountArr[(int)AbilityType.Sense]);
+                StatGradeImg.sprite = SetSkillLevelImg(tempLevel);
+                DetailedStatName.text = "활용력";
+                DetailedStatValue.text = "Lv. " + tempLevel;
+            }
+            break;
         }
     }
 
@@ -584,7 +631,8 @@ public class CharacterInfoPanel : MonoBehaviour
 
         for (int i = 0; i < nowStudentCount; i++)
         {
-            if (tempData[i].m_StudentStat.m_StudentName == CharacterName1.text)
+            //if (tempData[i].m_StudentStat.m_StudentName == CharacterName1.text)
+            if (tempData[i].m_StudentStat.m_StudentName == TempStudent.m_StudentStat.m_StudentName)
             {
                 int tempLevel = 0;
                 StudentType tempType = tempData[i].m_StudentStat.m_StudentType;
@@ -598,125 +646,125 @@ public class CharacterInfoPanel : MonoBehaviour
                 switch (tempType)                // 이 학생의 학과 구별 (학과별로 상세 스킬이 달라짐)
                 {
                     case StudentType.GameDesigner:
+                    {
+                        // 이 학생을 눌렀을 때 -> 해당 학생이라는 것을 알고, 해당 학생정보창에 띄울 때 기본 설정 -> 첫번째 버튼 선택 된 상태로. 이건 학생 버튼 클릭 될때 설정
+                        // 해당 학생의 스탯 (ex ) 감각) 클릭 시 감각에 맞는 스킬(창의력) 글씨 뜨기
+
+                        if (nowButton.name == "SenseValueButton")       // 감각
                         {
-                            // 이 학생을 눌렀을 때 -> 해당 학생이라는 것을 알고, 해당 학생정보창에 띄울 때 기본 설정 -> 첫번째 버튼 선택 된 상태로. 이건 학생 버튼 클릭 될때 설정
-                            // 해당 학생의 스탯 (ex ) 감각) 클릭 시 감각에 맞는 스킬(창의력) 글씨 뜨기
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense]);
+                            SenseCheck.gameObject.SetActive(true);
 
-                            if (nowButton.name == "SenseValueButton")       // 감각
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                SenseCheck.gameObject.SetActive(true);
-
-                                DetailedStatName.text = "창의력";
-                            }
-                            else if (nowButton.name == "ConcentrationValueButton")  // 집중
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                ConcentrationCheck.gameObject.SetActive(true);
-
-                                DetailedStatName.text = "이해력";
-                            }
-                            else if (nowButton.name == "WitValueButton")        //재치
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                WitCheck.gameObject.SetActive(true);
-
-                                DetailedStatName.text = "분석력";
-                            }
-                            else if (nowButton.name == "TechnologyValueButton")     // 기술
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                TechnologyCheck.gameObject.SetActive(true);
-
-                                DetailedStatName.text = "소통력";
-                            }
-                            else if (nowButton.name == "InsightValueButton")        // 연구
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                InsightCheck.gameObject.SetActive(true);
-
-                                DetailedStatName.text = "사업력";
-                            }
+                            DetailedStatName.text = "창의력";
                         }
-                        break;
+                        else if (nowButton.name == "ConcentrationValueButton")  // 집중
+                        {
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration]);
+                            ConcentrationCheck.gameObject.SetActive(true);
+
+                            DetailedStatName.text = "이해력";
+                        }
+                        else if (nowButton.name == "WitValueButton")        //재치
+                        {
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit]);
+                            WitCheck.gameObject.SetActive(true);
+
+                            DetailedStatName.text = "분석력";
+                        }
+                        else if (nowButton.name == "TechnologyValueButton")     // 기술
+                        {
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique]);
+                            TechnologyCheck.gameObject.SetActive(true);
+
+                            DetailedStatName.text = "소통력";
+                        }
+                        else if (nowButton.name == "InsightValueButton")        // 연구
+                        {
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight]);
+                            InsightCheck.gameObject.SetActive(true);
+
+                            DetailedStatName.text = "사업력";
+                        }
+                    }
+                    break;
                     case StudentType.Art:
+                    {
+                        if (nowButton.name == "SenseValueButton")
                         {
-                            if (nowButton.name == "SenseValueButton")
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                SenseCheck.gameObject.SetActive(true);
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense]);
+                            SenseCheck.gameObject.SetActive(true);
 
-                                DetailedStatName.text = "표현력";
-                            }
-                            else if (nowButton.name == "ConcentrationValueButton")
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                ConcentrationCheck.gameObject.SetActive(true);
-
-                                DetailedStatName.text = "상상력";
-                            }
-                            else if (nowButton.name == "WitValueButton")
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                WitCheck.gameObject.SetActive(true);
-
-                                DetailedStatName.text = "색감각";
-                            }
-                            else if (nowButton.name == "TechnologyValueButton")
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                TechnologyCheck.gameObject.SetActive(true);
-
-                                DetailedStatName.text = "테크닉";
-                            }
-                            else if (nowButton.name == "InsightValueButton")
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                InsightCheck.gameObject.SetActive(true);
-
-                                DetailedStatName.text = "공간감";
-                            }
+                            DetailedStatName.text = "표현력";
                         }
-                        break;
+                        else if (nowButton.name == "ConcentrationValueButton")
+                        {
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration]);
+                            ConcentrationCheck.gameObject.SetActive(true);
+
+                            DetailedStatName.text = "상상력";
+                        }
+                        else if (nowButton.name == "WitValueButton")
+                        {
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit]);
+                            WitCheck.gameObject.SetActive(true);
+
+                            DetailedStatName.text = "색감각";
+                        }
+                        else if (nowButton.name == "TechnologyValueButton")
+                        {
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique]);
+                            TechnologyCheck.gameObject.SetActive(true);
+
+                            DetailedStatName.text = "테크닉";
+                        }
+                        else if (nowButton.name == "InsightValueButton")
+                        {
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight]);
+                            InsightCheck.gameObject.SetActive(true);
+
+                            DetailedStatName.text = "공간감";
+                        }
+                    }
+                    break;
                     case StudentType.Programming:
+                    {
+                        if (nowButton.name == "SenseValueButton")
                         {
-                            if (nowButton.name == "SenseValueButton")
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                SenseCheck.gameObject.SetActive(true);
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense]);
+                            SenseCheck.gameObject.SetActive(true);
 
-                                DetailedStatName.text = "활용력";
-                            }
-                            else if (nowButton.name == "ConcentrationValueButton")
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                ConcentrationCheck.gameObject.SetActive(true);
-
-                                DetailedStatName.text = "구현력";
-                            }
-                            else if (nowButton.name == "WitValueButton")
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                WitCheck.gameObject.SetActive(true);
-
-                                DetailedStatName.text = "논리력";
-                            }
-                            else if (nowButton.name == "TechnologyValueButton")
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                TechnologyCheck.gameObject.SetActive(true);
-                                DetailedStatName.text = "탐구력";
-
-                            }
-                            else if (nowButton.name == "InsightValueButton")
-                            {
-                                tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
-                                InsightCheck.gameObject.SetActive(true);
-
-                                DetailedStatName.text = "광기";
-                            }
+                            DetailedStatName.text = "활용력";
                         }
-                        break;
+                        else if (nowButton.name == "ConcentrationValueButton")
+                        {
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration]);
+                            ConcentrationCheck.gameObject.SetActive(true);
+
+                            DetailedStatName.text = "구현력";
+                        }
+                        else if (nowButton.name == "WitValueButton")
+                        {
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit]);
+                            WitCheck.gameObject.SetActive(true);
+
+                            DetailedStatName.text = "논리력";
+                        }
+                        else if (nowButton.name == "TechnologyValueButton")
+                        {
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique]);
+                            TechnologyCheck.gameObject.SetActive(true);
+                            DetailedStatName.text = "탐구력";
+
+                        }
+                        else if (nowButton.name == "InsightValueButton")
+                        {
+                            tempLevel = SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight]);
+                            InsightCheck.gameObject.SetActive(true);
+
+                            DetailedStatName.text = "광기";
+                        }
+                    }
+                    break;
                 }
 
                 StatGradeImg.sprite = SetSkillLevelImg(tempLevel);
@@ -730,20 +778,20 @@ public class CharacterInfoPanel : MonoBehaviour
         switch (tempType)                // 이 학생의 학과 구별 (학과별로 상세 스킬이 달라짐)
         {
             case StudentType.GameDesigner:
-                {
+            {
 
-                }
-                break;
+            }
+            break;
             case StudentType.Art:
-                {
+            {
 
-                }
-                break;
+            }
+            break;
             case StudentType.Programming:
-                {
+            {
 
-                }
-                break;
+            }
+            break;
         }
     }
 
@@ -777,23 +825,23 @@ public class CharacterInfoPanel : MonoBehaviour
         switch (nowButton.name)
         {
             case "LeftArrowButton":
-                {
-                    LeftArrowButton.gameObject.SetActive(false);
-                    StudentStatPage2.gameObject.SetActive(false);
+            {
+                LeftArrowButton.gameObject.SetActive(false);
+                StudentStatPage2.gameObject.SetActive(false);
 
-                    RightArrowButton.gameObject.SetActive(true);
-                    StudentInfoPage1.gameObject.SetActive(true);
-                }
-                break;
+                RightArrowButton.gameObject.SetActive(true);
+                StudentInfoPage1.gameObject.SetActive(true);
+            }
+            break;
             case "RigthArrowButton":
-                {
-                    LeftArrowButton.gameObject.SetActive(true);
-                    StudentStatPage2.gameObject.SetActive(true);
+            {
+                LeftArrowButton.gameObject.SetActive(true);
+                StudentStatPage2.gameObject.SetActive(true);
 
-                    RightArrowButton.gameObject.SetActive(false);
-                    StudentInfoPage1.gameObject.SetActive(false);
-                }
-                break;
+                RightArrowButton.gameObject.SetActive(false);
+                StudentInfoPage1.gameObject.SetActive(false);
+            }
+            break;
         }
     }
 
@@ -880,12 +928,19 @@ public class CharacterInfoPanel : MonoBehaviour
                 if (i < studentcount)
                 {
                     tempFriendshipData.Department = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_StudentType;
-                    tempFriendshipData.Name = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_StudentName;
+                    if (ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_UserSettingName != "")
+                    {
+                        tempFriendshipData.Name = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_UserSettingName;
+                    }
+                    else
+                    {
+                        tempFriendshipData.Name = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_StudentName;
+                    }
                 }
                 else
                 {
                     tempFriendshipData.Department = ObjectManager.Instance.m_InstructorList[i - studentcount].m_InstructorData.m_ProfessorType;
-                    tempFriendshipData.Name = ObjectManager.Instance.m_InstructorList[i - studentcount].m_InstructorData.m_ProfessorNameValue;
+                    tempFriendshipData.Name = ObjectManager.Instance.m_InstructorList[i - studentcount].m_InstructorData.m_ProfessorName;
                 }
                 tempFriendshipData.FriendshipAmount = ObjectManager.Instance.m_Friendship[myIndex][i];
 
@@ -904,24 +959,24 @@ public class CharacterInfoPanel : MonoBehaviour
             switch (FriendshipList[i].Department)      // for문을 돌면서 딕셔너리의 인덱스로 접근해 값을 가져오는 것...
             {
                 case StudentType.GameDesigner:
-                    {
-                        FriendshipInfoList[SpritePrefabCount].SetDepartmentImg.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_icon_info];
-                        FriendshipInfoList[SpritePrefabCount].SetStudentNameImg.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
-                    }
-                    break;
+                {
+                    FriendshipInfoList[SpritePrefabCount].SetDepartmentImg.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_icon_info];
+                    FriendshipInfoList[SpritePrefabCount].SetStudentNameImg.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
+                }
+                break;
                 case StudentType.Art:
-                    {
-                        FriendshipInfoList[SpritePrefabCount].SetDepartmentImg.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_icon_info];
-                        FriendshipInfoList[SpritePrefabCount].SetStudentNameImg.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
+                {
+                    FriendshipInfoList[SpritePrefabCount].SetDepartmentImg.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_icon_info];
+                    FriendshipInfoList[SpritePrefabCount].SetStudentNameImg.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
 
-                    }
-                    break;
+                }
+                break;
                 case StudentType.Programming:
-                    {
-                        FriendshipInfoList[SpritePrefabCount].SetDepartmentImg.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.programming_icon2_icon];
-                        FriendshipInfoList[SpritePrefabCount].SetStudentNameImg.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
-                    }
-                    break;
+                {
+                    FriendshipInfoList[SpritePrefabCount].SetDepartmentImg.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.programming_icon2_icon];
+                    FriendshipInfoList[SpritePrefabCount].SetStudentNameImg.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
+                }
+                break;
             }
             FriendshipInfoList[SpritePrefabCount].SetStudentName.text = FriendshipList[i].Name;
             FriendshipInfoList[SpritePrefabCount].SetFriendshipAmount.text = FriendshipList[i].FriendshipAmount.ToString();
@@ -944,7 +999,7 @@ public class CharacterInfoPanel : MonoBehaviour
 
             SpritePrefabCount += 1;
         }
-    }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  
+    }
 
     // 학생 정보창의 1page의 스킬부분에 데이터를 넣기 위한 준비
     public void SetStudentBonusSkill(Student nowStudent)
@@ -968,7 +1023,7 @@ public class CharacterInfoPanel : MonoBehaviour
 
                 prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
 
-                TempBonusSkillPrefab.GetStudentBonusSkillNameText.text = nowStudent.m_StudentStat.m_Skills[i];                                                           
+                TempBonusSkillPrefab.GetStudentBonusSkillNameText.text = nowStudent.m_StudentStat.m_Skills[i];
             }
         }
     }

@@ -10,25 +10,29 @@ public class SpecialDoing : Action
     private bool doingSomething = false;
     private bool isMinimumStat = false;
     private Transform m_LookTransform;
+    private Animator m_Animator;
 
     public override void OnStart()
     {
+        m_Animator = gameObject.GetComponent<Animator>();
     }
 
     public override TaskStatus OnUpdate()
     {
         int reward = 0;
         isMinimumStat = false;
+        int randomAnim = 0;
 
         if (doingSomething == false)
         {
             switch (gameObject.GetComponent<Student>().NowRoom)
             {
                 case (int)InteractionManager.SpotName.PuzzleRoom:
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", true);
-                    }
+                    //m_Animator.SetBool("IdleToSit", true);
+                    m_Animator.SetTrigger("ToSit");
+                    randomAnim = Random.Range(1, 5);
+                    m_Animator.SetInteger("SitNum", randomAnim);
+
                     reward = RandomGenreRoomReward();
                     if (reward == 1)
                     {
@@ -40,10 +44,10 @@ public class SpecialDoing : Action
                     break;
 
                 case (int)InteractionManager.SpotName.SimulationRoom:
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", true);
-                    }
+                    m_Animator.SetTrigger("ToSit");
+                    randomAnim = Random.Range(1, 5);
+                    m_Animator.SetInteger("SitNum", randomAnim);
+
                     reward = RandomGenreRoomReward();
                     if (reward == 1)
                     {
@@ -54,10 +58,9 @@ public class SpecialDoing : Action
                     break;
 
                 case (int)InteractionManager.SpotName.RhythmRoom:
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                    }
+                    randomAnim = Random.Range(1, 4);
+                    m_Animator.SetTrigger("ToTancing" + randomAnim);
+
                     reward = RandomGenreRoomReward();
                     if (reward == 1)
                     {
@@ -68,10 +71,10 @@ public class SpecialDoing : Action
                     break;
 
                 case (int)InteractionManager.SpotName.AdventureRoom:
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", true);
-                    }
+                    m_Animator.SetTrigger("ToSit");
+                    randomAnim = Random.Range(1, 5);
+                    m_Animator.SetInteger("SitNum", randomAnim);
+
                     reward = RandomGenreRoomReward();
                     if (reward == 1)
                     {
@@ -82,10 +85,24 @@ public class SpecialDoing : Action
                     break;
 
                 case (int)InteractionManager.SpotName.RPGRoom:
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+                    randomAnim = Random.Range(1, 5);
+                    if (randomAnim == 1)
                     {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
+                        m_Animator.SetTrigger("ToThinking");
                     }
+                    else if (randomAnim == 2)
+                    {
+                        m_Animator.SetTrigger("ToVictory");
+                    }
+                    else if (randomAnim == 3)
+                    {
+                        m_Animator.SetTrigger("ToClap");
+                    }
+                    else if (randomAnim == 4)
+                    {
+                        // 가만히 서있기
+                    }
+
                     reward = RandomGenreRoomReward();
                     if (reward == 1)
                     {
@@ -96,10 +113,10 @@ public class SpecialDoing : Action
                     break;
 
                 case (int)InteractionManager.SpotName.SportsRoom:
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", true);
-                    }
+                    m_Animator.SetTrigger("ToSit");
+                    randomAnim = Random.Range(1, 5);
+                    m_Animator.SetInteger("SitNum", randomAnim);
+
                     reward = RandomGenreRoomReward();
                     if (reward == 1)
                     {
@@ -110,10 +127,10 @@ public class SpecialDoing : Action
                     break;
 
                 case (int)InteractionManager.SpotName.ActionRoom:
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                    }
+                    m_Animator.SetTrigger("ToSit");
+                    randomAnim = Random.Range(1, 5);
+                    m_Animator.SetInteger("SitNum", randomAnim);
+
                     reward = RandomGenreRoomReward();
                     if (reward == 1)
                     {
@@ -124,10 +141,24 @@ public class SpecialDoing : Action
                     break;
 
                 case (int)InteractionManager.SpotName.ShootingRoom:
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
+                    randomAnim = Random.Range(1, 5);
+                    if (randomAnim == 1)
                     {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
+                        m_Animator.SetTrigger("ToThinking");
                     }
+                    else if (randomAnim == 2)
+                    {
+                        m_Animator.SetTrigger("ToVictory");
+                    }
+                    else if (randomAnim == 3)
+                    {
+                        m_Animator.SetTrigger("ToClap");
+                    }
+                    else if (randomAnim == 4)
+                    {
+                        // 가만히 서있기
+                    }
+
                     reward = RandomGenreRoomReward();
                     if (reward == 1)
                     {
@@ -138,12 +169,14 @@ public class SpecialDoing : Action
                     break;
 
                 case (int)InteractionManager.SpotName.Store:
+                    m_Animator.SetTrigger("ToTalk3");
                     InteractionManager.Instance.FacilityList[0].IsCalculating = true;
                     RandomFacilityReward();
                     this.gameObject.GetComponent<Student>().m_StudentStat.m_Health -= 1;
                     break;
 
                 case (int)InteractionManager.SpotName.BookStore:
+                    m_Animator.SetTrigger("ToTalk3");
                     InteractionManager.Instance.FacilityList[1].IsCalculating = true;
                     this.gameObject.GetComponent<Student>().m_StudentStat.m_Health -= 1;
                     this.gameObject.GetComponent<Student>().m_StudentStat.m_Passion -= 2;
@@ -153,14 +186,20 @@ public class SpecialDoing : Action
                 case (int)InteractionManager.SpotName.StudyRoom:
                     this.gameObject.GetComponent<Student>().m_StudentStat.m_Health -= 2;
                     this.gameObject.GetComponent<Student>().m_StudentStat.m_Passion -= 2;
+                    m_Animator.SetTrigger("ToSit");
+                    m_Animator.SetInteger("SitNum", 1);
                     RandomFacilityReward();
                     break;
 
                 case (int)InteractionManager.SpotName.Lounge1:
+                    m_Animator.SetTrigger("ToSit");
+                    m_Animator.SetInteger("SitNum", 1);
                     RandomFacilityReward();
                     break;
 
                 case (int)InteractionManager.SpotName.Lounge2:
+                    m_Animator.SetTrigger("ToSit");
+                    m_Animator.SetInteger("SitNum", 1);
                     RandomFacilityReward();
                     break;
 
@@ -173,6 +212,7 @@ public class SpecialDoing : Action
                     break;
 
                 case (int)InteractionManager.SpotName.AmusementMachine:
+                    m_Animator.SetTrigger("ToTyping");
                     RandomObjectReward();
                     break;
 
@@ -383,7 +423,7 @@ public class SpecialDoing : Action
                 int randomIncome = Random.Range(300, 1001);
                 int randomPassion = Random.Range(3, 6);
 
-                PlayerInfo.Instance.m_MyMoney += randomIncome;
+                PlayerInfo.Instance.MyMoney += randomIncome;
                 MonthlyReporter.Instance.m_NowMonth.IncomeSell += randomIncome;
                 gameObject.GetComponent<Student>().m_StudentStat.m_Passion += randomPassion;
             }
@@ -408,7 +448,7 @@ public class SpecialDoing : Action
                     gameObject.GetComponent<Student>().m_StudentStat.m_Health = 100;
                 }
                 randomInt = Random.Range(500, 1001);
-                PlayerInfo.Instance.m_MyMoney += randomInt;
+                PlayerInfo.Instance.MyMoney += randomInt;
                 MonthlyReporter.Instance.m_NowMonth.IncomeSell += randomInt;
             }
         }
@@ -432,12 +472,7 @@ public class SpecialDoing : Action
             }
         }
 
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("sittingIdel"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", false);
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-        }
-
+        m_Animator.SetTrigger("ToIdle");
         gameObject.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
         gameObject.GetComponent<Student>().m_IsCoolDown = true;
         //gameObject.GetComponent<Student>().InteractingObj = null;
@@ -448,7 +483,7 @@ public class SpecialDoing : Action
 
     IEnumerator ResetFacility(bool isGetReward)
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
 
         if (gameObject.GetComponent<Student>().NowRoom == (int)InteractionManager.SpotName.Store || gameObject.GetComponent<Student>().NowRoom == (int)InteractionManager.SpotName.BookStore)
         {
@@ -508,12 +543,10 @@ public class SpecialDoing : Action
 
             InteractionManager.Instance.ExitLounge(2);
         }
+        m_Animator.SetInteger("SitNum", 0);
+        m_Animator.SetTrigger("ToIdle");
 
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("sittingIdel"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", false);
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-        }
+        yield return new WaitForSeconds(1.5f);
 
         gameObject.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
         gameObject.GetComponent<Student>().m_IsCoolDown = true;
@@ -532,12 +565,7 @@ public class SpecialDoing : Action
 
         yield return new WaitForSeconds(3f);
 
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("sittingIdel"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", false);
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-        }
-
+        m_Animator.SetTrigger("ToIdle");
         gameObject.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
         gameObject.GetComponent<Student>().m_IsCoolDown = true;
         //gameObject.GetComponent<Student>().InteractingObj = null;
@@ -574,11 +602,10 @@ public class SpecialDoing : Action
             InteractionManager.Instance.ExitLounge(2);
         }
 
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("sittingIdel"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", false);
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-        }
+        m_Animator.SetTrigger("ToIdle");
+        m_Animator.SetInteger("SitNum", 0);
+        yield return new WaitForSeconds(1.5f);
+
         gameObject.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
         gameObject.GetComponent<Student>().m_IsCoolDown = true;
         //gameObject.GetComponent<Student>().InteractingObj = null;
@@ -590,20 +617,39 @@ public class SpecialDoing : Action
 
     IEnumerator ResetState()
     {
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(3f);
+
+        //InteractionManager.SpotName nowSpot = (InteractionManager.SpotName)gameObject.GetComponent<Student>().NowRoom;
+        //if (nowSpot == InteractionManager.SpotName.RhythmRoom)
+        //{
+        //    m_Animator.SetBool("IdleToDancing", false);
+        //    m_Animator.SetInteger("DancingNum", 0);
+        //}
+        //else if (nowSpot == InteractionManager.SpotName.RPGRoom || nowSpot == InteractionManager.SpotName.ShootingRoom)
+        //{
+        //    m_Animator.SetBool("IdleToThinking", false);
+        //    m_Animator.SetBool("IdleToVictory", false);
+        //    m_Animator.SetBool("IdleToStandingClap", false);
+        //}
+        //else
+        //{
+        //    m_Animator.SetBool("SittingIdle", false);
+        //    m_Animator.SetBool("SittingClap", false);
+        //    m_Animator.SetBool("SittingThumbsUp", false);
+        //    m_Animator.SetBool("SittingYawn", false);
+        //    m_Animator.SetBool("IdleToSit", false);
+        //}
+        m_Animator.SetTrigger("ToIdle");
+        m_Animator.SetInteger("SitNum", 0);
+
+        yield return new WaitForSeconds(1.5f);
 
         InteractionManager.Instance.ExitRoom((InteractionManager.SpotName)gameObject.GetComponent<Student>().NowRoom);
         gameObject.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
         gameObject.GetComponent<Student>().m_IsCoolDown = true;
-        //gameObject.GetComponent<Student>().InteractingObj = null;
         gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.Nothing;
         gameObject.GetComponent<NavMeshAgent>().isStopped = false;
-        
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("sittingIdel"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", false);
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-        }
+
         doingSomething = false;
     }
 
@@ -616,17 +662,35 @@ public class SpecialDoing : Action
 
         yield return new WaitForSeconds(3f);
 
+        //InteractionManager.SpotName nowSpot = (InteractionManager.SpotName)gameObject.GetComponent<Student>().NowRoom;
+        //if (nowSpot == InteractionManager.SpotName.RhythmRoom)
+        //{
+        //    m_Animator.SetBool("IdleToDancing", false);
+        //    m_Animator.SetInteger("DancingNum", 0);
+        //}
+        //else if (nowSpot == InteractionManager.SpotName.RPGRoom || nowSpot == InteractionManager.SpotName.ShootingRoom)
+        //{
+        //    m_Animator.SetBool("IdleToThinking", false);
+        //    m_Animator.SetBool("IdleToVictory", false);
+        //    m_Animator.SetBool("IdleToStandingClap", false);
+        //}
+        //else
+        //{
+        //    m_Animator.SetBool("SittingIdle", false);
+        //    m_Animator.SetBool("SittingClap", false);
+        //    m_Animator.SetBool("SittingThumbsUp", false);
+        //    m_Animator.SetBool("SittingYawn", false);
+        //}
+        m_Animator.SetTrigger("ToIdle");
+        m_Animator.SetInteger("SitNum", 0);
+
+        yield return new WaitForSeconds(1.5f);
+
         InteractionManager.Instance.ExitRoom((InteractionManager.SpotName)gameObject.GetComponent<Student>().NowRoom);
         gameObject.GetComponent<Student>().DoingValue = Student.Doing.EndInteracting;
         gameObject.GetComponent<Student>().m_IsCoolDown = true;
-        //gameObject.GetComponent<Student>().InteractingObj = null;
         gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.Nothing;
-        
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("sittingIdel"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", false);
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-        }
+
         gameObject.GetComponent<NavMeshAgent>().isStopped = false;
         gameObject.transform.GetChild(3).gameObject.SetActive(true);
         doingSomething = false;
@@ -642,37 +706,37 @@ public class SpecialDoing : Action
         {
             randIncome = Random.Range(10, 31);
             StartCoroutine(ClickEventManager.Instance.SPFadeOutText(transform.position, true, randIncome.ToString()));
-            PlayerInfo.Instance.m_SpecialPoint += randIncome;
+            PlayerInfo.Instance.SpecialPoint += randIncome;
         }
         else if (randomReward <= 40)
         {
             randIncome = Random.Range(3, 7);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Sense, randIncome.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense] += randIncome;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] += randIncome;
         }
         else if (randomReward <= 55)
         {
             randIncome = Random.Range(3, 7);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Technique, randIncome.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique] += randIncome;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] += randIncome;
         }
         else if (randomReward <= 70)
         {
             randIncome = Random.Range(3, 7);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Insight, randIncome.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight] += randIncome;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] += randIncome;
         }
         else if (randomReward <= 85)
         {
             randIncome = Random.Range(3, 7);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Concentration, randIncome.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] += randIncome;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += randIncome;
         }
         else
         {
             randIncome = Random.Range(3, 7);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Wit, randIncome.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit] += randIncome;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] += randIncome;
         }
     }
 
@@ -685,7 +749,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(6, 13);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, true, (int)GenreStat.RPG, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountList[(int)GenreStat.RPG] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountArr[(int)GenreStat.RPG] += randomStat;
 
             if (randomStat == 6)
                 isMinimumStat = true;
@@ -694,7 +758,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Sense, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -703,7 +767,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Insight, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -727,7 +791,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(6, 13);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, true, (int)GenreStat.Sports, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountList[(int)GenreStat.Sports] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountArr[(int)GenreStat.Sports] += randomStat;
 
             if (randomStat == 6)
                 isMinimumStat = true;
@@ -736,7 +800,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Sense, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -745,7 +809,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Technique, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -769,7 +833,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(6, 13);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, true, (int)GenreStat.Simulation, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountList[(int)GenreStat.Simulation] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountArr[(int)GenreStat.Simulation] += randomStat;
 
             if (randomStat == 6)
                 isMinimumStat = true;
@@ -778,7 +842,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Insight, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -787,7 +851,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Wit, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -811,7 +875,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(6, 13);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, true, (int)GenreStat.Action, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountList[(int)GenreStat.Action] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountArr[(int)GenreStat.Action] += randomStat;
 
             if (randomStat == 6)
                 isMinimumStat = true;
@@ -820,7 +884,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Concentration, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -829,7 +893,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Technique, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -853,7 +917,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(6, 13);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, true, (int)GenreStat.Rhythm, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountList[(int)GenreStat.Rhythm] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountArr[(int)GenreStat.Rhythm] += randomStat;
 
             if (randomStat == 6)
                 isMinimumStat = true;
@@ -862,7 +926,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Concentration, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -871,7 +935,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Wit, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -895,7 +959,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(6, 13);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, true, (int)GenreStat.Adventure, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountList[(int)GenreStat.Adventure] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountArr[(int)GenreStat.Adventure] += randomStat;
 
             if (randomStat == 6)
                 isMinimumStat = true;
@@ -904,7 +968,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Wit, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -913,7 +977,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Concentration, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -937,7 +1001,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(6, 13);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, true, (int)GenreStat.Shooting, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountList[(int)GenreStat.Shooting] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountArr[(int)GenreStat.Shooting] += randomStat;
 
             if (randomStat == 6)
                 isMinimumStat = true;
@@ -946,7 +1010,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Insight, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -955,7 +1019,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Concentration, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -979,7 +1043,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(6, 13);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, true, (int)GenreStat.Puzzle, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountList[(int)GenreStat.Puzzle] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_GenreAmountArr[(int)GenreStat.Puzzle] += randomStat;
 
             if (randomStat == 6)
                 isMinimumStat = true;
@@ -988,7 +1052,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Sense, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;
@@ -997,7 +1061,7 @@ public class SpecialDoing : Action
         {
             randomStat = Random.Range(2, 5);
             StartCoroutine(ClickEventManager.Instance.StatBoxFadeOut(transform.position, false, (int)AbilityType.Technique, randomStat.ToString()));
-            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique] += randomStat;
+            gameObject.GetComponent<Student>().m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique] += randomStat;
 
             if (randomStat == 2)
                 isMinimumStat = true;

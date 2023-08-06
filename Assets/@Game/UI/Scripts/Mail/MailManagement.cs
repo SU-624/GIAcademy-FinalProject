@@ -17,7 +17,8 @@ public enum MailType
 public class MailBox
 {
     public string m_MailTitle;
-    public string m_SendMailDate;
+    public int[] m_SendMailDate;
+    public int m_SenderID;
     public string m_FromMail;
     public string m_MailContent;
     public string m_Reward1;
@@ -34,15 +35,16 @@ public class MailManagement : MonoBehaviour
     [SerializeField] private Mail_Panel m_MailPanel;
     [SerializeField] private Sprite[] m_MailButtonSeletedImage;
     [SerializeField] private Sprite[] m_MailButtonImage;
+    [SerializeField] private Sprite[] m_SenderImage;
     [SerializeField] private GameObject m_BulbIcon;
 
-    private GameObject m_CurrentButton;                                 // 현재 내가 누른 버튼을 담아 둘 변수(신규 메일, 전체 메일 버튼 중)
-    private GameObject m_CurrentReadMail;                               // 내가 어떤 메일을 읽으려고 선택했는지 담아둘 변수
-    private List<MailBox> m_SentMailThisMonth = new List<MailBox>();    // 이번달 보낼 메일들을 잠시 담아두는 리스트
-    private List<MailBox> m_MailList = new List<MailBox>();             // 여태껏 발송된 모든 메일을 담아둘 리스트
-    public List<MailSender> m_MailSender = new List<MailSender>();      // 발송한 사람의 ID에 맞는 이름이 들어있다. 
-
-    private int _currentReadMailButtonIndex;                            // 내가 선택한 메일이 m_MailBoxContent의 몇 번째 자식으로 있는지 담아주는 변수
+    private GameObject m_CurrentButton;                                                 // 현재 내가 누른 버튼을 담아 둘 변수(신규 메일, 전체 메일 버튼 중)
+    private GameObject m_CurrentReadMail;                                               // 내가 어떤 메일을 읽으려고 선택했는지 담아둘 변수
+    private List<MailBox> m_SentMailThisMonth = new List<MailBox>();                    // 이번달 보낼 메일들을 잠시 담아두는 리스트
+    private List<MailBox> m_MailList = new List<MailBox>();                             // 여태껏 발송된 모든 메일을 담아둘 리스트
+    public List<MailSender> m_MailSender = new List<MailSender>();                      // 발송한 사람의 ID에 맞는 이름이 들어있다. 
+    private List<MailSenderImage> m_MailSenderImages = new List<MailSenderImage>();     // 발송한 사람의 ID에 맞는 이미지 인덱스가 들어있다.
+    private int _currentReadMailButtonIndex;                                            // 내가 선택한 메일이 m_MailBoxContent의 몇 번째 자식으로 있는지 담아주는 변수
     private int m_NowDay;
     private int m_NowMonth;
 
@@ -51,11 +53,15 @@ public class MailManagement : MonoBehaviour
         m_NowMonth = 0;
         m_NowDay = 1;
         InitMailSender();
+        InitMailSenderImageIndex();
         m_CurrentButton = m_MailPanel.NewMailButton.gameObject;
         m_MailPanel.m_ReceiptButton.onClick.AddListener(ClickRewardButton);
-        //m_MailList = AllInOneData.Instance.SendMailData;
-        DistributeSendMailData();
 
+        if (Json.Instance.UseLoadingData)
+        {
+            // 로딩한 정보를 메일함에 넣는다.
+            DistributeSendMailData();
+        }
     }
 
     private void Update()
@@ -64,7 +70,8 @@ public class MailManagement : MonoBehaviour
         {
             m_SentMailThisMonth.Clear();
 
-            if (m_NowMonth != 0 && m_NowMonth != GameTime.Instance.FlowTime.NowMonth && GameTime.Instance.FlowTime.NowWeek == 1 && GameTime.Instance.FlowTime.NowDay == 1)
+            if (m_NowMonth != 0 && m_NowMonth != GameTime.Instance.FlowTime.NowMonth &&
+                GameTime.Instance.FlowTime.NowWeek == 1 && GameTime.Instance.FlowTime.NowDay == 1)
             {
                 MonthlyReportMail();
                 SendMail();
@@ -72,14 +79,18 @@ public class MailManagement : MonoBehaviour
 
             for (int i = 0; i < AllOriginalJsonData.Instance.OriginalEmailData.Count; i++)
             {
-                string[] _date = AllOriginalJsonData.Instance.OriginalEmailData[i].Email_date.Split("/");
+                int[] _date = AllOriginalJsonData.Instance.OriginalEmailData[i].Email_date;
 
-                if (int.Parse(_date[0]) == GameTime.Instance.FlowTime.NowYear && int.Parse(_date[1]) == GameTime.Instance.FlowTime.NowMonth)
+                if (_date[0] == GameTime.Instance.FlowTime.NowYear &&
+                    _date[1] == GameTime.Instance.FlowTime.NowMonth)
                 {
-                    string _senderName = FindSenderName(AllOriginalJsonData.Instance.OriginalEmailData[i].Email_sender_id);
+                    string _senderName =
+                        FindSenderName(AllOriginalJsonData.Instance.OriginalEmailData[i].Email_sender_id);
 
-                    MakeMail(AllOriginalJsonData.Instance.OriginalEmailData[i].Email_Name, AllOriginalJsonData.Instance.OriginalEmailData[i].Email_date, _senderName,
-                        AllOriginalJsonData.Instance.OriginalEmailData[i].Email_script_Text, "", "", MailType.CommonMail, false, "", new Specification());
+                    MakeMail(AllOriginalJsonData.Instance.OriginalEmailData[i].Email_Name,
+                        AllOriginalJsonData.Instance.OriginalEmailData[i].Email_date, AllOriginalJsonData.Instance.OriginalEmailData[i].Email_sender_id, _senderName,
+                        AllOriginalJsonData.Instance.OriginalEmailData[i].Email_script_Text, "", "",
+                        MailType.CommonMail, false, "", new Specification());
                 }
             }
 
@@ -102,6 +113,8 @@ public class MailManagement : MonoBehaviour
     // AllInONeData에서 값 가져오기
     public void DistributeSendMailData()
     {
+        m_MailList.Clear();
+
         // 전체 저장된 메일 정보 순회
         foreach (var nowSendMailData in AllInOneData.Instance.SendMailData)
         {
@@ -151,24 +164,46 @@ public class MailManagement : MonoBehaviour
 
     private void InitMailSender()
     {
-        m_MailSender.Add(new MailSender(1, "정보수집가"));
-        m_MailSender.Add(new MailSender(2, "트렌드게임지"));
-        m_MailSender.Add(new MailSender(3, "게임메타"));
-        m_MailSender.Add(new MailSender(100, "청소년게이머박과장"));
-        m_MailSender.Add(new MailSender(101, "소도서관"));
-        m_MailSender.Add(new MailSender(102, "옥수수몬스터"));
-        m_MailSender.Add(new MailSender(103, "게임홀릭"));
-        m_MailSender.Add(new MailSender(104, "게임소식지"));
-        m_MailSender.Add(new MailSender(105, "누리넷"));
-        m_MailSender.Add(new MailSender(200, "소식통"));
-        m_MailSender.Add(new MailSender(201, "우왕굿"));
-        m_MailSender.Add(new MailSender(202, "녹두로만든우유"));
-        m_MailSender.Add(new MailSender(203, "학원잡"));
-        m_MailSender.Add(new MailSender(300, "익명"));
-        m_MailSender.Add(new MailSender(301, "블라블라"));
-        m_MailSender.Add(new MailSender(302, "회사인"));
-        m_MailSender.Add(new MailSender(400, "최고의게임만들기단"));
-        m_MailSender.Add(new MailSender(500, "게임교육협회"));
+        m_MailSender.Add(new MailSender(1000, "정보수집가"));
+        m_MailSender.Add(new MailSender(1001, "트렌드게임지"));
+        m_MailSender.Add(new MailSender(1002, "게임메타"));
+        m_MailSender.Add(new MailSender(2000, "청소년게이머박과장"));
+        m_MailSender.Add(new MailSender(2001, "소도서관"));
+        m_MailSender.Add(new MailSender(2002, "옥수수몬스터"));
+        m_MailSender.Add(new MailSender(2003, "게임홀릭"));
+        m_MailSender.Add(new MailSender(2004, "게임소식지"));
+        m_MailSender.Add(new MailSender(2005, "누리넷"));
+        m_MailSender.Add(new MailSender(3000, "소식통"));
+        m_MailSender.Add(new MailSender(3001, "우왕굿"));
+        m_MailSender.Add(new MailSender(3002, "녹두로만든우유"));
+        m_MailSender.Add(new MailSender(3003, "학원잡"));
+        m_MailSender.Add(new MailSender(4000, "익명"));
+        m_MailSender.Add(new MailSender(4001, "블라블라"));
+        m_MailSender.Add(new MailSender(4002, "회사인"));
+        m_MailSender.Add(new MailSender(5000, "최고의게임만들기단"));
+        m_MailSender.Add(new MailSender(6000, "게임교육협회"));
+    }
+
+    private void InitMailSenderImageIndex()
+    {
+        m_MailSenderImages.Add(new MailSenderImage(1000, 0));
+        m_MailSenderImages.Add(new MailSenderImage(1001, 1));
+        m_MailSenderImages.Add(new MailSenderImage(1002, 2));
+        m_MailSenderImages.Add(new MailSenderImage(2000, 3));
+        //m_MailSenderImages.Add(new MailSenderImage(2001, 1));
+        m_MailSenderImages.Add(new MailSenderImage(2002, 4));
+        //m_MailSenderImages.Add(new MailSenderImage(2003, 1));
+        //m_MailSenderImages.Add(new MailSenderImage(2004, 1));
+        //m_MailSenderImages.Add(new MailSenderImage(2005, 1));
+        m_MailSenderImages.Add(new MailSenderImage(3000, 5));
+        //m_MailSenderImages.Add(new MailSenderImage(3001, 10));
+        m_MailSenderImages.Add(new MailSenderImage(3002, 6));
+        //m_MailSenderImages.Add(new MailSenderImage(3003, 12));
+        m_MailSenderImages.Add(new MailSenderImage(4000, 7));
+        //m_MailSenderImages.Add(new MailSenderImage(4001, 14));
+        //m_MailSenderImages.Add(new MailSenderImage(4002, 15));
+        m_MailSenderImages.Add(new MailSenderImage(5000, 8));
+        m_MailSenderImages.Add(new MailSenderImage(6000, 9));
     }
 
     // 보낸 사람을 ID값으로 찾아주는 함수
@@ -195,24 +230,26 @@ public class MailManagement : MonoBehaviour
 
         int _index = m_MailList.FindIndex(x => x.m_MailTitle == m_Parent);
 
-        PlayerInfo.Instance.m_MyMoney += int.Parse(m_MailList[_index].m_Reward1);
-        PlayerInfo.Instance.m_SpecialPoint += int.Parse(m_MailList[_index].m_Reward2);
+        PlayerInfo.Instance.MyMoney += int.Parse(m_MailList[_index].m_Reward1);
+        PlayerInfo.Instance.SpecialPoint += int.Parse(m_MailList[_index].m_Reward2);
 
         m_MailPanel.SetReceiptButton(false);
     }
 
-    public void MakeMail(string _title, string _date, string _from, string _content, string _reward1, string _reward2, MailType _type, bool _rewardButton, string _month, Specification _monthlyReport)
+    public void MakeMail(string _title, int[] _date, int _senderID, string _from, string _content, string _reward1, string _reward2,
+        MailType _type, bool _rewardButton, string _month, Specification _monthlyReport)
     {
         MailBox MailComposition = new MailBox();
         MailComposition.m_MailTitle = _title;
         MailComposition.m_SendMailDate = _date;
+        MailComposition.m_SenderID = _senderID;
         MailComposition.m_FromMail = _from;
         MailComposition.m_MailContent = _content;
         MailComposition.m_Type = _type;
         MailComposition.m_Reward1 = _reward1;
         MailComposition.m_Reward2 = _reward2;
         MailComposition.m_IsNewMail = true;
-        MailComposition.m_MonthReportMailContent = _monthlyReport;      // 월간 보고 만들 때만 값을 넣어준다.
+        MailComposition.m_MonthReportMailContent = _monthlyReport; // 월간 보고 만들 때만 값을 넣어준다.
         MailComposition.m_Month = _month;
         m_MailPanel.SetReceiptButton(_rewardButton);
 
@@ -222,32 +259,39 @@ public class MailManagement : MonoBehaviour
     // 월간 보고는 매 달 해줘야 한다.
     private void MonthlyReportMail()
     {
-        string _monthlyReportTitle = PlayerInfo.Instance.m_AcademyName + " " + (GameTime.Instance.FlowTime.NowMonth - 1).ToString() + "월 월간보고";
+        string _monthlyReportTitle = PlayerInfo.Instance.AcademyName + " " +
+                                     (GameTime.Instance.FlowTime.NowMonth - 1).ToString() + "월 월간보고";
 
         if (GameTime.Instance.FlowTime.NowMonth == 1)
         {
-            _monthlyReportTitle = PlayerInfo.Instance.m_AcademyName + " " + "1월 월간보고";
+            _monthlyReportTitle = PlayerInfo.Instance.AcademyName + " " + "1월 월간보고";
         }
+        int[] _date = new int[4];
 
-        string _monthlyReportDate = GameTime.Instance.FlowTime.NowYear.ToString() + "년 " + GameTime.Instance.FlowTime.NowMonth.ToString() + "월 " + "1일";
+        _date[0] = GameTime.Instance.FlowTime.NowYear;
+        _date[1] = GameTime.Instance.FlowTime.NowMonth;
+        _date[3] = 1;
+
         string _month = (GameTime.Instance.FlowTime.NowMonth - 1).ToString();
         string _sender = "운영사무국";
         Specification _mailContent = MonthlyReporter.Instance.m_PrevMonth;
 
-        MakeMail(_monthlyReportTitle, _monthlyReportDate, _sender, "", "", "", MailType.MonthReport, false, _month, _mailContent);
+        MakeMail(_monthlyReportTitle, _date, 6000, _sender, "", "", "", MailType.MonthReport, false, _month,
+            _mailContent);
     }
 
     public void SendMail()
     {
         for (int i = 0; i < m_SentMailThisMonth.Count; i++)
         {
-            string[] _date = m_SentMailThisMonth[i].m_SendMailDate.Split("/");
+            int[] _date = m_SentMailThisMonth[i].m_SendMailDate;
 
             if (m_SentMailThisMonth[i].m_Type == MailType.CommonMail)
             {
-                if (int.Parse(_date[0]) == GameTime.Instance.FlowTime.NowYear &&
-                    int.Parse(_date[1]) == GameTime.Instance.FlowTime.NowMonth &&
-                    int.Parse(_date[2]) == GameTime.Instance.FlowTime.NowDay)
+                if (_date[0] == GameTime.Instance.FlowTime.NowYear &&
+                    _date[1] == GameTime.Instance.FlowTime.NowMonth &&
+                    _date[2] == GameTime.Instance.FlowTime.NowWeek &&
+                    _date[3] == GameTime.Instance.FlowTime.NowDay)
                 {
                     SetMailPrefab(i, _date);
                 }
@@ -260,7 +304,7 @@ public class MailManagement : MonoBehaviour
     }
 
     // 보낼 메일들의 프리팹 상태를 셋팅해준다.
-    private void SetMailPrefab(int _index, string[] _date)
+    private void SetMailPrefab(int _index, int[] _date)
     {
         GameObject m_Mail;
 
@@ -270,21 +314,29 @@ public class MailManagement : MonoBehaviour
         m_Mail.name = m_SentMailThisMonth[_index].m_MailTitle;
         m_Mail.GetComponent<MailPrefab>().m_MailTitle.text = m_SentMailThisMonth[_index].m_MailTitle;
 
-        if (m_SentMailThisMonth[_index].m_Type == MailType.MonthReport || m_SentMailThisMonth[_index].m_Type == MailType.RewardMail)
-        {
-            m_Mail.GetComponent<MailPrefab>().m_MailDate.text = _date[0];
-        }
-        else
-        {
-            m_Mail.GetComponent<MailPrefab>().m_MailDate.text = _date[0] + "년 " + _date[1] + "월 " + _date[2] + "일";
-        }
+        m_Mail.GetComponent<MailPrefab>().m_MailDate.text = _date[0] + "년 " + _date[1] + "월 " + _date[2] + "일";
 
         m_Mail.GetComponent<MailPrefab>().m_MailFrom.text = m_SentMailThisMonth[_index].m_FromMail;
+        Sprite _senderImage = SenderImage(m_SentMailThisMonth[_index].m_SenderID);
+        m_Mail.GetComponent<MailPrefab>().m_MailIcon.sprite = _senderImage;
         m_Mail.GetComponent<MailPrefab>().m_ReadButton.onClick.AddListener(ReadMail);
         m_BulbIcon.SetActive(true);
 
         m_MailList.Add(m_SentMailThisMonth[_index]);
         m_SentMailThisMonth.RemoveAt(_index);
+    }
+
+    private Sprite SenderImage(int _senderID)
+    {
+        foreach (MailSenderImage image in m_MailSenderImages)
+        {
+            if (image.SenderID == _senderID)
+            {
+                return m_SenderImage[image.Spriteindex];
+            }
+        }
+
+        return null;
     }
 
     // 메일의 읽기 버튼을 눌렀을 때 메일의 타입별로 셋팅을 나눠준다.
@@ -303,7 +355,8 @@ public class MailManagement : MonoBehaviour
 
             if (m_MailList[_index].m_Type == MailType.CommonMail)
             {
-                m_MailPanel.SetReadMailContent(m_MailList[_index].m_MailTitle, m_MailList[_index].m_FromMail, m_MailList[_index].m_MailContent);
+                m_MailPanel.SetReadMailContent(m_MailList[_index].m_MailTitle, m_MailList[_index].m_FromMail,
+                    m_MailList[_index].m_MailContent);
                 m_MailPanel.SetActiveReadMail(true);
                 m_MailPanel.SetReward(false, false, "", "");
             }
@@ -333,7 +386,8 @@ public class MailManagement : MonoBehaviour
 
             if (m_MailList[_index].m_Type == MailType.CommonMail)
             {
-                m_MailPanel.SetReadMailContent(m_MailList[_index].m_MailTitle, m_MailList[_index].m_FromMail, m_MailList[_index].m_MailContent);
+                m_MailPanel.SetReadMailContent(m_MailList[_index].m_MailTitle, m_MailList[_index].m_FromMail,
+                    m_MailList[_index].m_MailContent);
                 m_MailPanel.SetActiveReadMail(true);
                 m_MailPanel.SetReward(false, false, "", "");
             }
@@ -346,6 +400,8 @@ public class MailManagement : MonoBehaviour
                 SetMonthReportMailContent(_index);
             }
         }
+
+        m_MailPanel.SetBackButtonActive(true);
     }
 
     // 보상이 있는 메일일 때
@@ -368,24 +424,25 @@ public class MailManagement : MonoBehaviour
             m_MailPanel.SetReward(false, false, "", "");
         }
 
-        m_MailPanel.SetReadMailContent(m_MailList[_index].m_MailTitle, m_MailList[_index].m_FromMail, m_MailList[_index].m_MailContent);
+        m_MailPanel.SetReadMailContent(m_MailList[_index].m_MailTitle, m_MailList[_index].m_FromMail,
+            m_MailList[_index].m_MailContent);
         m_MailPanel.SetActiveReadMail(true);
     }
 
     // 월간 보고일 때
     private void SetMonthReportMailContent(int _index)
     {
-        string incomeEventResult = "+" + m_MailList[_index].m_MonthReportMailContent.IncomeEventResult.ToString() + "G";
-        string incomeSell = "+" + m_MailList[_index].m_MonthReportMailContent.IncomeSell.ToString() + "G";
-        string incomeActivity = "+" + m_MailList[_index].m_MonthReportMailContent.IncomeActivity.ToString() + "G";
-        string incomeAcademyFee = "+" + m_MailList[_index].m_MonthReportMailContent.IncomeAcademyFee.ToString() + "G";
+        string incomeEventResult = "+" + string.Format("{0:#,0}", m_MailList[_index].m_MonthReportMailContent.IncomeEventResult) + "G";
+        string incomeSell = "+" + string.Format("{0:#,0}", m_MailList[_index].m_MonthReportMailContent.IncomeSell) + "G";
+        string incomeActivity = "+" + string.Format("{0:#,0}", m_MailList[_index].m_MonthReportMailContent.IncomeActivity) + "G";
+        string incomeAcademyFee = "+" + string.Format("{0:#,0}", m_MailList[_index].m_MonthReportMailContent.IncomeAcademyFee) + "G";
 
-        string expenseEventResult = "-" + m_MailList[_index].m_MonthReportMailContent.ExpensesEventResult.ToString() + "G";
-        string expensesEventCost = "-" + m_MailList[_index].m_MonthReportMailContent.ExpensesEventCost.ToString() + "G";
-        string expenseActivity = "-" + m_MailList[_index].m_MonthReportMailContent.ExpensesActivity.ToString() + "G";
-        string expensesSalary = "-" + m_MailList[_index].m_MonthReportMailContent.ExpensesSalary.ToString() + "G";
-        string expensesFacility = "-" + m_MailList[_index].m_MonthReportMailContent.ExpensesFacility.ToString() + "G";
-        string expensesTuitionFee = "-" + m_MailList[_index].m_MonthReportMailContent.ExpensesTuitionFee.ToString() + "G";
+        string expenseEventResult = "-" + string.Format("{0:#,0}", m_MailList[_index].m_MonthReportMailContent.ExpensesEventResult) + "G";
+        string expensesEventCost = "-" + string.Format("{0:#,0}", m_MailList[_index].m_MonthReportMailContent.ExpensesEventCost) + "G";
+        string expenseActivity = "-" + string.Format("{0:#,0}", m_MailList[_index].m_MonthReportMailContent.ExpensesActivity) + "G";
+        string expensesSalary = "-" + string.Format("{0:#,0}", m_MailList[_index].m_MonthReportMailContent.ExpensesSalary) + "G";
+        string expensesFacility = "-" + string.Format("{0:#,0}", m_MailList[_index].m_MonthReportMailContent.ExpensesFacility) + "G";
+        string expensesTuitionFee = "-" + string.Format("{0:#,0}", m_MailList[_index].m_MonthReportMailContent.ExpensesTuitionFee) + "G";
 
         int totalIncome = m_MailList[_index].m_MonthReportMailContent.TotalIncome;
 
@@ -393,9 +450,10 @@ public class MailManagement : MonoBehaviour
 
         int netProfit = m_MailList[_index].m_MonthReportMailContent.NetProfit;
 
-        string totalIncomeText = "+" + totalIncome.ToString() + "G";
-        string totalExpensesText = "-" + totalExpenses.ToString() + "G";
-        string netProfitText = totalIncome < totalExpenses ? netProfit.ToString() + "G" : "+" + netProfit.ToString() + "G";
+        string totalIncomeText = "+" + string.Format("{0:#,0}", totalIncome) + "G";
+        string totalExpensesText = "-" + string.Format("{0:#,0}", totalExpenses) + "G";
+        string netProfitText =
+            totalIncome < totalExpenses ? string.Format("{0:#,0}", netProfit) + "G" : "+" + string.Format("{0:#,0}", netProfit) + "G";
 
         string goodsScore = m_MailList[_index].m_MonthReportMailContent.GoodsScore.ToString();
         string talentDevelopScore = m_MailList[_index].m_MonthReportMailContent.TalentDevelopmentScore.ToString();
@@ -404,10 +462,12 @@ public class MailManagement : MonoBehaviour
         string managementScore = m_MailList[_index].m_MonthReportMailContent.ManagementScore.ToString();
 
         string contentDate = m_MailList[_index].m_Month;
+        string date = m_MailList[_index].m_SendMailDate[0].ToString() + "년" + m_MailList[_index].m_SendMailDate[1].ToString() + "월" + m_MailList[_index].m_SendMailDate[3].ToString() + "일";
 
-        m_MailPanel.SetMonthlyReportMailContnet(m_MailList[_index].m_MailTitle, m_MailList[_index].m_FromMail, m_MailList[_index].m_SendMailDate,
-           incomeEventResult, incomeSell, incomeActivity, incomeAcademyFee, expenseEventResult, expensesEventCost, expenseActivity, expensesSalary,
-            expensesFacility, expensesTuitionFee, goodsScore, famousScore, activityScore, managementScore, talentDevelopScore, contentDate);
+        m_MailPanel.SetMonthlyReportMailContnet(m_MailList[_index].m_MailTitle, m_MailList[_index].m_FromMail,
+            date, incomeEventResult, incomeSell, incomeActivity, incomeAcademyFee, expenseEventResult, expensesEventCost,
+            expenseActivity, expensesSalary, expensesFacility, expensesTuitionFee, goodsScore, famousScore, activityScore, managementScore,
+            talentDevelopScore, contentDate);
 
         m_MailPanel.SetMonthlyReportTotalCostMailContent(totalIncomeText, totalExpensesText, netProfitText);
 
@@ -421,6 +481,7 @@ public class MailManagement : MonoBehaviour
         {
             m_CurrentButton = m_MailPanel.NewMailButton.gameObject;
         }
+
         m_MailPanel.NewMailButtonImgae.sprite = m_MailButtonSeletedImage[0];
         m_MailPanel.AllMailButtonImgae.sprite = m_MailButtonImage[1];
 
@@ -456,7 +517,7 @@ public class MailManagement : MonoBehaviour
         {
             if (m_MailPanel.ReadMailContent.activeSelf || m_MailPanel.ReadMonthReport.activeSelf)
             {
-                CloseMail();
+                ClickBackButton();
                 _destroyMailCount -= 1;
             }
 
@@ -484,16 +545,11 @@ public class MailManagement : MonoBehaviour
 
                     m_NewMail.GetComponent<MailPrefab>().m_MailTitle.text = m_MailList[i].m_MailTitle;
 
-                    if (m_MailList[i].m_Type == MailType.MonthReport || m_MailList[i].m_Type == MailType.RewardMail)
-                    {
-                        m_NewMail.GetComponent<MailPrefab>().m_MailDate.text = m_MailList[i].m_SendMailDate;
-                    }
-                    else
-                    {
-                        string[] _date = m_MailList[i].m_SendMailDate.Split("/");
-                        m_NewMail.GetComponent<MailPrefab>().m_MailDate.text = _date[0] + "년 " + _date[1] + "월 " + _date[2] + "일";
-                    }
+                    int[] _date = m_MailList[i].m_SendMailDate;
+                    m_NewMail.GetComponent<MailPrefab>().m_MailDate.text = _date[0] + "년 " + _date[1] + "월 " + _date[2] + "일";
 
+                    Sprite _senderImage = SenderImage(m_MailList[i].m_SenderID);
+                    m_NewMail.GetComponent<MailPrefab>().m_MailIcon.sprite = _senderImage;
                     m_NewMail.GetComponent<MailPrefab>().m_MailFrom.text = m_MailList[i].m_FromMail;
                     m_NewMail.GetComponent<MailPrefab>().m_ReadButton.onClick.AddListener(ReadMail);
                 }
@@ -508,7 +564,7 @@ public class MailManagement : MonoBehaviour
         {
             if (m_MailPanel.ReadMailContent.activeSelf || m_MailPanel.ReadMonthReport.activeSelf)
             {
-                CloseMail();
+                ClickBackButton();
             }
 
             m_MailPanel.NewMailButtonImgae.sprite = m_MailButtonImage[0];
@@ -533,15 +589,10 @@ public class MailManagement : MonoBehaviour
 
                 m_AllMail.GetComponent<MailPrefab>().m_MailTitle.text = m_MailList[i].m_MailTitle;
 
-                if (m_MailList[i].m_Type == MailType.MonthReport || m_MailList[i].m_Type == MailType.RewardMail)
-                {
-                    m_AllMail.GetComponent<MailPrefab>().m_MailDate.text = m_MailList[i].m_SendMailDate;
-                }
-                else
-                {
-                    string[] _date = m_MailList[i].m_SendMailDate.Split("/");
-                    m_AllMail.GetComponent<MailPrefab>().m_MailDate.text = _date[0] + "년 " + _date[1] + "월 " + _date[2] + "일";
-                }
+                int[] _date = m_MailList[i].m_SendMailDate;
+                m_AllMail.GetComponent<MailPrefab>().m_MailDate.text = _date[0] + "년 " + _date[1] + "월 " + _date[2] + "일";
+                Sprite _senderImage = SenderImage(m_MailList[i].m_SenderID);
+                m_AllMail.GetComponent<MailPrefab>().m_MailIcon.sprite = _senderImage;
 
                 m_AllMail.GetComponent<MailPrefab>().m_MailFrom.text = m_MailList[i].m_FromMail;
                 m_AllMail.GetComponent<MailPrefab>().m_ReadButton.onClick.AddListener(ReadMail);
@@ -551,8 +602,52 @@ public class MailManagement : MonoBehaviour
         }
     }
 
-    // 닫기 버튼을 누르면 방금 읽은 메일을 삭제시켜주고 신규 메일이 없다면 신규메일 없음 띄워주기
     public void CloseMail()
+    {
+        if (m_MailPanel.ReadMailContent.activeSelf || m_MailPanel.ReadMonthReport.activeSelf)
+        {
+            m_MailPanel.SetActiveReadMail(false);
+            m_MailPanel.SetActiveReadMonthlyReportMail(false);
+        }
+
+        if (m_CurrentButton.name == "New_Mail_Button")
+        {
+            int _destoryMailObj = m_MailPanel.MailBoxContent.childCount;
+
+            if (_destoryMailObj != 0)
+            {
+                for (int i = _destoryMailObj - 1; i >= 0; i--)
+                {
+                    MailObjectPool.ReturnObject(m_MailPanel.MailBoxContent.GetChild(i).gameObject);
+                }
+            }
+
+            m_MailPanel.SetNotNewMailPanel(true);
+
+            foreach (MailBox mail in m_MailList)
+            {
+                if (mail.m_IsNewMail)
+                {
+                    mail.m_IsNewMail = false;
+                }
+            }
+
+            m_BulbIcon.SetActive(false);
+        }
+        else if (m_CurrentButton.name == "All_Mail_Button")
+        {
+            for (int i = m_MailList.Count - 1; i >= 0; i--)
+            {
+                MailObjectPool.ReturnObject(m_MailPanel.MailBoxContent.GetChild(i).gameObject);
+            }
+
+            m_BulbIcon.SetActive(false);
+        }
+
+        m_MailPanel.ClickMailPanelCloseButton();
+    }
+
+    public void ClickBackButton()
     {
         if (m_CurrentButton.name == "New_Mail_Button")
         {
@@ -571,52 +666,7 @@ public class MailManagement : MonoBehaviour
             m_MailPanel.SetActiveReadMail(false);
             m_MailPanel.SetActiveReadMonthlyReportMail(false);
         }
-    }
 
-    // 뒤로가기 버튼을 눌렀을 때
-    public void ClickBackButton()
-    {
-        if (m_MailPanel.ReadMailContent.activeSelf || m_MailPanel.ReadMonthReport.activeSelf)
-        {
-            CloseMail();
-        }
-        else
-        {
-            if (m_CurrentButton.name == "New_Mail_Button")
-            {
-                int _destoryMailObj = m_MailPanel.MailBoxContent.childCount;
-
-                if (_destoryMailObj != 0)
-                {
-                    for (int i = 0; i < _destoryMailObj; i++)
-                    {
-                        MailObjectPool.ReturnObject(m_MailPanel.MailBoxContent.GetChild(i).gameObject);
-                    }
-                }
-
-                m_MailPanel.SetNotNewMailPanel(true);
-
-                foreach (MailBox mail in m_MailList)
-                {
-                    if (mail.m_IsNewMail)
-                    {
-                        mail.m_IsNewMail = false;
-                    }
-                }
-
-                m_BulbIcon.SetActive(false);
-            }
-            else if (m_CurrentButton.name == "All_Mail_Button")
-            {
-                for (int i = m_MailList.Count - 1; i >= 0; i--)
-                {
-                    MailObjectPool.ReturnObject(m_MailPanel.MailBoxContent.GetChild(i).gameObject);
-                }
-
-                m_BulbIcon.SetActive(false);
-            }
-
-            m_MailPanel.ClickMailPanelBackButton();
-        }
+        m_MailPanel.SetBackButtonActive(false);
     }
 }

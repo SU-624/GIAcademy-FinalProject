@@ -7,11 +7,12 @@ using UnityEngine.AI;
 public class ProfSpecialDoing : Action
 {
     private bool doingSomething = false;
+    private Animator m_Animator;
 
     public override void OnStart()
-	{
-		
-	}
+    {
+        m_Animator = gameObject.GetComponent<Animator>();
+    }
 
 	public override TaskStatus OnUpdate()
 	{
@@ -22,12 +23,14 @@ public class ProfSpecialDoing : Action
             switch (gameObject.GetComponent<Instructor>().NowRoom)
             {
                 case (int)InteractionManager.SpotName.Store:
+                    m_Animator.SetTrigger("ToTalk3");
                     InteractionManager.Instance.FacilityList[0].IsCalculating = true;
                     this.gameObject.GetComponent<Instructor>().m_InstructorData.m_ProfessorHealth -= 1;
                     RandomFacilityReward();
                     break;
 
                 case (int)InteractionManager.SpotName.BookStore:
+                    m_Animator.SetTrigger("ToTalk3");
                     InteractionManager.Instance.FacilityList[1].IsCalculating = true;
                     this.gameObject.GetComponent<Instructor>().m_InstructorData.m_ProfessorHealth -= 1;
                     this.gameObject.GetComponent<Instructor>().m_InstructorData.m_ProfessorPassion -= 2;
@@ -35,10 +38,14 @@ public class ProfSpecialDoing : Action
                     break;
 
                 case (int)InteractionManager.SpotName.Lounge1:
+                    m_Animator.SetTrigger("ToSit");
+                    m_Animator.SetInteger("SitNum", 1);
                     RandomFacilityReward();
                     break;
 
                 case (int)InteractionManager.SpotName.Lounge2:
+                    m_Animator.SetTrigger("ToSit");
+                    m_Animator.SetInteger("SitNum", 1);
                     RandomFacilityReward();
                     break;
 
@@ -47,10 +54,12 @@ public class ProfSpecialDoing : Action
                     break;
 
                 case (int)InteractionManager.SpotName.Pot:
+                    m_Animator.SetTrigger("ToPointing");
                     RandomObjectReward();
                     break;
 
                 case (int)InteractionManager.SpotName.AmusementMachine:
+                    m_Animator.SetTrigger("ToTyping");
                     RandomObjectReward();
                     break;
 
@@ -176,7 +185,6 @@ public class ProfSpecialDoing : Action
     private int RandomFacilityReward()
     {
         int randomScript = Random.Range(1, 101);
-
         // 스크립트 진행
         if (randomScript <= 30)
         {
@@ -216,7 +224,7 @@ public class ProfSpecialDoing : Action
                 int randomIncome = Random.Range(300, 1001);
                 int randomPassion = Random.Range(3, 6);
 
-                PlayerInfo.Instance.m_MyMoney += randomIncome;
+                PlayerInfo.Instance.MyMoney += randomIncome;
                 MonthlyReporter.Instance.m_NowMonth.IncomeSell += randomIncome;
                 gameObject.GetComponent<Instructor>().m_InstructorData.m_ProfessorPassion += randomPassion;
             }
@@ -241,7 +249,7 @@ public class ProfSpecialDoing : Action
                     gameObject.GetComponent<Instructor>().m_InstructorData.m_ProfessorHealth = 100;
                 }
                 randomInt = Random.Range(500, 1001);
-                PlayerInfo.Instance.m_MyMoney += randomInt;
+                PlayerInfo.Instance.MyMoney += randomInt;
                 MonthlyReporter.Instance.m_NowMonth.IncomeSell += randomInt;
             }
         }
@@ -288,6 +296,8 @@ public class ProfSpecialDoing : Action
         }
         else if (gameObject.GetComponent<Instructor>().NowRoom == (int)InteractionManager.SpotName.Lounge1)
         {
+            m_Animator.SetInteger("SitNum", 0);
+
             if (isGetReward)
             {
                 int randomInt = Random.Range(20, 41);
@@ -308,6 +318,8 @@ public class ProfSpecialDoing : Action
         }
         else if (gameObject.GetComponent<Instructor>().NowRoom == (int)InteractionManager.SpotName.Lounge2)
         {
+            m_Animator.SetInteger("SitNum", 0);
+
             if (isGetReward)
             {
                 int randomInt = Random.Range(20, 41);
@@ -327,12 +339,7 @@ public class ProfSpecialDoing : Action
             InteractionManager.Instance.ExitLounge(2);
         }
 
-
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Sitting Idle"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToSitting", false);
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdle", true);
-        }
+        yield return new WaitForSeconds(1.5f);
 
         gameObject.GetComponent<Instructor>().DoingValue = Instructor.Doing.EndInteracting;
         gameObject.GetComponent<Instructor>().m_IsCoolDown = true;
@@ -351,12 +358,7 @@ public class ProfSpecialDoing : Action
 
         yield return new WaitForSeconds(3f);
 
-
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Sitting Idle"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToSitting", false);
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdle", true);
-        }
+        m_Animator.SetTrigger("ToIdle");
 
         gameObject.GetComponent<Instructor>().DoingValue = Instructor.Doing.EndInteracting;
         gameObject.GetComponent<Instructor>().m_IsCoolDown = true;
@@ -381,20 +383,18 @@ public class ProfSpecialDoing : Action
         }
         else if (gameObject.GetComponent<Student>().NowRoom == (int)InteractionManager.SpotName.Lounge1)
         {
+            m_Animator.SetInteger("SitNum", 0);
             InteractionManager.Instance.ExitLounge(1);
         }
         else if (gameObject.GetComponent<Student>().NowRoom == (int)InteractionManager.SpotName.Lounge2)
         {
+            m_Animator.SetInteger("SitNum", 0);
             InteractionManager.Instance.ExitLounge(2);
         }
 
+        yield return new WaitForSeconds(1.5f);
 
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Sitting Idle"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToSitting", false);
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdle", true);
-        }
-
+        m_Animator.SetTrigger("ToIdle");
         gameObject.GetComponent<Instructor>().DoingValue = Instructor.Doing.EndInteracting;
         gameObject.GetComponent<Instructor>().m_IsCoolDown = true;
         //gameObject.GetComponent<Instructor>().InteractingObj = null;

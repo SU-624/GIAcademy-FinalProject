@@ -21,6 +21,7 @@ public class Instructor : MonoBehaviour
         EndInteracting,
         InFacility,
         ObjectInteraction,
+        Vacation,
         Idle
     }
 
@@ -44,6 +45,8 @@ public class Instructor : MonoBehaviour
     public bool m_IsArrivedClass;
     public bool m_IsDesSetting;
     private Doing m_Doing;
+    public Transform LookTransform;
+
     public Doing DoingValue
     {
         get => m_Doing;
@@ -95,6 +98,20 @@ public class Instructor : MonoBehaviour
 
         switch (m_Doing)
         {
+            case Doing.InFacility:
+                {
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookTransform.forward),
+                        Time.deltaTime * 4f);
+                }
+                break;
+
+            case Doing.ObjectInteraction:
+                {
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookTransform.forward),
+                        Time.deltaTime * 4f);
+                }
+                break;
+
             // 쿨타임 적용할 부분
             case Doing.EndInteracting:
                 {
@@ -140,15 +157,21 @@ public class Instructor : MonoBehaviour
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lookTransform.forward),
                 Time.deltaTime * 10);
         }
+
+        if (GameTime.Instance.Month == 2 && GameTime.Instance.Week == 4 && GameTime.Instance.Day == 5 &&
+            DoingValue == Doing.Vacation)
+        {
+            DoingValue = Doing.FreeWalk;
+        }
     }
 
     public void Initialize(ProfessorStat stat)
     {
-        this.name = stat.m_ProfessorNameValue;
-        //gameObject = professorTag.m_ProfessorNameValue;
+        this.name = stat.m_ProfessorName;
+        //gameObject = professorTag.m_ProfessorName;
 
         m_InstructorData = stat;
-        // m_InstructorData.m_ProfessorNameValue = stat.m_ProfessorNameValue;
+        // m_InstructorData.m_ProfessorName = stat.m_ProfessorName;
         // m_InstructorData.m_ProfessorType = stat.m_ProfessorType;
         // m_InstructorData.m_ProfessorPassion = stat.m_ProfessorPassion;
         // m_InstructorData.m_ProfessorHealth = stat.m_ProfessorHealth;

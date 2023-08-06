@@ -5,10 +5,10 @@ using TMPro;
 public class InJaeRecommendResult : MonoBehaviour
 {
     [Header("결과창 패널의 속성들")]
-    [SerializeField] private GameObject[] m_GMStudentResult;
+    [SerializeField] private GameObject[] m_GameDesignerStudentResult;
     [SerializeField] private GameObject[] m_ArtStudentResult;
     [SerializeField] private GameObject[] m_ProgrammingStudentResult;
-    [SerializeField] private Transform m_GMStudentResultParent;
+    [SerializeField] private Transform m_GameDesignerStudentResultParent;
     [SerializeField] private Transform m_ArtStudentResultParent;
     [SerializeField] private Transform m_ProgrammingStudentResultParent;
     [SerializeField] private GameObject m_DetailResultPanel;
@@ -25,6 +25,7 @@ public class InJaeRecommendResult : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_DetailCompanyName;
 
     public Button DetailPanelCloseButton { get { return m_DetailPanelCloseButton; } set { m_DetailPanelCloseButton = value; } }
+    public Button OKButton { get { return m_OKButton; } set { m_OKButton = value; } }
 
     private void Start()
     {
@@ -57,7 +58,7 @@ public class InJaeRecommendResult : MonoBehaviour
     {
         for (int i = 0; i < 6; i++)
         {
-            m_GMStudentResult[i].GetComponent<RecommendResultStudentPrefab>().m_StudentName.text = _gmStudent[i];
+            m_GameDesignerStudentResult[i].GetComponent<RecommendResultStudentPrefab>().m_StudentName.text = _gmStudent[i];
             m_ArtStudentResult[i].GetComponent<RecommendResultStudentPrefab>().m_StudentName.text = _artStudent[i];
             m_ProgrammingStudentResult[i].GetComponent<RecommendResultStudentPrefab>().m_StudentName.text = _programmingStudent[i];
         }
@@ -67,7 +68,7 @@ public class InJaeRecommendResult : MonoBehaviour
     {
         for (int i = 0; i < 6; i++)
         {
-            m_GMStudentResult[i].GetComponent<RecommendResultStudentPrefab>().m_StudnetImage.sprite = _gmStudent[i];
+            m_GameDesignerStudentResult[i].GetComponent<RecommendResultStudentPrefab>().m_StudnetImage.sprite = _gmStudent[i];
             m_ArtStudentResult[i].GetComponent<RecommendResultStudentPrefab>().m_StudnetImage.sprite = _artStudent[i];
             m_ProgrammingStudentResult[i].GetComponent<RecommendResultStudentPrefab>().m_StudnetImage.sprite = _programmingStudent[i];
         }
@@ -77,7 +78,7 @@ public class InJaeRecommendResult : MonoBehaviour
     {
         for (int i = 0; i < 6; i++)
         {
-            m_GMStudentResult[i].GetComponent<RecommendResultStudentPrefab>().m_PassFail.sprite = _gmPassFail[i];
+            m_GameDesignerStudentResult[i].GetComponent<RecommendResultStudentPrefab>().m_PassFail.sprite = _gmPassFail[i];
             m_ArtStudentResult[i].GetComponent<RecommendResultStudentPrefab>().m_PassFail.sprite = _artPassFail[i];
             m_ProgrammingStudentResult[i].GetComponent<RecommendResultStudentPrefab>().m_PassFail.sprite = _programmingPassFail[i];
         }

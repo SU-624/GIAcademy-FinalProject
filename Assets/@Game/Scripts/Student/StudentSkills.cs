@@ -23,8 +23,6 @@ public class StudentSkills : MonoBehaviour
     private List<BonusSkillConditions> m_IntimacySkillConditionList = new List<BonusSkillConditions>();
     private List<BonusSkillConditions> m_CommonSkillConditionList = new List<BonusSkillConditions>();
 
-    private int _developCount;
-
     private void OnEnable()
     {
         GameJam.SkillConditionDataChangedEvent += CheckGameJamSkillConditions;
@@ -110,6 +108,9 @@ public class StudentSkills : MonoBehaviour
     {
         foreach (BonusSkillConditions _condition in m_GameJamSkillConditionList)
         {
+            int _developConceptCount = 0;
+            int _developGenreCount = 0;
+
             bool _isLevelCondition = true;
             bool _isEntryCountCondition = true;
 
@@ -120,36 +121,39 @@ public class StudentSkills : MonoBehaviour
             bool _isGameJamLevelSatisfy = _condition.GameJameLevel[0] != "0";
             bool _isGameJamEntrySatisfy = _condition.GamedevelopmentNumber != 0;
 
+            StudentType studentType = _condition.StudentPart_ID == 0 ? StudentType.None : _condition.StudentPart_ID == 1 ? StudentType.GameDesigner : _condition.StudentPart_ID == 2 ? StudentType.Art : StudentType.Programming;
+
             foreach (Student _studentList in ObjectManager.Instance.m_StudentList)
             {
-                if (_isGenreIDSatisfy)
+                if (studentType == _studentList.m_StudentStat.m_StudentType || studentType == StudentType.None)
                 {
-                    _developCount = CompareGameJamDataToCondition(0, _condition.GameGenre_ID, _studentList);
-                }
+                    if (_isGenreIDSatisfy)
+                    {
+                        _developGenreCount = CompareGameJamDataToCondition(0, _condition.GameGenre_ID, _studentList);
+                    }
 
-                if (_isConceptIDSatisfy)
-                {
-                    _developCount = CompareGameJamDataToCondition(1, _condition.GameConcept_ID, _studentList);
-                }
+                    if (_isConceptIDSatisfy)
+                    {
+                        _developConceptCount = CompareGameJamDataToCondition(1, _condition.GameConcept_ID, _studentList);
+                    }
 
-                if (_isGameJamLevelSatisfy)
-                {
-                    _isLevelCondition = CompareGameJamLevelToCondition(_condition.GameJameLevel, _studentList);
-                }
+                    if (_isGameJamLevelSatisfy)
+                    {
+                        _isLevelCondition = CompareGameJamLevelToCondition(_condition.GameJameLevel, _studentList);
+                    }
 
-                if (_isGameJamEntrySatisfy)
-                {
-                    _isEntryCountCondition = CompareGameJamEntryCountToCondition(_condition.GamedevelopmentNumber, _studentList);
-                }
+                    if (_isGameJamEntrySatisfy)
+                    {
+                        _isEntryCountCondition = CompareGameJamEntryCountToCondition(_condition.GamedevelopmentNumber, _studentList);
+                    }
 
-                if (_developCount != _condition.GameGenre_DPNumber || !_isLevelCondition || !_isEntryCountCondition)
-                {
-                    continue;
-                }
-
-                if (!_studentList.m_StudentStat.m_Skills.Contains(_condition.Ability_Name))
-                {
-                    _studentList.m_StudentStat.m_Skills.Add(_condition.Ability_Name);
+                    if (_developConceptCount == _condition.GameConcept_DPNumber && _developGenreCount == _condition.GameGenre_DPNumber && _isLevelCondition && _isEntryCountCondition)
+                    {
+                        if (!_studentList.m_StudentStat.m_Skills.Contains(_condition.Ability_Name))
+                        {
+                            _studentList.m_StudentStat.m_Skills.Add(_condition.Ability_Name);
+                        }
+                    }
                 }
             }
         }
@@ -178,7 +182,11 @@ public class StudentSkills : MonoBehaviour
     {
         int[] m_State = new int[5];
         int[] m_Genre = new int[8];
-        bool _isSatisfy = false;
+        bool _isHealth = true;
+        bool _isPassion = true;
+        bool _isStat = true;
+        bool _isGenre = true;
+        bool _isClass = true;
 
         foreach (BonusSkillConditions _classCondition in m_ClassSkillConditionList)
         {
@@ -192,30 +200,30 @@ public class StudentSkills : MonoBehaviour
             {
                 if (_isGenreSatisfy && !_isStatSatisfy)
                 {
-                    _isSatisfy = CompareStateValueToCondition(m_Genre, _studentList.m_StudentStat.m_GenreAmountList);
+                    _isGenre = CompareStateValueToCondition(m_Genre, _studentList.m_StudentStat.m_GenreAmountArr);
                 }
                 else if (!_isGenreSatisfy && _isStatSatisfy)
                 {
-                    _isSatisfy = CompareStateValueToCondition(m_State, _studentList.m_StudentStat.m_AbilityAmountList);
+                    _isStat = CompareStateValueToCondition(m_State, _studentList.m_StudentStat.m_AbilityAmountArr);
                 }
                 else if (_isGenreSatisfy && _isStatSatisfy)
                 {
-                    _isSatisfy = CompareStateValueToCondition(m_Genre, _studentList.m_StudentStat.m_GenreAmountList);
-                    _isSatisfy = CompareStateValueToCondition(m_State, _studentList.m_StudentStat.m_AbilityAmountList);
+                    _isGenre = CompareStateValueToCondition(m_Genre, _studentList.m_StudentStat.m_GenreAmountArr);
+                    _isStat = CompareStateValueToCondition(m_State, _studentList.m_StudentStat.m_AbilityAmountArr);
                 }
 
                 if (_isHealthSatisfy && !_isPassionSatisfy)
                 {
-                    _isSatisfy = CompareHealthOrPassionToCondition(_studentList.m_StudentStat.m_Health, _classCondition.Health);
+                    _isHealth = CompareHealthOrPassionToCondition(_studentList.m_StudentStat.m_Health, _classCondition.Health);
                 }
                 else if (!_isHealthSatisfy && _isPassionSatisfy)
                 {
-                    _isSatisfy = CompareHealthOrPassionToCondition(_studentList.m_StudentStat.m_Passion, _classCondition.Passion);
+                    _isPassion = CompareHealthOrPassionToCondition(_studentList.m_StudentStat.m_Passion, _classCondition.Passion);
                 }
                 else if (_isHealthSatisfy && _isPassionSatisfy)
                 {
-                    _isSatisfy = CompareHealthOrPassionToCondition(_studentList.m_StudentStat.m_Health, _classCondition.Health);
-                    _isSatisfy = CompareHealthOrPassionToCondition(_studentList.m_StudentStat.m_Passion, _classCondition.Passion);
+                    _isHealth = CompareHealthOrPassionToCondition(_studentList.m_StudentStat.m_Health, _classCondition.Health);
+                    _isPassion = CompareHealthOrPassionToCondition(_studentList.m_StudentStat.m_Passion, _classCondition.Passion);
                 }
 
                 if (_isClassSatisfy)
@@ -223,18 +231,18 @@ public class StudentSkills : MonoBehaviour
                     switch (_studentList.m_StudentStat.m_StudentType)
                     {
                         case StudentType.GameDesigner:
-                        _isSatisfy = FindLessonClassIDCount(_classCondition.ClassID, _classCondition.ClassType, _classCondition.Numberoflessons, SelectClass.m_GameDesignerData);
+                        _isClass = FindLessonClassIDCount(_classCondition.ClassID, _classCondition.Numberoflessons, SelectClass.m_GameDesignerData);
                         break;
                         case StudentType.Art:
-                        _isSatisfy = FindLessonClassIDCount(_classCondition.ClassID, _classCondition.ClassType, _classCondition.Numberoflessons, SelectClass.m_ArtData);
+                        _isClass = FindLessonClassIDCount(_classCondition.ClassID, _classCondition.Numberoflessons, SelectClass.m_ArtData);
                         break;
                         case StudentType.Programming:
-                        _isSatisfy = FindLessonClassIDCount(_classCondition.ClassID, _classCondition.ClassType, _classCondition.Numberoflessons, SelectClass.m_ProgrammingData);
+                        _isClass = FindLessonClassIDCount(_classCondition.ClassID, _classCondition.Numberoflessons, SelectClass.m_ProgrammingData);
                         break;
                     }
                 }
 
-                if (_isSatisfy && !_studentList.m_StudentStat.m_Skills.Contains(_classCondition.Ability_Name))
+                if (_isClass && _isGenre && _isStat && _isHealth && _isPassion && !_studentList.m_StudentStat.m_Skills.Contains(_classCondition.Ability_Name))
                 {
                     _studentList.m_StudentStat.m_Skills.Add(_classCondition.Ability_Name);
                 }
@@ -256,7 +264,7 @@ public class StudentSkills : MonoBehaviour
     {
         int[] m_State = new int[5];
         int[] m_Genre = new int[8];
-        
+
         bool _isStatSatisfy = false;
         bool _isGenreSatisfy = false;
         bool _isHealthSatisfy = false;
@@ -276,18 +284,18 @@ public class StudentSkills : MonoBehaviour
                 // 장르만 조건이 있을 경우
                 if (_isGenreSatisfy && !_isStatSatisfy)
                 {
-                    _isSatisfy = CompareStateValueToCondition(m_Genre, _studentList.m_StudentStat.m_GenreAmountList);
+                    _isSatisfy = CompareStateValueToCondition(m_Genre, _studentList.m_StudentStat.m_GenreAmountArr);
                 }
                 // 스탯만 조건이 있을 경우
                 else if (!_isGenreSatisfy && _isStatSatisfy)
                 {
-                    _isSatisfy =  CompareStateValueToCondition(m_State, _studentList.m_StudentStat.m_AbilityAmountList);
+                    _isSatisfy = CompareStateValueToCondition(m_State, _studentList.m_StudentStat.m_AbilityAmountArr);
                 }
                 // 둘 다 있을 경우
                 else if (_isGenreSatisfy && _isStatSatisfy)
                 {
-                    _isSatisfy = CompareStateValueToCondition(m_Genre, _studentList.m_StudentStat.m_GenreAmountList);
-                    _isSatisfy = CompareStateValueToCondition(m_State, _studentList.m_StudentStat.m_AbilityAmountList);
+                    _isSatisfy = CompareStateValueToCondition(m_Genre, _studentList.m_StudentStat.m_GenreAmountArr);
+                    _isSatisfy = CompareStateValueToCondition(m_State, _studentList.m_StudentStat.m_AbilityAmountArr);
                 }
 
                 // 체력만 있는 경우
@@ -375,11 +383,51 @@ public class StudentSkills : MonoBehaviour
     }
 
     // 수업 아이디로 학생들이 그 수업을 몇 번 들었는지 확인해주는 함수.
-    private bool FindLessonClassIDCount(int classID, int classType, int classNumberOfLesson, List<SaveSelectClassInfoData> classData)
+    private bool FindLessonClassIDCount(int classID, int classNumberOfLesson, List<SaveSelectClassInfoData> classData)
     {
-        int classNumberoflessonsCount = classData.Count(data =>
-            data.m_SelectClassDataSave.m_ClassID == classID &&
-            (int)data.m_SelectClassDataSave.m_ClassType == classType);
+        int classNumberoflessonsCount = 0;
+
+        switch (classData[0].m_SelectProfessorDataSave.m_ProfessorType)
+        {
+            case StudentType.GameDesigner:
+            {
+                if (PlayerInfo.Instance.GameDesignerClassDic.ContainsKey(classID))
+                {
+                    classNumberoflessonsCount = PlayerInfo.Instance.GameDesignerClassDic[classID];
+                }
+                else
+                {
+                    classNumberoflessonsCount = -1;
+                }
+            }
+            break;
+
+            case StudentType.Art:
+            {
+                if (PlayerInfo.Instance.ArtClassDic.ContainsKey(classID))
+                {
+                    classNumberoflessonsCount = PlayerInfo.Instance.ArtClassDic[classID];
+                }
+                else
+                {
+                    classNumberoflessonsCount = -1;
+                }
+            }
+            break;
+
+            case StudentType.Programming:
+            {
+                if (PlayerInfo.Instance.ProgrammingClassDic.ContainsKey(classID))
+                {
+                    classNumberoflessonsCount = PlayerInfo.Instance.ProgrammingClassDic[classID];
+                }
+                else
+                {
+                    classNumberoflessonsCount = -1;
+                }
+            }
+            break;
+        }
 
         return classNumberOfLesson == classNumberoflessonsCount;
     }
@@ -387,13 +435,26 @@ public class StudentSkills : MonoBehaviour
     // 학생 장르, 스탯 값과 스킬 조건의 장르, 스탯 값이 같은지 비교해주는 함수
     private bool CompareStateValueToCondition(int[] array, int[] studentState)
     {
-        return array.SequenceEqual(studentState);
+        bool _isTrue = false;
+        for (int i = 0; i < 5; i++)
+        {
+            if (array[i] >= studentState[i])
+            {
+                _isTrue = true;
+            }
+            else
+            {
+                _isTrue = false;
+                break;
+            }
+        }
+        return _isTrue;
     }
 
     // 학생 체력, 열정 값과 스킬 조건의 체력, 열정 값이 같은지 비교해주는 함수
     private bool CompareHealthOrPassionToCondition(int studentValue, int conditionValue)
     {
-        return studentValue == conditionValue;
+        return studentValue >= conditionValue;
     }
 
     // 친밀도가 조건과 맞으면 값을 올려준다.
@@ -411,28 +472,34 @@ public class StudentSkills : MonoBehaviour
         {
             foreach (var gameJamData in keyValue.Value)
             {
-                string _condtionValue = _genreOrConcept == 0 ? gameJamData.m_GameJamData.m_Genre : gameJamData.m_GameJamInfoData.m_GjamConcept;
+                GameJamInfo _nowData = GameJam.SearchAllGameJamInfo(keyValue.Key);
+
+                Student _gameDesigner = ObjectManager.Instance.SearchStudentInfo(gameJamData.m_GameDesignerStudentName);
+                Student _art= ObjectManager.Instance.SearchStudentInfo(gameJamData.m_ArtStudentName);
+                Student _programming= ObjectManager.Instance.SearchStudentInfo(gameJamData.m_ProgrammingStudentName);
+
+                string _condtionValue = _genreOrConcept == 0 ? gameJamData.m_Genre : _nowData.m_GjamConcept;
 
                 if (_condtionValue == _gameJamSatisfy)
                 {
                     switch (_entryStudent.m_StudentStat.m_StudentType)
                     {
                         case StudentType.GameDesigner:
-                        if (gameJamData.m_GameJamData.m_GM[0] == _entryStudent)
+                        if (_gameDesigner == _entryStudent)
                         {
                             _count++;
                         }
                         break;
 
                         case StudentType.Art:
-                        if (gameJamData.m_GameJamData.m_Art[0] == _entryStudent)
+                        if (_art == _entryStudent)
                         {
                             _count++;
                         }
                         break;
 
                         case StudentType.Programming:
-                        if (gameJamData.m_GameJamData.m_Programming[0] == _entryStudent)
+                        if (_programming == _entryStudent)
                         {
                             _count++;
                         }
@@ -452,13 +519,17 @@ public class StudentSkills : MonoBehaviour
         {
             for (int j = 0; j < GameJam.m_GameJamHistory.ElementAt(i).Value.Count; j++)
             {
+                Student _gameDesigner = ObjectManager.Instance.SearchStudentInfo(GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameDesignerStudentName);
+                Student _art = ObjectManager.Instance.SearchStudentInfo(GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_ArtStudentName);
+                Student _programming = ObjectManager.Instance.SearchStudentInfo(GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_ProgrammingStudentName);
+
                 switch (_entryStudent.m_StudentStat.m_StudentType)
                 {
                     case StudentType.GameDesigner:
                     {
                         foreach (string _levelName in _level)
                         {
-                            if (GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Rank == _levelName && GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GM[0] == _entryStudent)
+                            if (GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_Rank == _levelName && _gameDesigner == _entryStudent)
                             {
                                 return true;
                             }
@@ -470,7 +541,7 @@ public class StudentSkills : MonoBehaviour
                     {
                         foreach (string _levelName in _level)
                         {
-                            if (GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Rank == _levelName && GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Art[0] == _entryStudent)
+                            if (GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_Rank == _levelName && _art == _entryStudent)
                             {
                                 return true;
                             }
@@ -482,7 +553,7 @@ public class StudentSkills : MonoBehaviour
                     {
                         foreach (string _levelName in _level)
                         {
-                            if (GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Rank == _levelName && GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Programming[0] == _entryStudent)
+                            if (GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_Rank == _levelName && _programming == _entryStudent)
                             {
                                 return true;
                             }
@@ -505,11 +576,15 @@ public class StudentSkills : MonoBehaviour
         {
             for (int j = 0; j < GameJam.m_GameJamHistory.ElementAt(i).Value.Count; j++)
             {
+                Student _gameDesigner = ObjectManager.Instance.SearchStudentInfo(GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameDesignerStudentName);
+                Student _art = ObjectManager.Instance.SearchStudentInfo(GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_ArtStudentName);
+                Student _programming = ObjectManager.Instance.SearchStudentInfo(GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_ProgrammingStudentName);
+
                 switch (_entryStudent.m_StudentStat.m_StudentType)
                 {
                     case StudentType.GameDesigner:
                     {
-                        if (GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GM[0] == _entryStudent)
+                        if (_gameDesigner == _entryStudent)
                         {
                             _count++;
                         }
@@ -518,7 +593,7 @@ public class StudentSkills : MonoBehaviour
 
                     case StudentType.Art:
                     {
-                        if (GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Art[0] == _entryStudent)
+                        if (_art == _entryStudent)
                         {
                             _count++;
                         }
@@ -527,7 +602,7 @@ public class StudentSkills : MonoBehaviour
 
                     case StudentType.Programming:
                     {
-                        if (GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Programming[0] == _entryStudent)
+                        if (_programming == _entryStudent)
                         {
                             _count++;
                         }
@@ -552,17 +627,20 @@ public class StudentSkills : MonoBehaviour
                 switch (_entryStudent.m_StudentStat.m_StudentType)
                 {
                     case StudentType.GameDesigner:
-                    if (showData.m_ParticipatingStudents[0] == _entryStudent)
+                    Student _gamedesigner = ObjectManager.Instance.SearchStudentInfo(showData.m_GameDesignerStudentName);
+                    if (_gamedesigner == _entryStudent)
                         participatingIndex = 0;
                     break;
 
                     case StudentType.Art:
-                    if (showData.m_ParticipatingStudents[1] == _entryStudent)
+                    Student _art = ObjectManager.Instance.SearchStudentInfo(showData.m_GameDesignerStudentName);
+                    if (_art == _entryStudent)
                         participatingIndex = 1;
                     break;
 
                     case StudentType.Programming:
-                    if (showData.m_ParticipatingStudents[2] == _entryStudent)
+                    Student _programming = ObjectManager.Instance.SearchStudentInfo(showData.m_GameDesignerStudentName);
+                    if (_programming == _entryStudent)
                         participatingIndex = 2;
                     break;
                 }

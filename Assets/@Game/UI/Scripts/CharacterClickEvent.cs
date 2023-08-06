@@ -38,6 +38,7 @@ public class CharacterClickEvent : MonoBehaviour
     [SerializeField] private Sprite ArtImage;
     [SerializeField] private Sprite ProgrammingImage;
 
+    private int m_CameraLayerMask = 1 << 7;
     private int m_layerMask = 1 << 8;
     private int m_uiLayerMask = 1 << 5;
 
@@ -56,7 +57,7 @@ public class CharacterClickEvent : MonoBehaviour
     void Update()
     {
         TurnOffCharacterNamePlate();
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_EDITOR_WIN
         CharacterInfoScreenWhenUnityEditor();
 
 #elif UNITY_ANDROID
@@ -72,11 +73,21 @@ public class CharacterClickEvent : MonoBehaviour
             case "Student":
                 {
                     PopUpStudentInfoPanel.TurnOnUI();
+
+                    if (PlayerInfo.Instance.StudentProfileClickCount <= 10)
+                    {
+                        PlayerInfo.Instance.StudentProfileClickCount++;
+                    }
                 }
                 break;
             case "Instructor":
                 {
                     PopUpInstructorInfoPanel.TurnOnUI();
+
+                    if (PlayerInfo.Instance.TeacherProfileClickCount <= 10)
+                    {
+                        PlayerInfo.Instance.TeacherProfileClickCount++;
+                    }
                 }
                 break;
         }
@@ -91,27 +102,37 @@ public class CharacterClickEvent : MonoBehaviour
             RaycastHit hit;     // 레이캐스트 맞을 물체
             GameObject nowClick = EventSystem.current.currentSelectedGameObject;
 
-            if (GameTime.Instance.IsGameMode == true && isPopUpCharacterNamePlate == false)         // 캐릭터 이름표 / 캐릭터정보창 둘 다 안떠있을 때
+            if (GameTime.Instance.IsGameMode == true && isPopUpCharacterNamePlate == false/* && ObjectManager.Instance.m_StudentList.Count == 18*/)         // 캐릭터 이름표 / 캐릭터정보창 둘 다 안떠있을 때
             {
-                if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~m_uiLayerMask & m_layerMask))
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~m_CameraLayerMask & m_layerMask))
                 {
                     Debug.Log("오브젝트의 태그 ? : " + hit.transform.name);
                     Debug.DrawRay(transform.position, transform.forward * 1000, Color.red);
 
-                    if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() == true)      // raycast가 UI 를 만나지 않을 때 (UI 부딪히면 true 반환)
+                    if (!EventSystem.current.IsPointerOverGameObject())      // raycast가 UI 를 만나지 않을 때 (UI 부딪히면 true 반환)
                     {
                         Debug.Log("학생인포 뜨기");
 
-                        if (hit.transform.tag == "Student")     // 학생 인식
+                        if (hit.transform.tag == "Student" && ObjectManager.Instance.m_StudentList.Count == 18)     // 학생 인식
                         {
                             Debug.Log("학생입니다");
                             NowClickCharacterTag = hit.transform.tag;
 
                             GameObject character = hit.transform.gameObject;        // 레이캐스트 맞은 캐릭터
                             var CPositon = character.transform.position;        // 캐릭터의 머리위 포지션S
-
+                            StudentStat tempStudentStat =
+                                hit.transform.gameObject.GetComponent<Student>().m_StudentStat;
                             // CharacterNamePlate.GetCharacterImage.sprite = GameDesignerImage;
-                            CharacterNamePlate.CName.text = character.name;
+
+                            if (tempStudentStat.m_UserSettingName != "")
+                            {
+                                CharacterNamePlate.CName.text = tempStudentStat.m_UserSettingName;
+                            }
+                            else
+                            {
+                                CharacterNamePlate.CName.text = character.name;
+                            }
+
                             StudentInfoPage.ShowStudentBasicInfo(character);
                             StudentInfoPage.ShowCharacterDetailedStat(character);
 
@@ -170,7 +191,7 @@ public class CharacterClickEvent : MonoBehaviour
                 }
                 else
                 {
-                    if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~m_uiLayerMask & m_layerMask))
+                    if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~m_CameraLayerMask & m_layerMask))
                     {
                         if (hit.transform.tag == "Student")
                         {
@@ -181,7 +202,17 @@ public class CharacterClickEvent : MonoBehaviour
                             var CPositon = character.transform.position;        // 캐릭터의 머리위 포지션
                             var CHeadPositon = character.transform.GetChild(0).position;
 
-                            CharacterNamePlate.CName.text = character.name;
+                            StudentStat tempStudentStat =
+                                hit.transform.gameObject.GetComponent<Student>().m_StudentStat;
+
+                            if (tempStudentStat.m_UserSettingName != "")
+                            {
+                                CharacterNamePlate.CName.text = tempStudentStat.m_UserSettingName;
+                            }
+                            else
+                            {
+                                CharacterNamePlate.CName.text = character.name;
+                            }
                             StudentInfoPage.ShowStudentBasicInfo(character);
                             StudentInfoPage.ShowCharacterDetailedStat(character);
 
@@ -293,11 +324,11 @@ public class CharacterClickEvent : MonoBehaviour
             {
                 isPopUpCharacterNamePlate = true;
 
-                if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~m_uiLayerMask & m_layerMask))          //레이캐스트 맞았다?
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~m_CameraLayerMask & m_layerMask))          //레이캐스트 맞았다?
                 {
                     Debug.Log("오브젝트의 태그 ? : " + hit.transform.name);
 
-                    if (UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject() == true)      // raycast가 UI 를 만나지 않을 때 (UI 부딪히면 true 반환)
+                    if (!EventSystem.current.IsPointerOverGameObject(0))      // raycast가 UI 를 만나지 않을 때 (UI 부딪히면 true 반환)
                     {
                         Debug.Log("학생인포 뜨기");
 
@@ -311,7 +342,17 @@ public class CharacterClickEvent : MonoBehaviour
                             var CPositon = character.transform.position;        // 캐릭터의 머리위 포지션
                             var CHeadPositon = character.transform.GetChild(0).position;
 
-                            CharacterNamePlate.CName.text = character.name;
+                            StudentStat tempStudentStat =
+                                hit.transform.gameObject.GetComponent<Student>().m_StudentStat;
+
+                            if (tempStudentStat.m_UserSettingName != "")
+                            {
+                                CharacterNamePlate.CName.text = tempStudentStat.m_UserSettingName;
+                            }
+                            else
+                            {
+                                CharacterNamePlate.CName.text = character.name;
+                            }
                             StudentInfoPage.ShowStudentBasicInfo(character);
                             StudentInfoPage.ShowCharacterDetailedStat(character);
 
@@ -367,7 +408,7 @@ public class CharacterClickEvent : MonoBehaviour
                 }
                 else
                 {
-                    if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~m_uiLayerMask & m_layerMask))
+                    if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~m_CameraLayerMask & m_layerMask))
                     {
                         if (hit.transform.tag == "Student")
                         {
@@ -379,7 +420,17 @@ public class CharacterClickEvent : MonoBehaviour
                             var CPositon = character.transform.position;        // 캐릭터의 머리위 포지션
                             var CHeadPositon = character.transform.GetChild(0).position;
 
-                            CharacterNamePlate.CName.text = character.name;
+                            StudentStat tempStudentStat =
+                                hit.transform.gameObject.GetComponent<Student>().m_StudentStat;
+
+                            if (tempStudentStat.m_UserSettingName != "")
+                            {
+                                CharacterNamePlate.CName.text = tempStudentStat.m_UserSettingName;
+                            }
+                            else
+                            {
+                                CharacterNamePlate.CName.text = character.name;
+                            }
                             StudentInfoPage.ShowStudentBasicInfo(character);
                             StudentInfoPage.ShowCharacterDetailedStat(character);
 

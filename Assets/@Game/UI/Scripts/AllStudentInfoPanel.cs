@@ -5,6 +5,8 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 using System;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 public class AllStudentInfoPanel : MonoBehaviour
 {
@@ -18,7 +20,7 @@ public class AllStudentInfoPanel : MonoBehaviour
     [Header("강사 정보 이외에 팝업창의 버튼 변수들")]
     [SerializeField] private Image StudentImagePrefab_First;
 
-    [SerializeField] private Image StudentProfileImg_First;            
+    [SerializeField] private Image StudentProfileImg_First;
     [SerializeField] private TextMeshProUGUI FirstStudentName;
     [SerializeField] private Button FirstStudentButton;
     [Space(5f)]
@@ -182,10 +184,19 @@ public class AllStudentInfoPanel : MonoBehaviour
             {
                 // studentImgList[i] = tempData[i].m_StudentStat.image;       // 이미지는 나중에 생긴다면
                 studentButtonList[StudentListCount].gameObject.name = tempData[i].m_StudentStat.m_StudentName;
-                studentNameTextList[StudentListCount].text = tempData[i].m_StudentStat.m_StudentName;
+                if (tempData[i].m_StudentStat.m_UserSettingName != "")
+                {
+                    //studentButtonList[StudentListCount].gameObject.name = tempData[i].m_StudentStat.m_UserSettingName;
+                    studentNameTextList[StudentListCount].text = tempData[i].m_StudentStat.m_UserSettingName;
+                }
+                else
+                {
+                    //studentButtonList[StudentListCount].gameObject.name = tempData[i].m_StudentStat.m_StudentName;
+                    studentNameTextList[StudentListCount].text = tempData[i].m_StudentStat.m_StudentName;
+                }
 
                 studentImgList[StudentListCount].sprite = tempData[i].StudentProfileImg;        // 학생 이미지 넣기
-                
+
                 // studentImgList[StudentListCount].gameObject.SetActive(true);
                 StudentListCount += 1;
             }
@@ -212,56 +223,83 @@ public class AllStudentInfoPanel : MonoBehaviour
         switch (nowButton.name)
         {
             case "GameDesignerIndexButton":
-                {
-                    Debug.Log("기획 인덱스 클릭");
-                    FindCorrectDepartmentSprite(nowButton);
+            {
+                Debug.Log("기획 인덱스 클릭");
+                FindCorrectDepartmentSprite(nowButton);
 
-                    for (int i = 0; i < nowStudentCount; i++)
+                for (int i = 0; i < nowStudentCount; i++)
+                {
+                    if (tempData[i].m_StudentStat.m_StudentType == StudentType.GameDesigner)
                     {
-                        if (tempData[i].m_StudentStat.m_StudentType == StudentType.GameDesigner)
+                        if (tempData[i].m_StudentStat.m_UserSettingName != "")
                         {
-                            studentButtonList[StudentListCount].name = tempData[i].m_StudentStat.m_StudentName;
-                            studentNameTextList[StudentListCount].text = tempData[i].m_StudentStat.m_StudentName;
-                            studentImgList[StudentListCount].sprite = tempData[i].StudentProfileImg;        // 학생 이미지 넣기
-                            StudentListCount += 1;
+                            //studentButtonList[StudentListCount].name = tempData[i].m_StudentStat.m_UserSettingName;
+                            studentNameTextList[StudentListCount].text = tempData[i].m_StudentStat.m_UserSettingName;
                         }
+                        else
+                        {
+                            //studentButtonList[StudentListCount].name = tempData[i].m_StudentStat.m_StudentName;
+                            studentNameTextList[StudentListCount].text = tempData[i].m_StudentStat.m_StudentName;
+                        }
+                        studentButtonList[StudentListCount].name = tempData[i].m_StudentStat.m_StudentName;
+                        studentImgList[StudentListCount].sprite = tempData[i].StudentProfileImg;        // 학생 이미지 넣기
+                        StudentListCount += 1;
                     }
                 }
-                break;
+            }
+            break;
             case "ArtIndexButton":
-                {
-                    Debug.Log("아트 인덱스 클릭");
-                    FindCorrectDepartmentSprite(nowButton);
+            {
+                Debug.Log("아트 인덱스 클릭");
+                FindCorrectDepartmentSprite(nowButton);
 
-                    for (int i = 0; i < nowStudentCount; i++)
+                for (int i = 0; i < nowStudentCount; i++)
+                {
+                    if (tempData[i].m_StudentStat.m_StudentType == StudentType.Art)
                     {
-                        if (tempData[i].m_StudentStat.m_StudentType == StudentType.Art)
+                        if (tempData[i].m_StudentStat.m_UserSettingName != "")
                         {
-                            studentButtonList[StudentListCount].name = tempData[i].m_StudentStat.m_StudentName;
-                            studentNameTextList[StudentListCount].text = tempData[i].m_StudentStat.m_StudentName;
-                            studentImgList[StudentListCount].sprite = tempData[i].StudentProfileImg;        // 학생 이미지 넣기
-                            StudentListCount += 1;
+                            //studentButtonList[StudentListCount].name = tempData[i].m_StudentStat.m_UserSettingName;
+                            studentNameTextList[StudentListCount].text = tempData[i].m_StudentStat.m_UserSettingName;
                         }
+                        else
+                        {
+                            //studentButtonList[StudentListCount].name = tempData[i].m_StudentStat.m_StudentName;
+                            studentNameTextList[StudentListCount].text = tempData[i].m_StudentStat.m_StudentName;
+                        }
+                        studentButtonList[StudentListCount].name = tempData[i].m_StudentStat.m_StudentName;
+                        studentImgList[StudentListCount].sprite = tempData[i].StudentProfileImg;        // 학생 이미지 넣기
+                        StudentListCount += 1;
                     }
                 }
-                break;
+            }
+            break;
             case "ProgrammingIndexButton":
-                {
-                    Debug.Log("플밍 인덱스 클릭");
-                    FindCorrectDepartmentSprite(nowButton);
+            {
+                Debug.Log("플밍 인덱스 클릭");
+                FindCorrectDepartmentSprite(nowButton);
 
-                    for (int i = 0; i < nowStudentCount; i++)
+                for (int i = 0; i < nowStudentCount; i++)
+                {
+                    if (tempData[i].m_StudentStat.m_StudentType == StudentType.Programming)
                     {
-                        if (tempData[i].m_StudentStat.m_StudentType == StudentType.Programming)
+                        if (tempData[i].m_StudentStat.m_UserSettingName != "")
                         {
-                            studentButtonList[StudentListCount].name = tempData[i].m_StudentStat.m_StudentName;
-                            studentNameTextList[StudentListCount].text = tempData[i].m_StudentStat.m_StudentName;
-                            studentImgList[StudentListCount].sprite = tempData[i].StudentProfileImg;        // 학생 이미지 넣기
-                            StudentListCount += 1;
+                            //studentButtonList[StudentListCount].name = tempData[i].m_StudentStat.m_UserSettingName;
+                            studentNameTextList[StudentListCount].text = tempData[i].m_StudentStat.m_UserSettingName;
                         }
+                        else
+                        {
+                            //studentButtonList[StudentListCount].name = tempData[i].m_StudentStat.m_StudentName;
+                            studentNameTextList[StudentListCount].text = tempData[i].m_StudentStat.m_StudentName;
+                        }
+                        studentButtonList[StudentListCount].name = tempData[i].m_StudentStat.m_StudentName;
+                        studentImgList[StudentListCount].sprite = tempData[i].StudentProfileImg;        // 학생 이미지 넣기
+                        StudentListCount += 1;
                     }
                 }
-                break;
+            }
+            break;
         }
     }
 
@@ -269,6 +307,10 @@ public class AllStudentInfoPanel : MonoBehaviour
     public void IfIClickEachStudentButton()
     {
         Debug.Log("학생 각 이미지 누름");
+        if (PlayerInfo.Instance.StudentProfileClickCount <= 10)
+        {
+            PlayerInfo.Instance.StudentProfileClickCount++;
+        }
 
         // 내가 무슨 버튼을 눌렀는지 판별
         // 누른 버튼의 부모의 이름을 가져와서 현재 학생 목록을 비교
@@ -300,33 +342,33 @@ public class AllStudentInfoPanel : MonoBehaviour
             {
                 StudentCount = 0;
 
-                foreach (EStudentImgIndex temp in Enum.GetValues(typeof(EStudentImgIndex)))
-                {
-                    if (tempData[i].m_StudentStat.m_StudentID == temp.ToString())
-                    {
-                        studentImgList[StudentCount].sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
-
-                        StudentCount += 1;
-                    }
-                }
+                StudentInfoPage.TempStudent = tempData[i];
 
                 // 학생 이미지 넣기
                 StudentInfoPage.GetCharacterImg1.sprite = tempData[i].StudentProfileImg;
                 StudentInfoPage.GetCharacterImg2.sprite = tempData[i].StudentProfileImg;
 
-                sense = tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense];
-                concentration = tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration];
-                wit = tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit];
-                technique = tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique];
-                insight = tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight];
+                sense = tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense];
+                concentration = tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration];
+                wit = tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit];
+                technique = tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique];
+                insight = tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight];
 
-                StudentInfoPage.MakeStudentStatPentagon(sense, concentration, wit, technique, insight);
+                StudentInfoPage.MakeStudentStatPentagon(sense, insight, technique, wit, concentration);
 
                 // StudentInfoPage.ShowStudentBasicInfo();
                 Debug.Log("왜안들어올까");
                 // 학생 데이터 다 넣기
-                StudentInfoPage.GetCharacterName1.text = tempData[i].m_StudentStat.m_StudentName;
-                StudentInfoPage.GetCharacterName2.text = tempData[i].m_StudentStat.m_StudentName;
+                if (tempData[i].m_StudentStat.m_UserSettingName != "")
+                {
+                    StudentInfoPage.GetCharacterName1.text = tempData[i].m_StudentStat.m_UserSettingName;
+                    StudentInfoPage.GetCharacterName2.text = tempData[i].m_StudentStat.m_UserSettingName;
+                }
+                else
+                {
+                    StudentInfoPage.GetCharacterName1.text = tempData[i].m_StudentStat.m_StudentName;
+                    StudentInfoPage.GetCharacterName2.text = tempData[i].m_StudentStat.m_StudentName;
+                }
 
                 StudentInfoPage.GetPassionValue1.text = tempData[i].m_StudentStat.m_Passion.ToString();
                 StudentInfoPage.GetHealthValue1.text = tempData[i].m_StudentStat.m_Health.ToString();
@@ -345,72 +387,88 @@ public class AllStudentInfoPanel : MonoBehaviour
                 StudentInfoPage.GetStudentPersonalityName.text = tempData[i].m_StudentStat.m_Personality;
                 StudentInfoPage.GetStudentPersonalityInfo.text = peronalityInfoScript;
 
+                // 학생 성격의 이미지를 넣기 위해 중간의 띄어쓰기 공백을 없애서 이미지를 찾기 위한 부분. 
+                string tempPersonalityName = StudentInfoPage.GetStudentPersonalityName.text;
+
+                if (tempPersonalityName.Any(x => Char.IsWhiteSpace(x) == true))
+                {
+                    tempPersonalityName = Regex.Replace(StudentInfoPage.GetStudentPersonalityName.text, @"\s+", String.Empty);
+                }
+
+                for (int j = 0; j < UISpriteLists.Instance.GetStudentPersonalitySpriteList.Count; j++)
+                {
+                    if (tempPersonalityName == UISpriteLists.Instance.GetStudentPersonalitySpriteList[j].name)
+                    {
+                        StudentInfoPage.GetStudentPersonalityImg.sprite = UISpriteLists.Instance.GetStudentPersonalitySpriteList[j];
+                    }
+                }
+
                 switch (tempData[i].m_StudentStat.m_StudentType)
                 {
                     case StudentType.GameDesigner:
-                        {
-                            StudentInfoPage.GetGameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_tab_selected];
-                            StudentInfoPage.GetArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
-                            StudentInfoPage.GetProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
-                            StudentInfoPage.GetDepartmentImg1.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_icon_info];
-                            StudentInfoPage.GetDepartmentImg2.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_icon_info];
+                    {
+                        StudentInfoPage.GetGameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_tab_selected];
+                        StudentInfoPage.GetArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
+                        StudentInfoPage.GetProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
+                        StudentInfoPage.GetDepartmentImg1.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_icon_info];
+                        StudentInfoPage.GetDepartmentImg2.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_icon_info];
 
-                            tempLevel = StudentInfoPage.SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
+                        tempLevel = StudentInfoPage.SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense]);
 
-                            StudentInfoPage.GetDetailedStatName.text = "창의력";
-                            StudentInfoPage.GetDetailedStatValue.text = "Lv. " + tempLevel;
-                            StudentInfoPage.GetStatGradeImg.sprite = StudentInfoPage.SetSkillLevelImg(tempLevel);
-                        }
-                        break;
+                        StudentInfoPage.GetDetailedStatName.text = "창의력";
+                        StudentInfoPage.GetDetailedStatValue.text = "Lv. " + tempLevel;
+                        StudentInfoPage.GetStatGradeImg.sprite = StudentInfoPage.SetSkillLevelImg(tempLevel);
+                    }
+                    break;
                     case StudentType.Art:
-                        {
-                            StudentInfoPage.GetGameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
-                            StudentInfoPage.GetArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_selected];
-                            StudentInfoPage.GetProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
-                            StudentInfoPage.GetDepartmentImg1.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_icon_info];
-                            StudentInfoPage.GetDepartmentImg2.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_icon_info];
+                    {
+                        StudentInfoPage.GetGameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
+                        StudentInfoPage.GetArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_selected];
+                        StudentInfoPage.GetProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
+                        StudentInfoPage.GetDepartmentImg1.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_icon_info];
+                        StudentInfoPage.GetDepartmentImg2.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_icon_info];
 
-                            tempLevel = StudentInfoPage.SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
+                        tempLevel = StudentInfoPage.SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense]);
 
-                            StudentInfoPage.GetDetailedStatName.text = "표현력";
-                            StudentInfoPage.GetDetailedStatValue.text = "Lv. " + tempLevel;
-                            StudentInfoPage.GetStatGradeImg.sprite = StudentInfoPage.SetSkillLevelImg(tempLevel);
-                        }
-                        break;
+                        StudentInfoPage.GetDetailedStatName.text = "표현력";
+                        StudentInfoPage.GetDetailedStatValue.text = "Lv. " + tempLevel;
+                        StudentInfoPage.GetStatGradeImg.sprite = StudentInfoPage.SetSkillLevelImg(tempLevel);
+                    }
+                    break;
                     case StudentType.Programming:
-                        {
-                            StudentInfoPage.GetGameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
-                            StudentInfoPage.GetArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
-                            StudentInfoPage.GetProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_selected];
-                            StudentInfoPage.GetDepartmentImg1.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.programming_icon2_icon];
-                            StudentInfoPage.GetDepartmentImg2.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.programming_icon2_icon];
+                    {
+                        StudentInfoPage.GetGameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
+                        StudentInfoPage.GetArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
+                        StudentInfoPage.GetProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_selected];
+                        StudentInfoPage.GetDepartmentImg1.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.programming_icon2_icon];
+                        StudentInfoPage.GetDepartmentImg2.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.programming_icon2_icon];
 
-                            tempLevel = StudentInfoPage.SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense]);
+                        tempLevel = StudentInfoPage.SetSkillLevel(tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense]);
 
-                            StudentInfoPage.GetDetailedStatName.text = "활용력";
-                            StudentInfoPage.GetDetailedStatValue.text = "Lv. " + tempLevel;
-                            StudentInfoPage.GetStatGradeImg.sprite = StudentInfoPage.SetSkillLevelImg(tempLevel);
-                        }
-                        break;
+                        StudentInfoPage.GetDetailedStatName.text = "활용력";
+                        StudentInfoPage.GetDetailedStatValue.text = "Lv. " + tempLevel;
+                        StudentInfoPage.GetStatGradeImg.sprite = StudentInfoPage.SetSkillLevelImg(tempLevel);
+                    }
+                    break;
                 }
 
                 StudentInfoPage.SetStudentBonusSkill(tempData[i]);
 
-                StudentInfoPage.GetSenseValue.text = tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense].ToString();
-                StudentInfoPage.GetWitValue.text = tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit].ToString();
-                StudentInfoPage.GetConcentrationValue.text = tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration].ToString();
-                StudentInfoPage.GetTechnologyValue.text = tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique].ToString();
-                StudentInfoPage.GetInsightValue.text = tempData[i].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight].ToString();
+                StudentInfoPage.GetSenseValue.text = tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense].ToString();
+                StudentInfoPage.GetWitValue.text = tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit].ToString();
+                StudentInfoPage.GetConcentrationValue.text = tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration].ToString();
+                StudentInfoPage.GetTechnologyValue.text = tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique].ToString();
+                StudentInfoPage.GetInsightValue.text = tempData[i].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight].ToString();
 
-                StudentInfoPage.GetRPGStatValue.text = tempData[i].m_StudentStat.m_GenreAmountList[(int)GenreStat.RPG].ToString();
-                StudentInfoPage.GetActionStatValue.text = tempData[i].m_StudentStat.m_GenreAmountList[(int)GenreStat.Action].ToString();
-                StudentInfoPage.GetSimulationStatValue.text = tempData[i].m_StudentStat.m_GenreAmountList[(int)GenreStat.Simulation].ToString();
-                StudentInfoPage.GetShootingStatValue.text = tempData[i].m_StudentStat.m_GenreAmountList[(int)GenreStat.Shooting].ToString();
+                StudentInfoPage.GetRPGStatValue.text = tempData[i].m_StudentStat.m_GenreAmountArr[(int)GenreStat.RPG].ToString();
+                StudentInfoPage.GetActionStatValue.text = tempData[i].m_StudentStat.m_GenreAmountArr[(int)GenreStat.Action].ToString();
+                StudentInfoPage.GetSimulationStatValue.text = tempData[i].m_StudentStat.m_GenreAmountArr[(int)GenreStat.Simulation].ToString();
+                StudentInfoPage.GetShootingStatValue.text = tempData[i].m_StudentStat.m_GenreAmountArr[(int)GenreStat.Shooting].ToString();
 
-                StudentInfoPage.GetRhythmStatValue.text = tempData[i].m_StudentStat.m_GenreAmountList[(int)GenreStat.Rhythm].ToString();
-                StudentInfoPage.GetAdventureStatValue.text = tempData[i].m_StudentStat.m_GenreAmountList[(int)GenreStat.Adventure].ToString();
-                StudentInfoPage.GetPuzzleStatValue.text = tempData[i].m_StudentStat.m_GenreAmountList[(int)GenreStat.Puzzle].ToString();
-                StudentInfoPage.GetSportsStatValue.text = tempData[i].m_StudentStat.m_GenreAmountList[(int)GenreStat.Sports].ToString();
+                StudentInfoPage.GetRhythmStatValue.text = tempData[i].m_StudentStat.m_GenreAmountArr[(int)GenreStat.Rhythm].ToString();
+                StudentInfoPage.GetAdventureStatValue.text = tempData[i].m_StudentStat.m_GenreAmountArr[(int)GenreStat.Adventure].ToString();
+                StudentInfoPage.GetPuzzleStatValue.text = tempData[i].m_StudentStat.m_GenreAmountArr[(int)GenreStat.Puzzle].ToString();
+                StudentInfoPage.GetSportsStatValue.text = tempData[i].m_StudentStat.m_GenreAmountArr[(int)GenreStat.Sports].ToString();
 
                 StudentInfoPage.ReadyFriendshipData(tempData[i]);
                 StudentInfoPage.SetFriendshipInfo();
@@ -426,47 +484,47 @@ public class AllStudentInfoPanel : MonoBehaviour
         switch (nowButton.name)
         {
             case "GameDesignerIndexButton":
-                {
-                    GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_tab_selected];
-                    ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
-                    ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
+            {
+                GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_tab_selected];
+                ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
+                ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
 
-                    StudentProfileImg_First.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
-                    StudentProfileImg_Second.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
-                    StudentProfileImg_Third.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
-                    StudentProfileImg_Fourth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
-                    StudentProfileImg_Fifth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
-                    StudentProfileImg_Sixth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
-                }
-                break;
+                StudentProfileImg_First.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
+                StudentProfileImg_Second.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
+                StudentProfileImg_Third.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
+                StudentProfileImg_Fourth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
+                StudentProfileImg_Fifth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
+                StudentProfileImg_Sixth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
+            }
+            break;
             case "ArtIndexButton":
-                {
-                    GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
-                    ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_selected];
-                    ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
+            {
+                GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
+                ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_selected];
+                ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
 
-                    StudentProfileImg_First.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
-                    StudentProfileImg_Second.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
-                    StudentProfileImg_Third.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
-                    StudentProfileImg_Fourth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
-                    StudentProfileImg_Fifth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
-                    StudentProfileImg_Sixth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
-                }
-                break;
+                StudentProfileImg_First.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
+                StudentProfileImg_Second.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
+                StudentProfileImg_Third.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
+                StudentProfileImg_Fourth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
+                StudentProfileImg_Fifth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
+                StudentProfileImg_Sixth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
+            }
+            break;
             case "ProgrammingIndexButton":
-                {
-                    GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
-                    ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
-                    ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_selected];
+            {
+                GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
+                ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
+                ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_selected];
 
-                    StudentProfileImg_First.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
-                    StudentProfileImg_Second.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
-                    StudentProfileImg_Third.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
-                    StudentProfileImg_Fourth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
-                    StudentProfileImg_Fifth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
-                    StudentProfileImg_Sixth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
-                }
-                break;
+                StudentProfileImg_First.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
+                StudentProfileImg_Second.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
+                StudentProfileImg_Third.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
+                StudentProfileImg_Fourth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
+                StudentProfileImg_Fifth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
+                StudentProfileImg_Sixth.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
+            }
+            break;
         }
 
         return null;

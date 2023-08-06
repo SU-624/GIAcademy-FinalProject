@@ -33,17 +33,17 @@ public class QuarterReport : MonoBehaviour
             {
                 return;
             }
-            else if (GameTime.Instance.FlowTime.NowMonth == 6 && MonthlyReporter.Instance.m_4thQuarterScore != 0)
+            else if (GameTime.Instance.FlowTime.NowMonth == 6 && MonthlyReporter.Instance.FourthQuarterScore != 0)
             {
                 // 분기별 점수에 있는 슬라이드바 초기화해주기
                 InitQuarterSpecificationPanel();
             }
 
-            if(GameTime.Instance.FlowTime.NowMonth == 6)
+            if (GameTime.Instance.FlowTime.NowMonth == 6)
             {
                 m_Quarter = "1분기";
             }
-            else if(GameTime.Instance.FlowTime.NowMonth == 9)
+            else if (GameTime.Instance.FlowTime.NowMonth == 9)
             {
                 m_Quarter = "2분기";
 
@@ -59,7 +59,7 @@ public class QuarterReport : MonoBehaviour
             }
 
             m_QuarterReportPanel.PopUpReportPanel();
-            
+
             m_QuarterReportPanel.ChangeQuarterName(m_Quarter + " 운영결과가 나왔습니다.\n지금 바로 확인하시죠!");
 
             m_IsQuaterMonth = true;
@@ -89,46 +89,53 @@ public class QuarterReport : MonoBehaviour
         if (GameTime.Instance.FlowTime.NowMonth == 6)
         {
             // 1분기
+            int _caculatePercent = (MonthlyReporter.Instance.FirstQuarterScore / 4995) * 100;
+
             m_QuarterSpecificationPanel.ChangeQuarterTitle("1");
-            m_QuarterSpecificationPanel.Set1stQuarterScore(MonthlyReporter.Instance.m_1stQuarterScore.ToString(), MonthlyReporter.Instance.m_1stQuarterScore);
+            m_QuarterSpecificationPanel.Set1stQuarterScore(MonthlyReporter.Instance.FirstQuarterScore.ToString(), _caculatePercent);
             m_QuarterSpecificationPanel.SetQuarterRankTitle("1");
         }
         else if (GameTime.Instance.FlowTime.NowMonth == 9)
         {
             // 2분기
+            int _caculatePercent = (MonthlyReporter.Instance.SecondQuarterScore / 4995) * 100;
+
             m_QuarterSpecificationPanel.ChangeQuarterTitle("2");
-            m_QuarterSpecificationPanel.Set2ndQuarterScore(MonthlyReporter.Instance.m_2ndQuarterScore.ToString(), MonthlyReporter.Instance.m_2ndQuarterScore);
+            m_QuarterSpecificationPanel.Set2ndQuarterScore(MonthlyReporter.Instance.SecondQuarterScore.ToString(), _caculatePercent);
             m_QuarterSpecificationPanel.SetQuarterRankTitle("2");
         }
         else if (GameTime.Instance.FlowTime.NowMonth == 12)
         {
             // 3분기
+            int _caculatePercent = (MonthlyReporter.Instance.ThirdQuarterScore / 4995) * 100;
+
             m_QuarterSpecificationPanel.ChangeQuarterTitle("3");
-            m_QuarterSpecificationPanel.Set3rdQuarterScore(MonthlyReporter.Instance.m_3rdQuarterScore.ToString(), MonthlyReporter.Instance.m_3rdQuarterScore);
+            m_QuarterSpecificationPanel.Set3rdQuarterScore(MonthlyReporter.Instance.ThirdQuarterScore.ToString(), _caculatePercent);
             m_QuarterSpecificationPanel.SetQuarterRankTitle("3");
         }
         else if (GameTime.Instance.FlowTime.NowMonth == 3)
         {
             // 4분기
+            int _caculatePercent = (MonthlyReporter.Instance.FourthQuarterScore / 4995) * 100;
             m_QuarterSpecificationPanel.ChangeQuarterTitle("4");
-            m_QuarterSpecificationPanel.Set4thQuarterScore(MonthlyReporter.Instance.m_4thQuarterScore.ToString(), MonthlyReporter.Instance.m_4thQuarterScore);
+            m_QuarterSpecificationPanel.Set4thQuarterScore(MonthlyReporter.Instance.FourthQuarterScore.ToString(), _caculatePercent);
             m_QuarterSpecificationPanel.SetQuarterRankTitle("4");
         }
 
-        string _totalIncome = MonthlyReporter.Instance.m_PrevQuarter.TotalIncome.ToString() + "\\";
-        string _totalIncomeEventResult = MonthlyReporter.Instance.m_PrevQuarter.IncomeEventResult.ToString() + "\\";
-        string _totalIncomeSell = MonthlyReporter.Instance.m_PrevQuarter.IncomeSell.ToString() + "\\";
-        string _totalIncomeActivity = MonthlyReporter.Instance.m_PrevQuarter.IncomeActivity.ToString() + "\\";
-        string _totalIncomeAcademyFee = MonthlyReporter.Instance.m_PrevQuarter.IncomeAcademyFee.ToString() + "\\";
+        string _totalIncome = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.TotalIncome) + "\\";
+        string _totalIncomeEventResult = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.IncomeEventResult) + "\\";
+        string _totalIncomeSell = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.IncomeSell) + "\\";
+        string _totalIncomeActivity = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.IncomeActivity) + "\\";
+        string _totalIncomeAcademyFee = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.IncomeAcademyFee) + "\\";
 
-        string _totalExpenses = MonthlyReporter.Instance.m_PrevQuarter.TotalExpenses.ToString() + "\\";
-        string _totalExpensesEventResult = MonthlyReporter.Instance.m_PrevQuarter.ExpensesEventResult.ToString() + "\\";
-        string _totalExpensesEventCost = MonthlyReporter.Instance.m_PrevQuarter.ExpensesEventCost.ToString() + "\\";
-        string _totalExpensesActivity = MonthlyReporter.Instance.m_PrevQuarter.ExpensesActivity.ToString() + "\\";
-        string _totalExpensesSalary = MonthlyReporter.Instance.m_PrevQuarter.ExpensesSalary.ToString() + "\\";
-        string _totalExpensesFacility = MonthlyReporter.Instance.m_PrevQuarter.ExpensesFacility.ToString() + "\\";
-        string _totalExpensesTuitionFee = MonthlyReporter.Instance.m_PrevQuarter.ExpensesTuitionFee.ToString() + "\\";
-        string _totalNetPtofit = MonthlyReporter.Instance.m_PrevQuarter.NetProfit.ToString() + "\\";
+        string _totalExpenses = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.TotalExpenses) + "\\";
+        string _totalExpensesEventResult = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.ExpensesEventResult) + "\\";
+        string _totalExpensesEventCost = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.ExpensesEventCost) + "\\";
+        string _totalExpensesActivity = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.ExpensesActivity) + "\\";
+        string _totalExpensesSalary = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.ExpensesSalary) + "\\";
+        string _totalExpensesFacility = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.ExpensesFacility) + "\\";
+        string _totalExpensesTuitionFee = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.ExpensesTuitionFee) + "\\";
+        string _totalNetPtofit = string.Format("{0:#,0}", MonthlyReporter.Instance.m_PrevQuarter.NetProfit) + "\\";
 
         string _totalGoodsScore = MonthlyReporter.Instance.m_PrevQuarter.GoodsScore.ToString();
         string _totalManagementScore = MonthlyReporter.Instance.m_PrevQuarter.ManagementScore.ToString();
@@ -188,48 +195,81 @@ public class QuarterReport : MonoBehaviour
         string _2ndAcademyChangeScore = m_AcademyNameToRank[1].Value.ToString();
         string _3rdAcademyChangeScore = m_AcademyNameToRank[2].Value.ToString();
 
-        string _myAcademyName = PlayerInfo.Instance.m_AcademyName;
-        int _myScoreIndex = m_AcademyList.FindIndex(x => x.Key == PlayerInfo.Instance.m_AcademyName);
+        string _myAcademyName = PlayerInfo.Instance.AcademyName;
+        int _myScoreIndex = m_AcademyList.FindIndex(x => x.Key == PlayerInfo.Instance.AcademyName);
         string _myAcademyScore = m_AcademyList[_myScoreIndex].Value.ToString();
 
-        int _myChangeScoreIndex = m_AcademyNameToRank.FindIndex(x => x.Key == PlayerInfo.Instance.m_AcademyName);
+        int _myChangeScoreIndex = m_AcademyNameToRank.FindIndex(x => x.Key == PlayerInfo.Instance.AcademyName);
         string _myAcademyChangeScore = m_AcademyNameToRank[_myChangeScoreIndex].Value.ToString();
 
         int _myAcademyIndex = FindIndexToList(m_AcademyList, _myAcademyName);
-        string _myAcademyRank = _myAcademyIndex.ToString();
-        
-        m_MyAcademyQuarterRank = _myAcademyIndex;
 
-        string _academyName1 = m_AcademyList[_myAcademyIndex - 1].Key;
-        string _academyScore1 = m_AcademyList[_myAcademyIndex - 1].Value.ToString();
-        string _academyChangeScore1 = m_AcademyNameToRank[_myAcademyIndex - 1].Value.ToString();
-        string _academyRank1 = FindIndexToList(m_AcademyList, _academyName1).ToString();
+        string _myAcademyRank;
+        string _academyName1;
 
-        string _academyName2 = m_AcademyList[_myAcademyIndex + 1].Key;
-        string _academyScore2 = m_AcademyList[_myAcademyIndex + 1].Value.ToString();
-        string _academyChangeScore2 = m_AcademyNameToRank[_myAcademyIndex + 1].Value.ToString();
-        string _academyRank2 = FindIndexToList(m_AcademyList, _academyName2).ToString();
+        string _academyRank1;
+        string _academyScore1;
+        string _academyChangeScore1;
 
-        if (_1stAcademyName == _myAcademyName)
+        string _academyRank2;
+        string _academyName2;
+        string _academyScore2;
+        string _academyChangeScore2;
+
+        if (_myAcademyIndex == 0)
         {
-            m_QuarterSpecificationPanel.MyAcademyRankPlace.transform.SetSiblingIndex(0);
+            _myAcademyRank = "1";
+
+            _academyRank1 = "2";
+            _academyName1 = m_AcademyList[_myAcademyIndex + 1].Key;
+            _academyScore1 = m_AcademyList[_myAcademyIndex + 1].Value.ToString();
+            _academyChangeScore1 = m_AcademyNameToRank[_myAcademyIndex + 1].Value.ToString();
+
+            _academyRank2 = "3";
+            _academyName2 = m_AcademyList[_myAcademyIndex + 2].Key;
+            _academyScore2 = m_AcademyList[_myAcademyIndex + 2].Value.ToString();
+            _academyChangeScore2 = m_AcademyNameToRank[_myAcademyIndex + 2].Value.ToString();
         }
         else
         {
-            m_QuarterSpecificationPanel.MyAcademyRankPlace.transform.SetSiblingIndex(1);
+            _myAcademyRank = _myAcademyIndex.ToString();
+
+            _academyName1 = m_AcademyList[_myAcademyIndex - 1].Key;
+            _academyRank1 = FindIndexToList(m_AcademyList, _academyName1).ToString();
+            _academyScore1 = m_AcademyList[_myAcademyIndex - 1].Value.ToString();
+            _academyChangeScore1 = m_AcademyNameToRank[_myAcademyIndex - 1].Value.ToString();
+
+            _academyName2 = m_AcademyList[_myAcademyIndex + 1].Key;
+            _academyRank2 = FindIndexToList(m_AcademyList, _academyName2).ToString();
+            _academyScore2 = m_AcademyList[_myAcademyIndex + 1].Value.ToString();
+            _academyChangeScore2 = m_AcademyNameToRank[_myAcademyIndex + 1].Value.ToString();
         }
+
+
+        m_MyAcademyQuarterRank = _myAcademyIndex;
 
         // 1등한 학원의 정보를 넣어준다.
         m_QuarterSpecificationPanel.SetQuarter1stAcademyInfo(_1stAcademyName, _1stAcademyScore);
         //  1~3등의 이름과 점수, 랭킹변화를 넣어준다.
         m_QuarterSpecificationPanel.SetAcademysPanel(_1stAcademyName, _1stAcademyScore, _1stAcademyChangeScore, _2ndAcademyName, _2ndAcademyScore, _2ndAcademyChangeScore
             , _3rdAcademyName, _3rdAcademyScore, _3rdAcademyChangeScore);
-        // 내 아카데미보다 한 단계 낮고 높은 아카데미와 함께 띄워준다.
+        // 내 아카데미가 1등이면 나보다 낮은 아카데미 2개의 정보를, 아니라면 나보다 높고 나보다 작은 아카데미를 한개씩 보여준다.
         m_QuarterSpecificationPanel.SetMyAcademyRankPalce(_academyName1, _academyScore1, _academyRank1, _academyChangeScore1, _myAcademyName, _myAcademyScore, _myAcademyRank, _myAcademyChangeScore,
             _academyName2, _academyScore2, _academyRank2, _academyChangeScore2);
-        // 모든 아카데미의 증감소 화살표 표시
-        m_QuarterSpecificationPanel.SetIncreaseImage(m_AcademyNameToRank[0].Value, m_AcademyNameToRank[1].Value, m_AcademyNameToRank[2].Value, m_AcademyNameToRank[_myChangeScoreIndex].Value,
-            m_AcademyNameToRank[_myAcademyIndex - 1].Value, m_AcademyNameToRank[_myAcademyIndex + 1].Value);
+
+        if (_1stAcademyName == _myAcademyName)
+        {
+            m_QuarterSpecificationPanel.MyAcademyRankPlace.transform.SetSiblingIndex(0);
+            // 모든 아카데미의 증감소 화살표 표시
+            m_QuarterSpecificationPanel.SetIncreaseImage(m_AcademyNameToRank[0].Value, m_AcademyNameToRank[1].Value, m_AcademyNameToRank[2].Value, m_AcademyNameToRank[_myChangeScoreIndex].Value,
+                m_AcademyNameToRank[_myAcademyIndex + 1].Value, m_AcademyNameToRank[_myAcademyIndex + 2].Value);
+        }
+        else
+        {
+            m_QuarterSpecificationPanel.MyAcademyRankPlace.transform.SetSiblingIndex(1);
+            m_QuarterSpecificationPanel.SetIncreaseImage(m_AcademyNameToRank[0].Value, m_AcademyNameToRank[1].Value, m_AcademyNameToRank[2].Value, m_AcademyNameToRank[_myChangeScoreIndex].Value,
+                m_AcademyNameToRank[_myAcademyIndex - 1].Value, m_AcademyNameToRank[_myAcademyIndex + 1].Value);
+        }
     }
 
     private int FindIndexToList(List<KeyValuePair<string, int>> _academyList, string _name)
@@ -264,7 +304,7 @@ public class QuarterReport : MonoBehaviour
         m_AcademyList = QuarterlyReport.Instance.NowAcademyScore;
 
         // 이번 분기에 맞는 점수 넣어주기
-        m_AcademyList.Add(new KeyValuePair<string, int>(PlayerInfo.Instance.m_AcademyName, _score));
+        m_AcademyList.Add(new KeyValuePair<string, int>(PlayerInfo.Instance.AcademyName, _score));
 
         m_AcademyList.Sort((x, y) =>
         {
@@ -276,7 +316,7 @@ public class QuarterReport : MonoBehaviour
         int _count = m_AcademyList.Count;
 
         // 맨 꼴찌 학원이 내 학원이라면 내 점수보다 조금 더 작은 학원을 만들어서 넣어준다.
-        if (m_AcademyList[_count - 1].Key == PlayerInfo.Instance.m_AcademyName)
+        if (m_AcademyList[_count - 1].Key == PlayerInfo.Instance.AcademyName)
         {
             m_AcademyList.Add(new KeyValuePair<string, int>("멸망아카데미", (int)(_score * 0.7)));
         }
@@ -288,7 +328,7 @@ public class QuarterReport : MonoBehaviour
         int _score = MonthlyReporter.Instance.m_PrevQuarter.GoodsScore + MonthlyReporter.Instance.m_PrevQuarter.ManagementScore + MonthlyReporter.Instance.m_PrevQuarter.FamousScore +
             MonthlyReporter.Instance.m_PrevQuarter.ActivityScore + MonthlyReporter.Instance.m_PrevQuarter.TalentDevelopmentScore;
 
-        PlayerInfo.Instance.m_AcademyScore += _score;
+        PlayerInfo.Instance.AcademyScore += _score;
     }
 
     // 이전 랭킹을 저장해둘 함수 m_prevAcademyRank 여기에 1등부터 넣어준다.

@@ -11,9 +11,11 @@ public class SetClassPanel : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_Week;
     [SerializeField] private TextMeshProUGUI m_CurrentMoney;
     [SerializeField] private TextMeshProUGUI m_TotalClassMoney;
-    [SerializeField] private TextMeshProUGUI m_TotalHealth;
+    [SerializeField] private TextMeshProUGUI m_WarningText;
     [SerializeField] private PopUpUI m_PopUpSelectClassPanel;
     [SerializeField] private PopOffUI m_PopOffSelectClassPanel;
+    [SerializeField] private PopUpUI m_PopUpWarningPanel;
+    [SerializeField] private PopOffUI m_PopOffWarningPanel;
 
     [Space(5f)]
     [Header("내가 클릭한 수업과 강사의 정보를 띄워주는 패널")]
@@ -38,11 +40,11 @@ public class SetClassPanel : MonoBehaviour
     [Header("내가 지정한 수업이 몇 주차 어느 파트의 수업인지 띄워주는 패널")]
     [Header("1주차")]
     [SerializeField] private GameObject m_1WeekPanel;
-    [SerializeField] private GameObject m_1WeekGMClass;
+    [SerializeField] private GameObject m_1WeekGameDesignerClass;
     [SerializeField] private GameObject m_1WeekArtClass;
     [SerializeField] private GameObject m_1WeekProgrammingClass;
-    [SerializeField] private TextMeshProUGUI m_1WeekGMClassName;
-    [SerializeField] private TextMeshProUGUI m_1WeekGMClassMoney;
+    [SerializeField] private TextMeshProUGUI m_1WeekGameDesignerClassName;
+    [SerializeField] private TextMeshProUGUI m_1WeekGameDesignerClassMoney;
     [SerializeField] private TextMeshProUGUI m_1WeekArtClassName;
     [SerializeField] private TextMeshProUGUI m_1WeekArtClassMoney;
     [SerializeField] private TextMeshProUGUI m_1WeekProgrammingClassName;
@@ -52,11 +54,11 @@ public class SetClassPanel : MonoBehaviour
     [Space(5f)]
     [Header("2주차")]
     [SerializeField] private GameObject m_2WeekPanel;
-    [SerializeField] private GameObject m_2WeekGMClass;
+    [SerializeField] private GameObject m_2WeekGameDesignerClass;
     [SerializeField] private GameObject m_2WeekArtClass;
     [SerializeField] private GameObject m_2WeekProgrammingClass;
-    [SerializeField] private TextMeshProUGUI m_2WeekGMClassName;
-    [SerializeField] private TextMeshProUGUI m_2WeekGMClassMoney;
+    [SerializeField] private TextMeshProUGUI m_2WeekGameDesignerClassName;
+    [SerializeField] private TextMeshProUGUI m_2WeekGameDesignerClassMoney;
     [SerializeField] private TextMeshProUGUI m_2WeekArtClassName;
     [SerializeField] private TextMeshProUGUI m_2WeekArtClassMoney;
     [SerializeField] private TextMeshProUGUI m_2WeekProgrammingClassName;
@@ -76,12 +78,17 @@ public class SetClassPanel : MonoBehaviour
     [SerializeField] private ScrollRect m_ProfessorScrollView;
     [SerializeField] private GameObject m_PartWeek;
 
+    [Space(5f)]
+    [Header("튜토리얼용")]
+    [SerializeField] private RectTransform m_ProfessorListRect;
+    [SerializeField] private RectTransform m_ClassListRect;
+    [SerializeField] private RectTransform m_MoneyRect;
+
+
     public RectTransform m_ClassPrefab;
     public RectTransform m_ProfessorPrefab;
-    public GameObject MoneyWarningMessage { get { return m_MoneyWarningMessage; } set { m_MoneyWarningMessage = value; } }
-    public GameObject HealthWarningMessage { get { return m_HealthWarningMessage; } set { m_HealthWarningMessage = value; } }
-    public GameObject CurrentMoneyWarningMessage { get { return m_CurrentMoneyWarningMessage; } set { m_CurrentMoneyWarningMessage = value; } }
     public TextMeshProUGUI CurrentMoney { get { return m_CurrentMoney; } set { m_CurrentMoney = value; } }
+    public TextMeshProUGUI m_TotalMoney { get { return m_TotalClassMoney; } }
     public Transform ClassPrefabParent { get { return m_ClassPrefabParent; } set { m_ClassPrefabParent = value; } }
     public Transform ProfessorPrefabParent { get { return m_ProfessorPrefabParent; } set { m_ProfessorPrefabParent = value; } }
     public GameObject[] AllInfoPanelClassStat { get { return m_AllInfoPanelClassStat; } set { m_AllInfoPanelClassStat = value; } }
@@ -98,6 +105,9 @@ public class SetClassPanel : MonoBehaviour
     public ScrollRect ClassScrollView { get { return m_ClassScrollView; } set { m_ClassScrollView = value; } }
     public ScrollRect ProfessorScrollView { get { return m_ProfessorScrollView; } set { m_ProfessorScrollView = value; } }
     public GameObject PartWeek { get { return m_PartWeek; } set { m_PartWeek = value; } }
+    public RectTransform ProfessorListRect { get { return m_ProfessorListRect; } set { m_ProfessorListRect = value; } }
+    public RectTransform ClassListRect { get { return m_ClassListRect; } set { m_ClassListRect = value; } }
+    public RectTransform MoneyRect { get { return m_MoneyRect; } set { m_MoneyRect = value; } }
 
     private void Start()
     {
@@ -131,21 +141,23 @@ public class SetClassPanel : MonoBehaviour
         m_ProfessorImage.sprite = _profile;
     }
 
-    public void SetClassMoney(Color _color, string _money)
-    {
-        m_ClickClassMoney.color = _color;
-        m_ClickClassMoney.text = _money;
-    }
+    //public void SetClassMoney(Color _color, string _money)
+    //{
+    //    m_TotalClassMoney.color = _color;
+    //    m_TotalClassMoney.text = _money;
+    //}
 
     public void TotalMoney(Color _color, string _money)
     {
         m_TotalClassMoney.color = _color;
-        m_TotalClassMoney.text = _money;
+        m_TotalClassMoney.text =  _money;
     }
 
-    public void TotalHealth(string _health)
+    public void SetWarningText(string _text)
     {
-        m_TotalHealth.text = _health;
+        m_WarningText.text = _text;
+        m_PopUpWarningPanel.TurnOnUI();
+        m_PopOffWarningPanel.DelayTurnOffUI();
     }
 
     public void SetProfessorHealth(Color _color)
@@ -183,18 +195,18 @@ public class SetClassPanel : MonoBehaviour
         m_AllInfoPanelClassAllStat.SetActive(_allStatFlag);
     }
 
-    public void Set1WeekGMPanel(bool _1WeekGMClass, string _1WeekGMClassName = "", string _1WeekGMClassMoney = "")
+    public void Set1WeekGameDesignerPanel(bool _1WeekGameDesignerClass, string _1WeekGameDesignerClassName = "", string _1WeekGameDesignerClassMoney = "")
     {
-        m_1WeekGMClass.SetActive(_1WeekGMClass);
-        m_1WeekGMClassName.text = _1WeekGMClassName;
-        m_1WeekGMClassMoney.text = _1WeekGMClassMoney;
+        m_1WeekGameDesignerClass.SetActive(_1WeekGameDesignerClass);
+        m_1WeekGameDesignerClassName.text = _1WeekGameDesignerClassName;
+        m_1WeekGameDesignerClassMoney.text = _1WeekGameDesignerClassMoney;
     }
 
-    public void Set2WeekGMPanel(bool _2WeekGMClass, string _2WeekGMClassName = "", string _2WeekGMClassMoney = "")
+    public void Set2WeekGameDesignerPanel(bool _2WeekGameDesignerClass, string _2WeekGameDesignerClassName = "", string _2WeekGameDesignerClassMoney = "")
     {
-        m_2WeekGMClass.SetActive(_2WeekGMClass);
-        m_2WeekGMClassName.text = _2WeekGMClassName;
-        m_2WeekGMClassMoney.text = _2WeekGMClassMoney;
+        m_2WeekGameDesignerClass.SetActive(_2WeekGameDesignerClass);
+        m_2WeekGameDesignerClassName.text = _2WeekGameDesignerClassName;
+        m_2WeekGameDesignerClassMoney.text = _2WeekGameDesignerClassMoney;
     }
 
     public void Set1WeekArtPanel(bool _1WeekArtClass, string _1WeekArtClassName = "", string _1WeekArtClassMoney = "")
@@ -237,14 +249,14 @@ public class SetClassPanel : MonoBehaviour
 
     public void ClickUpAndDownButton()
     {
-        if(m_1WeekPanel.activeSelf)
+        if (m_1WeekPanel.activeSelf)
         {
             m_DownButton.gameObject.SetActive(false);
             m_2WeekPanel.SetActive(true);
             m_1WeekPanel.SetActive(false);
             m_UpButton.gameObject.SetActive(true);
         }
-        else if(m_2WeekPanel.activeSelf)
+        else if (m_2WeekPanel.activeSelf)
         {
             m_UpButton.gameObject.SetActive(false);
             m_1WeekPanel.SetActive(true);

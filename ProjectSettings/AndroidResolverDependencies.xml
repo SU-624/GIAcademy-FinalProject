@@ -2,6 +2,7 @@
   <packages>
     <package>com.google.android.gms:play-services-base:18.1.0</package>
     <package>com.google.firebase:firebase-analytics:21.2.0</package>
+    <package>com.google.firebase:firebase-analytics-unity:10.3.0</package>
     <package>com.google.firebase:firebase-app-unity:10.3.0</package>
     <package>com.google.firebase:firebase-auth:21.1.0</package>
     <package>com.google.firebase:firebase-auth-unity:10.3.0</package>
@@ -63,6 +64,7 @@
     <file>Assets/Plugins/Android/com.google.code.gson.gson-2.9.0.jar</file>
     <file>Assets/Plugins/Android/com.google.errorprone.error_prone_annotations-2.14.0.jar</file>
     <file>Assets/Plugins/Android/com.google.firebase.firebase-analytics-21.2.0.aar</file>
+    <file>Assets/Plugins/Android/com.google.firebase.firebase-analytics-unity-10.3.0.aar</file>
     <file>Assets/Plugins/Android/com.google.firebase.firebase-annotations-16.1.0.jar</file>
     <file>Assets/Plugins/Android/com.google.firebase.firebase-appcheck-interop-16.1.0.aar</file>
     <file>Assets/Plugins/Android/com.google.firebase.firebase-app-unity-10.3.0.aar</file>

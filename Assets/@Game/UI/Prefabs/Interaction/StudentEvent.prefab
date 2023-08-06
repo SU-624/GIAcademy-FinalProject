@@ -130,7 +130,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3740133766033655203}
-  - component: {fileID: 2243355005106778997}
+  - component: {fileID: 174221367989849491}
   m_Layer: 5
   m_Name: StudentEvent
   m_TagString: Untagged
@@ -159,7 +159,7 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &2243355005106778997
+--- !u!114 &174221367989849491
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

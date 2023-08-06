@@ -16,8 +16,10 @@ public class FollowTarget : MonoBehaviour
 
     float ChatBoxOriginalSize = 0.4f;
     float ChatBoxscaleAmount = 0.03f;
-    float ChatBoxOffsetX = 0.5f;
-    float ChatBoxLeftOffsetX = 1.1f;
+    float ChatBoxOffsetX = 4f;
+    float ChatBoxOffsetLengthX = 8f;
+    float ChatBoxLeftOffsetX = 3f;
+    float ChatBoxLeftOffsetLengthX = 5f;
     float ChatBoxOffsetY = 0.1f;
 
     public bool IsLeft = false;
@@ -37,7 +39,7 @@ public class FollowTarget : MonoBehaviour
                 transform.position = Camera.main.WorldToScreenPoint(m_Target.position + m_Offset);
                 transform.position =
                     new Vector3(
-                        transform.position.x - transform.GetChild(0).GetComponent<TextMeshProUGUI>().text.Length *
+                        transform.position.x - (transform.GetChild(0).GetComponent<TextMeshProUGUI>().text.Length * ChatBoxLeftOffsetLengthX) -
                         (-Camera.main.orthographicSize + CameraMaxOrthoSize + 1) * ChatBoxLeftOffsetX - 100.0f, transform.position.y + (-Camera.main.orthographicSize + CameraMaxOrthoSize) * ChatBoxOffsetY, transform.position.z);
             }
             else
@@ -47,14 +49,14 @@ public class FollowTarget : MonoBehaviour
                 transform.position = Camera.main.WorldToScreenPoint(m_Target.position + m_Offset);
                 transform.position =
                     new Vector3(
-                        transform.position.x + transform.GetChild(0).GetComponent<TextMeshProUGUI>().text.Length *
-                        (-Camera.main.orthographicSize + CameraMaxOrthoSize + 1) * ChatBoxOffsetX, transform.position.y + (-Camera.main.orthographicSize + CameraMaxOrthoSize) * ChatBoxOffsetY, transform.position.z);
+                        transform.position.x + (transform.GetChild(0).GetComponent<TextMeshProUGUI>().text.Length * ChatBoxOffsetLengthX) +
+                        (-Camera.main.orthographicSize + CameraMaxOrthoSize + 1) * ChatBoxOffsetX - 30, transform.position.y + (-Camera.main.orthographicSize + CameraMaxOrthoSize) * ChatBoxOffsetY, transform.position.z);
             }
         }
         else
         {
             m_Offset.y = 3.0f + (-Camera.main.orthographicSize + CameraMaxOrthoSize) * 0.08f;
-            transform.localScale = Vector3.one + (Vector3.one * (-Camera.main.orthographicSize + CameraMaxOrthoSize) * 0.1f);
+            transform.localScale = Vector3.one * 3f + (Vector3.one * (-Camera.main.orthographicSize + CameraMaxOrthoSize) * 0.1f);
             transform.position = Camera.main.WorldToScreenPoint(m_Target.position + m_Offset);
         }
     }

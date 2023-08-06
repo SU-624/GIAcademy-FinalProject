@@ -1,0 +1,274 @@
+{
+"OriginalAIAcademyInfoData":[
+ {
+   "No": 100,
+   "Name": "숙희 껨학원",
+   "MoneyScore": 200,
+   "FamousScore": 205,
+   "ActivityScore": 200,
+   "ManagingScore": 206,
+   "EducationScore": 201
+ },
+ {
+   "No": 101,
+   "Name": "콤뚜스 프로메이커",
+   "MoneyScore": 201,
+   "FamousScore": 203,
+   "ActivityScore": 201,
+   "ManagingScore": 203,
+   "EducationScore": 203
+ },
+ {
+   "No": 102,
+   "Name": "넨마불",
+   "MoneyScore": 201,
+   "FamousScore": 202,
+   "ActivityScore": 206,
+   "ManagingScore": 202,
+   "EducationScore": 200
+ },
+ {
+   "No": 103,
+   "Name": "게임인재원",
+   "MoneyScore": 200,
+   "FamousScore": 206,
+   "ActivityScore": 200,
+   "ManagingScore": 201,
+   "EducationScore": 200
+ },
+ {
+   "No": 104,
+   "Name": "방구석 게임동아리",
+   "MoneyScore": 204,
+   "FamousScore": 201,
+   "ActivityScore": 202,
+   "ManagingScore": 202,
+   "EducationScore": 204
+ },
+ {
+   "No": 105,
+   "Name": "쳇,GPT",
+   "MoneyScore": 203,
+   "FamousScore": 200,
+   "ActivityScore": 203,
+   "ManagingScore": 202,
+   "EducationScore": 201
+ },
+ {
+   "No": 106,
+   "Name": "뜨또 게임연구소",
+   "MoneyScore": 202,
+   "FamousScore": 207,
+   "ActivityScore": 204,
+   "ManagingScore": 200,
+   "EducationScore": 203
+ },
+ {
+   "No": 107,
+   "Name": "아카데미 오블라센",
+   "MoneyScore": 204,
+   "FamousScore": 204,
+   "ActivityScore": 200,
+   "ManagingScore": 203,
+   "EducationScore": 200
+ },
+ {
+   "No": 108,
+   "Name": "즐겜 대학원",
+   "MoneyScore": 203,
+   "FamousScore": 201,
+   "ActivityScore": 201,
+   "ManagingScore": 201,
+   "EducationScore": 203
+ },
+ {
+   "No": 109,
+   "Name": "패밀리 오락관",
+   "MoneyScore": 201,
+   "FamousScore": 201,
+   "ActivityScore": 203,
+   "ManagingScore": 205,
+   "EducationScore": 201
+ },
+ {
+   "No": 200,
+   "Name": "나락 아카데미",
+   "MoneyScore": 203,
+   "FamousScore": 203,
+   "ActivityScore": 205,
+   "ManagingScore": 200,
+   "EducationScore": 203
+ },
+ {
+   "No": 201,
+   "Name": "SPS 아카데미",
+   "MoneyScore": 204,
+   "FamousScore": 205,
+   "ActivityScore": 202,
+   "ManagingScore": 201,
+   "EducationScore": 205
+ },
+ {
+   "No": 202,
+   "Name": "돈방석 게임학원",
+   "MoneyScore": 200,
+   "FamousScore": 202,
+   "ActivityScore": 203,
+   "ManagingScore": 204,
+   "EducationScore": 204
+ },
+ {
+   "No": 203,
+   "Name": "멋진 유저들",
+   "MoneyScore": 202,
+   "FamousScore": 204,
+   "ActivityScore": 204,
+   "ManagingScore": 206,
+   "EducationScore": 203
+ },
+ {
+   "No": 204,
+   "Name": "트롤대학교",
+   "MoneyScore": 205,
+   "FamousScore": 204,
+   "ActivityScore": 205,
+   "ManagingScore": 201,
+   "EducationScore": 208
+ },
+ {
+   "No": 205,
+   "Name": "게임좀비들",
+   "MoneyScore": 206,
+   "FamousScore": 205,
+   "ActivityScore": 204,
+   "ManagingScore": 208,
+   "EducationScore": 204
+ },
+ {
+   "No": 206,
+   "Name": "페스타 마지카",
+   "MoneyScore": 206,
+   "FamousScore": 203,
+   "ActivityScore": 203,
+   "ManagingScore": 203,
+   "EducationScore": 207
+ },
+ {
+   "No": 207,
+   "Name": "블루아카데미",
+   "MoneyScore": 204,
+   "FamousScore": 200,
+   "ActivityScore": 202,
+   "ManagingScore": 207,
+   "EducationScore": 203
+ },
+ {
+   "No": 208,
+   "Name": "노잼 게이머스",
+   "MoneyScore": 207,
+   "FamousScore": 206,
+   "ActivityScore": 201,
+   "ManagingScore": 205,
+   "EducationScore": 206
+ },
+ {
+   "No": 209,
+   "Name": "쥬쥬게임아카데미",
+   "MoneyScore": 205,
+   "FamousScore": 203,
+   "ActivityScore": 200,
+   "ManagingScore": 202,
+   "EducationScore": 205
+ },
+ {
+   "No": 300,
+   "Name": "실버타이거",
+   "MoneyScore": 201,
+   "FamousScore": 207,
+   "ActivityScore": 203,
+   "ManagingScore": 205,
+   "EducationScore": 205
+ },
+ {
+   "No": 301,
+   "Name": "포폴만가르치는학원",
+   "MoneyScore": 203,
+   "FamousScore": 206,
+   "ActivityScore": 201,
+   "ManagingScore": 205,
+   "EducationScore": 208
+ },
+ {
+   "No": 302,
+   "Name": "국영수 게임학원",
+   "MoneyScore": 206,
+   "FamousScore": 204,
+   "ActivityScore": 208,
+   "ManagingScore": 204,
+   "EducationScore": 206
+ },
+ {
+   "No": 303,
+   "Name": "UA Porject",
+   "MoneyScore": 208,
+   "FamousScore": 206,
+   "ActivityScore": 203,
+   "ManagingScore": 206,
+   "EducationScore": 204
+ },
+ {
+   "No": 304,
+   "Name": "Cock&Tall",
+   "MoneyScore": 204,
+   "FamousScore": 202,
+   "ActivityScore": 206,
+   "ManagingScore": 205,
+   "EducationScore": 203
+ },
+ {
+   "No": 305,
+   "Name": "댕스 라이또",
+   "MoneyScore": 207,
+   "FamousScore": 200,
+   "ActivityScore": 207,
+   "ManagingScore": 203,
+   "EducationScore": 206
+ },
+ {
+   "No": 306,
+   "Name": "렉쓴 인재양성소",
+   "MoneyScore": 208,
+   "FamousScore": 206,
+   "ActivityScore": 202,
+   "ManagingScore": 206,
+   "EducationScore": 207
+ },
+ {
+   "No": 307,
+   "Name": "히카리 게이무",
+   "MoneyScore": 203,
+   "FamousScore": 207,
+   "ActivityScore": 208,
+   "ManagingScore": 207,
+   "EducationScore": 205
+ },
+ {
+   "No": 308,
+   "Name": "DDuoL",
+   "MoneyScore": 205,
+   "FamousScore": 208,
+   "ActivityScore": 207,
+   "ManagingScore": 204,
+   "EducationScore": 204
+ },
+ {
+   "No": 309,
+   "Name": "EZPZ아카데미",
+   "MoneyScore": 205,
+   "FamousScore": 208,
+   "ActivityScore": 201,
+   "ManagingScore": 202,
+   "EducationScore": 208
+ }
+]
+}

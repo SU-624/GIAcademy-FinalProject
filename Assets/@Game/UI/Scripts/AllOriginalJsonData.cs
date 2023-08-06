@@ -44,12 +44,14 @@ public class AllOriginalJsonData
     public List<SimpleExecutionEventReward> SimpleEventReward = new List<SimpleExecutionEventReward>();                         //  사용가능한 선택이벤트 목록
     public List<OptionChoiceEventReward> ChoiceEventReward = new List<OptionChoiceEventReward>();
     // 학생, 강사, 메일 원본데이터
-    //public List<CommonMailBox> OriginalMailData = new List<CommonMailBox>();                                                    // 예전 일반메일 데이터
+    //public List<CommonMailBox> OriginalMailData = new List<CommonMailBox>();                                                  // 예전 일반메일 데이터
     //public List<ReportMailBox> ?
     public List<StudentSaveData> OriginalStudentData = new List<StudentSaveData>();                                             // 원본 전체학생 데이터
     public List<ProfessorSaveData> OriginalTeacherhData = new List<ProfessorSaveData>();                                        // 원본 전체교수 데이터
     public List<ProfessorSaveData> OriginalInstructorData = new List<ProfessorSaveData>();                                      // 원본 전체교수 데이터
     public List<RankScript> OriginalRankScripteData = new List<RankScript>();
+    public List<AIAcademyInfo> OriginalAIAcademyInfoData = new List<AIAcademyInfo>();                                           /// 7.14 : 새로 추가된 AI아카데미 데이터
+    public List<StudentLastName> OriginalStudentLastNameData = new List<StudentLastName>();                                     /// 7.14 : 새로 추가된 학생 이름 풀
     public List<GameShowData> OriginalRandomGameShowData = new List<GameShowData>();
     //public List<SpecialGameShowData> OriginalSpecialGameShowData = new List<SpecialGameShowData>();
     public List<EmailData> OriginalEmailData = new List<EmailData>();                                                           // 원본 메일 데이터

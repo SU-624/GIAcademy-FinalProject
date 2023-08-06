@@ -24,12 +24,12 @@ public enum ClassState
 /// 2022.11.04
 /// </summary>
 /// 
-
 public class InGameTest : MonoBehaviour
 {
     private static InGameTest _instance = null;
 
     public delegate void StudentDataChangedEventHandler();
+
     public static event StudentDataChangedEventHandler StudentDataChangedEvent;
 
     [SerializeField] private PopUpUI m_ClassResultPopUp;
@@ -46,7 +46,8 @@ public class InGameTest : MonoBehaviour
     public bool _isSelectClassNotNull = false;
 
     public List<Vector3> FreeWalkPointList = new List<Vector3>();
-    public int m_ProfessorTotalSalary = 0;
+    private List<RankTable> m_AIAcademyRankList = new List<RankTable>();
+    private List<AIAcademyInfo> m_AIData = new List<AIAcademyInfo>();
 
     private bool testCheck;
     private bool testCheck2;
@@ -63,30 +64,35 @@ public class InGameTest : MonoBehaviour
             {
                 return null;
             }
+
             return _instance;
         }
     }
 
     private void Awake()
     {
-        m_ClassState = ClassState.nothing;
+        // 저장 데이터가 없다면 초기설정
+        if (!Json.Instance.UseLoadingData)
+        {
+            m_ClassState = ClassState.nothing;
 
-        PlayerInfo.Instance.m_MyMoney = 1500000;      // 맨처음 초기 소지머니     최대머니 : 999,999,999   9억
-        PlayerInfo.Instance.m_SpecialPoint = 10000;     //                         최대머니 : 999,999,999   9억
+            PlayerInfo.Instance.MyMoney = 100000; // 맨처음 초기 소지머니     최대머니 : 999,999,999   9억
+            PlayerInfo.Instance.SpecialPoint = 200; //                         최대머니 : 999,999,999   9억
 
-        // 아카데미 인지도, 인재 양성 등등
-        PlayerInfo.Instance.m_Awareness = 100;
-        PlayerInfo.Instance.m_Management = 100;
-        PlayerInfo.Instance.m_TalentDevelopment = 100;
-        PlayerInfo.Instance.m_Activity = 100;
-        PlayerInfo.Instance.m_Goods = 100;
+            // 아카데미 인지도, 인재 양성 등등
+            PlayerInfo.Instance.Famous = 100;
+            PlayerInfo.Instance.Management = 100;
+            PlayerInfo.Instance.TalentDevelopment = 100;
+            PlayerInfo.Instance.Activity = 100;
+            PlayerInfo.Instance.Goods = 100;
 
-        PlayerInfo.Instance.m_CurrentRank = Rank.F;
+            PlayerInfo.Instance.CurrentRank = Rank.F;
+        }
 
         if (_instance == null)
         {
             _instance = this;
-            DontDestroyOnLoad(gameObject);
+            //DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -97,27 +103,17 @@ public class InGameTest : MonoBehaviour
     void Start()
     {
         GameObject[] freewalkPoint = GameObject.FindGameObjectsWithTag("Rest");
-
         for (int i = 0; i < freewalkPoint.Length; i++)
         {
             FreeWalkPointList.Add(freewalkPoint[i].transform.position);
         }
+
         testCheck = false;
         testCheck2 = false;
         testCheck3 = false;
 
-        QuarterlyReport.Instance.Init();
-        QuarterlyReport.Instance.AddNewAcademy("NC", "D", "S", "A", "S", "S");
-        QuarterlyReport.Instance.AddNewAcademy("Netmarble", "A", "A", "S", "A", "B");
-        QuarterlyReport.Instance.AddNewAcademy("Blanc", "S", "D", "D", "S", "B");
-        QuarterlyReport.Instance.AddNewAcademy("GI", "B", "S", "B", "A", "S");
-        QuarterlyReport.Instance.AddNewAcademy("Woodpie", "A", "A", "S", "D", "A");
-        QuarterlyReport.Instance.AddNewAcademy("Ocean", "B", "S", "B", "A", "D");
-        QuarterlyReport.Instance.AddNewAcademy("manggugi", "F", "E", "SS", "F", "A");
-        QuarterlyReport.Instance.AddNewAcademy("DuoL", "S", "A", "SSS", "C", "S");
-        QuarterlyReport.Instance.AddNewAcademy("CockTail", "B", "E", "B", "S", "SS");
-        QuarterlyReport.Instance.AddNewAcademy("ThanksLight", "SS", "S", "A", "B", "SSS");
-        QuarterlyReport.Instance.AddNewAcademy("ProjectUA", "S", "C", "B", "D", "B");
+        InitAIAcademyRankList();
+        MakeAIAcademy();
     }
 
     private void Update()
@@ -145,6 +141,7 @@ public class InGameTest : MonoBehaviour
                     m_isProfessorArrived = false;
                     break;
                 }
+
                 //professor.gameObject.GetComponent<Animator>().SetBool("isStudying", true);
                 m_isProfessorArrived = true;
             }
@@ -173,15 +170,60 @@ public class InGameTest : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F5))
         {
-            Time.timeScale = InGameUI.Instance.m_NowGameSpeed; ;
+            Time.timeScale = InGameUI.Instance.m_NowGameSpeed;
         }
 
-        //if (Input.GetKeyDown(KeyCode.F6))
-        //{
-        //    GameTime.Instance.Year = 2;
-        //    GameTime.Instance.Month = 2;
-        //}
+        if (Input.GetKeyDown(KeyCode.F6))
+        {
+            GameTime.Instance.Year = 2;
+            GameTime.Instance.Month = 2;
+            GameTime.Instance.Week = 1;
+            PlayerInfo.Instance.IsFirstGameJam = false;
+            PlayerInfo.Instance.IsFirstGameShow = false;
+            PlayerInfo.Instance.IsFirstClassSetting = false;
+        }
+    }
 
+    private void InitAIAcademyRankList()
+    {
+        m_AIAcademyRankList.Add(new RankTable(Rank.SSS, 320, 400));
+        m_AIAcademyRankList.Add(new RankTable(Rank.SS, 280, 360));
+        m_AIAcademyRankList.Add(new RankTable(Rank.S, 240, 320));
+        m_AIAcademyRankList.Add(new RankTable(Rank.A, 200, 280));
+        m_AIAcademyRankList.Add(new RankTable(Rank.B, 160, 240));
+        m_AIAcademyRankList.Add(new RankTable(Rank.C, 120, 200));
+        m_AIAcademyRankList.Add(new RankTable(Rank.D, 80, 160));
+        m_AIAcademyRankList.Add(new RankTable(Rank.E, 40, 120));
+        m_AIAcademyRankList.Add(new RankTable(Rank.F, 0, 80));
+    }
+
+    private void MakeAIAcademy()
+    {
+        QuarterlyReport.Instance.Init();
+
+        foreach (AIAcademyInfo info in AllOriginalJsonData.Instance.OriginalAIAcademyInfoData)
+        {
+            string _money = SearchRankForData(info.MoneyScore).ToString();
+            string _famous = SearchRankForData(info.FamousScore).ToString();
+            string _activity = SearchRankForData(info.ActivityScore).ToString();
+            string _managing = SearchRankForData(info.ManagingScore).ToString();
+            string _education = SearchRankForData(info.EducationScore).ToString();
+
+            QuarterlyReport.Instance.AddNewAcademy(info.Name, _money, _famous, _activity, _managing, _education);
+        }
+    }
+
+    private Rank SearchRankForData(int _value)
+    {
+        foreach (RankTable info in m_AIAcademyRankList)
+        {
+            if (info.MaxValue < _value && _value > info.MinValue)
+            {
+                return info.Grade;
+            }
+        }
+
+        return Rank.None;
     }
 
     // 버튼을 누르면 2주동안 첫째 주에 m_ClassState가 ClassStart가 될 수 있도록 해주기.
@@ -201,6 +243,9 @@ public class InGameTest : MonoBehaviour
             else
             {
                 _isSelectClassNotNull = true;
+                AssignClassDataToDepartmentDictionary(SelectClass.m_GameDesignerData[i].m_SelectClassDataSave.m_ClassStatType, SelectClass.m_GameDesignerData[i].m_SelectClassDataSave);
+                AssignClassDataToDepartmentDictionary(SelectClass.m_ArtData[i].m_SelectClassDataSave.m_ClassStatType, SelectClass.m_ArtData[i].m_SelectClassDataSave);
+                AssignClassDataToDepartmentDictionary(SelectClass.m_ProgrammingData[i].m_SelectClassDataSave.m_ClassStatType, SelectClass.m_ProgrammingData[i].m_SelectClassDataSave);
             }
         }
 
@@ -208,21 +253,97 @@ public class InGameTest : MonoBehaviour
         {
             m_ClassState = ClassState.ClassStart;
 
-            foreach (var student in ObjectManager.Instance.m_StudentBehaviorList)
+            foreach (var student in ObjectManager.Instance.m_StudentList)
             {
-                student.GetComponent<Student>().m_IsDesSetting = false;
+                student.m_IsDesSetting = false;
             }
+
             _popOffClassPanel.TurnOffUI();
 
             // 내 소지금에서 선택한 수업만큼 돈을 빼준다.
-            PlayerInfo.Instance.m_MyMoney -= _classPrefab.m_TotalMoney;
+            PlayerInfo.Instance.MyMoney -= _classPrefab.m_TotalMoney;
             MonthlyReporter.Instance.m_NowMonth.ExpensesTuitionFee += _classPrefab.m_TotalMoney;
             // 교사 월급 계산해주기
-            m_ProfessorTotalSalary =_classPrefab.CalculateSalary();
-            MonthlyReporter.Instance.m_NowMonth.ExpensesSalary += m_ProfessorTotalSalary;
+            //m_ProfessorTotalSalary =_classPrefab.CalculateSalary();
+            //MonthlyReporter.Instance.m_NowMonth.ExpensesSalary += m_ProfessorTotalSalary;
             _classPrefab.InitSelecteClass();
-        }
 
+            // 이번 달 수업이 없는 외래강사는 체력이 회복된다.
+            foreach (var professor in Professor.Instance.GameManagerProfessor)
+            {
+                bool isTeaching = false;
+                if (professor.m_ProfessorSet == "외래")
+                {
+                    for (var i = 0; i < 2; i++)
+                    {
+                        if (professor == SelectClass.m_GameDesignerData[i].m_SelectProfessorDataSave)
+                        {
+                            isTeaching = true;
+                            break;
+                        }
+                    }
+
+                    if (!isTeaching)
+                    {
+                        professor.m_ProfessorHealth += 5;
+                        if (professor.m_ProfessorHealth > 100)
+                        {
+                            professor.m_ProfessorHealth = 100;
+                        }
+                    }
+                }
+            }
+
+            foreach (var professor in Professor.Instance.ArtProfessor)
+            {
+                bool isTeaching = false;
+                if (professor.m_ProfessorSet == "외래")
+                {
+                    for (var i = 0; i < 2; i++)
+                    {
+                        if (professor == SelectClass.m_ArtData[i].m_SelectProfessorDataSave)
+                        {
+                            isTeaching = true;
+                            break;
+                        }
+                    }
+
+                    if (!isTeaching)
+                    {
+                        professor.m_ProfessorHealth += 5;
+                        if (professor.m_ProfessorHealth > 100)
+                        {
+                            professor.m_ProfessorHealth = 100;
+                        }
+                    }
+                }
+            }
+
+            foreach (var professor in Professor.Instance.ProgrammingProfessor)
+            {
+                bool isTeaching = false;
+                if (professor.m_ProfessorSet == "외래")
+                {
+                    for (var i = 0; i < 2; i++)
+                    {
+                        if (professor == SelectClass.m_ProgrammingData[i].m_SelectProfessorDataSave)
+                        {
+                            isTeaching = true;
+                            break;
+                        }
+                    }
+
+                    if (!isTeaching)
+                    {
+                        professor.m_ProfessorHealth += 5;
+                        if (professor.m_ProfessorHealth > 100)
+                        {
+                            professor.m_ProfessorHealth = 100;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     // 수업 선택이 끝나고 다음달이 되면 실행시켜줄 함수.
@@ -230,9 +351,9 @@ public class InGameTest : MonoBehaviour
     {
         m_ClassState = ClassState.ClassStart;
 
-        foreach (var student in ObjectManager.Instance.m_StudentBehaviorList)
+        foreach (var student in ObjectManager.Instance.m_StudentList)
         {
-            student.GetComponent<Student>().m_IsDesSetting = false;
+            student.m_IsDesSetting = false;
         }
     }
 
@@ -251,8 +372,8 @@ public class InGameTest : MonoBehaviour
     {
         m_ClassState = ClassState.ClassEnd;
 
-        m_ClassResultPopUp.TurnOnUI();          // 수업이 끝나면 일단 수업 결과창부터 띄워준다.
-        m_ClassResult.GetComponent<ClassResult>().enabled = true;
+        m_ClassResultPopUp.TurnOnUI(); // 수업이 끝나면 일단 수업 결과창부터 띄워준다.
+        //m_ClassResult.GetComponent<ClassResult>().enabled = true;
 
         foreach (var student in ObjectManager.Instance.m_StudentList)
         {
@@ -262,6 +383,7 @@ public class InGameTest : MonoBehaviour
             student.GetComponent<NavMeshAgent>().isStopped = false;
             //student.GetComponent<NavMeshAgent>().obstacleAvoidanceType = ObstacleAvoidanceType.MedQualityObstacleAvoidance;
         }
+
         foreach (var professor in ObjectManager.Instance.m_InstructorList)
         {
             professor.m_IsArrivedClass = false;
@@ -274,9 +396,8 @@ public class InGameTest : MonoBehaviour
         m_ChangeProfessorStat.ApplyProfessorStat();
         m_ChangeProfessorStat.ApplyStudentStat();
 
-        StudentDataChangedEvent?.Invoke();
 
-        Invoke("StateInit", 4f);
+        Invoke("StateInit", 6f);
     }
 
     // 방금 들은 수업의 정보를 지워준다.
@@ -284,9 +405,115 @@ public class InGameTest : MonoBehaviour
     {
         PlayerInfo.Instance.IsFirstClassEnd = true;
         m_ClassState = ClassState.nothing;
-        m_ClassResult.GetComponent<ClassResult>().enabled = false;
+        //m_ClassResult.GetComponent<ClassResult>().enabled = false;
+        StudentDataChangedEvent?.Invoke();
     }
 
+    private void AssignClassDataToDepartmentDictionary(ClassType _classType, Class _classData)
+    {
+        switch (_classType)
+        {
+            case ClassType.Class:
+            {
+                if (_classData.m_ClassType == StudentType.GameDesigner)
+                {
+                    if (!PlayerInfo.Instance.GameDesignerClassDic.ContainsKey(_classData.m_ClassID))
+                    {
+                        PlayerInfo.Instance.GameDesignerClassDic.Add(_classData.m_ClassID, 1);
+                    }
+                    else
+                    {
+                        PlayerInfo.Instance.GameDesignerClassDic[_classData.m_ClassID] += 1;
+                    }
+                }
+                else if (_classData.m_ClassType == StudentType.Art)
+                {
+                    if (!PlayerInfo.Instance.ArtClassDic.ContainsKey(_classData.m_ClassID))
+                    {
+                        PlayerInfo.Instance.ArtClassDic.Add(_classData.m_ClassID, 1);
+                    }
+                    else
+                    {
+                        PlayerInfo.Instance.ArtClassDic[_classData.m_ClassID] += 1;
+                    }
+                }
+                else if (_classData.m_ClassType == StudentType.Programming)
+                {
+                    if (!PlayerInfo.Instance.ProgrammingClassDic.ContainsKey(_classData.m_ClassID))
+                    {
+                        PlayerInfo.Instance.ProgrammingClassDic.Add(_classData.m_ClassID, 1);
+                    }
+                    else
+                    {
+                        PlayerInfo.Instance.ProgrammingClassDic[_classData.m_ClassID] += 1;
+                    }
+                }
+            }
+            break;
+
+            case ClassType.Commonm:
+            {
+                if (!PlayerInfo.Instance.GameDesignerClassDic.ContainsKey(_classData.m_ClassID))
+                {
+                    PlayerInfo.Instance.GameDesignerClassDic.Add(_classData.m_ClassID, 1);
+                }
+                else
+                {
+                    PlayerInfo.Instance.GameDesignerClassDic[_classData.m_ClassID] += 1;
+                }
+
+                if (!PlayerInfo.Instance.ArtClassDic.ContainsKey(_classData.m_ClassID))
+                {
+                    PlayerInfo.Instance.ArtClassDic.Add(_classData.m_ClassID, 1);
+                }
+                else
+                {
+                    PlayerInfo.Instance.ArtClassDic[_classData.m_ClassID] += 1;
+                }
+
+                if (!PlayerInfo.Instance.ProgrammingClassDic.ContainsKey(_classData.m_ClassID))
+                {
+                    PlayerInfo.Instance.ProgrammingClassDic.Add(_classData.m_ClassID, 1);
+                }
+                else
+                {
+                    PlayerInfo.Instance.ProgrammingClassDic[_classData.m_ClassID] += 1;
+                }
+            }
+            break;
+
+            case ClassType.Special:
+            {
+                if (!PlayerInfo.Instance.GameDesignerClassDic.ContainsKey(_classData.m_ClassID))
+                {
+                    PlayerInfo.Instance.GameDesignerClassDic.Add(_classData.m_ClassID, 1);
+                }
+                else
+                {
+                    PlayerInfo.Instance.GameDesignerClassDic[_classData.m_ClassID] += 1;
+                }
+
+                if (!PlayerInfo.Instance.ArtClassDic.ContainsKey(_classData.m_ClassID))
+                {
+                    PlayerInfo.Instance.ArtClassDic.Add(_classData.m_ClassID, 1);
+                }
+                else
+                {
+                    PlayerInfo.Instance.ArtClassDic[_classData.m_ClassID] += 1;
+                }
+
+                if (!PlayerInfo.Instance.ProgrammingClassDic.ContainsKey(_classData.m_ClassID))
+                {
+                    PlayerInfo.Instance.ProgrammingClassDic.Add(_classData.m_ClassID, 1);
+                }
+                else
+                {
+                    PlayerInfo.Instance.ProgrammingClassDic[_classData.m_ClassID] += 1;
+                }
+            }
+            break;
+        }
+    }
 }
 
 

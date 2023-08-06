@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Firebase.Firestore;
 using StatData.Runtime;
@@ -12,7 +13,7 @@ public class PlayerSaveData
 {
     [FirestoreProperty] public string PrincipalName { get; set; } // 원장 이름
     [FirestoreProperty] public string AcademyName { get; set; } // 아카데미 이름
-    [FirestoreProperty] public int Money { get; set; } // 소유 머니
+    [FirestoreProperty] public int MyMoney { get; set; } // 소유 머니
     [FirestoreProperty] public int SpecialPoint { get; set; } // 소유 포인트
 
     [FirestoreProperty] public int Famous { get; set; } // 인지도
@@ -22,15 +23,33 @@ public class PlayerSaveData
     [FirestoreProperty] public int Goods { get; set; } // 재화점수
     [FirestoreProperty] public int AcademyScore { get; set; } // 아카데미 점수
 
+    [FirestoreProperty] public int CurrentRank { get; set; }
+
     // 튜토리얼 여부
     [FirestoreProperty] public bool IsFirstAcademySetting { get; set; }
     [FirestoreProperty] public bool IsFirstClassSetting { get; set; }
-    [FirestoreProperty] public bool IsFirstClassSettingPDEnd { get; set; }
+    [FirestoreProperty] public bool IsFirstClassSettingPdEnd { get; set; }
     [FirestoreProperty] public bool IsFirstGameJam { get; set; }
+    [FirestoreProperty] public bool IsFirstGameShow { get; set; }
     [FirestoreProperty] public bool IsFirstClassEnd { get; set; }
+    [FirestoreProperty] public bool IsFirstInJaeRecommend { get; set; }
+    [FirestoreProperty] public bool IsFirstVacation { get; set; }
 
-    // 퀘스트
-    [FirestoreProperty] public bool[] isMissionClear { get; set; }
+    // 미션
+    [FirestoreProperty] public bool[] IsMissionClear { get; set; }
+    [FirestoreProperty] public bool[] IsGetReward { get; set; }
+    [FirestoreProperty] public int NowMissionStepCount { get; set; }
+    [FirestoreProperty] public bool IsAllMissionClear { get; set; }
+
+    // 각종 정보
+    [FirestoreProperty] public int StudentProfileClickCount { get; set; }
+    [FirestoreProperty] public int TeacherProfileClickCount { get; set; }
+    [FirestoreProperty] public int GenreRoomClickCount { get; set; }
+
+    [FirestoreProperty] public int UnLockTeacherCount { get; set; }
+    [FirestoreProperty] public int ParticipatedGameJamCount { get; set; }
+    [FirestoreProperty] public int ParticipatedGameShowCount { get; set; }
+
 
     // 게임 시간
     [FirestoreProperty] public int Year { get; set; }
@@ -38,8 +57,64 @@ public class PlayerSaveData
     [FirestoreProperty] public int Week { get; set; }
     [FirestoreProperty] public int Day { get; set; }
 
-}
+    // 수업 기록용으로 추가됨
+    public Dictionary<int, int> GameDesignerClassDic { get; set; }
+    public Dictionary<int, int> ArtClassDic { get; set; }
+    public Dictionary<int, int> ProgrammingClassDic { get; set; }
 
+    // 게임잼 관련 정보
+    public Dictionary<string, int> GameJamEntryCount { get; set; }
+
+    /// 새로 추가된 게임잼 관련 딕셔너리들. 내가 선택한 게임잼의 필요 스탯들의 값이다. 0710 추가완료
+    public Dictionary<string, int> NeedGameDesignerStat { get; set; }
+    public Dictionary<string, int> NeedArtStat { get; set; }
+    public Dictionary<string, int> NeedProgrammingStat { get; set; }
+
+
+    // Dicionary를 서버 저장하기 위해 자른 데이터
+    [FirestoreProperty] public List<int> GameDesignerClassDic_keys { get; set; }
+    [FirestoreProperty] public List<int> GameDesignerClassDic_values { get; set; }
+    [FirestoreProperty] public List<int> ArtClassDic_keys { get; set; }
+    [FirestoreProperty] public List<int> ArtClassDic_values { get; set; }
+    [FirestoreProperty] public List<int> ProgrammingClassDic_keys { get; set; }
+    [FirestoreProperty] public List<int> ProgrammingClassDic_values { get; set; }
+
+    [FirestoreProperty] public List<string> GameJamEntryCount_keys { get; set; }
+    [FirestoreProperty] public List<int> GameJamEntryCount_values { get; set; }
+
+    [FirestoreProperty] public List<string> NeedGameDesignerStat_keys { get; set; }
+    [FirestoreProperty] public List<int> NeedGameDesignerStat_values { get; set; }
+    [FirestoreProperty] public List<string> NeedArtStat_keys { get; set; }
+    [FirestoreProperty] public List<int> NeedArtStat_values { get; set; }
+    [FirestoreProperty] public List<string> NeedProgrammingStat_keys { get; set; }
+    [FirestoreProperty] public List<int> NeedProgrammingStat_values { get; set; }
+
+
+    // 게임잼 게임쇼 결과 정보 Dicrionary 내용 중 두 키를 여기다 저장한다.
+    [FirestoreProperty] public List<int> GameJamSaveDic_keys { get; set; }
+    [FirestoreProperty] public List<int> GameJamSaveDic_Deepkeys { get; set; }
+    [FirestoreProperty] public List<int> GameShowSaveDic_keys { get; set; }
+    [FirestoreProperty] public List<int> GameShowSaveDic_Deepkeys { get; set; }
+
+    // Push Alarm On, Off 를 위한 트리거
+    [FirestoreProperty] public bool isPushAlarmOn { get; set; }
+
+    // 업적 적용을 위한 데이터
+    [FirestoreProperty] public int ActionCenterCount { get; set; }
+    [FirestoreProperty] public int SimulationCenterCount { get; set; }
+    [FirestoreProperty] public int ShootingCenterCount { get; set; }
+    [FirestoreProperty] public int RhythmCenterCount { get; set; }
+    [FirestoreProperty] public int RPGCenterCount { get; set; }
+    [FirestoreProperty] public int SportsCenterCount { get; set; }
+    [FirestoreProperty] public int AdventureCenterCount { get; set; }
+    [FirestoreProperty] public int PuzzleCenterCount { get; set; }
+
+    // 게임잼 장르정보 버그 방지용
+    [FirestoreProperty] public double _genreBonusScore { get; set; }
+    [FirestoreProperty] public string _genreName { get; set; }
+    [FirestoreProperty] public double m_GenreScore { get; set; }
+    [FirestoreProperty] public int m_MiniGameScore { get; set; }
+}
 
 // 0612
 [FirestoreData]
@@ -48,6 +123,7 @@ public class StudentSaveData
     // 학생이 가지고있는 기본 스탯. (체력, 열정, 친밀도 등)
     [FirestoreProperty] public string StudentID { get; set; } // 학생 고유 ID 모델링 찾는 용
     [FirestoreProperty] public string StudentName { get; set; } // 학생 이름
+    [FirestoreProperty] public string UserSettingName { get; set; } // 학생 이름
     [FirestoreProperty] public int Health { get; set; } // 학생 체력 최대 100, 최소 0
     [FirestoreProperty] public int Passion { get; set; } // 학생 열정 최대 100, 최소 0
     [FirestoreProperty] public int Gender { get; set; } // 학생 성별
@@ -86,6 +162,8 @@ public class ProfessorSaveData
     [FirestoreProperty] public int ProfessorPay { get; set; } // 월급
     [FirestoreProperty] public int ProfessorHealth { get; set; } // 체력
     [FirestoreProperty] public int ProfessorPassion { get; set; } // 열정
+
+    [FirestoreProperty] public bool IsUnlockProfessor { get; set; } // 해금
 }
 
 // 사용한 이벤트 정보를 모은다. 0612
@@ -113,8 +191,11 @@ public class TodayEventSaveData
 public class SendMailSaveData
 {
     [FirestoreProperty] public string MailTitle { get; set; }
-    [FirestoreProperty] public string SendMailDate { get; set; }
-    [FirestoreProperty] public string FromMail { get; set; }
+    [FirestoreProperty] public int[] SendMailDate { get; set; }
+
+    /// string에서 int[]로 변경
+    [FirestoreProperty]
+    public string FromMail { get; set; }
 
     [FirestoreProperty] public string MailContent { get; set; }
 
@@ -150,7 +231,119 @@ public class SendMailSaveData
     [FirestoreProperty] public int TalentDevelopmentScore { get; set; }
 }
 
+[Serializable]
+[FirestoreData]
+public class GameJamSaveData
+{
+    // 내가 선택한 게임잼의 정보와 참가시킨 학생들의 정보
+    [FirestoreProperty] public long m_GameJamID { get; set; }
+    [FirestoreProperty] public long m_GameJamTime { get; set; }
+    [FirestoreProperty] public string m_GameDesignerStudentName { get; set; }
+    [FirestoreProperty] public string m_ArtStudentName { get; set; }
+    [FirestoreProperty] public string m_ProgrammingStudentName { get; set; }
 
+    // 게임잼 결과의 정보
+    [FirestoreProperty] public double m_Score { get; set; }
+    [FirestoreProperty] public string m_Genre { get; set; }
+    [FirestoreProperty] public string m_Rank { get; set; }
+    [FirestoreProperty] public string m_GameName { get; set; }
+    [FirestoreProperty] public long m_Awareness { get; set; }
+    [FirestoreProperty] public long m_PracticalTalent { get; set; }
+    [FirestoreProperty] public long m_Management { get; set; }
+    [FirestoreProperty] public long m_MakeYear { get; set; }
+    [FirestoreProperty] public long m_MakeMonth { get; set; }
+
+    /// 주차랑 일 추가.
+    [FirestoreProperty]
+    public long m_MakeWeek { get; set; }
+
+    [FirestoreProperty] public long m_MakeDay { get; set; }
+
+    /// 성공확률
+    [FirestoreProperty]
+    public string m_SuccessPercent { get; set; }
+
+    [FirestoreProperty] public long m_ConceptIndex { get; set; }
+
+    /// 게임잼 결과에서 필요한 스탯들의 정보
+    [FirestoreProperty]
+    public long m_GameDesignerFirstNeedStat { get; set; }
+
+    [FirestoreProperty] public long m_GameDesignerSecondNeedStat { get; set; }
+    [FirestoreProperty] public string m_GameDesignerFirstNeedStatName { get; set; }
+    [FirestoreProperty] public string m_GameDesignerSecondNeedStatName { get; set; }
+
+    [FirestoreProperty] public long m_ArtFirstNeedStat { get; set; }
+    [FirestoreProperty] public long m_ArtSecondNeedStat { get; set; }
+    [FirestoreProperty] public string m_ArtFirstNeedStatName { get; set; }
+    [FirestoreProperty] public string m_ArtSecondNeedStatName { get; set; }
+
+    [FirestoreProperty] public long m_ProgrammingFirstNeedStat { get; set; }
+    [FirestoreProperty] public long m_ProgrammingSecondNeedStat { get; set; }
+    [FirestoreProperty] public string m_ProgrammingFirstNeedStatName { get; set; }
+    [FirestoreProperty] public string m_ProgrammingSecondNeedStatName { get; set; }
+
+    [FirestoreProperty] public long m_GameDesignerEntryStudentStat1 { get; set; }
+    [FirestoreProperty] public long m_GameDesignerEntryStudentStat2 { get; set; }
+    [FirestoreProperty] public long m_ArtEntryStudentStat1 { get; set; }
+    [FirestoreProperty] public long m_ArtEntryStudentStat2 { get; set; }
+    [FirestoreProperty] public long m_ProgrammingEntryStudentStat1 { get; set; }
+    [FirestoreProperty] public long m_ProgrammingEntryStudentStat2 { get; set; }
+
+    [FirestoreProperty] public double m_Funny { get; set; }
+    [FirestoreProperty] public double m_Perfection { get; set; }
+    [FirestoreProperty] public double m_Graphic { get; set; }
+    [FirestoreProperty] public double m_TotalGenreScore { get; set; }
+    [FirestoreProperty] public double m_Difficulty { get; set; }
+}
+
+[Serializable]
+[FirestoreData]
+public class GameShowSaveData
+{
+    [FirestoreProperty] public long m_GameShowID { get; set; }
+    [FirestoreProperty] public string m_GameShowName { get; set; }
+
+    [FirestoreProperty] public long m_GameJamID { get; set; }
+    [FirestoreProperty] public string m_GameJamName { get; set; }
+
+    //[FirestoreProperty] public Assessment m_GameShowResultAssessment { get; set; }
+    [FirestoreProperty] public long m_GameShowResultAssessment { get; set; }
+
+    [FirestoreProperty] public long m_FunScore { get; set; }
+    [FirestoreProperty] public long m_GraphicScore { get; set; }
+    [FirestoreProperty] public long m_PerfectionScore { get; set; }
+    [FirestoreProperty] public long m_GenreScore { get; set; }
+    [FirestoreProperty] public long m_ConceptScore { get; set; }
+
+    /// 디데이 프리팹을 위한 날짜 저장
+    [FirestoreProperty]
+    public long m_MakeMonth { get; set; }
+
+    [FirestoreProperty] public long m_MakeWeek { get; set; }
+    [FirestoreProperty] public long m_MakeDay { get; set; }
+
+    // [FirestoreProperty] public Assessment m_FunAssessment { get; set; }
+    // [FirestoreProperty] public Assessment m_GraphicAssessment { get; set; }
+    // [FirestoreProperty] public Assessment m_PerfectionAssessment { get; set; }
+    // [FirestoreProperty] public Assessment m_GenreAssessment { get; set; }
+    // [FirestoreProperty] public Assessment m_ConceptAssessment { get; set; }
+    [FirestoreProperty] public long m_FunAssessment { get; set; }
+    [FirestoreProperty] public long m_GraphicAssessment { get; set; }
+    [FirestoreProperty] public long m_PerfectionAssessment { get; set; }
+    [FirestoreProperty] public long m_GenreAssessment { get; set; }
+    [FirestoreProperty] public long m_ConceptAssessment { get; set; }
+
+
+    [FirestoreProperty] public string m_GameDesignerStudentName { get; set; }
+    [FirestoreProperty] public string m_ArtStudentName { get; set; }
+    [FirestoreProperty] public string m_ProgrammingStudentName { get; set; }
+    [FirestoreProperty] public long m_GameShowGenreAndConceptHeart { get; set; }
+    [FirestoreProperty] public long m_FunnyHeart { get; set; }
+    [FirestoreProperty] public long m_GenreHeart { get; set; }
+    [FirestoreProperty] public long m_GraphicHeart { get; set; }
+    [FirestoreProperty] public long m_PerceficationHeart { get; set; }
+}
 // 이전 데이터 + 
 
 
@@ -162,7 +355,7 @@ public class GameJamInfo
     public string m_GjamHost;
     public int m_GjamHostIcon;
     public string m_GjamDetailInfo;
-    public int m_EntryFee;
+    public float m_EntryFee;
     public int m_StudentHealth; // 게임잼 참여시 소모되는 학생 기본스탯
     public int m_StudentPassion; // 게임잼 참여시 소모되는 학생 기본스탯
     public string m_GjamMainGenre; // 게임잼이 요구하는 메인 장르
@@ -175,7 +368,7 @@ public class GameJamInfo
     public int m_GjamAI_ID;
 
     public Dictionary<string, int>
-        m_GjamNeedStatGM = new Dictionary<string, int>(); // 게임 제작 완성에 필요한 스탯종류와 값(각 학과별로 있어야 함)
+        m_GjamNeedStatGameDesigner = new Dictionary<string, int>(); // 게임 제작 완성에 필요한 스탯종류와 값(각 학과별로 있어야 함)
 
     public Dictionary<string, int>
         m_GjamNeedStatArt = new Dictionary<string, int>(); // 게임 제작 완성에 필요한 스탯종류와 값(각 학과별로 있어야 함)
@@ -225,6 +418,26 @@ public class RankScript
     public int Reward2Amount;
 }
 
+/// 7.14 AI아카데미 정보 추가
+public class AIAcademyInfo
+{
+    public int No;
+    public string Name;
+    public int MoneyScore;
+    public int FamousScore;
+    public int ActivityScore;
+    public int ManagingScore;
+    public int EducationScore;
+}
+
+/// 7.14 학생들 이름 풀 추가
+public class StudentLastName
+{
+    public string Name;
+    public bool IsMale;
+}
+
+
 // 수업 알람이 떴을 때 나올 스크립트
 public class ClassAlramScript
 {
@@ -257,27 +470,27 @@ public class GameShowData
 {
     public int GameShow_ID;
     public bool GameShow_Fix;
+    public int GameShow_Name_ID;
     public string GameShow_Name;
 
-    public int GameShow_Level;
-    public int GameShow_Health;
-    public int GameShow_Pasion;
-    public Dictionary<string, int> GameShow_State = new Dictionary<string, int>();
-    public string[] GameShowConcept;
-    public string[] GameShowGenre;
     public int GameShow_Host_ID;
     public string GameShow_Host_Name;
     public int GameShow_Judges_ID;
     public string GameShow_Judges_Name;
+    public Dictionary<string, int> GameShow_State = new Dictionary<string, int>();
+    public string[] GameShowConcept;
+    public string[] GameShowGenre;
+    public int GameShow_Health;
+    public int GameShow_Pasion;
     public int Preset_ID;
     public int GameShow_Year;
     public int GameShow_Month;
     public int GameShow_Week;
     public int GameShow_Day;
-
     public int GameShow_Plusreward;
     public int GameShow_Plusreward_value;
-    public bool GameShow_Special;
+    public int GameShow_Level;
+
     public int GameShow_Reward;
 }
 
@@ -285,14 +498,15 @@ public class GameShowData
 public class EmailData
 {
     public int Email_ID;
+    public int[] Email_date;
     public int Email_sender_id;
-    public string Email_date;
+    public int Email_sender_icon_id;
+    public int Email_reward_id1;
+    public int Email_reward_icon_value1;
+    public int Email_reward_id2;
+    public int Email_reward_icon_value2;
     public string Email_Name;
     public string Email_script_Text;
-    public int Email_reward1_id;
-    public int Email_reward1_Amount;
-    public int Email_reward2_id;
-    public int Email_reward2_Amount;
 }
 
 // 랭크 보상 메일의 형식은 기본 메일과 조금 달라 따로 관리
@@ -354,14 +568,15 @@ public class BonusSkillScript
 // 퀘스트 데이터테이블
 public class MissionData
 {
-    public int MissionID;               // 퀘스트 아이디
-    public int MissionStep;             // 퀘스트 단계
+    public int MissionID; // 퀘스트 아이디
+    public int MissionStep; // 퀘스트 단계
 
-    public bool IsMissionClear;         // 미션 클리어 유무
+    public bool IsMissionClear; // 미션 클리어 유무
+    public bool IsGetReward; // 미션 보상 획득 여부
 
-    public string MissionName;          // 퀘스트 이름
-    public int MissionCondition;        // 퀘스트 조건
-    public int ConditionAmountN;      // 퀘스트 조건의 양
+    public string MissionName; // 퀘스트 이름
+    public int MissionCondition; // 퀘스트 조건
+    public int ConditionAmountN; // 퀘스트 조건의 양
 
     public int Reward1Index; // 보상 1 인덱스
     public int Reward1Amount; // 보상 1 양

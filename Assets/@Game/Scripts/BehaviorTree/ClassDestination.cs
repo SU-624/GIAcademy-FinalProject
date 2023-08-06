@@ -8,13 +8,14 @@ public class ClassDestination : Action
 {
     private string m_NowDestination = " ";
 
-    private const float DesClassDis = 2;
+    private const float DesClassDis = 1;
 
     private bool m_isCoroutineRunning = false;
 
     private IEnumerator studyTalkCoroutine;
 
     private NavMeshAgent m_Agent;
+    private Animator m_Animator;
 
     private float m_ResetTimer;
     private const float m_ResetTime = 5;
@@ -22,6 +23,7 @@ public class ClassDestination : Action
     public override void OnStart()
     {
         m_Agent = gameObject.GetComponent<NavMeshAgent>();
+        m_Animator = gameObject.GetComponent<Animator>();
     }
 
 	public override TaskStatus OnUpdate()
@@ -43,7 +45,8 @@ public class ClassDestination : Action
             if (gameObject.GetComponent<Student>().m_IsDesSetting == false)
             {
 
-                _bNewDestination = SetClassEndDestination();
+                //_bNewDestination = SetClassEndDestination();
+                StartCoroutine(SetClassEnd());
             }
             gameObject.GetComponent<Student>().m_IsDesSetting = true;
 
@@ -86,6 +89,12 @@ public class ClassDestination : Action
             m_Agent.SetDestination(entrancePos);
             m_Agent.isStopped = false;
 
+            int randomAnim = Random.Range(1, 3);
+
+            m_Animator.SetTrigger("ToWalk" + randomAnim);
+            //m_Animator.SetBool("IdleToWalk", true);
+            //m_Animator.SetInteger("WalkNum", randomAnim);
+
             return true;
         }
 
@@ -103,10 +112,6 @@ public class ClassDestination : Action
             }
             else
             {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(entrancePos);
-                //}
                 m_ResetTimer += Time.deltaTime;
 
                 if (m_ResetTimer >= m_ResetTime)
@@ -127,17 +132,16 @@ public class ClassDestination : Action
 
             if (dis < DesClassDis)
             {
+                m_Animator.SetTrigger("ToSit");
+                m_Animator.SetInteger("SitNum", 1);
+                //m_Animator.SetBool("IdleToWalk", false);
+                //m_Animator.SetInteger("WalkNum", 0);
+                //m_Animator.SetBool("IdleToSit", true);
+                //m_Animator.SetBool("SittingIdle", true);
+                m_Agent.velocity = Vector3.zero;
                 gameObject.GetComponent<Student>().m_IsDesSetting = false;
                 m_NowDestination = " ";
                 gameObject.GetComponent<Student>().m_IsArrivedClass = true;
-                gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", true);
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(seatPos);
-                //}
             }
 
             return true;
@@ -151,17 +155,38 @@ public class ClassDestination : Action
         int rand = Random.Range(0, InGameTest.Instance.FreeWalkPointList.Count);
 
         Vector3 resPoint = InGameTest.Instance.FreeWalkPointList[rand];
-        
+
+        m_Animator.SetBool("SittingIdle", false);
+        m_Animator.SetBool("IdleToSit", false);
+        //m_Animator.SetBool("IdleToWalk", true);
         m_NowDestination = "FreeWalk" + (rand + 1);
         m_Agent.SetDestination(resPoint);
         gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
 
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("sittingIdel"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", false);
-        }
-
         return true;
+    }
+
+    IEnumerator SetClassEnd()
+    {
+        //m_Animator.SetBool("SittingIdle", false);
+        //m_Animator.SetBool("IdleToSit", false);
+        m_Animator.SetInteger("SitNum", 0);
+
+        yield return new WaitForSeconds(1.5f);
+
+        //int rand = Random.Range(0, InGameTest.Instance.FreeWalkPointList.Count);
+
+        //Vector3 resPoint = InGameTest.Instance.FreeWalkPointList[rand];
+        //m_NowDestination = "FreeWalk" + (rand + 1);
+        //m_Agent.SetDestination(resPoint);
+
+        int randomAnim = Random.Range(1, 3);
+        m_Animator.SetTrigger("ToWalk" + randomAnim);
+        //m_Animator.SetBool("IdleToWalk", true);
+        //m_Animator.SetInteger("WalkNum", randomAnim);
+        gameObject.GetComponent<Student>().m_IsCoolDown = true;
+        gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
+        StartCoroutine(gameObject.GetComponent<Student>().ClassEndCoolTime());
     }
 
     IEnumerator StudentScript()

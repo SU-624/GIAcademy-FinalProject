@@ -43,6 +43,29 @@ public class InGameCamera : MonoBehaviour
     private float m_cameraOrthoSize = 28f;
     public GameObject[] BlockAreas;
 
+
+    [Space(5f)] 
+    [Header("튜토리얼용 고정 오브젝트")] 
+    [SerializeField] private Transform m_TutorialTarget1;
+    [SerializeField] private Transform m_TutorialTarget2;
+    [SerializeField] private Transform m_TutorialTarget3;
+
+    public Transform TutorialTarget1
+    {
+        get { return m_TutorialTarget1; }
+        set { m_TutorialTarget1 = value; }
+    }
+    public Transform TutorialTarget2
+    {
+        get { return m_TutorialTarget2; }
+        set { m_TutorialTarget2 = value; }
+    }
+    public Transform TutorialTarget3
+    {
+        get { return m_TutorialTarget3; }
+        set { m_TutorialTarget3 = value; }
+    }
+
     void Awake()
     {
         Camera cam = GetComponent<Camera>();

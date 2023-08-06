@@ -155,6 +155,7 @@ public class InteractionManager : MonoBehaviour
 
     [Header("장르방 업그레이드")]
     [SerializeField] private List<GameObject> GenreRoomUpgrade;
+    [SerializeField] private GameObject UpgradeEffectPrefab;
 
     [SerializeField] private GameObject EmoticonPrefab;
     [SerializeField] private GameObject ChatBoxPrefab;
@@ -167,6 +168,9 @@ public class InteractionManager : MonoBehaviour
     private Transform m_canvas;
     private int m_emoNum = 0;
     private int m_chatNum = 0;
+    public GameObject UpgradeEffect1;
+    public GameObject UpgradeEffect2;
+    
 
     public void Awake()
     {
@@ -458,14 +462,14 @@ public class InteractionManager : MonoBehaviour
             {
                 randIncome = Random.Range(300, 4001);
                 StartCoroutine(ClickEventManager.Instance.MoneyFadeOutText(StorePoints[3].position, true, randIncome.ToString()));
-                PlayerInfo.Instance.m_MyMoney += randIncome;
+                PlayerInfo.Instance.MyMoney += randIncome;
                 MonthlyReporter.Instance.m_NowMonth.IncomeSell += randIncome;
             }
             else
             {
                 randIncome = Random.Range(20, 131);
                 StartCoroutine(ClickEventManager.Instance.SPFadeOutText(StorePoints[3].position, true, randIncome.ToString()));
-                PlayerInfo.Instance.m_SpecialPoint += randIncome;
+                PlayerInfo.Instance.SpecialPoint += randIncome;
             }
         }
         else
@@ -474,14 +478,14 @@ public class InteractionManager : MonoBehaviour
             {
                 randIncome = Random.Range(300, 4001);
                 StartCoroutine(ClickEventManager.Instance.MoneyFadeOutText(BookStorePoints[3].position, true, randIncome.ToString()));
-                PlayerInfo.Instance.m_MyMoney += randIncome;
+                PlayerInfo.Instance.MyMoney += randIncome;
                 MonthlyReporter.Instance.m_NowMonth.IncomeSell += randIncome;
             }
             else
             {
                 randIncome = Random.Range(20, 131);
                 StartCoroutine(ClickEventManager.Instance.SPFadeOutText(BookStorePoints[3].position, true, randIncome.ToString()));
-                PlayerInfo.Instance.m_SpecialPoint += randIncome;
+                PlayerInfo.Instance.SpecialPoint += randIncome;
             }
         }
     }
@@ -608,7 +612,7 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
-    public void RandomScript(int room, Transform studentPos, bool isMinimumStat)
+    public void RandomScript(int room, Transform studentPos, bool isMinimumStat, bool isProfessor = false)
     {
         int randomSelect = 0;
 
@@ -839,11 +843,32 @@ public class InteractionManager : MonoBehaviour
                 break;
 
             case (int)SpotName.NoticeBoard:
-                randomSelect = Random.Range(0, m_scriptsManager.ObjectScripts[room - 20].Count + 1);
-                if (randomSelect < m_scriptsManager.ObjectScripts[room - 20].Count)
-                    ShowScripts(room, randomSelect, studentPos);
-                else if (randomSelect == m_scriptsManager.ObjectScripts[room - 20].Count)
-                    ShowEmoticon(6, studentPos);
+                if (isProfessor)
+                {
+                    if (GameTime.Instance.Month != 2)
+                    {
+                        randomSelect = Random.Range(0, m_scriptsManager.ProNoticeBoardScripts[0].Count);
+                        ShowScripts(room, randomSelect, studentPos, true);
+                    }
+                    else
+                    {
+                        randomSelect = Random.Range(0, m_scriptsManager.ProNoticeBoardScripts[1].Count);
+                        ShowScripts(room, randomSelect, studentPos, true , 1);
+                    }
+                }
+                else
+                {
+                    if (GameTime.Instance.Month != 2)
+                    {
+                        randomSelect = Random.Range(0, m_scriptsManager.ObjectScripts[room - 20].Count);
+                        ShowScripts(room, randomSelect, studentPos);
+                    }
+                    else
+                    {
+                        randomSelect = Random.Range(0, m_scriptsManager.ObjectScripts[room - 20 + 1].Count);
+                        ShowScripts(room + 1, randomSelect, studentPos);
+                    }
+                }
                 break;
 
             default:
@@ -890,7 +915,7 @@ public class InteractionManager : MonoBehaviour
         m_emoticonBoxList[num].SetActive(false);
     }
 
-    public void ShowScripts(int room, int scriptNum, Transform studentPos)
+    public void ShowScripts(int room, int scriptNum, Transform studentPos, bool isProfessor = false, int noticeBoard = 0)
     {
         int nowBoxNum = m_chatNum;
         if (room < 10)
@@ -905,8 +930,16 @@ public class InteractionManager : MonoBehaviour
         }
         else
         {
-            m_chatBoxList[nowBoxNum].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
-                m_scriptsManager.ObjectScripts[room - 20][scriptNum];
+            if (isProfessor)
+            {
+                m_chatBoxList[nowBoxNum].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
+                    m_scriptsManager.ProNoticeBoardScripts[noticeBoard][scriptNum];
+            }
+            else
+            {
+                m_chatBoxList[nowBoxNum].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
+                    m_scriptsManager.ObjectScripts[room - 20][scriptNum];
+            }
         }
         m_chatBoxList[nowBoxNum].GetComponent<FollowTarget>().m_Target = studentPos;
         m_chatBoxList[nowBoxNum].SetActive(true);
@@ -960,28 +993,37 @@ public class InteractionManager : MonoBehaviour
         }
     }
 
-    public void GenreRoomLevelUp(string genreRoomName)
+    public void GenreRoomLevelUp(int genreRoom)
     {
-        GenreRoomList[(int)Enum.Parse(typeof(SpotName), genreRoomName)].Level++;
-        PlayerInfo.Instance.m_SpecialPoint -= 2000;
+        GenreRoomList[genreRoom].Level++;
+        PlayerInfo.Instance.SpecialPoint -= 2000;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_EDITOR_WIN
         Camera.main.GetComponent<TestCamera>().IsFixed = true;
         Camera.main.GetComponent<TestCamera>().FixedObject =
-            GenreRoomCenters[(int)Enum.Parse(typeof(SpotName), genreRoomName)].gameObject;
+            GenreRoomCenters[genreRoom].gameObject;
+        //effect.transform.position = GenreRoomCenters[genreRoom].position;
+        //effect.transform.LookAt(Camera.main.transform.position);
+        StartCoroutine(ActiveObject(genreRoom));
 #elif UNITY_ANDROID
         Camera.main.GetComponent<InGameCamera>().IsFixed = true;
         Camera.main.GetComponent<InGameCamera>().FixedObject =
-            GenreRoomCenters[(int)Enum.Parse(typeof(SpotName), genreRoomName)].gameObject;
+            GenreRoomCenters[genreRoom].gameObject;
+        StartCoroutine(ActiveObject(genreRoom));
 #endif
-        StartCoroutine(ActiveObject(genreRoomName));
     }
 
-    IEnumerator ActiveObject(string genreRoomName)
+    IEnumerator ActiveObject(int genreRoom)
     {
         yield return new WaitForSeconds(1.0f);
 
-        GenreRoomUpgrade[(int)Enum.Parse(typeof(SpotName), genreRoomName)].SetActive(true);
+        ClickEventManager.Instance.Sound.PlayGenreRoomUpgradeSound();
+        //이펙트 재생
+        GameObject effect = Instantiate(UpgradeEffectPrefab, this.transform);
+        //effect.transform.SetParent(GameObject.Find("ClickEvents").transform);
+        effect.transform.position = GenreRoomCenters[genreRoom].position;
+        Destroy(effect, 2f);
+        GenreRoomUpgrade[genreRoom].SetActive(true);
 
         StartCoroutine(ResetCamera());
     }
@@ -990,7 +1032,7 @@ public class InteractionManager : MonoBehaviour
     {
         yield return new WaitForSeconds(2.0f);
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_EDITOR_WIN
         Camera.main.GetComponent<TestCamera>().ResetCameraPosition();
 #elif UNITY_ANDROID
         Camera.main.GetComponent<InGameCamera>().ResetCameraPosition();

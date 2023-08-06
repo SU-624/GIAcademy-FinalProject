@@ -102,6 +102,18 @@ public class MailSender
     }
 }
 
+public class MailSenderImage
+{
+    public int SenderID;
+    public int Spriteindex;
+
+    public MailSenderImage(int senderID, int spriteindet)
+    {
+        SenderID = senderID;
+        Spriteindex = spriteindet;
+    }
+}
+
 // 게임쇼에서 난이도와 평가점수에 따른 금액을 정할 때 사용할 클래스
 public class GameShowRewardByDifficulty
 {
@@ -272,5 +284,41 @@ public class GameJamReward
         Difficulty = difficulty;
         GameJamRank = gameJamRank;
         Reward = reward;
+    }
+}
+
+// 아카데미 등급에 따른 비용 상승
+public class IncreaseFee
+{
+    public Rank MyAcademyRank;
+    public float RisingFee;
+    public float RisingStat;
+
+    public IncreaseFee(Rank myAcademyRank, float risingFee, float risingStat)
+    {
+        MyAcademyRank = myAcademyRank;
+        RisingFee = risingFee;
+        RisingStat = risingStat;
+    }
+}
+
+/// 학생의 성격별로 수업을 듣고 난 후 가중치를 주기위한 함수
+public class IncreaseStat
+{
+    public string personalityName;
+    public float Insight;
+    public float Concentration;
+    public float Sense;
+    public float Technique;
+    public float Wit;
+
+    public IncreaseStat(string skillName, float insight, float concentration, float sense, float technique, float wit)
+    {
+        personalityName = skillName;
+        Insight = insight;
+        Concentration = concentration;
+        Sense = sense;
+        Technique = technique;
+        Wit = wit;
     }
 }

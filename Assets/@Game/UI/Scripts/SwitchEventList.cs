@@ -276,8 +276,8 @@ public class SwitchEventList : MonoBehaviour
 
         if (EventSetPanel.activeSelf == true)
         {
-            NowMoneyText.text = PlayerInfo.Instance.m_MyMoney.ToString();
-            NowSpecialPointText.text = PlayerInfo.Instance.m_SpecialPoint.ToString();
+            NowMoneyText.text = PlayerInfo.Instance.MyMoney.ToString();
+            NowSpecialPointText.text = PlayerInfo.Instance.SpecialPoint.ToString();
         }
     }
 
@@ -533,8 +533,8 @@ public class SwitchEventList : MonoBehaviour
                 // if (_NowEvent.name == PossibleChooseEventClassList[i].EventClassName)
                 // {
                 // 
-                //     if (PossibleChooseEventClassList[i].NeedMoney < PlayerInfo.Instance.m_MyMoney &&
-                //         PossibleChooseEventClassList[i].NeedSpecialPoint < PlayerInfo.Instance.m_SpecialPoint)
+                //     if (PossibleChooseEventClassList[i].NeedMoney < PlayerInfo.Instance.MyMoney &&
+                //         PossibleChooseEventClassList[i].NeedSpecialPoint < PlayerInfo.Instance.SpecialPoint)
                 //     {
                 //         NoticeMoneyText.gameObject.SetActive(false);
                 //         // PayMoneyText.text = PossibleChooseEventClassList[i].NeedMoney.ToString();

@@ -33,6 +33,8 @@ public class Student : MonoBehaviour
 
     // 학생의 모든 정보를 담고있는 변수
     public StudentStat m_StudentStat;
+    public GameObject ChatObject;
+    public Transform LookTransform;
 
     private Doing m_Doing;
     public Doing DoingValue
@@ -92,16 +94,21 @@ public class Student : MonoBehaviour
                         //Destroy(this.gameObject);
                         // 오브젝트를 반환할 때 원래 이름으로 다시 바꿔준 다음 반환시킨다.
                         this.gameObject.name = m_StudentStat.m_StudentID;
+                        this.gameObject.GetComponent<BehaviorTree>().ExternalBehavior = null;
+                        ObjectManager.Instance.m_StudentList.Remove(this);
+
+                        if (ChatObject != null)
+                        {
+                            InGameObjectPool.ReturnChatObject(ChatObject);
+                        }
 
                         if (m_StudentStat.m_Gender == 1)
                         {
                             InGameObjectPool.ReturnMaleStudentObject(this.gameObject);
-                            ObjectManager.Instance.m_StudentList.Remove(this);
                         }
                         else
                         {
                             InGameObjectPool.ReturnFemaleStudentObject(this.gameObject);
-                            ObjectManager.Instance.m_StudentList.Remove(this);
                         }
                     }
                     break;
@@ -146,6 +153,12 @@ public class Student : MonoBehaviour
 
     void Update()
     {
+        if (GameTime.Instance.FlowTime.NowMonth == 2 && GameTime.Instance.FlowTime.NowWeek == 3 &&
+            GameTime.Instance.FlowTime.NowDay == 5)
+        {
+            DoingValue = Doing.FreeWalk;
+        }
+
         switch (m_Doing)
         {
             case Doing.FreeWalk:
@@ -175,16 +188,29 @@ public class Student : MonoBehaviour
 
             case Doing.InGenreRoom:
                 {
-                    Transform lookTransform = (Transform)gameObject.GetComponent<BehaviorTree>().ExternalBehavior.GetVariable("SeatTransform").GetValue();
-                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lookTransform.forward),
-                        Time.deltaTime * 0.5f);
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookTransform.forward),
+                        Time.deltaTime * 4f);
+                }
+                break;
+
+            case Doing.InFacility:
+                {
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookTransform.forward),
+                        Time.deltaTime * 4f);
+                }
+                break;
+
+            case Doing.ObjectInteraction:
+                {
+                    transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(LookTransform.forward),
+                        Time.deltaTime * 4f);
                 }
                 break;
 
             // 쿨타임 적용할 부분
             case Doing.EndInteracting:
                 {
-                    //InteractingObj = null;
+                    InteractingObj = null;
                     m_Doing = Doing.FreeWalk;
                     StartCoroutine(CoolTimeStart());
                 }
@@ -227,19 +253,25 @@ public class Student : MonoBehaviour
                 Time.deltaTime * 10);
         }
     }
-
-
+    
     public void Initialize(StudentStat _stat) //, StudentCondition _studentCondition
     {
         m_Doing = Doing.EndInteracting;
         m_StudentStat = _stat;
         m_StudentStat.m_StudentID = gameObject.name;
+        m_StudentStat.m_UserSettingName = "";
         gameObject.name = _stat.m_StudentName;
     }
 
     void OnTriggerEnter(Collider other)
     {
         if (InGameTest.Instance == null || InGameTest.Instance.m_ClassState != ClassState.nothing || other.tag != "Interacting")
+            return;
+
+        if (GameTime.Instance.FlowTime.NowMonth == 2 && GameTime.Instance.FlowTime.NowWeek == 4)
+            return;
+
+        if (Vector3.Distance(this.transform.position, other.transform.position) < 3)
             return;
 
         GameObject nowObject = other.transform.parent.gameObject;
@@ -336,7 +368,13 @@ public class Student : MonoBehaviour
 
         //Debug.Log(gameObject.name + " 쿨타임 초기화");
         m_IsCoolDown = false;    // 쿨타임 끝남.
-        InteractingObj = null;
+    }
+
+    public IEnumerator ClassEndCoolTime()
+    {
+        yield return new WaitForSeconds(10f);
+
+        m_IsCoolDown = false;    // 쿨타임 끝남.
     }
 
     private int CheckFriendship(Student otherStudent)

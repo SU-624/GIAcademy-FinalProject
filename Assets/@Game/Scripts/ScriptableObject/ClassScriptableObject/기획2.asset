@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f7261a90f59030448c2987e8d2b4b44, type: 3}
   m_Name: "\uAE30\uD68D2"
   m_EditorClassIdentifier: 
-  m_ClassID: 101
+  m_ClassID: 1101
   m_ClassName: "\uB178\uB3D9\uC740 \uADF8\uB9CC! \uC7AC\uBC0C\uB294 \uD018\uC2A4\uD2B8
     \uC791\uC131\uBC95"
   m_ClassType: 0
@@ -24,7 +24,7 @@ MonoBehaviour:
   m_Wit: 3
   m_Technique: 0
   m_Insight: 0
-  m_Money: 60000
+  m_Money: 10000
   m_Health: 7
   m_Passion: 8
   m_UnLockClass: 1

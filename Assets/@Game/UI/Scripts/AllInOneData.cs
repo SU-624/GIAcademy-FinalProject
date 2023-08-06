@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using StatData.Runtime;
+using System.Reflection;
 
 /// <summary>
 ///  Mang 23. 02. 08
@@ -49,14 +50,6 @@ public class AllInOneData
         set { instance = value; }
     }
 
-    private void Awake()
-    {
-        if (instance == null)
-        {
-            instance = this;
-        }
-    }
-
     // Class
     public PlayerSaveData PlayerData = new(); // 플레이어의 인게임 정보
     public List<StudentSaveData> StudentData = new(); // 현재 사용하는 학생 정보
@@ -65,33 +58,33 @@ public class AllInOneData
     public List<TodayEventSaveData> TodaySuddenEventData = new(); // 불러온 뒤 떠야하는 돌발 이벤트 ID
 
     public List<SendMailSaveData> SendMailData = new(); // 모든 메일 정보
-    public List<SaveGameJamData> EndGameJamData = new(); // 완료한 게임잼 데이타
     
+    public List<GameJamSaveData>  GameJamToBeRunning = new(); // 진행할 게임잼 데이타
+    public List<GameShowSaveData>  GameShowToBeRunning = new(); // 진행할 게임잼 데이타
+    
+    // 서버에 아직 미추가 (7.17)
+    public Dictionary<int, List<GameJamSaveData>>  GameJamHistory = new(); // 완료한 게임잼 데이타
+    public Dictionary<int, List<GameShowSaveData>>  GameShowHistory = new(); // 완료한 게임잼 데이타
 
-
+    
     // 로딩 여부를 판별하는 변수
     public bool ServerLoading = false;
-    
-    
-    
-    
+
+
     // //public InGameSaveData InGameData = new InGameSaveData(); // 인게임에 필요한 데이터들
 
     // public List<GameJamInfo> GameJamData = new List<GameJamInfo>();
     // public List<InJaeRecommendData> _InJaeRecommendData = new List<InJaeRecommendData>();
     // public List<RankScript> RankScripteData = new List<RankScript>();
     // public List<EmailData> _EmailData = new List<EmailData>();
-    public List<GameShowData> _GameShowData = new(); // 테스트용
+    //public List<GameShowData> _GameShowData = new(); // 테스트용
 
     // Data
     // 친밀도 데이터는 학생이 직접 들고있도록 변경했습니다.
     //public List<List<int>> Friendship = new List<List<int>>(); // 모든 학생과 강사의 친밀도 (학생18 강사3)
 
-    
-    
-    
 
-    private void CleanAllGameData()
+    public void CleanAllGameData()
     {
         PlayerData = new PlayerSaveData();
         StudentData.Clear();
@@ -100,6 +93,13 @@ public class AllInOneData
         TodaySuddenEventData.Clear();
 
         SendMailData.Clear();
+        
+        GameJamToBeRunning.Clear();
+        GameJamHistory.Clear();
+        GameShowToBeRunning.Clear();
+        GameShowHistory.Clear();
+
+        //TestData = new DicSaveTest();
     }
 
     // 인게임 에서 저장하기 버튼 눌렀을 때 동작하는 함수.
@@ -115,15 +115,10 @@ public class AllInOneData
         CollectStudentData();
         // 강사 정보 모음
         CollectProfessorData();
-        // 돌발 이벤트 정보 모음 EventScheduleSystem 애서 호출
-        // CollectSuddenEventData();
-        // 메일 정보 모음 MailManagement에서 호출
-        // CollectMailData();  
-        // 게임잼 정보 모음 GameJam 에서 호출
-        // CollectGameJam();
+        // 나머지는 싱글톤이 아니라서 각 클래스에서 호출해서 저장
     }
 
-    
+
     // 이런 식이 아니라 각 데이터를 직접 사용하는 곳의 Start에서 데이터를 가져와야 할꺼 같다.
     public void DistributeLoadGameData()
     {
@@ -140,53 +135,114 @@ public class AllInOneData
     // 각 Json으로 저장 할 데이터들의 변화되는 값을 여기 함수에서 넣어주기
     private void CollectPlayerData()
     {
-        PlayerData.Money = PlayerInfo.Instance.m_MyMoney;
-        PlayerData.SpecialPoint = PlayerInfo.Instance.m_SpecialPoint; // 2차 재화입니다
-        PlayerData.AcademyName = PlayerInfo.Instance.m_AcademyName;
-        PlayerData.PrincipalName = PlayerInfo.Instance.m_TeacherName;
+        BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
-        PlayerData.Famous = PlayerInfo.Instance.m_Awareness; // 인지도
-        PlayerData.TalentDevelopment = PlayerInfo.Instance.m_TalentDevelopment; // 인재 양성
-        PlayerData.Management = PlayerInfo.Instance.m_Management; // 운영
-        PlayerData.Activity = PlayerInfo.Instance.m_Activity; // 활동 점수
-        PlayerData.Goods = PlayerInfo.Instance.m_Goods; // 재화 점수
-        PlayerData.AcademyScore = PlayerInfo.Instance.m_AcademyScore;
-
-        PlayerData.IsFirstAcademySetting = PlayerInfo.Instance.IsFirstAcademySetting;
-        PlayerData.IsFirstClassSetting = PlayerInfo.Instance.IsFirstClassSetting;
-        PlayerData.IsFirstClassSettingPDEnd = PlayerInfo.Instance.IsFirstClassSettingPDEnd;
-        PlayerData.IsFirstGameJam = PlayerInfo.Instance.IsFirstGameJam;
-        PlayerData.IsFirstClassEnd = PlayerInfo.Instance.IsFirstClassEnd;
-
-        PlayerData.isMissionClear = PlayerInfo.Instance.isMissionClear;
+        var setPlayerData = typeof(PlayerSaveData).GetProperties(flags);
+        var getPlayerData = typeof(PlayerInfo).GetFields(flags);
+        var getTimeData = typeof(NowTime).GetFields(flags);
         
-        PlayerData.Year = GameTime.Instance.FlowTime.NowYear;
-        PlayerData.Month = GameTime.Instance.FlowTime.NowMonth;
-        PlayerData.Week = GameTime.Instance.FlowTime.NowWeek;
-        PlayerData.Day = GameTime.Instance.FlowTime.NowDay;
+        foreach (var set in setPlayerData)
+        {
+            foreach (var get in getPlayerData)
+            {
+                if (set.Name == get.Name)
+                {
+                    var value = get.GetValue(PlayerInfo.Instance);
+                    set.SetValue(PlayerData, value);
+                    break;
+                }
+            }
+
+            foreach (var get in getTimeData)
+            {
+                if ("Now" + set.Name == get.Name)
+                {
+                    var value = get.GetValue(GameTime.Instance.FlowTime);
+                    set.SetValue(PlayerData, value);
+                    break;
+                }
+            }
+        }
+
+        // TestData.GameDesignerClassDic = PlayerData.GameDesignerClassDic;
+        // TestData.ArtClassDic = PlayerData.ArtClassDic;
+        // TestData.ProgrammingClassDic = PlayerData.ProgrammingClassDic;
+        //
+        // TestData.GameJamEntryCount = PlayerData.GameJamEntryCount;
+        // TestData.NeedGameDesignerStat = PlayerData.NeedGameDesignerStat;
+        // TestData.NeedArtStat = PlayerData.NeedArtStat;
+        // TestData.NeedProgrammingStat = PlayerData.NeedProgrammingStat;
+
+
+        // PlayerData.MyMoney = PlayerInfo.Instance.MyMoney;
+        // PlayerData.SpecialPoint = PlayerInfo.Instance.SpecialPoint; // 2차 재화입니다
+        // PlayerData.AcademyName = PlayerInfo.Instance.m_AcademyName;
+        // PlayerData.PrincipalName = PlayerInfo.Instance.TeacherName;
+        //
+        // PlayerData.Famous = PlayerInfo.Instance.Famous; // 인지도
+        // PlayerData.TalentDevelopment = PlayerInfo.Instance.TalentDevelopment; // 인재 양성
+        // PlayerData.Management = PlayerInfo.Instance.Management; // 운영
+        // PlayerData.Activity = PlayerInfo.Instance.Activity; // 활동 점수
+        // PlayerData.Goods = PlayerInfo.Instance.Goods; // 재화 점수
+        // PlayerData.AcademyScore = PlayerInfo.Instance.AcademyScore;
+        //
+        // PlayerData.IsFirstAcademySetting = PlayerInfo.Instance.IsFirstAcademySetting;
+        // PlayerData.IsFirstClassSetting = PlayerInfo.Instance.IsFirstClassSetting;
+        // PlayerData.IsFirstClassSettingPdEnd = PlayerInfo.Instance.IsFirstClassSettingPdEnd;
+        // PlayerData.IsFirstGameJam = PlayerInfo.Instance.IsFirstGameJam;
+        // PlayerData.IsFirstClassEnd = PlayerInfo.Instance.IsFirstClassEnd;
+        //
+        // PlayerData.IsMissionClear = PlayerInfo.Instance.IsMissionClear;
+        // PlayerData.NowMissionStepCount = PlayerInfo.Instance.NowMissionStepCount;
+
+        // PlayerData.Year = GameTime.Instance.FlowTime.NowYear;
+        // PlayerData.Month = GameTime.Instance.FlowTime.NowMonth;
+        // PlayerData.Week = GameTime.Instance.FlowTime.NowWeek;
+        // PlayerData.Day = GameTime.Instance.FlowTime.NowDay;
     }
 
     private void DistributePlayerData()
     {
-        PlayerInfo.Instance.m_MyMoney = PlayerData.Money;
-        PlayerInfo.Instance.m_SpecialPoint = PlayerData.SpecialPoint;
-        PlayerInfo.Instance.m_AcademyName = PlayerData.AcademyName;
-        PlayerInfo.Instance.m_TeacherName = PlayerData.PrincipalName;
+        BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
 
-        PlayerInfo.Instance.m_Awareness = PlayerData.Famous;
-        PlayerInfo.Instance.m_TalentDevelopment = PlayerData.TalentDevelopment;
-        PlayerInfo.Instance.m_Management = PlayerData.Management;
-        PlayerInfo.Instance.m_Activity = PlayerData.Activity;
-        PlayerInfo.Instance.m_Goods = PlayerData.Goods;
-        PlayerInfo.Instance.m_AcademyScore = PlayerData.AcademyScore;
+        var setPlayerData = typeof(PlayerInfo).GetFields(flags);
+        var getPlayerData = typeof(PlayerSaveData).GetProperties(flags);
+
+        foreach (var set in setPlayerData)
+        {
+            foreach (var get in getPlayerData)
+            {
+                if (set.Name == get.Name)
+                {
+                    var value = get.GetValue(PlayerData);
+                    set.SetValue(PlayerInfo.Instance, value);
+                    break;
+                }
+            }
+        }
         
-        PlayerInfo.Instance.IsFirstAcademySetting = PlayerData.IsFirstAcademySetting;
-        PlayerInfo.Instance.IsFirstClassSetting = PlayerData.IsFirstClassSetting;
-        PlayerInfo.Instance.IsFirstClassSettingPDEnd = PlayerData.IsFirstClassSettingPDEnd;
-        PlayerInfo.Instance.IsFirstGameJam = PlayerData.IsFirstGameJam;
-        PlayerInfo.Instance.IsFirstClassEnd = PlayerData.IsFirstClassEnd;
 
-        PlayerInfo.Instance.isMissionClear = PlayerData.isMissionClear;
+        //
+        // PlayerInfo.Instance.MyMoney = PlayerData.MyMoney;
+        // PlayerInfo.Instance.SpecialPoint = PlayerData.SpecialPoint;
+        // PlayerInfo.Instance.m_AcademyName = PlayerData.AcademyName;
+        // PlayerInfo.Instance.TeacherName = PlayerData.PrincipalName;
+        //
+        // PlayerInfo.Instance.Famous = PlayerData.Famous;
+        // PlayerInfo.Instance.TalentDevelopment = PlayerData.TalentDevelopment;
+        // PlayerInfo.Instance.Management = PlayerData.Management;
+        // PlayerInfo.Instance.Activity = PlayerData.Activity;
+        // PlayerInfo.Instance.Goods = PlayerData.Goods;
+        // PlayerInfo.Instance.AcademyScore = PlayerData.AcademyScore;
+        //
+        // PlayerInfo.Instance.IsFirstAcademySetting = PlayerData.IsFirstAcademySetting;
+        // PlayerInfo.Instance.IsFirstClassSetting = PlayerData.IsFirstClassSetting;
+        // PlayerInfo.Instance.IsFirstClassSettingPdEnd = PlayerData.IsFirstClassSettingPdEnd;
+        // PlayerInfo.Instance.IsFirstGameJam = PlayerData.IsFirstGameJam;
+        // PlayerInfo.Instance.IsFirstClassEnd = PlayerData.IsFirstClassEnd;
+        //
+        // PlayerInfo.Instance.IsMissionClear = PlayerData.IsMissionClear;
+        // PlayerInfo.Instance.NowMissionStepCount = PlayerData.NowMissionStepCount;
 
         // 시간 정보는 GameTime에서 직접 넣는다.
     }
@@ -200,135 +256,122 @@ public class AllInOneData
                 // 학생 ID
                 StudentID = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_StudentID,
                 StudentName = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_StudentName,
+                UserSettingName = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_UserSettingName,
                 Health = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Health,
                 Passion = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Passion,
                 Gender = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Gender,
-                
+
                 StudentType = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_StudentType,
-                AbilityAmountArr = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountList,
+                AbilityAmountArr = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilityAmountArr,
                 AbilitySkills = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_AbilitySkills,
                 Skills = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Skills,
-                GenreAmountArr = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_GenreAmountList,
-                
+                GenreAmountArr = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_GenreAmountArr,
+
                 Personality = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_Personality,
                 NumberOfEntries = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_NumberOfEntries,
                 IsActiving = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_IsActiving,
                 IsRecommend = ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_IsRecommend,
 
-                
+
                 Friendship = ObjectManager.Instance.m_Friendship[i],
                 FriendshipIndex = i,
             };
 
             StudentData.Add(tempStudent);
         }
+
+        // BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+        //
+        // var setData = typeof(StudentSaveData).GetProperties(flags);
+        // var getData = typeof(StudentStat).GetFields(flags);
+        //
+        //
+        // foreach (var student in ObjectManager.Instance.m_StudentList)
+        // {
+        //     StudentSaveData data = new StudentSaveData();
+        //
+        //     foreach (var set in setData)
+        //     {
+        //         foreach (var get in getData)
+        //         {
+        //             if ("m_" +  set.Name == get.Name)
+        //             {
+        //                 var value = get.GetValue(student.m_StudentStat);
+        //                 set.SetValue(data, value);
+        //                 break;
+        //             }
+        //         }
+        //     }
+        //
+        //     StudentData.Add(data);
+        // }
     }
 
     private void CollectProfessorData()
     {
-        for (int i = 0; i < ObjectManager.Instance.nowProfessor.GameManagerProfessor.Count; i++)
+        BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+
+        var setData = typeof(ProfessorSaveData).GetProperties(flags);
+        var getData = typeof(ProfessorStat).GetFields(flags);
+
+        foreach (var professor in Professor.Instance.GameManagerProfessor)
         {
-            ProfessorSaveData temp = new ProfessorSaveData
+            ProfessorSaveData data = new ProfessorSaveData();
+
+            foreach (var set in setData)
             {
-                ProfessorID = ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorID, // 강사 고유 ID
-                ProfessorName =
-                    ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorNameValue, // 강사 이름
-                ProfessorType = ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorType, // 강사 학과
-                ProfessorSet =
-                    ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorSet, // 왜래, 전임강사 구별
-                ProfessorPower = ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorPower, // 강의력
-                
-                ProfessorExperience =
-                    ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorExperience, // 경험치
-                ProfessorSkills = ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorSkills, // 스킬
-                ProfessorPay = ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorPay, // 월급
-                ProfessorHealth = ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorHealth, // 체력
-                ProfessorPassion = ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorPassion // 열정
-            };
-
-            ProfessorData.Add(temp);
-        }
-
-        for (int i = 0; i < ObjectManager.Instance.nowProfessor.ArtProfessor.Count; i++)
-        {
-            ProfessorSaveData temp = new ProfessorSaveData
-            {
-                ProfessorID = ObjectManager.Instance.nowProfessor.ArtProfessor[i].m_ProfessorID, // 강사 고유 ID
-                ProfessorName = ObjectManager.Instance.nowProfessor.ArtProfessor[i].m_ProfessorNameValue, // 강사 이름
-                ProfessorType = ObjectManager.Instance.nowProfessor.ArtProfessor[i].m_ProfessorType, // 강사 학과
-                ProfessorSet =
-                    ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorSet, // 왜래, 전임강사 구별
-                ProfessorPower = ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorPower, // 강의력
-                
-                ProfessorExperience =
-                    ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorExperience, // 경험치
-                ProfessorSkills = ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorSkills, // 스킬
-                ProfessorPay = ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorPay, // 월급
-                ProfessorHealth = ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorHealth, // 체력
-                ProfessorPassion = ObjectManager.Instance.nowProfessor.GameManagerProfessor[i].m_ProfessorPassion // 열정
-            };
-
-            ProfessorData.Add(temp);
-        }
-
-        for (int i = 0; i < ObjectManager.Instance.nowProfessor.ProgrammingProfessor.Count; i++)
-        {
-            ProfessorSaveData temp = new ProfessorSaveData
-            {
-                ProfessorID = ObjectManager.Instance.nowProfessor.ProgrammingProfessor[i].m_ProfessorID, // 강사 고유 ID
-                ProfessorName =
-                    ObjectManager.Instance.nowProfessor.ProgrammingProfessor[i].m_ProfessorNameValue, // 강사 이름
-                ProfessorType = ObjectManager.Instance.nowProfessor.ProgrammingProfessor[i].m_ProfessorType, // 강사 학과
-                ProfessorSet =
-                    ObjectManager.Instance.nowProfessor.ProgrammingProfessor[i].m_ProfessorSet, // 왜래, 전임강사 구별
-                ProfessorPower = ObjectManager.Instance.nowProfessor.ProgrammingProfessor[i].m_ProfessorPower, // 강의력
-                
-                ProfessorExperience =
-                    ObjectManager.Instance.nowProfessor.ProgrammingProfessor[i].m_ProfessorExperience, // 경험치
-                ProfessorSkills = ObjectManager.Instance.nowProfessor.ProgrammingProfessor[i].m_ProfessorSkills, // 스킬
-                ProfessorPay = ObjectManager.Instance.nowProfessor.ProgrammingProfessor[i].m_ProfessorPay, // 월급
-                ProfessorHealth = ObjectManager.Instance.nowProfessor.ProgrammingProfessor[i].m_ProfessorHealth, // 체력
-                ProfessorPassion = ObjectManager.Instance.nowProfessor.ProgrammingProfessor[i].m_ProfessorPassion // 열정
-            };
-
-            ProfessorData.Add(temp);
-        }
-    }
-
-    private void DistributeProfessorData()
-    {
-        ObjectManager.Instance.nowProfessor.GameManagerProfessor.Clear();
-        ObjectManager.Instance.nowProfessor.ArtProfessor.Clear();
-        ObjectManager.Instance.nowProfessor.ProgrammingProfessor.Clear();
-
-        foreach (ProfessorSaveData professorData in ProfessorData)
-        {
-            ProfessorStat professor = new ProfessorStat();
-            professor.m_ProfessorID = professorData.ProfessorID;
-            professor.m_ProfessorNameValue = professorData.ProfessorName;
-            professor.m_ProfessorType = professorData.ProfessorType;
-            professor.m_ProfessorSet = professorData.ProfessorSet;
-            professor.m_ProfessorPower = professorData.ProfessorPower;
-            professor.m_ProfessorExperience = professorData.ProfessorExperience;
-            professor.m_ProfessorSkills = professorData.ProfessorSkills;
-            professor.m_ProfessorPay = professorData.ProfessorPay;
-            professor.m_ProfessorHealth = professorData.ProfessorHealth;
-            professor.m_ProfessorPassion = professorData.ProfessorPassion;
-        
-        
-            // 수정 필요
-            switch (professorData.ProfessorType)
-            {
-                case StudentType.GameDesigner:
-                    ObjectManager.Instance.nowProfessor.GameManagerProfessor.Add(professor);
-                    break;
-                case StudentType.Art:
-                    ObjectManager.Instance.nowProfessor.ArtProfessor.Add(professor);
-                    break;
-                case StudentType.Programming:
-                    ObjectManager.Instance.nowProfessor.ProgrammingProfessor.Add(professor);
-                    break;
+                foreach (var get in getData)
+                {
+                    if ("m_" + set.Name == get.Name)
+                    {
+                        var value = get.GetValue(professor);
+                        set.SetValue(data, value);
+                        break;
+                    }
+                }
             }
+
+            ProfessorData.Add(data);
+        }
+
+        foreach (var professor in Professor.Instance.ArtProfessor)
+        {
+            ProfessorSaveData data = new ProfessorSaveData();
+
+            foreach (var set in setData)
+            {
+                foreach (var get in getData)
+                {
+                    if ("m_" + set.Name == get.Name)
+                    {
+                        var value = get.GetValue(professor);
+                        set.SetValue(data, value);
+                        break;
+                    }
+                }
+            }
+
+            ProfessorData.Add(data);
+        }
+
+        foreach (var professor in Professor.Instance.ProgrammingProfessor)
+        {
+            ProfessorSaveData data = new ProfessorSaveData();
+
+            foreach (var set in setData)
+            {
+                foreach (var get in getData)
+                {
+                    if ("m_" + set.Name == get.Name)
+                    {
+                        var value = get.GetValue(professor);
+                        set.SetValue(data, value);
+                        break;
+                    }
+                }
+            }
+
+            ProfessorData.Add(data);
         }
     }
 
@@ -357,6 +400,9 @@ public class AllInOneData
 
     public void CollectMailData(List<MailBox> mailList)
     {
+        BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
+
+
         for (int i = 0; i < mailList.Count; i++)
         {
             SendMailData.Add(new SendMailSaveData()
@@ -372,104 +418,41 @@ public class AllInOneData
                     Month = mailList[i].m_Month,
                     Type = mailList[i].m_Type,
                     IsNewMail = mailList[i].m_IsNewMail,
-                    
+
                     //MonthReportMailContent = mailList[i].m_MonthReportMailContent,
-                
-                    
+
+
                     // Specification
                     IncomeEventResult = mailList[i].m_MonthReportMailContent.IncomeEventResult,
                     IncomeSell = mailList[i].m_MonthReportMailContent.IncomeSell,
                     IncomeActivity = mailList[i].m_MonthReportMailContent.IncomeActivity,
                     IncomeAcademyFee = mailList[i].m_MonthReportMailContent.IncomeAcademyFee,
                     ExpensesEventResult = mailList[i].m_MonthReportMailContent.ExpensesEventResult,
-                    
+
                     ExpensesEventCost = mailList[i].m_MonthReportMailContent.ExpensesEventCost,
                     ExpensesActivity = mailList[i].m_MonthReportMailContent.ExpensesActivity,
                     ExpensesSalary = mailList[i].m_MonthReportMailContent.ExpensesSalary,
                     ExpensesFacility = mailList[i].m_MonthReportMailContent.ExpensesFacility,
                     ExpensesTuitionFee = mailList[i].m_MonthReportMailContent.ExpensesTuitionFee,
-                    
+
                     TotalIncome = mailList[i].m_MonthReportMailContent.TotalIncome,
                     TotalExpenses = mailList[i].m_MonthReportMailContent.TotalExpenses,
                     NetProfit = mailList[i].m_MonthReportMailContent.NetProfit,
                     GoodsScore = mailList[i].m_MonthReportMailContent.GoodsScore,
                     FamousScore = mailList[i].m_MonthReportMailContent.FamousScore,
-                    
+
                     ActivityScore = mailList[i].m_MonthReportMailContent.ActivityScore,
                     ManagementScore = mailList[i].m_MonthReportMailContent.ManagementScore,
                     TalentDevelopmentScore = mailList[i].m_MonthReportMailContent.TalentDevelopmentScore,
                 }
-            
             );
         }
     }
 
-    public void CollectGameJamData(Dictionary<int, List<SaveGameJamData>> GameJamHistory, List<SaveGameJamData> ToBeRunning)
-    {
-            
-    }
-
-    // 이전 코드 유지
-    /// <summary>
-    /// ////////////////////////////////////////////////////////////////////////////////////////////////
-    /// </summary>
-    private void SaveEventData()
-    {
-        // for (int i = 0; i < EventData.Count; i++)
-        // {
-        //     EventData.Remove(EventData[i]);
-        // }
-
-        // 리스트 이므로 반복문을 돌면서 데이터를 넣어주자
-        for (int i = 0; i < SwitchEventList.Instance.ThisMonthMySelectEventList.Count; i++)
-        {
-            //EventSaveData tempData = new EventSaveData();
-
-            // tempData.EventNumber = SwitchEventList.Instance.MyEventList[i].EventNumber;
-            // 
-            // tempData.EventDate[0] = SwitchEventList.Instance.MyEventList[i].EventDate[0];
-            // tempData.EventDate[1] = SwitchEventList.Instance.MyEventList[i].EventDate[1];
-            // tempData.EventDate[2] = SwitchEventList.Instance.MyEventList[i].EventDate[2];
-            // tempData.EventDate[3] = SwitchEventList.Instance.MyEventList[i].EventDate[3];
-            // 
-            // tempData.IsPossibleUseEvent = SwitchEventList.Instance.MyEventList[i].IsPossibleUseEvent;
-            // tempData.EventName = SwitchEventList.Instance.MyEventList[i].EventClassName;
-            // tempData.EventInformation = SwitchEventList.Instance.MyEventList[i].EventInformation;
-            // // tempData.IsPopUp = SwitchEventList.Instance.MyEventList[i].IsPopUp;     // 불러오기 시 팝업이 된 것인지 아닌지 체크? 어차피 날자로 하면 필요가 없나
-            // 
-            // tempData.EventRewardMoney = SwitchEventList.Instance.MyEventList[i].EventRewardMoney;
-            // tempData.EventRewardSpecialPoint = SwitchEventList.Instance.MyEventList[i].EventRewardSpecialPoint;
-            // 
-            // tempData.EventRewardStat[0] = SwitchEventList.Instance.MyEventList[i].EventRewardStat[0];       // 학생복지
-            // tempData.EventRewardStat[1] = SwitchEventList.Instance.MyEventList[i].EventRewardStat[1];       // 홍보점수
-            // tempData.EventRewardStat[2] = SwitchEventList.Instance.MyEventList[i].EventRewardStat[2];       // 버프
-            // tempData.EventRewardStat[3] = SwitchEventList.Instance.MyEventList[i].EventRewardStat[3];       // 아이템
-
-            //EventData.Add(tempData);
-        }
-    }
-
-    // 현재 로드는 여기서 쓰지 않음 각각의 데이터가 필요한 곳에서 직접 넣어주고 있음 한군데서 하는게 더 편하다고 생각했는데 이러면 안될것 같다?
-    // 왜냐 각각의 스크립트가 만들어지는 부분이 다르기 때문이다
-    // AllInOneData.cs -> MonoBehaviors를 상속받지 않기 때문에 Json.cs 의 Awake에서 json의 정보를 다 넣어주도록 하자
-    public void LoadAllJsonData()
-    {
-        // LoadInGameData();
-        // LoadNowMonthEventData();
-    }
-
-    // 학생 -> objectManager 의  Awake에서 데이터 로드 하고
-    // 메일 -> ChangeMailContent 에서 원본 로드, 현재 메일 상태 로드 
-
-
-    public void LoadInGameData()
-    {
-        // 인게임 날짜
-        GameTime.Instance.FlowTime.NowYear = PlayerData.Year;
-        GameTime.Instance.FlowTime.NowMonth = PlayerData.Month;
-        GameTime.Instance.FlowTime.NowWeek = PlayerData.Week;
-        GameTime.Instance.FlowTime.NowDay = PlayerData.Day;
-    }
+    // public void CollectGameJamData(Dictionary<int, List<GameJamSaveData>> GameJamHistory,
+    //     List<GameJamSaveData> ToBeRunning)
+    // {
+    // }
 }
 
 // 클래스들의 데이터 정보는 AllDataClass로 이동했음.

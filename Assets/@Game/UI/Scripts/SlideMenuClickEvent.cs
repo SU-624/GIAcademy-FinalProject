@@ -18,19 +18,13 @@ public class SlideMenuClickEvent : MonoBehaviour
     [Space(5f)]
     [SerializeField] private SlideMenuPanel slideMenuPanel;
 
-    // 팝업, 팝오프를 위한 모음집들 -> 이 친구들도 모아놓은 스크립트 하나 만들어서 프리팹화 해두면 편하려나?
-    // [Space(10f)]
-    // [SerializeField] private PopUpUI PopUpInstructorInfoPanel;
-    // [SerializeField] private PopOffUI PopOffInstructorInfoPanel;
-
-
     // Start is called before the first frame update
     void Start()
     {
         StudentListInfoPanel.LoadAllDepartmentIndexImg();
         StudentListInfoPanel.LoadStudentSkillLevelImg();
 
-        slideMenuPanel.GetPopOffManagementButton.gameObject.SetActive(false);
+        //slideMenuPanel.GetPopOffManagementButton.gameObject.SetActive(false);
         //slideMenuPanel.GetSecondContentUI.SetActive(false);
         slideMenuPanel.GetSecondManagementUI.SetActive(false);
 

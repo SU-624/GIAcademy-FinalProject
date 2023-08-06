@@ -40,11 +40,6 @@ public class Narrative : MonoBehaviour
         //StartCoroutine(NarrativeContinue());
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -56,6 +51,7 @@ public class Narrative : MonoBehaviour
                 m_isImgClear = false;
                 m_isScriptClear = false;
             }
+            ClickEventManager.Instance.Sound.PlayIconTouch();
         }
 
         if (Input.touchCount >= 1)
@@ -69,6 +65,7 @@ public class Narrative : MonoBehaviour
                     m_isImgClear = false;
                     m_isScriptClear = false;
                 }
+                ClickEventManager.Instance.Sound.PlayIconTouch();
             }
         }
 

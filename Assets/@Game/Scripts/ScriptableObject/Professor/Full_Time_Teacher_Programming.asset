@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: Full_Time_Teacher_Programming
   m_EditorClassIdentifier: 
   m_ProfessorID: 300
-  m_ProfessorName: "\uC5E0\uB9C8\uBD80\uC778"
+  m_ProfessorName: "\uAE40\uB2EC\uC639"
   m_ProfessorType: 2
   m_ProfessorSet: "\uC804\uC784"
   m_ProfessorPower: 1
   m_ProfessorSkills:
-  - "\uB098\uB294 \uC804\uC784\uC774\uB2E4"
-  - "\uC548\uB155\uD558\uC138\uC694? \uC804\uC784\uAC15\uC0AC\uC785\uB2C8\uB2E4."
+  - "\uD50C\uBC0D"
+  - "\uC790\uCCB4\uC5D4\uC9C4\uC5D0 PBR\uAE4C\uC9C0 \uAC00\uB974\uCE5C\uB2F5\uB2C8\uB2E4."
   m_ProfessorPay: 15000
   m_ProfessorHealth: 100
   m_ProfessorPassion: 100

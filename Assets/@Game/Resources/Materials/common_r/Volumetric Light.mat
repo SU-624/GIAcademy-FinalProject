@@ -53,7 +53,7 @@ Material:
     m_Floats:
     - _EdgeFallof: 0.02
     - _Light_UpDown: 0.4
-    - _Opacity: 3.4
+    - _Opacity: 3.3
     - _QueueControl: 0
     - _QueueOffset: 0
     - _UseTexture: 0

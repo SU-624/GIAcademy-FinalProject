@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using StatData.Runtime;
@@ -11,17 +12,11 @@ public class ClassResult : MonoBehaviour
     [SerializeField] private GameObject m_ResultClassStudentPrefab;
     [SerializeField] private Sprite[] m_IncreasesArrows;
 
-    private Professor m_ProfessorData = new Professor();
     private int[] m_Stats = new int[5];
     private int[] m_IncreasesStats = new int[5];
-    private string[] m_GMSkillName = new string[5];
+    private string[] m_GameDesignerSkillName = new string[5];
     private string[] m_ArtSkillName = new string[5];
     private string[] m_ProgrammingSkillName = new string[5];
-
-    private void OnEnable()
-    {
-        StartCoroutine(TouchResultPanel());
-    }
 
     private void Start()
     {
@@ -31,11 +26,11 @@ public class ClassResult : MonoBehaviour
     // 스킬의 레벨이 올랐을 때 각 파트에 맞는 이름을 띄워주기 위해 초기화해두었다.
     private void InitSkillName()
     {
-        m_GMSkillName[0] = "▶사업력";
-        m_GMSkillName[1] = "▶이해력";
-        m_GMSkillName[2] = "▶창의력";
-        m_GMSkillName[3] = "▶소통력";
-        m_GMSkillName[4] = "▶분석력";
+        m_GameDesignerSkillName[0] = "▶사업력";
+        m_GameDesignerSkillName[1] = "▶이해력";
+        m_GameDesignerSkillName[2] = "▶창의력";
+        m_GameDesignerSkillName[3] = "▶소통력";
+        m_GameDesignerSkillName[4] = "▶분석력";
 
         m_ArtSkillName[0] = "▶공간감";
         m_ArtSkillName[1] = "▶상상력";
@@ -50,25 +45,11 @@ public class ClassResult : MonoBehaviour
         m_ProgrammingSkillName[4] = "▶논리력";
     }
 
-    // 수업이 끝났을 때 이 컴포넌트를 활성화 시켜 터치 카운트가 들어오면 팝업 창은 닫고 결과창을 띄워주게 했다.
-    IEnumerator TouchResultPanel()
+    /// 수업이 끝났을 때 미니게임으로 인해 터치카운트가 증가하여 팝업창이 꺼지는 일을 막기위해 하나의 큰 버튼을 만든다.
+    public void ClickResultButton()
     {
-        while (m_ClassResultPanel.ResultPopUpPanel.activeSelf)
-        {
-            yield return new WaitUntil(() =>
-            {
-                if ((Input.touchCount > 1 || Input.GetMouseButtonDown(0)))
-                {
-                    m_ClassResultPanel.SetPanel(true);
-                    SetResultPanel(StudentType.GameDesigner);
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            });
-        }
+        m_ClassResultPanel.SetPanel(true);
+        SetResultPanel(StudentType.GameDesigner);
     }
 
     // 처음에는 기획을 만들고 다음 페이지를 보는 버튼을 눌렀을 때 차례대로 아트, 플밍 순서대로 만들어준다.
@@ -124,30 +105,47 @@ public class ClassResult : MonoBehaviour
         for (int i = 0; i < 2; i++)
         {
             ProfessorStat nowProfessorStat = _classData[i].m_SelectProfessorDataSave;
-            float magnification = m_ProfessorData.m_StatMagnification[nowProfessorStat.m_ProfessorPower];
 
-            m_Stats[0] = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight];
-            m_Stats[0] += (int)(_classData[i].m_SelectClassDataSave.m_Insight * magnification);
-            m_IncreasesStats[0] += m_Stats[0] - ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight];
+            float magnification = Professor.Instance.m_StatMagnification[nowProfessorStat.m_ProfessorPower];
+            float increaseStat = m_ClassData.SetIncreaseClassFeeOrStat(PlayerInfo.Instance.CurrentRank, true);
 
-            m_Stats[1] = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration];
-            m_Stats[1] += (int)(_classData[i].m_SelectClassDataSave.m_Concentration * magnification);
-            m_IncreasesStats[1] += m_Stats[1] - ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration];
+            float _personalityInsight = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_Personality, 0);
+            float _personalityConcentration = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_Personality, 1);
+            float _personalitySense = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_Personality, 2);
+            float _personalityTechnique = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_Personality, 3);
+            float _personalitywit = ObjectManager.Instance.CheckIncreaseStat(ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_Personality, 4);
 
-            m_Stats[2] = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense];
-            m_Stats[2] += (int)(_classData[i].m_SelectClassDataSave.m_Sense * magnification);
-            m_IncreasesStats[2] += m_Stats[2] - ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense];
+            double _insight = Math.Round(_classData[i].m_SelectClassDataSave.m_Insight * magnification * _personalityInsight * increaseStat);
+            double _concentration = Math.Round(_classData[i].m_SelectClassDataSave.m_Concentration * magnification * _personalityConcentration * increaseStat);
+            double _sense = Math.Round(_classData[i].m_SelectClassDataSave.m_Sense * magnification * _personalitySense * increaseStat);
+            double _technique = Math.Round(_classData[i].m_SelectClassDataSave.m_Technique * magnification * _personalityTechnique * increaseStat);
+            double _wit = Math.Round(_classData[i].m_SelectClassDataSave.m_Wit * magnification * _personalitywit * increaseStat);
 
-            m_Stats[3] = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique];
-            m_Stats[3] += (int)(_classData[i].m_SelectClassDataSave.m_Technique * magnification);
-            m_IncreasesStats[3] += m_Stats[3] - ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique];
+            m_IncreasesStats[0] += (int)(_insight);
 
-            m_Stats[4] = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit];
-            m_Stats[4] += (int)(_classData[i].m_SelectClassDataSave.m_Wit * magnification);
-            m_IncreasesStats[4] += m_Stats[4] - ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit];
+            m_IncreasesStats[1] += (int)(_concentration);
+
+            m_IncreasesStats[2] += (int)(_sense);
+
+            m_IncreasesStats[3] += (int)(_technique);
+
+            m_IncreasesStats[4] += (int)(_wit);
         }
 
-        _resultStudent.GetComponent<ClassResultStudentPrefab>().m_StudnetName.text = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_StudentName;
+        m_Stats[0] = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight];
+        m_Stats[1] = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration];
+        m_Stats[2] = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense];
+        m_Stats[3] = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique];
+        m_Stats[4] = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit];
+
+        if (ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_UserSettingName != "")
+        {
+            _resultStudent.GetComponent<ClassResultStudentPrefab>().m_StudnetName.text = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_UserSettingName;
+        }
+        else
+        {
+            _resultStudent.GetComponent<ClassResultStudentPrefab>().m_StudnetName.text = ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_StudentName;
+        }
         _resultStudent.GetComponent<ClassResultStudentPrefab>().m_StudentImgae.sprite = ObjectManager.Instance.m_StudentList[_studentListIndex].StudentProfileImg;
 
         for (int i = 0; i < 5; i++)
@@ -181,7 +179,7 @@ public class ClassResult : MonoBehaviour
 
                 if (ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_StudentType == StudentType.GameDesigner)
                 {
-                    _resultStudent.GetComponent<ClassResultStudentPrefab>().m_StatSkillsText[i].text = m_GMSkillName[i] + " 레벨 상승!";
+                    _resultStudent.GetComponent<ClassResultStudentPrefab>().m_StatSkillsText[i].text = m_GameDesignerSkillName[i] + " 레벨 상승!";
                 }
                 else if (ObjectManager.Instance.m_StudentList[_studentListIndex].m_StudentStat.m_StudentType == StudentType.Art)
                 {

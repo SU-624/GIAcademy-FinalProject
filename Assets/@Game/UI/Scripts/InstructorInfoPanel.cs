@@ -77,7 +77,6 @@ public class InstructorInfoPanel : MonoBehaviour
 
     [SerializeField] private PopOffUI popOffInstructorPanel;
 
-    private Professor m_ProfessorData = new Professor();
     private ProfessorStat m_nowProfessorStat = new ProfessorStat();
 
     [SerializeField] private PopUpUI PopUpAlarmInfoScreen;
@@ -85,6 +84,12 @@ public class InstructorInfoPanel : MonoBehaviour
 
 
     GameObject TempNowClickedTeacher;
+
+    public GameObject GetAllInstructorPanel
+    {
+        get { return AllInstructorPanel; }
+        set { AllInstructorPanel = value; }
+    }
 
     public Button GetGameDesignerIndexButton
     {
@@ -215,10 +220,10 @@ public class InstructorInfoPanel : MonoBehaviour
     {
         int nowProfessorLevel = m_nowProfessorStat.m_ProfessorPower;
 
-        if (m_ProfessorData.m_PointPerClick[nowProfessorLevel] <= PlayerInfo.Instance.m_SpecialPoint)     // 재화 있는지 체크
+        if (Professor.Instance.m_PointPerClick[nowProfessorLevel] <= PlayerInfo.Instance.SpecialPoint)     // 재화 있는지 체크
         {
             AlarmInfoScreenImg.gameObject.SetActive(false);
-            NeedSpecialMoneyForLevelUp.text = "<color=#0012FF>" + m_ProfessorData.m_PointPerClick[nowProfessorLevel] + "</color>";      // 재화 충분 (파랑)
+            NeedSpecialMoneyForLevelUp.text = "<color=#0012FF>" + Professor.Instance.m_PointPerClick[nowProfessorLevel] + "</color>";      // 재화 충분 (파랑)
         }
         else
         {
@@ -226,17 +231,17 @@ public class InstructorInfoPanel : MonoBehaviour
             AlarmInfoScreenImg.gameObject.SetActive(true);
             StartCoroutine(AlarmScreenPopOff(1));
 
-            NeedSpecialMoneyForLevelUp.text = "<color=#FF0000>" + m_ProfessorData.m_PointPerClick[nowProfessorLevel] + "</color>";      // 재화 불충분 (빨강)
+            NeedSpecialMoneyForLevelUp.text = "<color=#FF0000>" + Professor.Instance.m_PointPerClick[nowProfessorLevel] + "</color>";      // 재화 불충분 (빨강)
         }
 
-        LevelUpSliderBarPercentText.text = string.Format("{0:0.##}", ((float)m_nowProfessorStat.m_ProfessorExperience / (float)m_ProfessorData.m_ExperiencePerLevel[m_nowProfessorStat.m_ProfessorPower] * 100)) + "%";
-        LevelUpSliderBar.value = (float)m_nowProfessorStat.m_ProfessorExperience / (float)m_ProfessorData.m_ExperiencePerLevel[m_nowProfessorStat.m_ProfessorPower];        // 다음 레벨에 도달하기 위한 퍼센트 수치
+        LevelUpSliderBarPercentText.text = string.Format("{0:0.##}", ((float)m_nowProfessorStat.m_ProfessorExperience / (float)Professor.Instance.m_ExperiencePerLevel[m_nowProfessorStat.m_ProfessorPower] * 100)) + "%";
+        LevelUpSliderBar.value = (float)m_nowProfessorStat.m_ProfessorExperience / (float)Professor.Instance.m_ExperiencePerLevel[m_nowProfessorStat.m_ProfessorPower];        // 다음 레벨에 도달하기 위한 퍼센트 수치
 
         NowTeacherSkillLevelText.text = "Lv." + m_nowProfessorStat.m_ProfessorPower;     // 강사의 스킬 레벨 표시
 
-        NowSpecialMoneyAmountText.text = PlayerInfo.Instance.m_SpecialPoint.ToString();
+        NowSpecialMoneyAmountText.text = PlayerInfo.Instance.SpecialPoint.ToString();
 
-        string BonusStatPercent = ((float)m_ProfessorData.m_StatMagnification[m_nowProfessorStat.m_ProfessorPower] * 100 - 100).ToString();
+        string BonusStatPercent = ((float)Professor.Instance.m_StatMagnification[m_nowProfessorStat.m_ProfessorPower] * 100 - 100).ToString();
 
         LevelUpAlarmText.text = "수업 시 학생이 " + "<color=#009A14>" + BonusStatPercent + "%" + "</color>" + "의 보너스 스탯을 얻습니다.";
         //LevelUpSliderBar.value = SliderBarAmount;
@@ -265,41 +270,44 @@ public class InstructorInfoPanel : MonoBehaviour
 
             return;
         }
-        if (PlayerInfo.Instance.m_SpecialPoint >= m_ProfessorData.m_PointPerClick[nowProfessorLevel])
+        if (PlayerInfo.Instance.SpecialPoint >= Professor.Instance.m_PointPerClick[nowProfessorLevel])
         {
-            PlayerInfo.Instance.m_SpecialPoint -= m_ProfessorData.m_PointPerClick[nowProfessorLevel];
+            PlayerInfo.Instance.SpecialPoint -= Professor.Instance.m_PointPerClick[nowProfessorLevel];
 
-            m_nowProfessorStat.m_ProfessorExperience += m_ProfessorData.m_ExperiencePerClick[nowProfessorLevel];
-            if (m_nowProfessorStat.m_ProfessorExperience >= m_ProfessorData.m_ExperiencePerLevel[nowProfessorLevel])
+            m_nowProfessorStat.m_ProfessorExperience += Professor.Instance.m_ExperiencePerClick[nowProfessorLevel];
+
+            if (m_nowProfessorStat.m_ProfessorExperience >= Professor.Instance.m_ExperiencePerLevel[nowProfessorLevel])
             {
                 m_nowProfessorStat.m_ProfessorPower++;
-                m_nowProfessorStat.m_ProfessorExperience -= m_ProfessorData.m_ExperiencePerLevel[nowProfessorLevel];
+                m_nowProfessorStat.m_ProfessorExperience -= Professor.Instance.m_ExperiencePerLevel[nowProfessorLevel];
                 LevelText.text = "Lv." + m_nowProfessorStat.m_ProfessorPower.ToString();
+                ClickEventManager.Instance.Sound.PlayProfessorUpgradeSound();
+                PlayerInfo.Instance.ProfessorUpgrade++;
             }
             // -------------------
-            if (m_ProfessorData.m_PointPerClick[m_nowProfessorStat.m_ProfessorPower] <= PlayerInfo.Instance.m_SpecialPoint)     // 재화 있는지 체크
+            if (Professor.Instance.m_PointPerClick[m_nowProfessorStat.m_ProfessorPower] <= PlayerInfo.Instance.SpecialPoint)     // 재화 있는지 체크
             {
-                NeedSpecialMoneyForLevelUp.text = "<color=#0012FF>" + m_ProfessorData.m_PointPerClick[m_nowProfessorStat.m_ProfessorPower] + "</color>";      // 재화 충분 (파랑)
+                NeedSpecialMoneyForLevelUp.text = "<color=#0012FF>" + Professor.Instance.m_PointPerClick[m_nowProfessorStat.m_ProfessorPower] + "</color>";      // 재화 충분 (파랑)
             }
             else
             {
                 AlarmInfoScreenText.text = "소지 재화가 부족합니다.";
                 AlarmInfoScreenText.gameObject.SetActive(true);
                 StartCoroutine(AlarmScreenPopOff(1));
-                NeedSpecialMoneyForLevelUp.text = "<color=#FF0000>" + m_ProfessorData.m_PointPerClick[m_nowProfessorStat.m_ProfessorPower] + "</color>";      // 재화 불충분 (빨강)
+                NeedSpecialMoneyForLevelUp.text = "<color=#FF0000>" + Professor.Instance.m_PointPerClick[m_nowProfessorStat.m_ProfessorPower] + "</color>";      // 재화 불충분 (빨강)
             }
 
             if (nowProfessorLevel < 15)
             {
-                LevelUpSliderBarPercentText.text = string.Format("{0:0.##}", ((float)m_nowProfessorStat.m_ProfessorExperience / (float)m_ProfessorData.m_ExperiencePerLevel[m_nowProfessorStat.m_ProfessorPower] * 100)) + "%";
-                LevelUpSliderBar.value = (float)m_nowProfessorStat.m_ProfessorExperience / (float)m_ProfessorData.m_ExperiencePerLevel[m_nowProfessorStat.m_ProfessorPower];        // 다음 레벨에 도달하기 위한 퍼센트 수치
+                LevelUpSliderBarPercentText.text = string.Format("{0:0.##}", ((float)m_nowProfessorStat.m_ProfessorExperience / (float)Professor.Instance.m_ExperiencePerLevel[m_nowProfessorStat.m_ProfessorPower] * 100)) + "%";
+                LevelUpSliderBar.value = (float)m_nowProfessorStat.m_ProfessorExperience / (float)Professor.Instance.m_ExperiencePerLevel[m_nowProfessorStat.m_ProfessorPower];        // 다음 레벨에 도달하기 위한 퍼센트 수치
 
                 NowTeacherSkillLevelText.text = "Lv." + m_nowProfessorStat.m_ProfessorPower;     // 강사의 스킬 레벨 표시
-                float tempPercentAmount = ((float)m_ProfessorData.m_StatMagnification[m_nowProfessorStat.m_ProfessorPower] * 100 - 100);
+                float tempPercentAmount = ((float)Professor.Instance.m_StatMagnification[m_nowProfessorStat.m_ProfessorPower] * 100 - 100);
                 int temp = (int)tempPercentAmount;
                 string BonusStatPercent = tempPercentAmount.ToString();
 
-                NowSpecialMoneyAmountText.text = PlayerInfo.Instance.m_SpecialPoint.ToString();
+                NowSpecialMoneyAmountText.text = PlayerInfo.Instance.SpecialPoint.ToString();
 
                 LevelUpAlarmText.text = "수업 시 학생이 " + "<color=#009A14>" + BonusStatPercent + "%" + "</color>" + "의 보너스 스탯을 얻습니다.";
             }
@@ -333,56 +341,56 @@ public class InstructorInfoPanel : MonoBehaviour
         switch (tempType)
         {
             case StudentType.GameDesigner:
-                {
-                    GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_tab_selected];
-                    ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
-                    ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
-                    DepartmentImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_icon_info];
+            {
+                GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_tab_selected];
+                ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
+                ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
+                DepartmentImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_icon_info];
 
-                    if (professorSet == "전임")        // 전임 외래 구별은 string 으로 해줘야 한다
-                    {
-                        InstructorTagImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.prof1_icon_info];
-                    }
-                    else if (professorSet == "외래")
-                    {
-                        InstructorTagImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.prof2_icon_info];
-                    }
+                if (professorSet == "전임")        // 전임 외래 구별은 string 으로 해줘야 한다
+                {
+                    InstructorTagImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.prof1_icon_info];
                 }
-                break;
+                else if (professorSet == "외래")
+                {
+                    InstructorTagImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.prof2_icon_info];
+                }
+            }
+            break;
             case StudentType.Art:
-                {
-                    GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
-                    ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_selected];
-                    ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
-                    DepartmentImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_icon_info];
+            {
+                GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
+                ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_selected];
+                ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
+                DepartmentImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_icon_info];
 
-                    if (professorSet == "전임")        // 전임 외래 구별은 string 으로 해줘야 한다
-                    {
-                        InstructorTagImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.prof1_icon_info];
-                    }
-                    else if (professorSet == "외래")
-                    {
-                        InstructorTagImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.prof2_icon_info];
-                    }
+                if (professorSet == "전임")        // 전임 외래 구별은 string 으로 해줘야 한다
+                {
+                    InstructorTagImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.prof1_icon_info];
                 }
-                break;
+                else if (professorSet == "외래")
+                {
+                    InstructorTagImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.prof2_icon_info];
+                }
+            }
+            break;
             case StudentType.Programming:
-                {
-                    GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
-                    ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
-                    ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_selected];
-                    DepartmentImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.programming_icon2_icon];
+            {
+                GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
+                ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
+                ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_selected];
+                DepartmentImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.programming_icon2_icon];
 
-                    if (professorSet == "전임")        // 전임 외래 구별은 string 으로 해줘야 한다
-                    {
-                        InstructorTagImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.prof1_icon_info];
-                    }
-                    else if (professorSet == "외래")
-                    {
-                        InstructorTagImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.prof2_icon_info];
-                    }
+                if (professorSet == "전임")        // 전임 외래 구별은 string 으로 해줘야 한다
+                {
+                    InstructorTagImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.prof1_icon_info];
                 }
-                break;
+                else if (professorSet == "외래")
+                {
+                    InstructorTagImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.prof2_icon_info];
+                }
+            }
+            break;
         }
 
         string result = string.Format("{0:#,0}", tempStat.m_ProfessorPay);      // 숫자에 콤마 찍기 위한 함수

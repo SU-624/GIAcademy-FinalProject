@@ -4,7 +4,6 @@ using UnityEngine;
 namespace StatData.Runtime
 {
     [CreateAssetMenu(fileName = "ProfessorData", menuName = "StatData/ProfessorData", order = 0)]
-
     public class ProfessorData : ScriptableObject
     {
         [SerializeField] private int m_ProfessorID;
@@ -25,21 +24,8 @@ namespace StatData.Runtime
         public string ProfessorSet => m_ProfessorSet;
         public int ProfessorPower => m_ProfessorPower;
         public int ProfessorPay => m_ProfessorPay;
-
-        public bool IsUnLockProfessor => m_IsUnLockProfessor;
-
-        public int ProfessorHealth
-        {
-            get => m_ProfessorHealth;
-            set => m_ProfessorHealth = value;
-        }
-
-        public int ProfessorPassion
-        {
-            get => m_ProfessorPassion;
-            set => m_ProfessorPassion = value;
-        }
-
-
+        public int ProfessorHealth => m_ProfessorHealth;
+        public int ProfessorPassion => m_ProfessorPassion;
+        public bool IsUnlockProfessor => m_IsUnLockProfessor;
     }
 }

@@ -29,8 +29,8 @@ public class SuddenEventPanel : MonoBehaviour
     [SerializeField] private PopOffUI PopOffEvenScenarioPanel;
 
     [Space(5f)]
+    [SerializeField] private Image ScenarioSpeakerImageMask;
     [SerializeField] private Image ScenarioSpeakerImage;
-    [SerializeField] private TextMeshProUGUI TempScenarioSpeakerText;        // 이미지 들어오기 전 글로 보여줄 임시 텍스트
 
     [SerializeField] private TextMeshProUGUI EventScenarioText;
 
@@ -124,31 +124,37 @@ public class SuddenEventPanel : MonoBehaviour
     [SerializeField] private Transform StudentListParent;
 
     [SerializeField] private Image StudentListImage1;
+    [SerializeField] private Image StudentListNameTagImage1;
     [SerializeField] private TextMeshProUGUI StudentListName1;
     [SerializeField] private Button StudentListButton1;
     [SerializeField] private Image SelectedStudentImage1;
 
     [SerializeField] private Image StudentListImage2;
+    [SerializeField] private Image StudentListNameTagImage2;
     [SerializeField] private TextMeshProUGUI StudentListName2;
     [SerializeField] private Button StudentListButton2;
     [SerializeField] private Image SelectedStudentImage2;
 
     [SerializeField] private Image StudentListImage3;
+    [SerializeField] private Image StudentListNameTagImage3;
     [SerializeField] private TextMeshProUGUI StudentListName3;
     [SerializeField] private Button StudentListButton3;
     [SerializeField] private Image SelectedStudentImage3;
 
     [SerializeField] private Image StudentListImage4;
+    [SerializeField] private Image StudentListNameTagImage4;
     [SerializeField] private TextMeshProUGUI StudentListName4;
     [SerializeField] private Button StudentListButton4;
     [SerializeField] private Image SelectedStudentImage4;
 
     [SerializeField] private Image StudentListImage5;
+    [SerializeField] private Image StudentListNameTagImage5;
     [SerializeField] private TextMeshProUGUI StudentListName5;
     [SerializeField] private Button StudentListButton5;
     [SerializeField] private Image SelectedStudentImage5;
 
     [SerializeField] private Image StudentListImage6;
+    [SerializeField] private Image StudentListNameTagImage6;
     [SerializeField] private TextMeshProUGUI StudentListName6;
     [SerializeField] private Button StudentListButton6;
     [SerializeField] private Image SelectedStudentImage6;
@@ -164,6 +170,9 @@ public class SuddenEventPanel : MonoBehaviour
     [Header("돌발 이벤트 중 - 이벤트 후 보상 창")]
     [SerializeField] private PopUpUI PopUpRewardEventPanel;                 // 이벤트보상 UI 패널
     [SerializeField] private PopOffUI PopOffRewardEventPanel;
+
+    [SerializeField] private Image RewardEventPanel;                        // 사운드 변경을 위한 이벤트패널
+
     [Space(5f)]
     [SerializeField] private TextMeshProUGUI RewardHeadlineText;
     [Space(5f)]
@@ -187,17 +196,34 @@ public class SuddenEventPanel : MonoBehaviour
 
     // --------------------
     List<Image> studentImgList = new List<Image>();
+    List<Image> studentNameTagImgList = new List<Image>();
     List<TextMeshProUGUI> studentNameTextList = new List<TextMeshProUGUI>();
     List<Button> studentButtonList = new List<Button>();
 
     List<Image> CheckedStudentImgList = new List<Image>();
     // --------------------
 
-    // List<Sprite> speakerSpriteList = new List<Sprite>();
+    int tempNowSpeakerImgIndex = 0;     // 1 -> 스크립트 이미지, 2 -> 옵션선택 이벤트 이미지
+
+    public int RandomImgIndex = 0;
+
+    Color SelectedDarkColor;
+
+    public int GettempNowSpeakerImgIndex
+    {
+        get { return tempNowSpeakerImgIndex; }
+        set { tempNowSpeakerImgIndex = value; }
+    }
 
     public Button GetScenarioPanelNextButton
     {
         get { return ScenarioPanelNextButton; }
+    }
+
+    public Image GetSimpleExecutionEventImage
+    {
+        get { return SimpleExecutionEventImage; }
+        set { SimpleExecutionEventImage = value; }
     }
 
     public Image GetSimpleExecutionFillBar
@@ -306,6 +332,12 @@ public class SuddenEventPanel : MonoBehaviour
         set { CheckedStudentImgList = value; }
     }
 
+    public Transform GetStudentListParent
+    {
+        get { return StudentListParent; }
+        set { StudentListParent = value; }
+    }
+
     // 이 친구들을 이벤트스크립트매니저로 옮겨야 하나
     void Start()
     {
@@ -318,12 +350,36 @@ public class SuddenEventPanel : MonoBehaviour
         // TempTargetSelectEventPanelCloseButton.onClick.AddListener(PopOffTargetSelectEvent);
         // GetRewardButton.onClick.AddListener(PopOffRewardPanel);
 
+        SelectedDarkColor = new Color(0.55f, 0.55f, 0.55f, 1f);
+
+        ColorBlock tempGDColor = GameDesignerIndex.colors;
+        tempGDColor.normalColor = SelectedDarkColor;
+        tempGDColor.selectedColor = SelectedDarkColor;
+        GameDesignerIndex.colors = tempGDColor;
+
+        ColorBlock tempArtColor = ArtIndex.colors;
+        tempArtColor.normalColor = new Color(1f, 1f, 1f, 1f);
+        tempGDColor.selectedColor = new Color(1f, 1f, 1f, 1f);
+        ArtIndex.colors = tempArtColor;
+
+        ColorBlock tempProColor = ProgrammerIndex.colors;
+        tempProColor.normalColor = new Color(1f, 1f, 1f, 1f);
+        tempGDColor.selectedColor = new Color(1f, 1f, 1f, 1f);
+        ProgrammerIndex.colors = tempProColor;
+
         studentImgList.Add(StudentListImage1);
         studentImgList.Add(StudentListImage2);
         studentImgList.Add(StudentListImage3);
         studentImgList.Add(StudentListImage4);
         studentImgList.Add(StudentListImage5);
         studentImgList.Add(StudentListImage6);
+
+        studentNameTagImgList.Add(StudentListNameTagImage1);
+        studentNameTagImgList.Add(StudentListNameTagImage2);
+        studentNameTagImgList.Add(StudentListNameTagImage3);
+        studentNameTagImgList.Add(StudentListNameTagImage4);
+        studentNameTagImgList.Add(StudentListNameTagImage5);
+        studentNameTagImgList.Add(StudentListNameTagImage6);
 
         studentNameTextList.Add(StudentListName1);
         studentNameTextList.Add(StudentListName2);
@@ -345,7 +401,6 @@ public class SuddenEventPanel : MonoBehaviour
         CheckedStudentImgList.Add(SelectedStudentImage4);
         CheckedStudentImgList.Add(SelectedStudentImage5);
         CheckedStudentImgList.Add(SelectedStudentImage6);
-
     }
 
     // Update is called once per frame
@@ -355,18 +410,19 @@ public class SuddenEventPanel : MonoBehaviour
     }
 
     // 준비 된 이벤트의 화자 이미지를 넣기 위한 것
-    public void CheckNowScenarioScriptData(string nowSpeaker, string NowEventScript, Student nowTarget = null)
+    public void CheckNowScenarioScriptData(int num, string nowSpeaker, string NowEventScript, Student nowTarget = null)
     {
-        if (FindCorrectSpeakerSprite(nowSpeaker, nowTarget) == null)
+        if (FindCorrectSpeakerSprite(num, nowSpeaker, nowTarget) == null)
         {
-            ScenarioSpeakerImage.sprite = FindCorrectSpeakerSprite("NoneTemp");
+            // 화자의 이미지가 없어서 검정실루엣만 넣어줄때
+            ScenarioSpeakerImage.sprite = FindCorrectSpeakerSprite(num, "NoneTemp");
         }
         else
         {
-            ScenarioSpeakerImage.sprite = FindCorrectSpeakerSprite(nowSpeaker, nowTarget);
+            // 학생, 화자 등 이미지 찾아서 넣어주기 위한 부분
+            ScenarioSpeakerImage.sprite = FindCorrectSpeakerSprite(num, nowSpeaker, nowTarget);
         }
 
-        TempScenarioSpeakerText.text = nowSpeaker;
         EventScenarioText.text = NowEventScript;
     }
 
@@ -393,46 +449,76 @@ public class SuddenEventPanel : MonoBehaviour
     // 필요한 돈 표시
     public void ReadyEventRewardText(OptionEventPay OptionEventNeedPay)
     {
-        Option1NeedPayText.text = "0";
-        Option2NeedPayText.text = "0";
-        Option3NeedPayText.text = "0";
-
+        //RewardEventPanel.GetComponent<AudioSource>().clip = ClickEventManager.Instance.Sound.PlayFailSound;
 
         // TODO :: 보상 다시 만지기 -> 보상 이름이 아닌 이미지로 넣어야함
         if (OptionEventNeedPay.SelectPay1 != 0)
         {
+            string tempAmount;
+            tempAmount = string.Format("{0:#,###}", OptionEventNeedPay.PayAmount1);
+
             // Option1NeedPayImage = ;
-            Option1NeedPayText.text = "- " + OptionEventNeedPay.PayAmount1.ToString();
+            Option1NeedPayText.text = "- " + tempAmount;
+        }
+        else
+        {
+            Option1NeedPayText.text = "0";
         }
 
         if (OptionEventNeedPay.SelectPay2 != 0)
         {
+            string tempAmount;
+            tempAmount = string.Format("{0:#,###}", OptionEventNeedPay.PayAmount2);
+
             // Option1NeedPayImage = ;
-            Option2NeedPayText.text = "- " + OptionEventNeedPay.PayAmount2.ToString();
+            Option2NeedPayText.text = "- " + tempAmount;
+        }
+        else
+        {
+            Option2NeedPayText.text = "0";
         }
 
         if (OptionEventNeedPay.SelectPay3 != 0)
         {
+            string tempAmount;
+            tempAmount = string.Format("{0:#,###}", OptionEventNeedPay.PayAmount3);
+
             // Option1NeedPayImage = ;
-            Option3NeedPayText.text = "- " + OptionEventNeedPay.PayAmount3.ToString();
+            Option3NeedPayText.text = "- " + tempAmount;
+        }
+        else
+        {
+            Option3NeedPayText.text = "0";
         }
     }
 
     // 선택지이벤트 패널의 텍스트 넣기
     public void ReadyOptionChoicePanelText(string nowSpeaker, string nowEventScript, string[] OptionScript, RewardInfo[] nowrewardInfo, Student nowTarget = null)
     {
+        tempNowSpeakerImgIndex = 2;
+
         Option1Box.SetActive(true);
         Option2Box.SetActive(true);
         Option3Box.SetActive(true);
 
         // OptionEventSpeakerImage = Image;     -> 알맞은 화자 이미지 넣기 -> 알맞은 이미지 찾는 함수 필요할듯
-        OptionEventSpeakerImage.sprite = FindCorrectSpeakerSprite(nowSpeaker, nowTarget);
+        // OptionEventSpeakerImage.sprite = FindCorrectSpeakerSprite(2, nowSpeaker, nowTarget);
+
+        if (FindCorrectSpeakerSprite(2, nowSpeaker, nowTarget) == null)
+        {
+            // 화자의 이미지가 없어서 검정실루엣만 넣어줄때
+            OptionEventSpeakerImage.sprite = FindCorrectSpeakerSprite(2, "NoneTemp");
+        }
+        else
+        {
+            // 학생, 화자 등 이미지 찾아서 넣어주기 위한 부분
+            OptionEventSpeakerImage.sprite = FindCorrectSpeakerSprite(2, nowSpeaker, nowTarget);
+        }
+
         TempOptionEventSpeakerText.text = nowSpeaker;
 
         string TextSplit = nowEventScript; // .Split('/');
         NowEventScriptText.text = TextSplit;
-
-        // NowEventScriptText.text = TextSplit[TextSplit.Length - 1];
 
         if (OptionScript[2] != "")
         {
@@ -505,15 +591,17 @@ public class SuddenEventPanel : MonoBehaviour
     {
         Color Normalcolor = new Color32(0, 0, 0, 255);
 
-        Option1Button.interactable = true;
-        Option2Button.interactable = true;
-        Option3Button.interactable = true;
+        // Option1Button.interactable = true;
+        // Option2Button.interactable = true;
+        // Option3Button.interactable = true;
 
         switch (optionNum)
         {
             case 1:
+            {
+                if (NeedeventPay.SelectPay1 == 100)
                 {
-                    if (PlayerInfo.Instance.m_MyMoney <= NeedeventPay.PayAmount1)
+                    if (PlayerInfo.Instance.MyMoney < NeedeventPay.PayAmount1)
                     {
                         Option1Button.interactable = false;
 
@@ -522,13 +610,22 @@ public class SuddenEventPanel : MonoBehaviour
                     }
                     else
                     {
+                        Option1Button.interactable = true;
                         Option1NeedPayText.color = Normalcolor;
                     }
                 }
-                break;
-            case 2:
+                else
                 {
-                    if (PlayerInfo.Instance.m_MyMoney <= NeedeventPay.PayAmount1)
+                    Option1Button.interactable = true;
+                    Option1NeedPayText.color = Normalcolor;
+                }
+            }
+            break;
+            case 2:
+            {
+                if (NeedeventPay.SelectPay2 == 100)
+                {
+                    if (PlayerInfo.Instance.MyMoney < NeedeventPay.PayAmount1)
                     {
                         Option2Button.interactable = false;
 
@@ -537,13 +634,22 @@ public class SuddenEventPanel : MonoBehaviour
                     }
                     else
                     {
+                        Option2Button.interactable = true;
                         Option2NeedPayText.color = Normalcolor;
                     }
                 }
-                break;
-            case 3:
+                else
                 {
-                    if (PlayerInfo.Instance.m_MyMoney <= NeedeventPay.PayAmount1)
+                    Option2Button.interactable = true;
+                    Option2NeedPayText.color = Normalcolor;
+                }
+            }
+            break;
+            case 3:
+            {
+                if (NeedeventPay.SelectPay3 == 100)
+                {
+                    if (PlayerInfo.Instance.MyMoney < NeedeventPay.PayAmount1)
                     {
                         Option3Button.interactable = false;
 
@@ -552,13 +658,58 @@ public class SuddenEventPanel : MonoBehaviour
                     }
                     else
                     {
+                        Option3Button.interactable = true;
                         Option3NeedPayText.color = Normalcolor;
                     }
                 }
-                break;
+                else
+                {
+                    Option3Button.interactable = true;
+                    Option3NeedPayText.color = Normalcolor;
+                }
+            }
+            break;
         }
+    }
 
-
+    // 이벤트 보상에 따라서 전부 - 가 나올때는 fail 사운드 출력해주기 위한 함수
+    public void FindSoundRewardResult()
+    {
+        // 리워드 3개
+        if (Reward3Amount.text != "")
+        {
+            if (Reward1Amount.text.Contains("-") && Reward2Amount.text.Contains("-") && Reward3Amount.text.Contains("-"))
+            {
+                ClickEventManager.Instance.Sound.PlayFailSound();
+            }
+            else
+            {
+                ClickEventManager.Instance.Sound.PlayMoneyJackpotSound();
+            }
+        }
+        // 리워드 2개
+        else if (Reward2Amount.text != "")
+        {
+            if (Reward1Amount.text.Contains("-") && Reward2Amount.text.Contains("-"))
+            {
+                ClickEventManager.Instance.Sound.PlayFailSound();
+            }
+            else
+            {
+                ClickEventManager.Instance.Sound.PlayMoneyJackpotSound();
+            }
+        }
+        else if (Reward1Amount.text != "")
+        {
+            if (Reward1Amount.text.Contains("-"))
+            {
+                ClickEventManager.Instance.Sound.PlayFailSound();
+            }
+            else
+            {
+                ClickEventManager.Instance.Sound.PlayMoneyJackpotSound();
+            }
+        }
     }
 
     public void ReadyReawrdPanelText(RewardInfo[] reward)
@@ -577,15 +728,28 @@ public class SuddenEventPanel : MonoBehaviour
         Reward2Amount.text = "";
         Reward3Amount.text = "";
 
+        Vector2 newsize = new Vector2(167, 167);
+
+        Reward1Image.rectTransform.sizeDelta = newsize;
+        Reward2Image.rectTransform.sizeDelta = newsize;
+        Reward3Image.rectTransform.sizeDelta = newsize;
+
         if (reward[2].RewardID != 0)            // 보상 3개
         {
             Reward1Name.text = reward[0].RewardName;
             Reward2Name.text = reward[1].RewardName;
             Reward3Name.text = reward[2].RewardName;
 
-            Reward1Amount.text = reward[0].RewardAmount.ToString();
-            Reward2Amount.text = reward[1].RewardAmount.ToString();
-            Reward3Amount.text = reward[2].RewardAmount.ToString();
+            string tempAmount1;
+            tempAmount1 = string.Format("{0:#,###}", reward[0].RewardAmount);
+            string tempAmount2;
+            tempAmount2 = string.Format("{0:#,###}", reward[1].RewardAmount);
+            string tempAmount3;
+            tempAmount3 = string.Format("{0:#,###}", reward[2].RewardAmount);
+
+            Reward1Amount.text = tempAmount1;
+            Reward2Amount.text = tempAmount2;
+            Reward3Amount.text = tempAmount3;
 
             Reward1Image.sprite = ReadyEventRewardImgCheck(Reward1Name.text);
             Reward2Image.sprite = ReadyEventRewardImgCheck(Reward2Name.text);
@@ -598,8 +762,13 @@ public class SuddenEventPanel : MonoBehaviour
             Reward1Name.text = reward[0].RewardName;
             Reward2Name.text = reward[1].RewardName;
 
-            Reward1Amount.text = reward[0].RewardAmount.ToString();
-            Reward2Amount.text = reward[1].RewardAmount.ToString();
+            string tempAmount1;
+            tempAmount1 = string.Format("{0:#,###}", reward[0].RewardAmount);
+            string tempAmount2;
+            tempAmount2 = string.Format("{0:#,###}", reward[1].RewardAmount);
+
+            Reward1Amount.text = tempAmount1;
+            Reward2Amount.text = tempAmount2;
 
             Reward1Image.sprite = ReadyEventRewardImgCheck(Reward1Name.text);
             Reward2Image.sprite = ReadyEventRewardImgCheck(Reward2Name.text);
@@ -610,7 +779,10 @@ public class SuddenEventPanel : MonoBehaviour
         {
             Reward1Name.text = reward[0].RewardName;
 
-            Reward1Amount.text = reward[0].RewardAmount.ToString();
+            string tempAmount1;
+            tempAmount1 = string.Format("{0:#,###}", reward[0].RewardAmount);
+
+            Reward1Amount.text = tempAmount1;
 
             Reward1Image.sprite = ReadyEventRewardImgCheck(Reward1Name.text);
 
@@ -630,128 +802,118 @@ public class SuddenEventPanel : MonoBehaviour
         switch (rewardName)
         {
             case "골드":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Gold];
-                    return tempSprite;
-                }
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Gold];
+                return tempSprite;
+            }
             case "루비":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Rubby];
-                    return tempSprite;
-                }
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Rubby];
+                return tempSprite;
+            }
             case "운영점수":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Management];
-                    return tempSprite;
-                }
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Management];
+                return tempSprite;
+            }
             case "유명점수":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Awareness];
-                    return tempSprite;
-                }
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Awareness];
+                return tempSprite;
+            }
             case "활동점수":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Activity];
-                    return tempSprite;
-                }
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Activity];
+                return tempSprite;
+            }
             case "인재양성":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.TalentDevelopment];
-                    return tempSprite;
-                }
-            // 교사
-            case "교사-체력":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.ProfessorHealth];
-                    return tempSprite;
-                }
-            case "교사-열정":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.ProfessorPassion];
-                    return tempSprite;
-                }
-            case "교사-경험치":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.ProfessorExperience];
-                    return tempSprite;
-                }
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.TalentDevelopment];
+                return tempSprite;
+            }
+            // 교사 (+ 체력, 열정)
+            case "경험치":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.ProfessorExperience];
+                return tempSprite;
+            }
             // 학생
-            case "학생-체력":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Health];
-                    return tempSprite;
-                }
-            case "학생-열정":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Passion];
-                    return tempSprite;
-                }
-            case "학생-감각":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Sense];
-                    return tempSprite;
-                }
-            case "학생-집중":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Concentration];
-                    return tempSprite;
-                }
-            case "학생-재치":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Wit];
-                    return tempSprite;
-                }
-            case "학생-기술":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Technique];
-                    return tempSprite;
-                }
-            case "학생-통찰":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Insight];
-                    return tempSprite;
-                }
+            case "체력":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Health];
+                return tempSprite;
+            }
+            case "열정":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Passion];
+                return tempSprite;
+            }
+            case "감각":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Sense];
+                return tempSprite;
+            }
+            case "집중":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Concentration];
+                return tempSprite;
+            }
+            case "재치":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Wit];
+                return tempSprite;
+            }
+            case "기술":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Technique];
+                return tempSprite;
+            }
+            case "통찰":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Insight];
+                return tempSprite;
+            }
 
-            case "학생-액션":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Action];
-                    return tempSprite;
-                }
-            case "학생-시뮬레이션":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Simulation];
-                    return tempSprite;
-                }
-            case "학생-어드벤처":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Adventure];
-                    return tempSprite;
-                }
-            case "학생-슈팅":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Shooting];
-                    return tempSprite;
-                }
-            case "학생-RPG":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.RPG];
-                    return tempSprite;
-                }
-            case "학생-퍼즐":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Puzzle];
-                    return tempSprite;
-                }
-            case "학생-리듬":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Rhythm];
-                    return tempSprite;
-                }
-            case "학생-스포츠":
-                {
-                    tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Sports];
-                    return tempSprite;
-                }
+            case "액션":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Action];
+                return tempSprite;
+            }
+            case "시뮬레이션":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Simulation];
+                return tempSprite;
+            }
+            case "어드벤처":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Adventure];
+                return tempSprite;
+            }
+            case "슈팅":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Shooting];
+                return tempSprite;
+            }
+            case "RPG":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.RPG];
+                return tempSprite;
+            }
+            case "퍼즐":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Puzzle];
+                return tempSprite;
+            }
+            case "리듬":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Rhythm];
+                return tempSprite;
+            }
+            case "스포츠":
+            {
+                tempSprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Sports];
+                return tempSprite;
+            }
         }
 
         return null;
@@ -766,6 +928,9 @@ public class SuddenEventPanel : MonoBehaviour
 
         Reward1Name.text = "강사 해금!";
         Reward1Amount.text = reward[0].RewardName;
+
+        Vector2 newSize = new Vector2(167, 200);
+        Reward1Image.rectTransform.sizeDelta = newSize;
 
         foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
         {
@@ -789,6 +954,7 @@ public class SuddenEventPanel : MonoBehaviour
         Reward1Name.text = "회사 해금!";
         Reward1Amount.text = reward[0].RewardName;
 
+        Reward1Image.sprite = UISpriteLists.Instance.GetRewardSpriteList[(int)ERewardImg.Management];
         //foreach (var temp in NowCompanyList.m_CompanyList)
         //{
         //    if (reward[0].RewardName == temp.CompanyName)
@@ -803,33 +969,49 @@ public class SuddenEventPanel : MonoBehaviour
         Option3Object.SetActive(false);
     }
 
-    // 인자 초기값 공부하기 - 선택적 매개변수
+    // 타겟이벤트 - 이벤트 창의 선택된 개별 학생의 정보 데이터를 나타내기 위한 부분
     public void PopUpTargetEventPanelSetData(Student student = null)
     {
         if (student != null)
         {
-            StudentImage.sprite = student.StudentProfileImg;
-            // StudentImage.sprite = FindCorrectSpeakerSprite(student.m_StudentStat.m_StudentName);
+            ColorBlock tempGDColor = GameDesignerIndex.colors;
+            GameDesignerIndex.colors = tempGDColor;
 
-            StudentNameText.text = student.m_StudentStat.m_StudentName;
+            ColorBlock tempArtColor = ArtIndex.colors;
+            ArtIndex.colors = tempArtColor;
+
+            ColorBlock tempProColor = ProgrammerIndex.colors;
+            ProgrammerIndex.colors = tempProColor;
+
+            StudentImage.sprite = student.StudentProfileImg;
+            StudentImage.gameObject.SetActive(true);
+
+            if (student.m_StudentStat.m_UserSettingName != "")
+            {
+                StudentNameText.text = student.m_StudentStat.m_UserSettingName;
+            }
+            else
+            {
+                StudentNameText.text = student.m_StudentStat.m_StudentName;
+            }
 
             HealthText.text = student.m_StudentStat.m_Health.ToString();
             PassionText.text = student.m_StudentStat.m_Passion.ToString();
 
-            SenseText.text = student.m_StudentStat.m_AbilityAmountList[(int)AbilityType.Sense].ToString();
-            WitText.text = student.m_StudentStat.m_AbilityAmountList[(int)AbilityType.Wit].ToString();
-            ConcentrationText.text = student.m_StudentStat.m_AbilityAmountList[(int)AbilityType.Concentration].ToString();
-            TechniqueText.text = student.m_StudentStat.m_AbilityAmountList[(int)AbilityType.Technique].ToString();
-            InsightText.text = student.m_StudentStat.m_AbilityAmountList[(int)AbilityType.Insight].ToString();
+            SenseText.text = student.m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Sense].ToString();
+            WitText.text = student.m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Wit].ToString();
+            ConcentrationText.text = student.m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Concentration].ToString();
+            TechniqueText.text = student.m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Technique].ToString();
+            InsightText.text = student.m_StudentStat.m_AbilityAmountArr[(int)AbilityType.Insight].ToString();
 
-            PuzzleText.text = student.m_StudentStat.m_GenreAmountList[(int)GenreStat.Puzzle].ToString();
-            SimulationText.text = student.m_StudentStat.m_GenreAmountList[(int)GenreStat.Simulation].ToString();
-            RhythmText.text = student.m_StudentStat.m_GenreAmountList[(int)GenreStat.Rhythm].ToString();
-            AdventureText.text = student.m_StudentStat.m_GenreAmountList[(int)GenreStat.Adventure].ToString();
-            RPGText.text = student.m_StudentStat.m_GenreAmountList[(int)GenreStat.RPG].ToString();
-            SportsText.text = student.m_StudentStat.m_GenreAmountList[(int)GenreStat.Sports].ToString();
-            ActionText.text = student.m_StudentStat.m_GenreAmountList[(int)GenreStat.Action].ToString();
-            ShootingText.text = student.m_StudentStat.m_GenreAmountList[(int)GenreStat.Shooting].ToString();
+            PuzzleText.text = student.m_StudentStat.m_GenreAmountArr[(int)GenreStat.Puzzle].ToString();
+            SimulationText.text = student.m_StudentStat.m_GenreAmountArr[(int)GenreStat.Simulation].ToString();
+            RhythmText.text = student.m_StudentStat.m_GenreAmountArr[(int)GenreStat.Rhythm].ToString();
+            AdventureText.text = student.m_StudentStat.m_GenreAmountArr[(int)GenreStat.Adventure].ToString();
+            RPGText.text = student.m_StudentStat.m_GenreAmountArr[(int)GenreStat.RPG].ToString();
+            SportsText.text = student.m_StudentStat.m_GenreAmountArr[(int)GenreStat.Sports].ToString();
+            ActionText.text = student.m_StudentStat.m_GenreAmountArr[(int)GenreStat.Action].ToString();
+            ShootingText.text = student.m_StudentStat.m_GenreAmountArr[(int)GenreStat.Shooting].ToString();
 
             for (int i = 0; i < studentNameTextList.Count; i++)
             {
@@ -842,50 +1024,55 @@ public class SuddenEventPanel : MonoBehaviour
             }
 
         }
-        else
-        {
-            StudentImage.sprite = null;
-            StudentNameText.text = "";
+    }
 
-            HealthText.text = "";
-            PassionText.text = "";
-            SenseText.text = "";
-            WitText.text = "";
-            ConcentrationText.text = "";
-            TechniqueText.text = "";
-            InsightText.text = "";
+    public void InitTargetEventEachStudentInfo()
+    {
+        StudentImage.sprite = null;
+        StudentImage.gameObject.SetActive(false);
+        StudentNameText.text = "";
 
-            PuzzleText.text = "";
-            SimulationText.text = "";
-            RhythmText.text = "";
-            AdventureText.text = "";
-            RPGText.text = "";
-            SportsText.text = "";
-            ActionText.text = "";
-            ShootingText.text = "";
+        HealthText.text = "";
+        PassionText.text = "";
+        SenseText.text = "";
+        WitText.text = "";
+        ConcentrationText.text = "";
+        TechniqueText.text = "";
+        InsightText.text = "";
 
-        }
+        PuzzleText.text = "";
+        SimulationText.text = "";
+        RhythmText.text = "";
+        AdventureText.text = "";
+        RPGText.text = "";
+        SportsText.text = "";
+        ActionText.text = "";
+        ShootingText.text = "";
     }
 
     // 타겟이벤트의 정보창을 
-    public void SetTargetEventInfo(RewardInfo[] nowEventReward, string eventTerm)
+    public void SetTargetEventInfo(RewardInfo[] nowEventReward, string eventTerm, string dispatchSpot)
     {
-        // PositionText.text = noweventTerm;
+        //GameDesignerIndex.GetComponent<RectTransform>().sizeDelta = new Vector2(180, 96);
+        //ArtIndex.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 80);
+        //ProgrammerIndex.GetComponent<RectTransform>().sizeDelta = new Vector2(150, 80);
+
+        PositionText.text = dispatchSpot;
         TermText.text = eventTerm;
 
         // 만약 강사 or 회사  해금 정보가 true이면 그 페널을 띄운다.
 
         if (nowEventReward[2].RewardID != 0)            // 보상 3개
         {
-            string reward1 = nowEventReward[0].RewardName + " + " + nowEventReward[0].RewardAmount.ToString() + "\n";
-            string reward2 = nowEventReward[1].RewardName + " + " + nowEventReward[1].RewardAmount.ToString() + "\n";
+            string reward1 = nowEventReward[0].RewardName + " + " + nowEventReward[0].RewardAmount.ToString();
+            string reward2 = nowEventReward[1].RewardName + " + " + nowEventReward[1].RewardAmount.ToString();
             string reward3 = nowEventReward[2].RewardName + " + " + nowEventReward[2].RewardAmount.ToString();
 
             RewardText.text = reward1 + ", " + reward2 + ", " + reward3;
         }
         else if (nowEventReward[1].RewardID != 0)       // 보상 2개
         {
-            string reward1 = nowEventReward[0].RewardName + " + " + nowEventReward[0].RewardAmount.ToString() + "\n";
+            string reward1 = nowEventReward[0].RewardName + " + " + nowEventReward[0].RewardAmount.ToString();
             string reward2 = nowEventReward[1].RewardName + " + " + nowEventReward[1].RewardAmount.ToString();
 
             RewardText.text = reward1 + ", " + reward2;
@@ -903,15 +1090,43 @@ public class SuddenEventPanel : MonoBehaviour
     }
 
     // 학생 리스트에 데이터를 채워넣기 위한 작업
-    public void TargetEventStudentListSetData(/*Image[] studentImg, string[] studentName*/List<NowDepartmentStudentList> nowstudentList)
+    public void TargetEventStudentListSetData(List<NowDepartmentStudentList> nowstudentList)
     {
         int studentCount = ObjectManager.Instance.m_StudentList.Count;
         int StudentListCount = 0;
 
+        Sprite tempNameTagSprite;
+
+        if (nowstudentList[0].type == StudentType.GameDesigner)
+        {
+            tempNameTagSprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
+        }
+        else if (nowstudentList[0].type == StudentType.Art)
+        {
+            tempNameTagSprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
+        }
+        else if (nowstudentList[0].type == StudentType.Programming)
+        {
+            tempNameTagSprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
+        }
+        else        // 기본...?
+        {
+            tempNameTagSprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
+        }
+
         for (int i = 0; i < studentImgList.Count; i++)
         {
+            if (nowstudentList[i].ChangedName != "")
+            {
+                studentNameTextList[StudentListCount].text = nowstudentList[i].ChangedName;                 // 학생 이름
+            }
+            else
+            {
+                studentNameTextList[StudentListCount].text = nowstudentList[i].studentName;                 // 학생 이름
+            }
             studentImgList[StudentListCount].sprite = nowstudentList[i].studentImg;                     // 이미지는 나중에 생긴다면
-            studentNameTextList[StudentListCount].text = nowstudentList[i].studentName;                 // 학생 이름
+
+            studentNameTagImgList[StudentListCount].sprite = tempNameTagSprite;
             studentButtonList[StudentListCount].gameObject.name = nowstudentList[i].studentName;        // 버튼 이름 학생 이름으로 변경
 
             StudentListCount += 1;
@@ -969,8 +1184,14 @@ public class SuddenEventPanel : MonoBehaviour
         PopOffRewardEventPanel.TurnOffUI();
     }
 
-    public Sprite FindCorrectSpeakerSprite(string nowSpeaker, Student nowTarget = null)
+    public Sprite FindCorrectSpeakerSprite(int num, string nowSpeaker, Student nowTarget = null)
     {
+        int ScenarioImgrectX = 400;
+        int ScenarioImgrectY = 500;
+
+        int OptionImgX = 300;
+        int OptionImgY = 375;
+
         //선택된 학생
         if (nowSpeaker == ESpeakerImgIndex.SelectedStu.ToString())
         {
@@ -981,6 +1202,24 @@ public class SuddenEventPanel : MonoBehaviour
                     if (nowTarget.m_StudentStat.m_StudentName == ObjectManager.Instance.m_StudentList[i].m_StudentStat.m_StudentName)
                     {
                         Sprite tempSprite = ObjectManager.Instance.m_StudentList[i].StudentProfileImg;
+
+                        if (num == 1)        // 시나리오 나올때 학생 이미지
+                        {
+                            Vector2 newSize = new Vector2(ScenarioImgrectX, ScenarioImgrectY);
+                            ScenarioSpeakerImage.rectTransform.sizeDelta = newSize;
+                            ScenarioSpeakerImageMask.rectTransform.sizeDelta = newSize;
+
+                            ScenarioSpeakerImageMask.rectTransform.localPosition = new Vector3(-422, 0, 0);
+
+                            ScenarioSpeakerImageMask.enabled = true;
+                        }
+                        else if (num == 2)   // 옵션 선택 나올때 학생 이미지
+                        {
+                            Vector2 newSize = new Vector2(OptionImgX, OptionImgY);
+                            OptionEventSpeakerImage.rectTransform.sizeDelta = newSize;
+
+                            OptionEventSpeakerImage.rectTransform.localPosition = new Vector3(-347, 120, 0);
+                        }
 
                         return tempSprite;
                     }
@@ -1001,9 +1240,31 @@ public class SuddenEventPanel : MonoBehaviour
                 }
             }
 
-            int IndexNum = temRandom.Next(tempStudentList.Count);     // 학생리스트의 인덱스를 뽑아서 그 학생의 아이디 찾기
+            if (RandomImgIndex == 0)
+            {
+                int IndexNum = temRandom.Next(tempStudentList.Count);     // 학생리스트의 인덱스를 뽑아서 그 학생의 아이디 찾기
+                RandomImgIndex = IndexNum;
+            }
 
-            Sprite tempSprite = ObjectManager.Instance.m_StudentList[IndexNum].StudentProfileImg;
+            Sprite tempSprite = ObjectManager.Instance.m_StudentList[RandomImgIndex].StudentProfileImg;
+
+            if (num == 1)        // 시나리오 나올때 학생 이미지
+            {
+                Vector2 newSize = new Vector2(ScenarioImgrectX, ScenarioImgrectY);
+                ScenarioSpeakerImage.rectTransform.sizeDelta = newSize;
+                ScenarioSpeakerImageMask.rectTransform.sizeDelta = newSize;
+
+                ScenarioSpeakerImageMask.rectTransform.localPosition = new Vector3(-422, 0, 0);
+
+                ScenarioSpeakerImageMask.enabled = true;
+            }
+            else if (num == 2)   // 옵션 선택 나올때 학생 이미지
+            {
+                Vector2 newSize = new Vector2(OptionImgX, OptionImgY);
+                OptionEventSpeakerImage.rectTransform.sizeDelta = newSize;
+
+                OptionEventSpeakerImage.rectTransform.localPosition = new Vector3(-347, 120, 0);
+            }
 
             return tempSprite;
         }
@@ -1021,13 +1282,33 @@ public class SuddenEventPanel : MonoBehaviour
                 }
             }
 
-            int IndexNum = temRandom.Next(tempStudentList.Count);     // 학생리스트의 인덱스를 뽑아서 그 학생의 아이디 찾기
+            if (RandomImgIndex == 0)
+            {
+                int IndexNum = temRandom.Next(tempStudentList.Count);     // 학생리스트의 인덱스를 뽑아서 그 학생의 아이디 찾기
+                RandomImgIndex = IndexNum;
+            }
 
-            Sprite tempSprite = ObjectManager.Instance.m_StudentList[IndexNum].StudentProfileImg;
+            Sprite tempSprite = ObjectManager.Instance.m_StudentList[RandomImgIndex].StudentProfileImg;
+
+            if (num == 1)        // 시나리오 나올때 학생 이미지
+            {
+                Vector2 newSize = new Vector2(ScenarioImgrectX, ScenarioImgrectY);
+                ScenarioSpeakerImage.rectTransform.sizeDelta = newSize;
+                ScenarioSpeakerImageMask.rectTransform.sizeDelta = newSize;
+
+                ScenarioSpeakerImageMask.rectTransform.localPosition = new Vector3(-422, 0, 0);
+
+                ScenarioSpeakerImageMask.enabled = true;
+            }
+            else if (num == 2)   // 옵션 선택 나올때 학생 이미지
+            {
+                Vector2 newSize = new Vector2(OptionImgX, OptionImgY);
+                OptionEventSpeakerImage.rectTransform.sizeDelta = newSize;
+
+                OptionEventSpeakerImage.rectTransform.localPosition = new Vector3(-347, 120, 0);
+            }
 
             return tempSprite;
-
-
         }
         else if (nowSpeaker == ESpeakerImgIndex.ProRan.ToString())
         {
@@ -1043,23 +1324,72 @@ public class SuddenEventPanel : MonoBehaviour
                 }
             }
 
-            int IndexNum = temRandom.Next(tempStudentList.Count);     // 학생리스트의 인덱스를 뽑아서 그 학생의 아이디 찾기
+            if (RandomImgIndex == 0)
+            {
+                int IndexNum = temRandom.Next(tempStudentList.Count);     // 학생리스트의 인덱스를 뽑아서 그 학생의 아이디 찾기
+                RandomImgIndex = IndexNum;
+            }
 
-            Sprite tempSprite = ObjectManager.Instance.m_StudentList[IndexNum].StudentProfileImg;
+            Sprite tempSprite = ObjectManager.Instance.m_StudentList[RandomImgIndex].StudentProfileImg;
+
+            if (num == 1)        // 시나리오 나올때 학생 이미지
+            {
+                Vector2 newSize = new Vector2(ScenarioImgrectX, ScenarioImgrectY);
+                ScenarioSpeakerImage.rectTransform.sizeDelta = newSize;
+                ScenarioSpeakerImageMask.rectTransform.sizeDelta = newSize;
+
+                ScenarioSpeakerImageMask.rectTransform.localPosition = new Vector3(-422, 0, 0);
+
+                ScenarioSpeakerImageMask.enabled = true;
+            }
+            else if (num == 2)   // 옵션 선택 나올때 학생 이미지
+            {
+                Vector2 newSize = new Vector2(OptionImgX, OptionImgY);
+                OptionEventSpeakerImage.rectTransform.sizeDelta = newSize;
+
+                OptionEventSpeakerImage.rectTransform.localPosition = new Vector3(-347, 120, 0);
+
+            }
 
             return tempSprite;
         }
-        else
+        else            // 랜덤학생, 선택된 학생 이 아닐 때
         {
             foreach (var tempSprite in UISpriteLists.Instance.GetspeakerSpriteList)
             {
                 if (tempSprite.name == nowSpeaker)
                 {
+                    Vector2 newSize;
+
+                    if (num == 1)        // 시나리오 나올때 화자 이미지
+                    {
+                        if (nowSpeaker == "Gletter")
+                        {
+                            newSize = new Vector2(800, 800);
+                            ScenarioSpeakerImageMask.rectTransform.localPosition = new Vector3(-522, -40, 0);
+                        }
+                        else
+                        {
+                            newSize = new Vector2(1000, 1000);
+                            ScenarioSpeakerImageMask.rectTransform.localPosition = new Vector3(-522, -40, 0);
+                        }
+
+                        ScenarioSpeakerImage.rectTransform.sizeDelta = newSize;
+                        ScenarioSpeakerImageMask.rectTransform.sizeDelta = newSize;
+
+                        ScenarioSpeakerImageMask.enabled = false;
+                    }
+                    else if (num == 2)   // 옵션 선택 나올때 화자 이미지
+                    {
+                        newSize = new Vector2(500, 500);
+                        OptionEventSpeakerImage.rectTransform.sizeDelta = newSize;
+
+                        OptionEventSpeakerImage.rectTransform.localPosition = new Vector3(-347, 40, 0);
+                    }
                     return tempSprite;
                 }
             }
         }
-
         return null;
     }
 }

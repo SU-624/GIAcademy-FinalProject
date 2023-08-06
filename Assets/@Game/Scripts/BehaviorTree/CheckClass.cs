@@ -33,13 +33,13 @@ public class CheckClass : Conditional
         {
             //this.gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
             //gameObject.GetComponent<Animator>().SetBool("isStudying", false);
-            this.gameObject.GetComponent<Student>().m_IsCoolDown = false;    // 쿨타임 끝남.
-            this.gameObject.GetComponent<Student>().m_IsInteracting = false;
+            //this.gameObject.GetComponent<Student>().m_IsCoolDown = false;    // 쿨타임 끝남.
+            //this.gameObject.GetComponent<Student>().m_IsInteracting = false;
 
-            if (gameObject.GetComponent<Student>().m_IsDesSetting == false)
-            {
-                //SetClassEndDestination();
-            }
+            //if (gameObject.GetComponent<Student>().m_IsDesSetting == false)
+            //{
+            //    //SetClassEndDestination();
+            //}
             return TaskStatus.Success;
 
         }

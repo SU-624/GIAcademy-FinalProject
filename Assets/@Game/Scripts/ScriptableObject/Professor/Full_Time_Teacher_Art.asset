@@ -18,8 +18,9 @@ MonoBehaviour:
   m_ProfessorSet: "\uC804\uC784"
   m_ProfessorPower: 1
   m_ProfessorSkills:
-  - "\uB098\uB294 \uC804\uC784\uC774\uB2E4"
-  - "\uC548\uB155\uD558\uC138\uC694? \uC804\uC784\uAC15\uC0AC\uC785\uB2C8\uB2E4. "
+  - "\uC544\uD2B8\uC655"
+  - "\uAC1C\uC778\uBCC4 \uB9DE\uCDA4 \uAD50\uC721\uC5D0 \uC911\uC810\uC744 \uB450\uACE0
+    \uC788\uC5B4\uC694."
   m_ProfessorPay: 15000
   m_ProfessorHealth: 100
   m_ProfessorPassion: 100

@@ -120,7 +120,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5979439033324273818}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: RankSystem, Assembly-CSharp
+        m_MethodName: ClickBackButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1294084382649488849
 GameObject:
   m_ObjectHideFlags: 0
@@ -1833,6 +1845,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7285053430472767799}
+  - component: {fileID: 1674855157}
   m_Layer: 5
   m_Name: RankScene4
   m_TagString: Untagged
@@ -1863,6 +1876,38 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1674855157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7285053430472767800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d61fec21312b1f45b36b3dc8bbcea2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_1stAcademyName: {fileID: 7285053429845963046}
+  m_2ndAcademyName: {fileID: 7285053430363958156}
+  m_3rdAcademyName: {fileID: 7285053429462757988}
+  m_1stAcademyScore: {fileID: 7285053429478881012}
+  m_2ndAcademyScore: {fileID: 7285053430898874999}
+  m_3rdAcademyScore: {fileID: 7285053431217481507}
+  m_OtherAcademy1Score: {fileID: 7285053431125880550}
+  m_MyAcademyScore: {fileID: 7285053431278147239}
+  m_OtherAcademy2Score: {fileID: 7285053429357602275}
+  m_OtherAcademy1Name: {fileID: 7285053430248463230}
+  m_MyAcademyName: {fileID: 7285053430034561834}
+  m_OtherAcademy2Name: {fileID: 7285053430555443030}
+  m_OtherAcademy1Rank: {fileID: 7285053430672429573}
+  m_MyAcademyRank: {fileID: 7285053430091253871}
+  m_OtherAcademy2Rank: {fileID: 7285053429681987283}
+  m_OtherAcademy1Increase: {fileID: 8865311334342044683}
+  m_MyAcademyIncrease: {fileID: 4186647596269212968}
+  m_OtherAcademy2Increase: {fileID: 4027545081419674024}
+  m_MyAcademy: {fileID: 7285053431115645619}
+  m_BackButton: {fileID: 3512732012416156755}
 --- !u!1 &7285053430555443032
 GameObject:
   m_ObjectHideFlags: 0

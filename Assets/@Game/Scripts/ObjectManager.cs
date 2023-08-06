@@ -32,10 +32,10 @@ public class ObjectManager : MonoBehaviour
 
     public List<Student> m_StudentList = new List<Student>(); // 현재 학원에 있는 학생 리스트
     public List<Instructor> m_InstructorList = new List<Instructor>(); // 현재 학원의 강사 리스트
-    public List<GameObject> m_StudentBehaviorList = new List<GameObject>();
-    public Professor nowProfessor = new Professor(); // 내가 현재 고용하고 있는 강사들
-    private List<string> m_OriginalFeMaleName = new List<string>();
-    private List<string> m_OriginalMaleName = new List<string>();
+    //public List<GameObject> m_StudentBehaviorList = new List<GameObject>();
+    private List<string> m_OriginalFeMaleLastName = new List<string>();
+    private List<string> m_OriginalMaleLastName = new List<string>();
+    private List<string> m_OriginalFirstName = new List<string>();
 
     private List<string> m_FeMaleName = new List<string>();
     private List<string> m_MaleName = new List<string>();
@@ -43,6 +43,7 @@ public class ObjectManager : MonoBehaviour
     private List<StudentRandomStatRange> m_StudentRandomStatRangeList = new List<StudentRandomStatRange>();
     private List<StudentPersonality> m_StudentPersonality = new List<StudentPersonality>();
     private List<StudentBasicSkills> m_SkillRangeList = new List<StudentBasicSkills>();
+    private List<IncreaseStat> m_IncreaseStatData = new List<IncreaseStat>();
 
     public List<List<int>> m_Friendship = new List<List<int>>(); // 모든 학생과 강사의 친밀도 (학생18 강사3)
 
@@ -54,12 +55,33 @@ public class ObjectManager : MonoBehaviour
     // 현재 생성되어있는 강사 오브젝트(임의로 데이터 연결 하려 만듬)
     [SerializeField] private GameObject Professor1;
     [SerializeField] private GameObject Professor2;
-
     [SerializeField] private GameObject Professor3;
     // 모든 교사 정보를 담은 거니까 이거는 리스트<professorStat>
     // [SerializeField] private List<ProfessorStat> AllProfessor = new List<ProfessorStat>();
 
-    public Transform AcademyEntrance;
+    [SerializeField] private Transform AcademyEntrance;
+    [SerializeField] private Transform SpawnPoint1;
+    [SerializeField] private Transform SpawnPoint2;
+
+    private List<ExternalBehavior> m_ArtBehaviorPool = new List<ExternalBehavior>();
+    private List<ExternalBehavior> m_ProductManagerBehaviorPool = new List<ExternalBehavior>();
+    private List<ExternalBehavior> m_ProgrammingBehaviorPool = new List<ExternalBehavior>();
+
+    public List<ExternalBehavior> ArtBehaviorPool
+    {
+        get;
+        private set;
+    }
+    public List<ExternalBehavior> ProductManagerBehaviorPool
+    {
+        get;
+        private set;
+    }
+    public List<ExternalBehavior> ProgrammingBehaviorPool
+    {
+        get;
+        private set;
+    }
 
     private bool LoadStudentOnce = true;
 
@@ -91,14 +113,45 @@ public class ObjectManager : MonoBehaviour
 
     private void Start()
     {
+        ArtBehaviorPool = new List<ExternalBehavior>();
+        ProductManagerBehaviorPool = new List<ExternalBehavior>();
+        ProgrammingBehaviorPool = new List<ExternalBehavior>();
+
         InitStudentStatRangeByRank();
         InitStudentPersonality();
         InitFemaleAndMaleName();
         InitBasicSkills();
+        InitExternalBehaviorPool();
+        InitIncreaseStatData();
 
         m_InstructorList.Add(Professor1.GetComponent<Instructor>());
         m_InstructorList.Add(Professor2.GetComponent<Instructor>());
         m_InstructorList.Add(Professor3.GetComponent<Instructor>());
+    }
+
+    /// 성격에 따른 수업 가중치 
+    private void InitIncreaseStatData()
+    {
+        m_IncreaseStatData.Add(new IncreaseStat("평범", 1, 1, 1, 1, 1));
+        m_IncreaseStatData.Add(new IncreaseStat("완벽주의자", 1, 1, 1, 1, 1));
+        m_IncreaseStatData.Add(new IncreaseStat("먹쟁이", 1.2f, 1.2f, 1.1f, 0.7f, 1.2f));
+        m_IncreaseStatData.Add(new IncreaseStat("괴짜", 1, 1.3f, 0.7f, 1.3f, 0.7f));
+        m_IncreaseStatData.Add(new IncreaseStat("현실주의자", 0.7f, 1, 1.3f, 0.7f, 1.3f));
+        m_IncreaseStatData.Add(new IncreaseStat("낭만주의자", 0.8f, 0.8f, 1.2f, 1, 1.2f));
+        m_IncreaseStatData.Add(new IncreaseStat("낙관주의자", 1.3f, 0.9f, 0.8f, 1, 1));
+        m_IncreaseStatData.Add(new IncreaseStat("동물 애호가", 1.2f, 1.1f, 0.9f, 0.8f, 1));
+        m_IncreaseStatData.Add(new IncreaseStat("선량함", 1.1f, 1, 1, 1.1f, 0.8f));
+        m_IncreaseStatData.Add(new IncreaseStat("자아도취", 0.9f, 1.1f, 0.9f, 1, 1.1f));
+        m_IncreaseStatData.Add(new IncreaseStat("사악함", 1, 1.1f, 1.3f, 0.9f, 0.7f));
+        m_IncreaseStatData.Add(new IncreaseStat("지저분함", 1.3f, 0.8f, 0.8f, 1.1f, 1));
+        m_IncreaseStatData.Add(new IncreaseStat("인싸", 1, 0.7f, 1.1f, 0.9f, 1.3f));
+        m_IncreaseStatData.Add(new IncreaseStat("빠른 학습자", 1, 1, 1, 1, 1));
+        m_IncreaseStatData.Add(new IncreaseStat("사색가", 1.2f, 1, 1.1f, 0.8f, 0.9f));
+        m_IncreaseStatData.Add(new IncreaseStat("수집가", 1.3f, 0.7f, 1f, 0.8f, 1.2f));
+        m_IncreaseStatData.Add(new IncreaseStat("야심가", 1, 0.9f, 0.7f, 1.3f, 1.1f));
+        m_IncreaseStatData.Add(new IncreaseStat("궤변론자", 0.8f, 0.8f, 1.2f, 1, 1.2f));
+        m_IncreaseStatData.Add(new IncreaseStat("분위기 메이커", 0.9f, 1, 1, 1.2f, 0.9f));
+        m_IncreaseStatData.Add(new IncreaseStat("식물 애호가", 0.7f, 1.2f, 1, 1.2f, 0.9f));
     }
 
     private void InitStudentStatRangeByRank()
@@ -123,7 +176,7 @@ public class ObjectManager : MonoBehaviour
         m_StudentPersonality.Add(new StudentPersonality(5, "현실주의자", "MBTI를 안믿습니다."));
         m_StudentPersonality.Add(new StudentPersonality(6, "낭만주의자", "연인과 달빛아래서 블루스추는걸 즐깁니다."));
         m_StudentPersonality.Add(new StudentPersonality(7, "낙관주의자", "머리에 꽃달았습니다."));
-        m_StudentPersonality.Add(new StudentPersonality(8, "동물애호가", "집에 168종의 동물을 키우고 있습니다."));
+        m_StudentPersonality.Add(new StudentPersonality(8, "동물 애호가", "집에 168종의 동물을 키우고 있습니다."));
         m_StudentPersonality.Add(new StudentPersonality(9, "선량함", "착한아이라는 소리를 많이 듣습니다."));
         m_StudentPersonality.Add(new StudentPersonality(10, "자아도취", "난 너무이뻐 난 너무잘생겼어 난 최고야"));
         m_StudentPersonality.Add(new StudentPersonality(11, "사악함", "지금 옆 친구 가방을 노려보는 중입니다."));
@@ -140,28 +193,32 @@ public class ObjectManager : MonoBehaviour
 
     private void InitFemaleAndMaleName()
     {
-        m_OriginalMaleName.Add("이철수");
-        m_OriginalMaleName.Add("강상연");
-        m_OriginalMaleName.Add("박효신");
-        m_OriginalMaleName.Add("김준수");
-        m_OriginalMaleName.Add("이규헌");
-        m_OriginalMaleName.Add("신성현");
-        m_OriginalMaleName.Add("이재영");
-        m_OriginalMaleName.Add("손창우");
-        m_OriginalMaleName.Add("곽성윤");
+        foreach (StudentLastName name in AllOriginalJsonData.Instance.OriginalStudentLastNameData)
+        {
+            if (name.IsMale)
+                m_OriginalMaleLastName.Add(name.Name);
+            else
+                m_OriginalFeMaleLastName.Add(name.Name);
+        }
 
-        m_OriginalFeMaleName.Add("이주연");
-        m_OriginalFeMaleName.Add("염미경");
-        m_OriginalFeMaleName.Add("김효선");
-        m_OriginalFeMaleName.Add("진영인");
-        m_OriginalFeMaleName.Add("홍예지");
-        m_OriginalFeMaleName.Add("이자은");
-        m_OriginalFeMaleName.Add("박진주");
-        m_OriginalFeMaleName.Add("김승희");
-        m_OriginalFeMaleName.Add("박민지");
-        m_OriginalFeMaleName.Add("오혜주");
-        m_OriginalFeMaleName.Add("정은솔");
-        m_OriginalFeMaleName.Add("안수진");
+        m_OriginalFirstName.Add("김");
+        m_OriginalFirstName.Add("이");
+        m_OriginalFirstName.Add("박");
+        m_OriginalFirstName.Add("최");
+        m_OriginalFirstName.Add("정");
+        m_OriginalFirstName.Add("강");
+        m_OriginalFirstName.Add("조");
+        m_OriginalFirstName.Add("윤");
+        m_OriginalFirstName.Add("장");
+        m_OriginalFirstName.Add("임");
+        m_OriginalFirstName.Add("한");
+        m_OriginalFirstName.Add("오");
+        m_OriginalFirstName.Add("서");
+        m_OriginalFirstName.Add("신");
+        m_OriginalFirstName.Add("권");
+        m_OriginalFirstName.Add("황");
+        m_OriginalFirstName.Add("안");
+        m_OriginalFirstName.Add("편");
     }
 
     private void InitBasicSkills()
@@ -171,6 +228,91 @@ public class ObjectManager : MonoBehaviour
         m_SkillRangeList.Add(new StudentBasicSkills(3, 21, 30));
         m_SkillRangeList.Add(new StudentBasicSkills(4, 31, 40));
         m_SkillRangeList.Add(new StudentBasicSkills(5, 41, 50));
+    }
+
+    private void InitExternalBehaviorPool()
+    {
+        for (var i = 1; i < 7; i++)
+        {
+            ExternalBehavior studentTreeInstance = Instantiate(studentTree);
+            studentTreeInstance.Init();
+            Vector3 classEntrance = GameObject.Find("CheckArtClass").transform.position;
+            studentTreeInstance.SetVariableValue("MyClassEntrance", classEntrance);
+            Vector3 classSeat = GameObject.Find("ArtFixedSeat" + i).transform.position;
+            studentTreeInstance.SetVariableValue("MyClassSeat", classSeat);
+            Transform SeatTransform = GameObject.Find("ArtFixedSeat" + i).transform;
+            studentTreeInstance.SetVariableValue("SeatTransform", SeatTransform);
+            ArtBehaviorPool.Add(studentTreeInstance);
+        }
+
+        for (var i = 1; i < 7; i++)
+        {
+            ExternalBehavior studentTreeInstance = Instantiate(studentTree);
+            studentTreeInstance.Init();
+            Vector3 classEntrance = GameObject.Find("CheckProductManagerClass").transform.position;
+            studentTreeInstance.SetVariableValue("MyClassEntrance", classEntrance);
+            Vector3 classSeat = GameObject.Find("ProductManagerFixedSeat" + i).transform.position;
+            studentTreeInstance.SetVariableValue("MyClassSeat", classSeat);
+            Transform SeatTransform = GameObject.Find("ProductManagerFixedSeat" + i).transform;
+            studentTreeInstance.SetVariableValue("SeatTransform", SeatTransform);
+            ProductManagerBehaviorPool.Add(studentTreeInstance);
+        }
+
+        for (var i = 1; i < 7; i++)
+        {
+            ExternalBehavior studentTreeInstance = Instantiate(studentTree);
+            studentTreeInstance.Init();
+            Vector3 classEntrance = GameObject.Find("CheckProgrammingClass").transform.position;
+            studentTreeInstance.SetVariableValue("MyClassEntrance", classEntrance);
+            Vector3 classSeat = GameObject.Find("ProgrammingFixedSeat" + i).transform.position;
+            studentTreeInstance.SetVariableValue("MyClassSeat", classSeat);
+            Transform SeatTransform = GameObject.Find("ProgrammingFixedSeat" + i).transform;
+            studentTreeInstance.SetVariableValue("SeatTransform", SeatTransform);
+            ProgrammingBehaviorPool.Add(studentTreeInstance);
+        }
+    }
+
+    // 내가 찾으려는 학생을 이름으로 찾아서 반환해주는 함수
+    public Student SearchStudentInfo(string _studentName)
+    {
+        foreach (Student student in m_StudentList)
+        {
+            if (student.m_StudentStat.m_StudentName == _studentName || student.m_StudentStat.m_UserSettingName == _studentName)
+            {
+                return student;
+            }
+        }
+
+        return null;
+    }
+
+    public float CheckIncreaseStat(string _personalityName, int _statIndex)
+    {
+        foreach (IncreaseStat stat in m_IncreaseStatData)
+        {
+            if (stat.personalityName == _personalityName)
+            {
+                switch (_statIndex)
+                {
+                    case 0:
+                    return stat.Insight;
+
+                    case 1:
+                    return stat.Concentration;
+
+                    case 2:
+                    return stat.Sense;
+
+                    case 3:
+                    return stat.Technique;
+
+                    case 4:
+                    return stat.Wit;
+                }
+            }
+        }
+
+        return 0;
     }
 
     public int CheckStatSkills(int _statValue)
@@ -189,7 +331,7 @@ public class ObjectManager : MonoBehaviour
     public void CreateAllStudent()
     {
         // 2년차에 저장 데이터를 불러오면 안되기 떄문에 수정 필요
-        if (Json.Instance.IsSavedDataExists && LoadStudentOnce)
+        if (Json.Instance.UseLoadingData && LoadStudentOnce)
         {
             CreateLoadedStudent();
             LoadStudentOnce = false;
@@ -201,70 +343,87 @@ public class ObjectManager : MonoBehaviour
             m_MaleName.Clear();
             m_FeMaleName.Clear();
 
-            m_MaleName = m_OriginalMaleName.ToList();
-            m_FeMaleName = m_OriginalFeMaleName.ToList();
+            string _firstName = "";
+            m_MaleName = m_OriginalMaleLastName.ToList();
+            m_FeMaleName = m_OriginalFeMaleLastName.ToList();
 
             m_nArt = 1;
             m_nProgramming = 1;
             m_nProductManager = 1;
 
+            int StudentCount = 0;
+
             for (int i = 0; i < 2; i++)
             {
                 int _nameIndex = Random.Range(0, m_MaleName.Count);
+                int _firstnameIndex = Random.Range(0, m_OriginalFirstName.Count);
+                _firstName = m_OriginalFirstName[_firstnameIndex];
 
-                CreateStudent(_nameIndex, StudentType.Art, 1);
+                StartCoroutine(DelayCreateStudent(_firstName + m_MaleName[_nameIndex], StudentType.Art, 1, StudentCount));
+                StudentCount++;
+                //CreateStudent(_nameIndex, StudentType.Art, 1);
                 m_MaleName.RemoveAt(_nameIndex);
             }
 
             for (int i = 0; i < 4; i++)
             {
                 int _nameIndex = Random.Range(0, m_FeMaleName.Count);
+                int _firstnameIndex = Random.Range(0, m_OriginalFirstName.Count);
+                _firstName = m_OriginalFirstName[_firstnameIndex];
 
-                CreateStudent(_nameIndex, StudentType.Art, 2);
+                StartCoroutine(DelayCreateStudent(_firstName + m_FeMaleName[_nameIndex], StudentType.Art, 2, StudentCount));
+                StudentCount++;
+                //CreateStudent(_nameIndex, StudentType.Art, 2);
                 m_FeMaleName.RemoveAt(_nameIndex);
             }
 
             for (int i = 0; i < 3; i++)
             {
                 int _nameIndex = Random.Range(0, m_MaleName.Count);
+                int _firstnameIndex = Random.Range(0, m_OriginalFirstName.Count);
+                _firstName = m_OriginalFirstName[_firstnameIndex];
 
-                CreateStudent(_nameIndex, StudentType.GameDesigner, 1);
+                StartCoroutine(DelayCreateStudent(_firstName + m_MaleName[_nameIndex], StudentType.GameDesigner, 1, StudentCount));
+                StudentCount++;
+                //CreateStudent(_nameIndex, StudentType.GameDesigner, 1);
                 m_MaleName.RemoveAt(_nameIndex);
             }
 
             for (int i = 0; i < 3; i++)
             {
                 int _nameIndex = Random.Range(0, m_FeMaleName.Count);
+                int _firstnameIndex = Random.Range(0, m_OriginalFirstName.Count);
+                _firstName = m_OriginalFirstName[_firstnameIndex];
 
-                CreateStudent(_nameIndex, StudentType.GameDesigner, 2);
+                StartCoroutine(DelayCreateStudent(_firstName + m_FeMaleName[_nameIndex], StudentType.GameDesigner, 2, StudentCount));
+                StudentCount++;
+                //CreateStudent(_nameIndex, StudentType.GameDesigner, 2);
                 m_FeMaleName.RemoveAt(_nameIndex);
             }
 
             for (int i = 0; i < 4; i++)
             {
                 int _nameIndex = Random.Range(0, m_MaleName.Count);
+                int _firstnameIndex = Random.Range(0, m_OriginalFirstName.Count);
+                _firstName = m_OriginalFirstName[_firstnameIndex];
 
-                CreateStudent(_nameIndex, StudentType.Programming, 1);
+                StartCoroutine(DelayCreateStudent(_firstName + m_MaleName[_nameIndex], StudentType.Programming, 1, StudentCount));
+                StudentCount++;
+                //CreateStudent(_nameIndex, StudentType.Programming, 1);
                 m_MaleName.RemoveAt(_nameIndex);
             }
 
             for (int i = 0; i < 2; i++)
             {
                 int _nameIndex = Random.Range(0, m_FeMaleName.Count);
+                int _firstnameIndex = Random.Range(0, m_OriginalFirstName.Count);
+                _firstName = m_OriginalFirstName[_firstnameIndex];
 
-                CreateStudent(_nameIndex, StudentType.Programming, 2);
+                StartCoroutine(DelayCreateStudent(_firstName + m_FeMaleName[_nameIndex], StudentType.Programming, 2, StudentCount));
+                StudentCount++;
+                //CreateStudent(_nameIndex, StudentType.Programming, 2);
                 m_FeMaleName.RemoveAt(_nameIndex);
             }
-
-            //for (int i = 6; i < 12; i++)
-            //{
-            //    CreateStudent(i, StudentType.GameDesigner);
-            //}
-
-            //for (int i = 12; i < 18; i++)
-            //{
-            //    CreateStudent(i, StudentType.Programming);
-            //}
 
             m_Friendship.Clear();
 
@@ -282,32 +441,10 @@ public class ObjectManager : MonoBehaviour
         }
     }
 
-    //private void InitProfessor()
-    //{
-    //    for (int i = 0; i < m_SelectProfessor.professorData.Count; i++)
-    //    {
-    //        if (m_SelectProfessor.professorData.ElementAt(i).Value.m_ProfessorType == StudentType.Art)
-    //        {
-    //            m_NowPlayerProfessor.ArtProcessor.Add(m_SelectProfessor.professorData.ElementAt(i).Value);
-    //        }
-
-    //        if (m_SelectProfessor.professorData.ElementAt(i).Value.m_ProfessorType == StudentType.GameDesigner)
-    //        {
-    //            m_NowPlayerProfessor.GameManagerProcessor.Add(m_SelectProfessor.professorData.ElementAt(i).Value);
-    //        }
-
-    //        if (m_SelectProfessor.professorData.ElementAt(i).Value.m_ProfessorType == StudentType.Programming)
-    //        {
-    //            m_NowPlayerProfessor.ProgrammingProfessor.Add(m_SelectProfessor.professorData.ElementAt(i).Value);
-    //        }
-
-    //    }
-    //}
-
     // 학생 오브젝트를 필요할 때 동적으로 생성해주기 위한 함수
     // 랜덤한 숫자를 가져와서 데이터베이스에 있는 학생의 정보를 무작위로 가져온다
     // 학생을 생성할 때 파츠를 오브젝트로 생성하는게 아니라 Mesh를 바꿔주는걸로 해주기
-    public void CreateStudent(int _nameIndex, StudentType _type, int _gender)
+    public void CreateStudent(string _name, StudentType _type, int _gender)
     {
         /// S. Monobehavior를 사용한 녀석들은 new를 하면 안된다.
         // GameObject student = new GameObject();
@@ -361,7 +498,6 @@ public class ObjectManager : MonoBehaviour
 
         // 엔티티로부터 스크립트를 얻어낸다
         Student _student = _newStudentObject.GetComponent<Student>();
-
         // 그 스크립트로부터 이런 저런 처리를 한다.
 
         // 처음 생성 시 3명이니 3,3 근데 이건 학생 생성 완료후로 넘겨야 할 듯.
@@ -375,13 +511,13 @@ public class ObjectManager : MonoBehaviour
         // else
         {
             // 랜덤한 int값이 들어가는 스탯들
-            RandomStat(_studentStat, _nameIndex, _gender);
+            RandomStat(_studentStat, _name, _gender);
             _studentStat.m_Skills = new List<string>();
 
             // 학생들의 기본 스킬을 스탯에 맞게 초기화 해준다.
             for (int i = 0; i < 5; i++)
             {
-                _studentStat.m_AbilitySkills[i] = CheckStatSkills(_studentStat.m_AbilityAmountList[i]);
+                _studentStat.m_AbilitySkills[i] = CheckStatSkills(_studentStat.m_AbilityAmountArr[i]);
                 if (_studentStat.m_AbilitySkills[i] <= 0)
                 {
                     Debug.LogWarning("스탯스킬 이상함 : " + _studentStat.m_AbilitySkills[i]);
@@ -404,51 +540,78 @@ public class ObjectManager : MonoBehaviour
 
         _newStudentObject.GetComponent<BehaviorTree>().DisableBehavior();
 
+        //if (_student.m_StudentStat.m_StudentType == StudentType.Art)
+        //{
+        //    _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior = ArtBehaviorPool[m_nArt];
+        //    _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior.GetVariable("")
+        //    m_nArt++;
+        //}
+        //else if (_student.m_StudentStat.m_StudentType == StudentType.GameDesigner)
+        //{
+        //    _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior = ProductManagerBehaviorPool[m_nProductManager];
+        //    m_nProductManager++;
+        //}
+        //else if (_student.m_StudentStat.m_StudentType == StudentType.Programming)
+        //{
+        //    _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior = ProgrammingBehaviorPool[m_nProgramming];
+        //    m_nProgramming++;
+        //}
+        //_newStudentObject.GetComponent<BehaviorTree>().EnableBehavior();
         ExternalBehavior studentTreeInstance = Instantiate(studentTree);
         studentTreeInstance.Init();
+        _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior = studentTreeInstance;
 
         if (_student.m_StudentStat.m_StudentType == StudentType.Art)
         {
             Vector3 classEntrance = GameObject.Find("CheckArtClass").transform.position;
-            studentTreeInstance.SetVariableValue("MyClassEntrance", classEntrance);
+            _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior.SetVariableValue("MyClassEntrance", classEntrance);
             Vector3 classSeat = GameObject.Find("ArtFixedSeat" + m_nArt).transform.position;
-            studentTreeInstance.SetVariableValue("MyClassSeat", classSeat);
-            Transform SeatTransform = GameObject.Find("ArtFixedSeat" + m_nArt).transform;
-            studentTreeInstance.SetVariableValue("SeatTransform", SeatTransform);
+            _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior.SetVariableValue("MyClassSeat", classSeat);
+            Transform seatTransform = GameObject.Find("ArtFixedSeat" + m_nArt).transform;
+            _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior.SetVariableValue("SeatTransform", seatTransform);
             m_nArt++;
         }
         else if (_student.m_StudentStat.m_StudentType == StudentType.GameDesigner)
         {
             Vector3 classEntrance = GameObject.Find("CheckProductManagerClass").transform.position;
-            studentTreeInstance.SetVariableValue("MyClassEntrance", classEntrance);
+            _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior.SetVariableValue("MyClassEntrance", classEntrance);
             Vector3 classSeat = GameObject.Find("ProductManagerFixedSeat" + m_nProductManager).transform.position;
-            studentTreeInstance.SetVariableValue("MyClassSeat", classSeat);
-            Transform SeatTransform = GameObject.Find("ProductManagerFixedSeat" + m_nProductManager).transform;
-            studentTreeInstance.SetVariableValue("SeatTransform", SeatTransform);
+            _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior.SetVariableValue("MyClassSeat", classSeat);
+            Transform seatTransform = GameObject.Find("ProductManagerFixedSeat" + m_nProductManager).transform;
+            _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior.SetVariableValue("SeatTransform", seatTransform);
             m_nProductManager++;
         }
         else if (_student.m_StudentStat.m_StudentType == StudentType.Programming)
         {
             Vector3 classEntrance = GameObject.Find("CheckProgrammingClass").transform.position;
-            studentTreeInstance.SetVariableValue("MyClassEntrance", classEntrance);
+            _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior.SetVariableValue("MyClassEntrance", classEntrance);
             Vector3 classSeat = GameObject.Find("ProgrammingFixedSeat" + m_nProgramming).transform.position;
-            studentTreeInstance.SetVariableValue("MyClassSeat", classSeat);
-            Transform SeatTransform = GameObject.Find("ProgrammingFixedSeat" + m_nProgramming).transform;
-            studentTreeInstance.SetVariableValue("SeatTransform", SeatTransform);
+            _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior.SetVariableValue("MyClassSeat", classSeat);
+            Transform seatTransform = GameObject.Find("ProgrammingFixedSeat" + m_nProgramming).transform;
+            _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior.SetVariableValue("SeatTransform", seatTransform);
             m_nProgramming++;
         }
-
-        _newStudentObject.GetComponent<BehaviorTree>().ExternalBehavior = studentTreeInstance;
         _newStudentObject.GetComponent<BehaviorTree>().EnableBehavior();
+
 
         // 새로 만든 학생 오브젝트의 위치를 0으로 돌린다. 네비매쉬가 켜진상태로 바꾸면 안바껴진다.
         _newStudentObject.GetComponent<NavMeshAgent>().enabled = false;
-        _newStudentObject.transform.position = AcademyEntrance.position;
+
+        int randomSpawn = Random.Range(1, 3);
+
+        if (randomSpawn == 1)
+        {
+            _newStudentObject.transform.position = SpawnPoint1.position;
+        }
+        else if (randomSpawn == 2)
+        {
+            _newStudentObject.transform.position = SpawnPoint2.position;
+        }
         _newStudentObject.GetComponent<NavMeshAgent>().enabled = true;
 
         // 만들어진 오브젝트를 특정 풀에 넣는다.
         m_StudentList.Add(_student);
-        m_StudentBehaviorList.Add(_newStudentObject);
+        //m_StudentBehaviorList.Add(_newStudentObject);
     }
 
     // 로딩한 데이터로 학생을 생성해보자.
@@ -460,6 +623,7 @@ public class ObjectManager : MonoBehaviour
         m_nProgramming = 1;
         m_nProductManager = 1;
 
+        // 호감도를 저장하기 위한 빈 리스트 생성
         for (int i = 0; i < 18; i++)
         {
             List<int> studentFriendship = new List<int>();
@@ -489,9 +653,9 @@ public class ObjectManager : MonoBehaviour
 
             // 엔티티로부터 스크립트를 얻어낸다
             Student _newStudent = _newStudentObject.GetComponent<Student>();
-            
-            
-            
+
+
+
             // 스텟 값을 넣어주기 위해 Reflection 사용해보았다!
             StudentStat _newStudentStat = new StudentStat();
             BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance;
@@ -567,25 +731,27 @@ public class ObjectManager : MonoBehaviour
 
             // 만들어진 오브젝트를 특정 풀에 넣는다.
             m_StudentList.Add(_newStudent);
-            m_StudentBehaviorList.Add(_newStudentObject);
+            //m_StudentBehaviorList.Add(_newStudentObject);
         }
-            Debug.Log("저장된 학생 생성 완료...!!");
+        Debug.Log("저장된 학생 생성 완료...!!");
+        // 불러오기 이후 시간이 멈추는 현상을 임시로 해결함
+        Time.timeScale = 1;
     }
 
-    public void RandomStat(StudentStat _studentStat, int _index, int _gender)
+    public void RandomStat(StudentStat _studentStat, string _name, int _gender)
     {
         int _randomIndex = Random.Range(0, 20);
 
         // 이름은 나중에 바꿔줘야함.
-        if (_gender == 1)
-        {
-            _studentStat.m_StudentName = m_MaleName[_index];
-        }
-        else
-        {
-            _studentStat.m_StudentName = m_FeMaleName[_index];
-        }
-
+        //if (_gender == 1)
+        //{
+        //    _studentStat.m_StudentName = m_MaleName[_index];
+        //}
+        //else
+        //{
+        //    _studentStat.m_StudentName = m_FeMaleName[_index];
+        //}
+        _studentStat.m_StudentName = _name;
         _studentStat.m_Health = 100;
         _studentStat.m_Passion = 100;
         _studentStat.m_IsActiving = false;
@@ -594,17 +760,17 @@ public class ObjectManager : MonoBehaviour
 
         for (int i = 0; i < (int)AbilityType.Count; ++i)
         {
-            _studentStat.m_AbilityAmountList[i] = GetRandomStat(PlayerInfo.Instance.m_CurrentRank, "스탯");
+            _studentStat.m_AbilityAmountArr[i] = GetRandomStat(PlayerInfo.Instance.CurrentRank, "스탯");
 
-            if (_studentStat.m_AbilityAmountList[i] <= 0)
+            if (_studentStat.m_AbilityAmountArr[i] <= 0)
             {
-                Debug.LogWarning("스탯값이 이상하게 들어감 : " + _studentStat.m_AbilityAmountList[i]);
+                Debug.LogWarning("스탯값이 이상하게 들어감 : " + _studentStat.m_AbilityAmountArr[i]);
             }
         }
 
         for (int i = 0; i < (int)GenreStat.Count; ++i)
         {
-            _studentStat.m_GenreAmountList[i] = GetRandomStat(PlayerInfo.Instance.m_CurrentRank, "장르");
+            _studentStat.m_GenreAmountArr[i] = GetRandomStat(PlayerInfo.Instance.CurrentRank, "장르");
         }
         // Random.Range(5, 101)
 
@@ -646,123 +812,49 @@ public class ObjectManager : MonoBehaviour
         return _script;
     }
 
-    // 임의로 생성해줄 강사 오브젝트와 데이터 연결]
-    public void LinkInstructorDataToObject(Professor m_NowPlayerProfessor)
+    // 임의로 생성해줄 강사 오브젝트와 데이터 연결
+    public void LinkInstructorDataToObject()
     {
-        // ObjectManager professor;
         // 교수 각각으로 스탯을 받아와서 데이터를 넣어준다 한번에 하면 레퍼런스라서 다 하나의 중복된 값이 들어가게 된다
-        ProfessorStat professorStat1 = new ProfessorStat();
-        ProfessorStat professorStat2 = new ProfessorStat();
-        ProfessorStat professorStat3 = new ProfessorStat();
 
         // 기획 데이터 넣기
-        for (int i = 0; i < m_NowPlayerProfessor.GameManagerProfessor.Count; i++)
+        for (int i = 0; i < Professor.Instance.GameManagerProfessor.Count; i++)
         {
-            if (m_NowPlayerProfessor.GameManagerProfessor[i].m_ProfessorType == StudentType.GameDesigner &&
-                m_NowPlayerProfessor.GameManagerProfessor[i].m_ProfessorSet == "전임")
+            if (Professor.Instance.GameManagerProfessor[i].m_ProfessorType == StudentType.GameDesigner &&
+                Professor.Instance.GameManagerProfessor[i].m_ProfessorSet == "전임")
             {
-                nowProfessor.GameManagerProfessor = m_NowPlayerProfessor.GameManagerProfessor;
-
-                professorStat1.m_ProfessorType = StudentType.GameDesigner;
-                professorStat1.m_ProfessorNameValue = nowProfessor.GameManagerProfessor[i].m_ProfessorNameValue;
-                professorStat1.m_ProfessorSet = nowProfessor.GameManagerProfessor[i].m_ProfessorSet;
-                professorStat1.m_ProfessorPay = nowProfessor.GameManagerProfessor[i].m_ProfessorPay;
-
-                professorStat1.m_ProfessorPassion = nowProfessor.GameManagerProfessor[i].m_ProfessorPassion;
-                professorStat1.m_ProfessorHealth = nowProfessor.GameManagerProfessor[i].m_ProfessorHealth;
-                professorStat1.m_ProfessorPower = nowProfessor.GameManagerProfessor[i].m_ProfessorPower;
-
-                for (int j = 0; j < nowProfessor.GameManagerProfessor[i].professorSkills.Count; j++)
-                {
-                    professorStat1.m_ProfessorSkills.Add(nowProfessor.GameManagerProfessor[i].professorSkills[j]);
-                }
-
                 // 여기서 설정된 강사 데이터를 다 넣어주는 것이다.
-                //Professor1.GetComponent<Instructor>().Initialize(professorStat1);
-                Professor1.GetComponent<Instructor>().Initialize(m_NowPlayerProfessor.GameManagerProfessor[i]);
+                Professor1.GetComponent<Instructor>().Initialize(Professor.Instance.GameManagerProfessor[i]);
             }
         }
 
         // 아트 데이터 넣기
-        for (int i = 0; i < m_NowPlayerProfessor.ArtProfessor.Count; i++)
+        for (int i = 0; i < Professor.Instance.ArtProfessor.Count; i++)
         {
-            if (m_NowPlayerProfessor.ArtProfessor[i].m_ProfessorType == StudentType.Art &&
-                m_NowPlayerProfessor.ArtProfessor[i].m_ProfessorSet == "전임")
+            if (Professor.Instance.ArtProfessor[i].m_ProfessorType == StudentType.Art &&
+                Professor.Instance.ArtProfessor[i].m_ProfessorSet == "전임")
             {
-                nowProfessor.ArtProfessor = m_NowPlayerProfessor.ArtProfessor;
-
-                professorStat2.m_ProfessorType = StudentType.Art;
-                professorStat2.m_ProfessorNameValue = nowProfessor.ArtProfessor[i].m_ProfessorNameValue;
-                professorStat2.m_ProfessorSet = nowProfessor.ArtProfessor[i].m_ProfessorSet;
-                professorStat2.m_ProfessorPay = nowProfessor.ArtProfessor[i].m_ProfessorPay;
-
-                professorStat2.m_ProfessorPassion = nowProfessor.ArtProfessor[i].m_ProfessorPassion;
-                professorStat2.m_ProfessorHealth = nowProfessor.ArtProfessor[i].m_ProfessorHealth;
-                professorStat2.m_ProfessorPower = nowProfessor.ArtProfessor[i].m_ProfessorPower;
-
-                for (int j = 0; j < nowProfessor.ArtProfessor[i].professorSkills.Count; j++)
-                {
-                    professorStat2.m_ProfessorSkills.Add(nowProfessor.ArtProfessor[i].professorSkills[j]);
-                }
-
                 // 여기서 설정된 강사 데이터를 다 넣어주는 것이다.
-                //Professor2.GetComponent<Instructor>().Initialize(professorStat2);
-                Professor2.GetComponent<Instructor>().Initialize(m_NowPlayerProfessor.ArtProfessor[i]);
+                Professor2.GetComponent<Instructor>().Initialize(Professor.Instance.ArtProfessor[i]);
             }
         }
 
         // 플밍 데이터 넣기
-        for (int i = 0; i < m_NowPlayerProfessor.ProgrammingProfessor.Count; i++)
+        for (int i = 0; i < Professor.Instance.ProgrammingProfessor.Count; i++)
         {
-            if (m_NowPlayerProfessor.ProgrammingProfessor[i].m_ProfessorType == StudentType.Programming &&
-                m_NowPlayerProfessor.ProgrammingProfessor[i].m_ProfessorSet == "전임") // 외래로 임시로 한다
+            if (Professor.Instance.ProgrammingProfessor[i].m_ProfessorType == StudentType.Programming &&
+                Professor.Instance.ProgrammingProfessor[i].m_ProfessorSet == "전임") // 외래로 임시로 한다
             {
-                nowProfessor.ProgrammingProfessor = m_NowPlayerProfessor.ProgrammingProfessor;
-
-                professorStat3.m_ProfessorType = StudentType.Programming;
-                professorStat3.m_ProfessorNameValue = nowProfessor.ProgrammingProfessor[i].m_ProfessorNameValue;
-                professorStat3.m_ProfessorSet = nowProfessor.ProgrammingProfessor[i].m_ProfessorSet;
-                professorStat3.m_ProfessorPay = nowProfessor.ProgrammingProfessor[i].m_ProfessorPay;
-
-                professorStat3.m_ProfessorPassion = nowProfessor.ProgrammingProfessor[i].m_ProfessorPassion;
-                professorStat3.m_ProfessorHealth = nowProfessor.ProgrammingProfessor[i].m_ProfessorHealth;
-                professorStat3.m_ProfessorPower = nowProfessor.ProgrammingProfessor[i].m_ProfessorPower;
-
-                for (int j = 0; j < nowProfessor.ProgrammingProfessor[i].professorSkills.Count; j++)
-                {
-                    professorStat3.m_ProfessorSkills.Add(nowProfessor.ProgrammingProfessor[i].professorSkills[j]);
-                }
-
                 // 여기서 설정된 강사 데이터를 다 넣어주는 것이다.
-                //Professor3.GetComponent<Instructor>().Initialize(professorStat3);
-                Professor3.GetComponent<Instructor>().Initialize(m_NowPlayerProfessor.ProgrammingProfessor[i]);
+                Professor3.GetComponent<Instructor>().Initialize(Professor.Instance.ProgrammingProfessor[i]);
             }
         }
+    }
 
-        Debug.Log("위는 3D 맵에 띄워진 캐릭터에 데이터를 넣는 작업");
+    IEnumerator DelayCreateStudent(string _name, StudentType _type, int _gender, int delayTime)
+    {
+        yield return new WaitForSeconds(delayTime);
 
-
-        // for (int i = 0; i < m_NowPlayerProfessor.AllProfessor.Count; i++)
-        // {
-        //     ProfessorStat temp = new ProfessorStat();
-        //     // nowProfessor.ProgrammingProfessor = m_NowPlayerProfessor.ProgrammingProfessor;
-        // 
-        //     temp.m_ProfessorType = m_NowPlayerProfessor.AllProfessor[i].m_ProfessorType;
-        //     temp.m_ProfessorNameValue = m_NowPlayerProfessor.AllProfessor[i].m_ProfessorNameValue;
-        //     temp.m_ProfessorSet = m_NowPlayerProfessor.AllProfessor[i].m_ProfessorSet;
-        //     temp.m_ProfessorPay = m_NowPlayerProfessor.AllProfessor[i].m_ProfessorPay;
-        // 
-        //     temp.m_ProfessorPassion = m_NowPlayerProfessor.AllProfessor[i].m_ProfessorPassion;
-        //     temp.m_ProfessorHealth = m_NowPlayerProfessor.AllProfessor[i].m_ProfessorHealth;
-        //     temp.m_ProfessorPower = m_NowPlayerProfessor.AllProfessor[i].m_ProfessorPower;
-        // 
-        //     for (int j = 0; j < m_NowPlayerProfessor.AllProfessor[i].professorSkills.Count; j++)
-        //     {
-        //         temp.m_ProfessorSkills.Add(m_NowPlayerProfessor.AllProfessor[i].professorSkills[j]);
-        //     }
-        // 
-        //     nowProfessor.AllProfessor.Add(temp); // Mang 이 가져다 쓸 모든 교수들의 모음집
-        //     // AllProfessor.Add(temp);
-        // }
+        CreateStudent(_name, _type, _gender);
     }
 }

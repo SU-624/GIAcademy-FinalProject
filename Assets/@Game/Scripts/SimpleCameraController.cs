@@ -172,7 +172,7 @@ namespace UnityTemplateProjects
             if (IsEscapePressed())
             {
                 Application.Quit();
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_EDITOR_WIN
                 UnityEditor.EditorApplication.isPlaying = false;
 #endif
             }

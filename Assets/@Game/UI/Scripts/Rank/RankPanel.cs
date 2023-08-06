@@ -6,14 +6,22 @@ using TMPro;
 
 public class RankPanel : MonoBehaviour
 {
-    [SerializeField] private PopOffUI m_PopOffRankPanel;
     [SerializeField] private PopUpUI m_PopUpRankPanel;
     [SerializeField] private Image m_FadeInOutImage;
     [SerializeField] private TextMeshProUGUI m_SpeechBubbleText;
     [SerializeField] private GameObject m_SpeechBubbleObj;
+    [SerializeField] private GameObject m_Rank1stEffectObj;
     [SerializeField] private GameObject m_CurtainObj;
+    [SerializeField] private Animator m_CurtainAni;
+
+    [Header("관중들 애니메이션")]
+    [SerializeField] private Animator m_CrowdUp1;
+    [SerializeField] private Animator m_CrowdUp2;
+    [SerializeField] private Animator m_CrowdDown1;
+    [SerializeField] private Animator m_CrowdDown2;
 
     public GameObject CurtainObj { get { return m_CurtainObj; } set { m_CurtainObj = value; } }
+    public Image FadeInOutImage { get { return m_FadeInOutImage; } set { m_FadeInOutImage = value; } }
 
     /// fade 효과를 위한 변수들
     private Color _fadeOutImageColor;
@@ -31,12 +39,18 @@ public class RankPanel : MonoBehaviour
         m_FadeInOutImage.color = _fadeOutImageColor;
 
         m_PopUpRankPanel.TurnOnUI();
+
         StartCoroutine(FadeOutPanel());
+    }
+
+    public void Set1stRankEffect(bool _isActive)
+    {
+        m_Rank1stEffectObj.SetActive(_isActive);
     }
 
     public void PopOffRankPanel()
     {
-        //StartCoroutine(FadeInPanel());
+        StartCoroutine(FadeInPanel());
     }
 
     IEnumerator FadeOutPanel()
@@ -50,18 +64,14 @@ public class RankPanel : MonoBehaviour
 
     public IEnumerator FadeInPanel()
     {
+        _fadeInImageColor.a = 0f;
+        m_FadeInOutImage.color = _fadeInImageColor;
+
         while (1f > m_FadeInOutImage.color.a)
         {
             m_FadeInOutImage.color = new Color(m_FadeInOutImage.color.r, m_FadeInOutImage.color.g, m_FadeInOutImage.color.b, m_FadeInOutImage.color.a + (Time.unscaledDeltaTime / m_FadeTime));
             yield return null;
         }
-
-        yield return new WaitForSecondsRealtime(2f);
-        
-        _fadeInImageColor.a = 0f;
-        m_FadeInOutImage.color = _fadeInImageColor;
-        
-        m_PopOffRankPanel.TurnOffUI();
     }
 
     public void SetSpeechBubbleText(string _text)
@@ -74,4 +84,8 @@ public class RankPanel : MonoBehaviour
         m_SpeechBubbleObj.SetActive(_flag);
     }
 
+    public void PlayCurtenAnimation()
+    {
+        m_CurtainAni.Play("CurtainAnim", 0, 0f);
+    }
 }

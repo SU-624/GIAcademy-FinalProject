@@ -131,21 +131,21 @@ public class AllInstructorPanel : MonoBehaviour
         switch (departmentType)
         {
             case StudentType.GameDesigner:
-                {
-                    // 학생 추리기
-                    // 기본 타입별로 정렬
-                }
-                break;
+            {
+                // 학생 추리기
+                // 기본 타입별로 정렬
+            }
+            break;
             case StudentType.Art:
-                {
+            {
 
-                }
-                break;
+            }
+            break;
             case StudentType.Programming:
-                {
+            {
 
-                }
-                break;
+            }
+            break;
         }
     }
 
@@ -156,17 +156,17 @@ public class AllInstructorPanel : MonoBehaviour
 
         tempData.Clear();
 
-        for (int i = 0; i < ObjectManager.Instance.nowProfessor.GameManagerProfessor.Count; i++)
+        for (int i = 0; i < Professor.Instance.GameManagerProfessor.Count; i++)
         {
-            tempData.Add(ObjectManager.Instance.nowProfessor.GameManagerProfessor[i]);
+            tempData.Add(Professor.Instance.GameManagerProfessor[i]);
         }
-        for (int i = 0; i < ObjectManager.Instance.nowProfessor.ArtProfessor.Count; i++)
+        for (int i = 0; i < Professor.Instance.ArtProfessor.Count; i++)
         {
-            tempData.Add(ObjectManager.Instance.nowProfessor.ArtProfessor[i]);
+            tempData.Add(Professor.Instance.ArtProfessor[i]);
         }
-        for (int i = 0; i < ObjectManager.Instance.nowProfessor.ProgrammingProfessor.Count; i++)
+        for (int i = 0; i < Professor.Instance.ProgrammingProfessor.Count; i++)
         {
-            tempData.Add(ObjectManager.Instance.nowProfessor.ProgrammingProfessor[i]);
+            tempData.Add(Professor.Instance.ProgrammingProfessor[i]);
         }
 
         GameObject thistoggle;
@@ -196,8 +196,8 @@ public class AllInstructorPanel : MonoBehaviour
     // 토글 클릭 시 토글대로 
     public void ArrangeInstructorType(List<ProfessorStat> tempData)
     {
-        int allProfessorCount = ObjectManager.Instance.nowProfessor.GameManagerProfessor.Count +
-            ObjectManager.Instance.nowProfessor.ArtProfessor.Count + ObjectManager.Instance.nowProfessor.ProgrammingProfessor.Count;
+        int allProfessorCount = Professor.Instance.GameManagerProfessor.Count +
+            Professor.Instance.ArtProfessor.Count + Professor.Instance.ProgrammingProfessor.Count;
         int AllInstructorObj = ParentInstructorPrefab.childCount;        // 
 
         for (int i = AllInstructorObj - 1; i >= 0; i--)
@@ -208,162 +208,165 @@ public class AllInstructorPanel : MonoBehaviour
         switch (NowTeacherTypeIndex)
         {
             case (int)StudentType.GameDesigner:
+            {
+                for (int i = 0; i < allProfessorCount; i++)
                 {
-                    for (int i = 0; i < allProfessorCount; i++)
+                    GameObject prefabParent;
+                    InstructorPrefab tempTeacherPrefabs;
+
+                    if (tempData[i].m_ProfessorType == StudentType.GameDesigner)
                     {
-                        GameObject prefabParent;
-                        InstructorPrefab tempTeacherPrefabs;
+                        prefabParent = InstructorObjectPool.GetInstructorPrefab(ParentInstructorPrefab);       //선택한 이벤트 프리팹 생성했으니
+                        tempTeacherPrefabs = prefabParent.GetComponent<InstructorPrefab>();
+                        prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
 
-                        if (tempData[i].m_ProfessorType == StudentType.GameDesigner)
+                        // 여기서 생성된 프리팹들에 데이터를 넣어줘야 한다
+                        prefabParent.name = tempData[i].m_ProfessorName;
+
+                        //foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
+                        //{
+                        //    if (tempData[i].m_ProfessorName == temp.ToString())
+                        //    {
+                        //        tempTeacherPrefabs.GetTeacherProfileImage.sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
+                        //    }
+                        //}
+                        tempTeacherPrefabs.GetTeacherProfileImage.sprite = tempData[i].m_TeacherProfileImg;
+                        tempTeacherPrefabs.GetTeacherLevelText.text = "Lv. " + tempData[i].m_ProfessorPower.ToString();
+
+                        tempTeacherPrefabs.name = tempData[i].m_ProfessorName;
+                        tempTeacherPrefabs.GetInstructorName.text = tempData[i].m_ProfessorName;
+
+                        switch (tempData[i].m_ProfessorSet)
                         {
-                            prefabParent = InstructorObjectPool.GetInstructorPrefab(ParentInstructorPrefab);       //선택한 이벤트 프리팹 생성했으니
-                            tempTeacherPrefabs = prefabParent.GetComponent<InstructorPrefab>();
-                            prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
-
-                            // 여기서 생성된 프리팹들에 데이터를 넣어줘야 한다
-                            prefabParent.name = tempData[i].m_ProfessorNameValue;
-
-                            //foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
-                            //{
-                            //    if (tempData[i].m_ProfessorNameValue == temp.ToString())
-                            //    {
-                            //        tempTeacherPrefabs.GetTeacherProfileImage.sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
-                            //    }
-                            //}
-                            tempTeacherPrefabs.GetTeacherProfileImage.sprite = tempData[i].m_TeacherProfileImg;
-
-                            tempTeacherPrefabs.name = tempData[i].m_ProfessorNameValue;
-                            tempTeacherPrefabs.GetInstructorName.text = tempData[i].m_ProfessorNameValue;
-
-                            switch (tempData[i].m_ProfessorSet)
+                            case "전임":
                             {
-                                case "전임":
-                                    {
-                                        tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetFullTimeTeacherImage;
-                                        tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorNameValue;
-                                    }
-                                    break;
-                                case "외래":
-                                    {
-                                        tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetoutsideTeacherImage;
-                                        tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorNameValue;
-                                    }
-                                    break;
+                                tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetFullTimeTeacherImage;
+                                tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorName;
                             }
-
-                            GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_tab_selected];
-                            ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
-                            ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
-                            tempTeacherPrefabs.GetTeacherNameImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
-                            tempTeacherPrefabs.GetInstructorImageButton.onClick.AddListener(slideMenuPanel.IFClickEachInstructorButton);
+                            break;
+                            case "외래":
+                            {
+                                tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetoutsideTeacherImage;
+                                tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorName;
+                            }
+                            break;
                         }
+
+                        GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_tab_selected];
+                        ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
+                        ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
+                        tempTeacherPrefabs.GetTeacherNameImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
+                        tempTeacherPrefabs.GetInstructorImageButton.onClick.AddListener(slideMenuPanel.IFClickEachInstructorButton);
                     }
                 }
-                break;
+            }
+            break;
             case (int)StudentType.Art:
+            {
+                for (int i = 0; i < allProfessorCount; i++)
                 {
-                    for (int i = 0; i < allProfessorCount; i++)
+                    GameObject prefabParent;
+                    InstructorPrefab tempTeacherPrefabs;
+
+                    if (tempData[i].m_ProfessorType == StudentType.Art)
                     {
-                        GameObject prefabParent;
-                        InstructorPrefab tempTeacherPrefabs;
+                        prefabParent = InstructorObjectPool.GetInstructorPrefab(ParentInstructorPrefab);       //선택한 이벤트 프리팹 생성했으니
+                        tempTeacherPrefabs = prefabParent.GetComponent<InstructorPrefab>();
+                        prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
 
-                        if (tempData[i].m_ProfessorType == StudentType.Art)
+                        // 여기서 생성된 프리팹들에 데이터를 넣어줘야 한다
+                        prefabParent.name = tempData[i].m_ProfessorName;
+
+                        //foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
+                        //{
+                        //    if (tempData[i].m_ProfessorName == temp.ToString())
+                        //    {
+                        //        tempTeacherPrefabs.GetTeacherProfileImage.sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
+                        //    }
+                        //}
+                        tempTeacherPrefabs.GetTeacherProfileImage.sprite = tempData[i].m_TeacherProfileImg;
+                        tempTeacherPrefabs.GetTeacherLevelText.text = "Lv. " + tempData[i].m_ProfessorPower.ToString();
+
+                        tempTeacherPrefabs.name = tempData[i].m_ProfessorName;
+                        tempTeacherPrefabs.GetInstructorName.text = tempData[i].m_ProfessorName;
+
+                        switch (tempData[i].m_ProfessorSet)
                         {
-                            prefabParent = InstructorObjectPool.GetInstructorPrefab(ParentInstructorPrefab);       //선택한 이벤트 프리팹 생성했으니
-                            tempTeacherPrefabs = prefabParent.GetComponent<InstructorPrefab>();
-                            prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
-
-                            // 여기서 생성된 프리팹들에 데이터를 넣어줘야 한다
-                            prefabParent.name = tempData[i].m_ProfessorNameValue;
-
-                            //foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
-                            //{
-                            //    if (tempData[i].m_ProfessorNameValue == temp.ToString())
-                            //    {
-                            //        tempTeacherPrefabs.GetTeacherProfileImage.sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
-                            //    }
-                            //}
-                            tempTeacherPrefabs.GetTeacherProfileImage.sprite = tempData[i].m_TeacherProfileImg;
-
-                            tempTeacherPrefabs.name = tempData[i].m_ProfessorNameValue;
-                            tempTeacherPrefabs.GetInstructorName.text = tempData[i].m_ProfessorNameValue;
-
-                            switch (tempData[i].m_ProfessorSet)
+                            case "전임":
                             {
-                                case "전임":
-                                    {
-                                        tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetFullTimeTeacherImage;
-                                        tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorNameValue;
-                                    }
-                                    break;
-                                case "외래":
-                                    {
-                                        tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetoutsideTeacherImage;
-                                        tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorNameValue;
-                                    }
-                                    break;
+                                tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetFullTimeTeacherImage;
+                                tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorName;
                             }
-                            GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
-                            ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_selected];
-                            ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
-                            tempTeacherPrefabs.GetTeacherNameImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
-                            tempTeacherPrefabs.GetInstructorImageButton.onClick.AddListener(slideMenuPanel.IFClickEachInstructorButton);
+                            break;
+                            case "외래":
+                            {
+                                tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetoutsideTeacherImage;
+                                tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorName;
+                            }
+                            break;
                         }
+                        GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
+                        ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_selected];
+                        ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
+                        tempTeacherPrefabs.GetTeacherNameImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
+                        tempTeacherPrefabs.GetInstructorImageButton.onClick.AddListener(slideMenuPanel.IFClickEachInstructorButton);
                     }
                 }
-                break;
+            }
+            break;
             case (int)StudentType.Programming:
+            {
+                for (int i = 0; i < allProfessorCount; i++)
                 {
-                    for (int i = 0; i < allProfessorCount; i++)
+                    GameObject prefabParent;
+                    InstructorPrefab tempTeacherPrefabs;
+
+                    if (tempData[i].m_ProfessorType == StudentType.Programming)
                     {
-                        GameObject prefabParent;
-                        InstructorPrefab tempTeacherPrefabs;
-                        
-                        if (tempData[i].m_ProfessorType == StudentType.Programming)
+                        prefabParent = InstructorObjectPool.GetInstructorPrefab(ParentInstructorPrefab);       //선택한 이벤트 프리팹 생성했으니
+                        tempTeacherPrefabs = prefabParent.GetComponent<InstructorPrefab>();
+                        prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
+
+                        // 여기서 생성된 프리팹들에 데이터를 넣어줘야 한다
+                        prefabParent.name = tempData[i].m_ProfessorName;
+
+                        //foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
+                        //{
+                        //    if (tempData[i].m_ProfessorName == temp.ToString())
+                        //    {
+                        //        tempTeacherPrefabs.GetTeacherProfileImage.sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
+                        //    }
+                        //}
+                        tempTeacherPrefabs.GetTeacherProfileImage.sprite = tempData[i].m_TeacherProfileImg;
+                        tempTeacherPrefabs.GetTeacherLevelText.text = "Lv. " + tempData[i].m_ProfessorPower.ToString();
+
+                        tempTeacherPrefabs.name = tempData[i].m_ProfessorName;
+                        tempTeacherPrefabs.GetInstructorName.text = tempData[i].m_ProfessorName;
+
+                        switch (tempData[i].m_ProfessorSet)
                         {
-                            prefabParent = InstructorObjectPool.GetInstructorPrefab(ParentInstructorPrefab);       //선택한 이벤트 프리팹 생성했으니
-                            tempTeacherPrefabs = prefabParent.GetComponent<InstructorPrefab>();
-                            prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
-
-                            // 여기서 생성된 프리팹들에 데이터를 넣어줘야 한다
-                            prefabParent.name = tempData[i].m_ProfessorNameValue;
-
-                            //foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
-                            //{
-                            //    if (tempData[i].m_ProfessorNameValue == temp.ToString())
-                            //    {
-                            //        tempTeacherPrefabs.GetTeacherProfileImage.sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
-                            //    }
-                            //}
-                            tempTeacherPrefabs.GetTeacherProfileImage.sprite = tempData[i].m_TeacherProfileImg;
-
-                            tempTeacherPrefabs.name = tempData[i].m_ProfessorNameValue;
-                            tempTeacherPrefabs.GetInstructorName.text = tempData[i].m_ProfessorNameValue;
-
-                            switch (tempData[i].m_ProfessorSet)
+                            case "전임":
                             {
-                                case "전임":
-                                    {
-                                        tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetFullTimeTeacherImage;
-                                        tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorNameValue;
-                                    }
-                                    break;
-                                case "외래":
-                                    {
-                                        tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetoutsideTeacherImage;
-                                        tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorNameValue;
-                                    }
-                                    break;
+                                tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetFullTimeTeacherImage;
+                                tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorName;
                             }
-                            GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
-                            ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
-                            ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_selected];
-                            tempTeacherPrefabs.GetTeacherNameImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
-                            tempTeacherPrefabs.GetInstructorImageButton.onClick.AddListener(slideMenuPanel.IFClickEachInstructorButton);
+                            break;
+                            case "외래":
+                            {
+                                tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetoutsideTeacherImage;
+                                tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorName;
+                            }
+                            break;
                         }
+                        GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
+                        ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
+                        ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_selected];
+                        tempTeacherPrefabs.GetTeacherNameImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
+                        tempTeacherPrefabs.GetInstructorImageButton.onClick.AddListener(slideMenuPanel.IFClickEachInstructorButton);
                     }
                 }
-                break;
+            }
+            break;
         }
     }
 
@@ -393,17 +396,17 @@ public class AllInstructorPanel : MonoBehaviour
         List<ProfessorStat> tempData = new List<ProfessorStat>();
         tempData.Clear();
 
-        for (int i = 0; i < ObjectManager.Instance.nowProfessor.GameManagerProfessor.Count; i++)
+        for (int i = 0; i < Professor.Instance.GameManagerProfessor.Count; i++)
         {
-            tempData.Add(ObjectManager.Instance.nowProfessor.GameManagerProfessor[i]);
+            tempData.Add(Professor.Instance.GameManagerProfessor[i]);
         }
-        for (int i = 0; i < ObjectManager.Instance.nowProfessor.ArtProfessor.Count; i++)
+        for (int i = 0; i < Professor.Instance.ArtProfessor.Count; i++)
         {
-            tempData.Add(ObjectManager.Instance.nowProfessor.ArtProfessor[i]);
+            tempData.Add(Professor.Instance.ArtProfessor[i]);
         }
-        for (int i = 0; i < ObjectManager.Instance.nowProfessor.ProgrammingProfessor.Count; i++)
+        for (int i = 0; i < Professor.Instance.ProgrammingProfessor.Count; i++)
         {
-            tempData.Add(ObjectManager.Instance.nowProfessor.ProgrammingProfessor[i]);
+            tempData.Add(Professor.Instance.ProgrammingProfessor[i]);
         }
 
         nowInstructorCount = tempData.Count;
@@ -433,176 +436,179 @@ public class AllInstructorPanel : MonoBehaviour
         switch (nowButton.name)
         {
             case "GameDesignerIndexButton":
+            {
+                Debug.Log("기획인덱스버튼클릭");
+                NowTeacherTypeIndex = (int)StudentType.GameDesigner;
+
+                for (int i = 0; i < nowInstructorCount; i++)
                 {
-                    Debug.Log("기획인덱스버튼클릭");
-                    NowTeacherTypeIndex = (int)StudentType.GameDesigner;
+                    GameObject prefabParent;
+                    InstructorPrefab tempTeacherPrefabs;
 
-                    for (int i = 0; i < nowInstructorCount; i++)
+                    if (tempData[i].m_ProfessorType == StudentType.GameDesigner)
                     {
-                        GameObject prefabParent;
-                        InstructorPrefab tempTeacherPrefabs;
+                        prefabParent = InstructorObjectPool.GetInstructorPrefab(ParentInstructorPrefab);       //선택한 이벤트 프리팹 생성했으니
+                        tempTeacherPrefabs = prefabParent.GetComponent<InstructorPrefab>();
+                        prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
 
-                        if (tempData[i].m_ProfessorType == StudentType.GameDesigner)
+                        prefabParent.name = tempData[i].m_ProfessorName;
+
+                        tempTeacherPrefabs.name = tempData[i].m_ProfessorName;
+                        tempTeacherPrefabs.GetInstructorName.text = tempData[i].m_ProfessorName;
+
+                        //foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
+                        //{
+                        //    if (tempData[i].m_ProfessorName == temp.ToString())
+                        //    {
+                        //        tempTeacherPrefabs.GetTeacherProfileImage.sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
+                        //    }
+                        //}
+
+                        tempTeacherPrefabs.GetTeacherProfileImage.sprite = tempData[i].m_TeacherProfileImg;
+                        tempTeacherPrefabs.GetTeacherLevelText.text = "Lv. " + tempData[i].m_ProfessorPower.ToString();
+
+                        switch (tempData[i].m_ProfessorSet)
                         {
-                            prefabParent = InstructorObjectPool.GetInstructorPrefab(ParentInstructorPrefab);       //선택한 이벤트 프리팹 생성했으니
-                            tempTeacherPrefabs = prefabParent.GetComponent<InstructorPrefab>();
-                            prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
-
-                            prefabParent.name = tempData[i].m_ProfessorNameValue;
-
-                            tempTeacherPrefabs.name = tempData[i].m_ProfessorNameValue;
-                            tempTeacherPrefabs.GetInstructorName.text = tempData[i].m_ProfessorNameValue;
-
-                            //foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
-                            //{
-                            //    if (tempData[i].m_ProfessorNameValue == temp.ToString())
-                            //    {
-                            //        tempTeacherPrefabs.GetTeacherProfileImage.sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
-                            //    }
-                            //}
-
-                            tempTeacherPrefabs.GetTeacherProfileImage.sprite = tempData[i].m_TeacherProfileImg;
-
-                            switch (tempData[i].m_ProfessorSet)
+                            case "전임":
                             {
-                                case "전임":
-                                    {
-                                        tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetFullTimeTeacherImage;
-                                        tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorNameValue;
-                                    }
-                                    break;
-                                case "외래":
-                                    {
-                                        tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetoutsideTeacherImage;
-                                        tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorNameValue;
-                                    }
-                                    break;
+                                tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetFullTimeTeacherImage;
+                                tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorName;
                             }
-                            GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_tab_selected];
-                            ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
-                            ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
-                            tempTeacherPrefabs.GetTeacherNameImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
-
-                            tempTeacherPrefabs.GetInstructorImageButton.onClick.AddListener(slideMenuPanel.IFClickEachInstructorButton);
+                            break;
+                            case "외래":
+                            {
+                                tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetoutsideTeacherImage;
+                                tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorName;
+                            }
+                            break;
                         }
+                        GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_tab_selected];
+                        ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
+                        ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
+                        tempTeacherPrefabs.GetTeacherNameImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedesign_nametag_info];
+
+                        tempTeacherPrefabs.GetInstructorImageButton.onClick.AddListener(slideMenuPanel.IFClickEachInstructorButton);
                     }
                 }
-                break;
+            }
+            break;
             case "ArtIndexButton":
+            {
+
+                for (int i = 0; i < nowInstructorCount; i++)
                 {
+                    Debug.Log("아트인덱스버튼클릭");
+                    NowTeacherTypeIndex = (int)StudentType.Art;
 
-                    for (int i = 0; i < nowInstructorCount; i++)
+                    GameObject prefabParent;
+                    InstructorPrefab tempTeacherPrefabs;
+
+                    if (tempData[i].m_ProfessorType == StudentType.Art)
                     {
-                        Debug.Log("아트인덱스버튼클릭");
-                        NowTeacherTypeIndex = (int)StudentType.Art;
+                        prefabParent = InstructorObjectPool.GetInstructorPrefab(ParentInstructorPrefab);       //선택한 이벤트 프리팹 생성했으니
+                        tempTeacherPrefabs = prefabParent.GetComponent<InstructorPrefab>();
+                        prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
 
-                        GameObject prefabParent;
-                        InstructorPrefab tempTeacherPrefabs;
+                        prefabParent.name = tempData[i].m_ProfessorName;
 
-                        if (tempData[i].m_ProfessorType == StudentType.Art)
+                        tempTeacherPrefabs.name = tempData[i].m_ProfessorName;
+                        tempTeacherPrefabs.GetInstructorName.text = tempData[i].m_ProfessorName;
+
+                        //foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
+                        //{
+                        //    if (tempData[i].m_ProfessorName == temp.ToString())
+                        //    {
+                        //        tempTeacherPrefabs.GetTeacherProfileImage.sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
+                        //    }
+                        //}
+
+                        tempTeacherPrefabs.GetTeacherProfileImage.sprite = tempData[i].m_TeacherProfileImg;
+                        tempTeacherPrefabs.GetTeacherLevelText.text = "Lv. " + tempData[i].m_ProfessorPower.ToString();
+
+                        switch (tempData[i].m_ProfessorSet)
                         {
-                            prefabParent = InstructorObjectPool.GetInstructorPrefab(ParentInstructorPrefab);       //선택한 이벤트 프리팹 생성했으니
-                            tempTeacherPrefabs = prefabParent.GetComponent<InstructorPrefab>();
-                            prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
-
-                            prefabParent.name = tempData[i].m_ProfessorNameValue;
-
-                            tempTeacherPrefabs.name = tempData[i].m_ProfessorNameValue;
-                            tempTeacherPrefabs.GetInstructorName.text = tempData[i].m_ProfessorNameValue;
-
-                            //foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
-                            //{
-                            //    if (tempData[i].m_ProfessorNameValue == temp.ToString())
-                            //    {
-                            //        tempTeacherPrefabs.GetTeacherProfileImage.sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
-                            //    }
-                            //}
-
-                            tempTeacherPrefabs.GetTeacherProfileImage.sprite = tempData[i].m_TeacherProfileImg;
-
-                            switch (tempData[i].m_ProfessorSet)
+                            case "전임":
                             {
-                                case "전임":
-                                    {
-                                        tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetFullTimeTeacherImage;
-                                        tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorNameValue;
-                                    }
-                                    break;
-                                case "외래":
-                                    {
-                                        tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetoutsideTeacherImage;
-                                        tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorNameValue;
-                                    }
-                                    break;
+                                tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetFullTimeTeacherImage;
+                                tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorName;
                             }
-
-                            GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
-                            ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_selected];
-                            ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
-                            tempTeacherPrefabs.GetTeacherNameImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
-
-                            tempTeacherPrefabs.GetInstructorImageButton.onClick.AddListener(slideMenuPanel.IFClickEachInstructorButton);
+                            break;
+                            case "외래":
+                            {
+                                tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetoutsideTeacherImage;
+                                tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorName;
+                            }
+                            break;
                         }
+
+                        GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
+                        ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_selected];
+                        ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_notselect];
+                        tempTeacherPrefabs.GetTeacherNameImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_nametag_info];
+
+                        tempTeacherPrefabs.GetInstructorImageButton.onClick.AddListener(slideMenuPanel.IFClickEachInstructorButton);
                     }
                 }
-                break;
+            }
+            break;
             case "ProgrammingIndexButton":
+            {
+
+                for (int i = 0; i < nowInstructorCount; i++)
                 {
+                    Debug.Log("플밍인덱스버튼클릭");
+                    NowTeacherTypeIndex = (int)StudentType.Programming;
 
-                    for (int i = 0; i < nowInstructorCount; i++)
+                    GameObject prefabParent;
+                    InstructorPrefab tempTeacherPrefabs;
+                    if (tempData[i].m_ProfessorType == StudentType.Programming)
                     {
-                        Debug.Log("플밍인덱스버튼클릭");
-                        NowTeacherTypeIndex = (int)StudentType.Programming;
+                        prefabParent = InstructorObjectPool.GetInstructorPrefab(ParentInstructorPrefab);       //선택한 이벤트 프리팹 생성했으니
+                        tempTeacherPrefabs = prefabParent.GetComponent<InstructorPrefab>();
+                        prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
 
-                        GameObject prefabParent;
-                        InstructorPrefab tempTeacherPrefabs;
-                        if (tempData[i].m_ProfessorType == StudentType.Programming)
+                        prefabParent.name = tempData[i].m_ProfessorName;
+
+                        tempTeacherPrefabs.name = tempData[i].m_ProfessorName;
+                        tempTeacherPrefabs.GetInstructorName.text = tempData[i].m_ProfessorName;
+
+                        //foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
+                        //{
+                        //    if (tempData[i].m_ProfessorName == temp.ToString())
+                        //    {
+                        //        tempTeacherPrefabs.GetTeacherProfileImage.sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
+                        //    }
+                        //}
+
+                        tempTeacherPrefabs.GetTeacherProfileImage.sprite = tempData[i].m_TeacherProfileImg;
+                        tempTeacherPrefabs.GetTeacherLevelText.text = "Lv. " + tempData[i].m_ProfessorPower.ToString();
+
+                        switch (tempData[i].m_ProfessorSet)
                         {
-                            prefabParent = InstructorObjectPool.GetInstructorPrefab(ParentInstructorPrefab);       //선택한 이벤트 프리팹 생성했으니
-                            tempTeacherPrefabs = prefabParent.GetComponent<InstructorPrefab>();
-                            prefabParent.transform.localScale = new Vector3(1f, 1f, 1f);
-
-                            prefabParent.name = tempData[i].m_ProfessorNameValue;
-
-                            tempTeacherPrefabs.name = tempData[i].m_ProfessorNameValue;
-                            tempTeacherPrefabs.GetInstructorName.text = tempData[i].m_ProfessorNameValue;
-
-                            //foreach (ETeacherProfile temp in Enum.GetValues(typeof(ETeacherProfile)))
-                            //{
-                            //    if (tempData[i].m_ProfessorNameValue == temp.ToString())
-                            //    {
-                            //        tempTeacherPrefabs.GetTeacherProfileImage.sprite = UISpriteLists.Instance.GetTeacherProfileSpriteList[(int)temp];
-                            //    }
-                            //}
-
-                            tempTeacherPrefabs.GetTeacherProfileImage.sprite = tempData[i].m_TeacherProfileImg;
-
-                            switch (tempData[i].m_ProfessorSet)
+                            case "전임":
                             {
-                                case "전임":
-                                    {
-                                        tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetFullTimeTeacherImage;
-                                        tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorNameValue;
-                                    }
-                                    break;
-                                case "외래":
-                                    {
-                                        tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetoutsideTeacherImage;
-                                        tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorNameValue;
-                                    }
-                                    break;
+                                tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetFullTimeTeacherImage;
+                                tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorName;
                             }
-
-                            GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
-                            ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
-                            ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_selected];
-                            tempTeacherPrefabs.GetTeacherNameImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
-
-                            tempTeacherPrefabs.GetInstructorImageButton.onClick.AddListener(slideMenuPanel.IFClickEachInstructorButton);
+                            break;
+                            case "외래":
+                            {
+                                tempTeacherPrefabs.GetInstructorTypeImage.sprite = tempTeacherPrefabs.GetoutsideTeacherImage;
+                                tempTeacherPrefabs.GetInstructorImageButton.name = tempData[i].m_ProfessorName;
+                            }
+                            break;
                         }
+
+                        GameDesignerIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.gamedegisn_tab_notselect];
+                        ArtIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.art_tab_notselect];
+                        ProgrammingIndexButton.image.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_tab_selected];
+                        tempTeacherPrefabs.GetTeacherNameImage.sprite = UISpriteLists.Instance.GetDepartmentIndexImgList[(int)EDepartmentImgIndex.program_nametag_info];
+
+                        tempTeacherPrefabs.GetInstructorImageButton.onClick.AddListener(slideMenuPanel.IFClickEachInstructorButton);
                     }
                 }
-                break;
+            }
+            break;
         }
     }
 }

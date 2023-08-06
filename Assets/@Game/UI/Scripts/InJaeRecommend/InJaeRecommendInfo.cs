@@ -27,7 +27,7 @@ public class InJaeRecommendInfo : MonoBehaviour
     [SerializeField] private Image[] m_StudentStatImage;
 
     [SerializeField] private GameObject m_StudentStat;
-    [SerializeField] private GameObject m_RecruitmentPartGM;
+    [SerializeField] private GameObject m_RecruitmentPartGameDesigner;
     [SerializeField] private GameObject m_RecruitmentPartArt;
     [SerializeField] private GameObject m_RecruitmentPartProgramming;
     [SerializeField] private GameObject m_ImpossibleRecommendPanel;
@@ -48,7 +48,7 @@ public class InJaeRecommendInfo : MonoBehaviour
 
     [Space(5f)]
     [Header("파트별 버튼")]
-    [SerializeField] private Button m_PartGM;
+    [SerializeField] private Button m_PartGameDesigner;
     [SerializeField] private Button m_PartArt;
     [SerializeField] private Button m_PartProgramming;
 
@@ -61,8 +61,23 @@ public class InJaeRecommendInfo : MonoBehaviour
     [SerializeField] private PopOffUI m_PopOffRecommendInfoPanel;
     [SerializeField] private PopUpUI m_PopUpImpossibleRecommendPanel;           // 내가 추천하려는 학생 중 추천이 불가능한 학생이 있다면 띄워줄 패널
     [SerializeField] private PopOffUI m_PopOffImpossibleRecommendPanel;
+    [SerializeField] private TextMeshProUGUI m_PopUpImpossibleRecommendText;           // 내가 추천하려는 학생 중 추천이 불가능한 학생이 있다면 띄워줄 패널
 
-    public Button PartGMButton { get { return m_PartGM; } set { m_PartGM = value; } }
+    [Space(5f)]
+    [Header("튜토리얼용")]
+    [SerializeField] private RectTransform m_RecommendInfoRect;
+    [SerializeField] private RectTransform m_PartSkillInfoRect;
+    [SerializeField] private RectTransform m_StatInfoRect;
+    [SerializeField] private RectTransform m_StudentListRect;
+    [SerializeField] private RectTransform m_PercentRect;
+
+    public RectTransform RecommendInfoRect { get { return m_RecommendInfoRect; } set { m_RecommendInfoRect = value; } }
+    public RectTransform PartSkillInfoRect { get { return m_PartSkillInfoRect; } set { m_PartSkillInfoRect = value; } }
+    public RectTransform StatInfoRect { get { return m_StatInfoRect; } set { m_StatInfoRect = value; } }
+    public RectTransform StudentListRect { get { return m_StudentListRect; } set { m_StudentListRect = value; } }
+    public RectTransform PercentRect { get { return m_PercentRect; } set { m_PercentRect = value; } }
+
+    public Button PartGameDesignerButton { get { return m_PartGameDesigner; } set { m_PartGameDesigner = value; } }
     public GameObject StudentStatObj { get { return m_StudentStat; } set { m_StudentStat = value; } }
     public Button CheckPanelOKButton { get { return m_CheckPanelOKButton; } set { m_CheckPanelOKButton = value; } }
     public Button CheckPanelCancleButton { get { return m_CheckPanelCancleButton; } set { m_CheckPanelCancleButton = value; } }
@@ -167,7 +182,7 @@ public class InJaeRecommendInfo : MonoBehaviour
     public void SetRecruitmentPart(int _part)
     {
         // 일단 다 꺼주고 다시 셋팅해주기
-        m_RecruitmentPartGM.SetActive(false);
+        m_RecruitmentPartGameDesigner.SetActive(false);
         m_RecruitmentPartArt.SetActive(false);
         m_RecruitmentPartProgramming.SetActive(false);
 
@@ -175,13 +190,13 @@ public class InJaeRecommendInfo : MonoBehaviour
         {
             case 0:
             {
-                m_RecruitmentPartGM.SetActive(true);
+                m_RecruitmentPartGameDesigner.SetActive(true);
                 m_RecruitmentPartArt.SetActive(true);
                 m_RecruitmentPartProgramming.SetActive(true);
             }
             break;
 
-            case 1: m_RecruitmentPartGM.SetActive(true); break;
+            case 1: m_RecruitmentPartGameDesigner.SetActive(true); break;
             case 2: m_RecruitmentPartArt.SetActive(true); break;
             case 3: m_RecruitmentPartProgramming.SetActive(true); break;
         }
@@ -192,11 +207,12 @@ public class InJaeRecommendInfo : MonoBehaviour
         m_Percent.text = _percent;
     }
 
-    public void SetActiveImpossibleRecommendPanel(bool _isTure)
+    public void SetActiveImpossibleRecommendPanel(bool _isTure, string _warnningMessage = "추천이 불가한 학생이 존재합니다!")
     {
         if (_isTure)
         {
             m_PopUpImpossibleRecommendPanel.TurnOnUI();
+            m_PopUpImpossibleRecommendText.text = _warnningMessage;
         }
         else
         {

@@ -755,13 +755,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 137567350944680598}
+  - component: {fileID: 1252603895}
   m_Layer: 5
   m_Name: RankScene3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &137567350944680598
 RectTransform:
   m_ObjectHideFlags: 0
@@ -786,6 +787,32 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1252603895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 137567350944680599}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d57c24f09012de947b32b951d7ea2646, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Title: {fileID: 137567350313570692}
+  m_ThrophyImage:
+  - {fileID: 137567349511505331}
+  - {fileID: 137567350380938612}
+  - {fileID: 137567350164872827}
+  m_ThrophyText:
+  - {fileID: 137567351329780453}
+  - {fileID: 137567349487024190}
+  - {fileID: 137567350364413014}
+  m_AcademyGrade: {fileID: 137567350356925698}
+  m_Throphy: {fileID: 137567349865866681}
+  m_TitleText: {fileID: 137567351114664676}
+  m_AcademyName: {fileID: 137567350955267642}
+  m_AcademyScore: {fileID: 137567350798315535}
 --- !u!1 &137567350955267620
 GameObject:
   m_ObjectHideFlags: 0

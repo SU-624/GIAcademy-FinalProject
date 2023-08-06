@@ -15,6 +15,7 @@ public class ClassPrefab : MonoBehaviour
     [SerializeField] private TextMeshProUGUI m_AllStatText;
     [SerializeField] private TextMeshProUGUI m_MoneyText;
     [SerializeField] private TextMeshProUGUI m_HealthText;
+    [SerializeField] private GameObject m_CheckImage;
 
     public Image PartImage { get { return m_PartImage; } set { m_PartImage = value; } }
     public TextMeshProUGUI ClassName { get { return m_ClassName; } set { m_ClassName = value; } }
@@ -25,4 +26,5 @@ public class ClassPrefab : MonoBehaviour
     public TextMeshProUGUI AllStatText { get { return m_AllStatText; } set { m_AllStatText = value; } }
     public TextMeshProUGUI MoneyText { get { return m_MoneyText; } set { m_MoneyText = value; } }
     public TextMeshProUGUI HealthText { get { return m_HealthText; } set { m_HealthText = value; } }
+    public GameObject CheckImage { get { return m_CheckImage; } set { m_CheckImage = value; } }
 }

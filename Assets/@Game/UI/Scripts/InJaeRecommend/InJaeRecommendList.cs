@@ -9,8 +9,18 @@ public class InJaeRecommendList : MonoBehaviour
     [SerializeField] private PopUpUI m_PopUpInJaeRecommendListPanel;
     [SerializeField] private Button m_CloseButton;
     [SerializeField] private ScrollRect m_Companycontent;
+    [SerializeField] private ScrollRect m_Recommendcontent;
     [SerializeField] private Transform m_CompanyContentTransform;
     [SerializeField] private Transform m_RecommendContentTransform;
+    [SerializeField] private RectTransform m_CompanyListRect;
+    [SerializeField] private RectTransform m_RecommendListRect;
+
+    public RectTransform CompanyListRect { get { return m_CompanyListRect; } set { m_CompanyListRect = value; } }
+    public RectTransform RecommendListRect { get { return m_RecommendListRect; } set { m_RecommendListRect = value; } }
+    public Transform CompanyContentTransform { get { return m_CompanyContentTransform; } set { m_CompanyContentTransform = value; } }
+    public Transform RecommendContentTransform { get { return m_RecommendContentTransform; } set { m_RecommendContentTransform = value; } }
+    public ScrollRect Companycontent { get { return m_Companycontent; } set { m_Companycontent = value; } }
+    public ScrollRect Recommendcontent { get { return m_Recommendcontent; } set { m_Recommendcontent = value; } }
 
     private void Start()
     {

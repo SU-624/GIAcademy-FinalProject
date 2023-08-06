@@ -15,12 +15,15 @@ public class ProfClassDestination : Action
     private IEnumerator studyTalkCoroutine;
 
     private NavMeshAgent m_Agent;
+    private Animator m_Animator;
+
     private float m_ResetTimer;
     private const float m_ResetTime = 5;
 
     public override void OnStart()
     {
         m_Agent = gameObject.GetComponent<NavMeshAgent>();
+        m_Animator = gameObject.GetComponent<Animator>();
     }
 
 	public override TaskStatus OnUpdate()
@@ -41,7 +44,8 @@ public class ProfClassDestination : Action
         {
             if (gameObject.GetComponent<Instructor>().m_IsDesSetting == false)
             {
-                _bNewDestination = SetClassEndDestination();
+                //_bNewDestination = SetClassEndDestination();
+                StartCoroutine(SetClassEnd());
             }
             gameObject.GetComponent<Instructor>().m_IsDesSetting = true;
 
@@ -55,6 +59,7 @@ public class ProfClassDestination : Action
         else if (InGameTest.Instance.m_ClassState == ClassState.StudyStart)
         {
             _bNewDestination = true;
+
         }
 
         else if (InGameTest.Instance.m_ClassState == ClassState.Studying)
@@ -63,42 +68,9 @@ public class ProfClassDestination : Action
 
             if (m_isCoroutineRunning == false)
             {
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToIdle", false);
+                int randomAnim = Random.Range(1, 4);
+                m_Animator.SetTrigger("ToTeach" + randomAnim);
 
-                    int randomAnimation = Random.Range(1, 4);
-
-                    if (randomAnimation == 1)
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToTeaching1", true);
-                    }
-                    else if (randomAnimation == 2)
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToTeaching1", true);
-                    }
-                    else if (randomAnimation == 3)
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToTeaching1", true);
-                    }
-                }
-                else if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    int randomAnimation = Random.Range(1, 4);
-
-                    if (randomAnimation == 1)
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToTeaching1", true);
-                    }
-                    else if (randomAnimation == 2)
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToTeaching1", true);
-                    }
-                    else if (randomAnimation == 3)
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToTeaching1", true);
-                    }
-                }
                 studyTalkCoroutine = ProfessorScript();
                 StartCoroutine(studyTalkCoroutine);
             }
@@ -117,11 +89,9 @@ public class ProfClassDestination : Action
             m_NowDestination = "ClassEntrance";
             Vector3 entrancePos = (Vector3)gameObject.GetComponent<BehaviorTree>().ExternalBehavior.GetVariable("MyClassEntrance").GetValue();
             m_Agent.SetDestination(entrancePos);
+            m_Agent.isStopped = false;
 
-            if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idle"))
-            {
-                gameObject.GetComponent<Animator>().SetBool("IsWalkToIdle", false);
-            }
+            m_Animator.SetTrigger("ToWalk");
 
             return true;
         }
@@ -147,10 +117,6 @@ public class ProfClassDestination : Action
                     m_ResetTimer = 0;
                     m_Agent.SetDestination(entrancePos);
                 }
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(entrancePos);
-                //}
             }
 
             return true;
@@ -164,24 +130,12 @@ public class ProfClassDestination : Action
             
             if (dis < DesClassDis)
             {
+                m_Animator.SetTrigger("ToIdle");
+
                 gameObject.GetComponent<Instructor>().m_IsDesSetting = false;
                 m_NowDestination = " ";
                 gameObject.GetComponent<Instructor>().m_IsArrivedClass = true;
-                Transform lookTarget = (Transform)gameObject.GetComponent<BehaviorTree>().ExternalBehavior.GetVariable("SeatTransform").GetValue();
-                transform.LookAt(lookTarget.forward);
                 m_Agent.velocity = Vector3.zero;
-                m_Agent.isStopped = true;
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToIdle", true);
-                }
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(seatPos);
-                //}
             }
 
             return true;
@@ -196,6 +150,17 @@ public class ProfClassDestination : Action
         gameObject.GetComponent<Instructor>().DoingValue = Instructor.Doing.FreeWalk;
 
         return true;
+    }
+
+    IEnumerator SetClassEnd()
+    {
+        m_Animator.SetTrigger("ToIdle");
+
+        yield return new WaitForSeconds(1.5f);
+
+        m_NowDestination = " ";
+        gameObject.GetComponent<Instructor>().m_IsCoolDown = true;
+        gameObject.GetComponent<Instructor>().DoingValue = Instructor.Doing.FreeWalk;
     }
 
     IEnumerator ProfessorScript()

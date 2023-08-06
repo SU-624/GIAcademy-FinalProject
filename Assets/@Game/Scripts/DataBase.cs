@@ -14,7 +14,7 @@ namespace StatData.Runtime
         public List<ProfessorData> professorDatas;
         public List<ClassData> classDatas;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR || UNITY_EDITOR_WIN
         private StudentType FindClassType(int classType)
         {
             switch (classType)
@@ -104,8 +104,6 @@ namespace StatData.Runtime
                         item.OpenYear, item.OpenMonth,
                         item.Sense, item.Concentration, item.Wit, item.Technique, item.Insight,
                         item.Money, item.Health, item.Passion, item.Class_Unlock);
-
-                Debug.Log(item.ClassStatType);
 
                 AssetDatabase.CreateAsset(
                     instance,

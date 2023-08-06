@@ -7,130 +7,118 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
 using Coffee.UIExtensions;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 public enum Assessment
 {
-    Terrible,       // 최악
-    Bad,            // 나쁨
+    Terrible, // 최악
+    Bad, // 나쁨
     NotBad,
-    SoSo,           // 보통
-    Good,           // 좋음
-    Great,          // 아주좋음
-    Excellent,      // 최상
+    SoSo, // 보통
+    Good, // 좋음
+    Great, // 아주좋음
+    Excellent, // 최상
     None
-}
-
-public struct SaveGameShowData
-{
-    public GameShowData m_TotalGameShowData;
-    public int m_GameJamID;
-    public string m_GameJamName;
-    public Assessment m_GameShowResultAssessment;
-
-    public int m_FunScore;
-    public int m_GraphicScore;
-    public int m_PerfectionScore;
-    public int m_GenreScore;
-    public int m_ConceptScore;
-    public Assessment m_FunAssessment;
-    public Assessment m_GraphicAssessment;
-    public Assessment m_PerfectionAssessment;
-    public Assessment m_GenreAssessment;
-    public Assessment m_ConceptAssessment;
-
-    public Student[] m_ParticipatingStudents;
-    public int m_GameShowGenreAndConceptHeart;
-    public int m_FunnyHeart;
-    public int m_GenreHeart;
-    public int m_GraphicHeart;
-    public int m_PerceficationHeart;
 }
 
 public class GameShow : MonoBehaviour
 {
     public delegate void GameShowDataChange();
+
     public static event GameShowDataChange GameShowDataChangeEvent;
 
+    [SerializeField] private GameJam m_GameJam;
     [SerializeField] private GameShowPanel m_GameShowPanel;
     [SerializeField] private GameShowAnimationPanel m_GameShowAnimationPanel;
     [SerializeField] private RewardPanel m_RewardPanel;
-    [SerializeField] private EventPanel m_EventPanel;
-    [SerializeField] private GameObject m_GameShowListPrefab;                                                               // 게임쇼 프리팹
-    [SerializeField] private GameObject m_PrevGameListPrefab;                                                               // 게임잼에서 만든 게임들의 프리팹
-    [SerializeField] private GameObject m_RewardPrefab;
-    [SerializeField] private GameObject m_EventPrefab;
-    [SerializeField] private TextMeshProUGUI m_NoveltyScript;                                                               // 참신함이 1미만일 때 띄워줄 패널의 텍스트
-    [SerializeField] private TextMeshProUGUI m_GoTOGameShowResultPanel;                                                     // 게임쇼의 결과를 보러가기 전에 띄워주는 패널의 텍스트
-    [SerializeField] private TextMeshProUGUI m_GameShowResultPanelText;                                                     // 게임쇼의 결과를 보여주기 위해 띄워주는 패널의 텍스트
+    [SerializeField] private SoundManager m_SoundManager;
+    [SerializeField] private ActivityEvent m_ActivityEvent;
+    [SerializeField] private GameObject m_SliderBarArlam;
+    [SerializeField] private GameObject m_GameShowArlam;
+    [SerializeField] private GameObject m_GameShowListPrefab; // 게임쇼 프리팹
+    [SerializeField] private GameObject m_PrevGameListPrefab; // 게임잼에서 만든 게임들의 프리팹
 
+    [SerializeField] private GameObject m_RewardPrefab;
+
+    [SerializeField] private TextMeshProUGUI m_NoveltyScript; // 참신함이 1미만일 때 띄워줄 패널의 텍스트
+    [SerializeField] private TextMeshProUGUI m_GoTOGameShowResultPanel; // 게임쇼의 결과를 보러가기 전에 띄워주는 패널의 텍스트
+    [SerializeField] private TextMeshProUGUI m_GameShowResultPanelText; // 게임쇼의 결과를 보여주기 위해 띄워주는 패널의 텍스트
+    [SerializeField] private Sprite[] m_RewardSprite;
     [Space(5f)]
     [Header("껐다가 켜줄 패널들의 PopUp, PopOff 오브젝트들")]
-    [SerializeField] private PopUpUI m_PopUpResultPanel;                                                                    // 게임쇼 결과창을 보러갈 popUP창
+    [SerializeField] private PopUpUI m_PopUpResultPanel; // 게임쇼 결과창을 보러갈 popUP창
     [SerializeField] private PopOffUI m_PopOffResultPanel;
-    [SerializeField] private PopUpUI m_PopUpResultAnimationPanel;                                                           // 게임쇼 결과에 따른 애니메이션을 보여줄 패널
+    [SerializeField] private PopUpUI m_PopUpResultAnimationPanel; // 게임쇼 결과에 따른 애니메이션을 보여줄 패널
     [SerializeField] private PopOffUI m_PopOffResultAnimationPanel;
-    [SerializeField] private PopUpUI m_PopUpNoveltyWarningPanel;                                                            // 참신함이 1미만으로 내려갈 때 띄워줄 패널
+    [SerializeField] private PopUpUI m_PopUpNoveltyWarningPanel; // 참신함이 1미만으로 내려갈 때 띄워줄 패널
     [SerializeField] private PopOffUI m_PopOffNoveltyWarningPanel;
-    [SerializeField] private PopUpUI m_PopUpResultScriptPanel;                                                              // 결과창에서 보상을 받기전 보여주는 스크립트 패널
+    [SerializeField] private PopUpUI m_PopUpResultScriptPanel; // 결과창에서 보상을 받기전 보여주는 스크립트 패널
     [SerializeField] private PopOffUI m_PopOffResultScriptPanel;
-    [SerializeField] private PopUpUI m_PopUpRewardPanel;                                                                    // 보상 패널
+    [SerializeField] private PopUpUI m_PopUpRewardPanel; // 보상 패널
     [SerializeField] private PopOffUI m_PopOffRewardPanel;
-    [Space(5f)]
 
+    [Space(5f)]
     [Header("튜토리얼용")]
     [SerializeField] private GameObject m_TutorialPanel;
     [SerializeField] private Unmask m_Unmask;
     [SerializeField] private Image m_TutorialTextImage;
     [SerializeField] private Image m_TutorialArrowImage;
     [SerializeField] private TextMeshProUGUI m_TutorialText;
+    [SerializeField] private Button m_NextButton;
     [SerializeField] private GameObject m_FoldButton;
     [SerializeField] private GameObject m_GameShowButton;
     [SerializeField] private GameObject m_BlackScreen;
+    [SerializeField] private GameObject m_ClassResultPanel;
     [SerializeField] private GameObject m_PDAlarm;
     [SerializeField] private TextMeshProUGUI m_AlarmText;
+
     [Space(5f)]
+    /// 게임쇼 셋팅과 판별에 필요한 데이터들을 담아둔 리스트들
+    private List<GameDifficulty> m_Difficulty = new List<GameDifficulty>(); // 내 아카데미 등급에 따른 난이도를 설정하는 리스트
 
-    private List<GameDifficulty> m_Difficulty = new List<GameDifficulty>();                                                 // 내 아카데미 등급에 따른 난이도를 설정하는 리스트
-    private List<GameShowRewardByDifficulty> m_Assessnent = new List<GameShowRewardByDifficulty>();                         // 난이도와 평가반응에 따른 보상을 설정하는 리스트
+    private List<DifficultyPreset> m_HeartPresetList = new List<DifficultyPreset>();
+
+    private List<GameShowRewardByDifficulty> m_Assessnent = new List<GameShowRewardByDifficulty>(); // 난이도와 평가반응에 따른 보상을 설정하는 리스트
+
     private List<GameShowScoreByHeart> m_ScoreByHeartList = new List<GameShowScoreByHeart>();
-    private List<EvaluationScoreRange> m_ScoreRangeList = new List<EvaluationScoreRange>();                                 // 평가 점수에 따른 반응
-    private List<ScoreConversion> m_ScoreConversionList = new List<ScoreConversion>();                                      // 평가 점수로 받은 반응으로 점수 환산
-    private List<FinalScoreRange> m_FinalScoreRangeList = new List<FinalScoreRange>();                                      //
-    private List<AssessmentResponse> m_AssessmentResponseList = new List<AssessmentResponse>();                             // 각 파트별로 반응에 따라 출력해줄 텍스트들
-    private List<ResultScript> m_ResultScriptList = new List<ResultScript>();                                               // 마지막 결과 패널에 띄워줄 스크립트 값들
-    private List<string> m_NoveltyScriptList = new List<string>();                                                          // 참신함 점수가 1이 아닐 때 띄워줄 스크립트들
-    private List<string> m_GotoGameShowScriptList = new List<string>();                                                     // 게임쇼장을 이동할 때 띄워줄 스크립트들(결과창 이동하는 패널)
-    private Dictionary<int, List<GameShowData>> GameShowRandomData = new Dictionary<int, List<GameShowData>>();             // 5가지의 레벨에 따른 데이터를 각각 저장해주기 위한 딕셔너리(추후 레벨이 추가되도 쉽게 바꿀 수 있다.)
+    private List<EvaluationScoreRange> m_ScoreRangeList = new List<EvaluationScoreRange>(); // 평가 점수에 따른 반응
+    private List<ScoreConversion> m_ScoreConversionList = new List<ScoreConversion>(); // 평가 점수로 받은 반응으로 점수 환산
+    private List<FinalScoreRange> m_FinalScoreRangeList = new List<FinalScoreRange>(); //
 
-    private List<GameShowData> m_GameShowRandomDataPool = new List<GameShowData>();                                         // 매 년 조건에 맞는 달에 난이도에 따라 랜덤으로 데이터를 넣어주는 리스트
-    private List<GameShowData> m_SpecialGameShowDataPool = new List<GameShowData>();                                        // 난이도 상관없이 연도만 맞춰 넣어주는 리스트
-    private List<GameShowData> m_TotalGameShowData = new List<GameShowData>();                                              // 이번달 공고에 띄워줄 게임쇼들을 모두 모아놓을 리스트
-    private List<GameShowData> highleveltotalpool = new List<GameShowData>();                                               // 내 아카데미 등급보다 높은 데이터들을 한번에 모아두고 그 중에 랜덤으로 몇 개만 뽑아야한다.
-    private List<GameShowData> lowleveltotalpool = new List<GameShowData>();                                                // 내 아카데미 등급보다 낮은 데이터들을 한번에 모아두고 그 중에 랜덤으로 몇 개만 뽑아야한다.
-    private List<GameShowData> m_NowMonthRandomGameShowData = new List<GameShowData>();                                     // 내 아카데미 등급에 맞는 데이터들이 들어있는  리스트
+    private List<AssessmentResponse> m_AssessmentResponseList = new List<AssessmentResponse>(); // 각 파트별로 반응에 따라 출력해줄 텍스트들
 
-    private List<GameShowData> m_HighLevelRandomPool = new List<GameShowData>();                                            // 내 아카데미 등급보다 높은 등급의 데이터들이 들어있는 리스트
-    private List<GameShowData> m_LowLevelRandomPool = new List<GameShowData>();                                             // 내 아카데미 등급보다 낮은 등급의 데이터들이 들어있는 리스트
+    private List<ResultScript> m_ResultScriptList = new List<ResultScript>(); // 마지막 결과 패널에 띄워줄 스크립트 값들
+    private List<string> m_NoveltyScriptList = new List<string>(); // 참신함 점수가 1이 아닐 때 띄워줄 스크립트들
+    private List<string> m_GotoGameShowScriptList = new List<string>(); // 게임쇼장을 이동할 때 띄워줄 스크립트들(결과창 이동하는 패널)
 
-    private SaveGameShowData m_TemporaryGameShowData = new SaveGameShowData();                                              // 내가 클릭한 게임쇼들의 정보를 임시로 저장해주는 변수
-    private List<SaveGameShowData> m_ToBeRunningGameShow = new List<SaveGameShowData>();                                    // 현재 내가 참가하는 게임쇼들을 담아둘 리스트
-    private Queue<Action> eventQueue = new Queue<Action>();                                                                     // 게임잼이 실행되고 나면 게임쇼를 참가할 준비를 해줘야한다. timescale이 0일 때 이벤트를 실행하니 안돼서 Update문에서 timescale이 0 보다 클 때 실행시켜주는걸로 변경
+    ///
+    private List<GameShowData> m_TotalGameShowData = new List<GameShowData>(); // 이번달 공고에 띄워줄 게임쇼들을 모두 모아놓을 리스트
 
-    public static Dictionary<int, List<SaveGameShowData>> m_GameShowHistory = new Dictionary<int, List<SaveGameShowData>>();
+    private static List<GameShowData> m_FixedGameShowData = new List<GameShowData>();
+    private static List<GameShowData> m_RandomGameShowData = new List<GameShowData>();
 
-    //private Student[] m_StudentsParticipated = new Student[3];
-    private Queue<string> m_ResultDialogQueue = new Queue<string>();                                                        // 마지막 결과창에 띄워줄 스크립트들을 출력 순서대로 넣어줄 큐
-    //private string[] m_LackCondition;
+    private GameShowSaveData _mTemporaryData = new GameShowSaveData(); // 내가 클릭한 게임쇼들의 정보를 임시로 저장해주는 변수
+    private List<GameShowSaveData> m_ToBeRunningGameShow = new List<GameShowSaveData>(); // 현재 내가 참가하는 게임쇼들을 담아둘 리스트
 
+    private Queue<Action> eventQueue = new Queue<Action>(); // 게임잼이 실행되고 나면 게임쇼를 참가할 준비를 해줘야한다. timescale이 0일 때 이벤트를 실행하니 안돼서 Update문에서 timescale이 0 보다 클 때 실행시켜주는걸로 변경
+
+    public static Dictionary<int, List<GameShowSaveData>> m_GameShowHistory = new Dictionary<int, List<GameShowSaveData>>();
+
+    private Queue<string> m_ResultDialogQueue = new Queue<string>(); // 마지막 결과창에 띄워줄 스크립트들을 출력 순서대로 넣어줄 큐
+    private Queue<string> m_NoveltyDialoge = new Queue<string>();
     public Sprite m_ApplySuccessSprite;
     public Sprite m_NotAllowedApplySprite;
     public Sprite m_ApplySprite;
     public Sprite[] m_FinalScoreSprite;
     public Sprite[] m_EmojiSprite;
     public Sprite[] m_StudentFace;
-    private GameObject m_PrevClickObj;                                                                                      // 내가 이전에 클릭한 게임잼 버튼을 담아둘 변수
+    private GameObject m_PrevClickObj;                                          // 내가 이전에 클릭한 게임잼 버튼을 담아둘 변수
+    private GameObject m_PrevClickGameShowObj;                                   // 게임잼 버튼 스프라이트 고정을 위해 이전 클릭한 게임잼 오브젝트를 담아둘 변수
+    private Color m_HighLightColor;
+    private IEnumerator m_SetSatisfactionStatusPanelCor;
+    private IEnumerator m_ChangeAnimationPanel;
 
-    private int m_NowDay;
     private int m_NowMonth;
     private int m_MonthLimit;
     private int m_GenreAndConceptHeart = 0;
@@ -139,30 +127,35 @@ public class GameShow : MonoBehaviour
     private int m_RewardPassion;
     private int m_RewardHealth;
     private float m_ScrollSpeed = 0.5f;
+    private float _novelty = 1f;
     private string m_ResultScriptTexet;
     private bool m_IsChangeMonth;
     private bool _isCanParticipate;
-    private bool m_IsCheckGameShow;
-    private bool m_IsTypingAnmation;
+    private bool _isSameDayInList;
+    private bool _isPrevGameJamButtonClick;
+    private bool _isFirstGameShow;
     private Vector3 m_TargetPosition;
     private Vector3 m_StartPosition;
+
+    private int m_TutorialCount;
+    private int m_ScriptCount;
 
     private void OnEnable()
     {
         SlideMenuPanel.OnGameShowListButtonClicked += HandleGameShowListButtonClicked;
         GameShowPanel.OnGameShowListPanelApplyButtonClicked += HandleGameShowListApplyButton;
-        GameShowPanel.OnGameShowListPanelSelectButtonClicked += HandleGameShowListSelectButton;
+        //GameShowPanel.OnGameShowListPanelSelectButtonClicked += HandleGameShowListSelectButton;
         InGameUI.OnGameShowRsultButtonClicked += HandleGameShowResultButton;
-        GameJam.DataChangedEvent += TakeOutGameShowData;
+        GameJam.DataChangedEvent += CombineGameShowData;
     }
 
     private void OnDisable()
     {
         SlideMenuPanel.OnGameShowListButtonClicked -= HandleGameShowListButtonClicked;
         GameShowPanel.OnGameShowListPanelApplyButtonClicked -= HandleGameShowListApplyButton;
-        GameShowPanel.OnGameShowListPanelSelectButtonClicked -= HandleGameShowListSelectButton;
+        //GameShowPanel.OnGameShowListPanelSelectButtonClicked -= HandleGameShowListSelectButton;
         InGameUI.OnGameShowRsultButtonClicked -= HandleGameShowResultButton;
-        GameJam.DataChangedEvent -= TakeOutGameShowData;
+        GameJam.DataChangedEvent -= CombineGameShowData;
     }
 
     private void Start()
@@ -177,9 +170,59 @@ public class GameShow : MonoBehaviour
         InitNoveltyScriptList();
         InitGotoGameShowScriptList();
         InitResultPanelScript();
+        InitHeartPresetList();
+        ClassifyGameShowData();
         m_MonthLimit = 2;
         m_GameShowPanel.InitGameShowPanel();
         m_GameShowHistory.Clear();
+        m_TutorialCount = 0;
+        m_ScriptCount = 0;
+        m_HighLightColor = new Color(1f, 0.8475146f, 0, 1f);
+        _isPrevGameJamButtonClick = false;
+        _isFirstGameShow = true;
+        m_NextButton.onClick.AddListener(TutorialContinue);
+        m_NextButton.onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
+        m_SetSatisfactionStatusPanelCor = SetSatisfactionStatusPanel();
+        m_ChangeAnimationPanel = ChangeAnimationPanel();
+
+        if (Json.Instance.UseLoadingData)
+        {
+            DistributeGameShowData();
+        }
+    }
+
+    private static GameShowData SearchGameShowInfo(int _gameShowID)
+    {
+        foreach (GameShowData gameShow in m_FixedGameShowData)
+        {
+            if (gameShow.GameShow_ID == _gameShowID)
+            {
+                return gameShow;
+            }
+        }
+
+        foreach (GameShowData gameShow in m_RandomGameShowData)
+        {
+            if (gameShow.GameShow_ID == _gameShowID)
+            {
+                return gameShow;
+            }
+        }
+
+        return null;
+    }
+
+    private GameShowData SearchGameShowDataForWeek(int _gameShowID)
+    {
+        foreach (GameShowData gameshow in m_TotalGameShowData)
+        {
+            if (gameshow.GameShow_ID == _gameShowID)
+            {
+                return gameshow;
+            }
+        }
+
+        return null;
     }
 
     private void Update()
@@ -189,40 +232,10 @@ public class GameShow : MonoBehaviour
             eventQueue.Dequeue()?.Invoke();
         }
 
-        if (m_NowDay != GameTime.Instance.FlowTime.NowDay)
+        if (m_NowMonth != GameTime.Instance.FlowTime.NowMonth /*&& GameTime.Instance.FlowTime.NowWeek == 1 && GameTime.Instance.FlowTime.NowDay == 3*/)
         {
-            if (m_EventPanel.gameObject.activeSelf)
-            {
-                for (int i = 0; i < m_EventPanel.EventTransform.childCount; i++)
-                {
-                    string DdayText = m_EventPanel.EventTransform.GetChild(i).GetComponent<EventPrefab>().DDAyText.text;
-
-                    int Dday = int.Parse(DdayText[2..]) - 1;
-
-                    m_EventPanel.EventTransform.GetChild(i).GetComponent<EventPrefab>().DDAyText.text = "D-" + Dday.ToString();
-
-                    if (Dday <= 0)
-                    {
-                        Dday = 0;
-                        m_IsTypingAnmation = false;
-                        Destroy(m_EventPanel.EventTransform.GetChild(i).gameObject, 0.5f);
-
-                    }
-                }
-
-                if (m_EventPanel.EventTransform.childCount == 0)
-                {
-                    m_EventPanel.gameObject.SetActive(false);
-                }
-            }
-
-            m_NowDay = GameTime.Instance.FlowTime.NowDay;
-        }
-
-        if (m_NowMonth != GameTime.Instance.FlowTime.NowMonth && GameTime.Instance.FlowTime.NowWeek == 1 && GameTime.Instance.FlowTime.NowDay == 3)
-        {
-            m_GameShowRandomDataPool.Clear();
-            m_SpecialGameShowDataPool.Clear();
+            m_TotalGameShowData.Clear();
+            SetActiveAlram(false);
             m_GameShowPanel.DestroyObj(m_GameShowPanel.GameShowListContentObj);
             m_NowMonth = GameTime.Instance.FlowTime.NowMonth;
             m_MonthLimit = 2;
@@ -233,57 +246,212 @@ public class GameShow : MonoBehaviour
         {
             for (int i = 0; i < m_ToBeRunningGameShow.Count; i++)
             {
-                if (m_ToBeRunningGameShow[i].m_TotalGameShowData.GameShow_Month == GameTime.Instance.FlowTime.NowMonth
-                    && m_ToBeRunningGameShow[i].m_TotalGameShowData.GameShow_Week == GameTime.Instance.FlowTime.NowWeek
-                    && m_ToBeRunningGameShow[i].m_TotalGameShowData.GameShow_Day == GameTime.Instance.FlowTime.NowDay
-                    && !m_IsCheckGameShow)
+                GameShowData _nowGameShow = SearchGameShowInfo((int)m_ToBeRunningGameShow[i].m_GameShowID);
+
+                if (m_ToBeRunningGameShow[i].m_MakeMonth == GameTime.Instance.FlowTime.NowMonth
+                    && m_ToBeRunningGameShow[i].m_MakeWeek == GameTime.Instance.FlowTime.NowWeek
+                    && m_ToBeRunningGameShow[i].m_MakeDay == GameTime.Instance.FlowTime.NowDay
+                    && m_ActivityEvent.m_IsCheckGameShow == false && m_ClassResultPanel.activeSelf == false)
                 {
-                    m_TemporaryGameShowData = m_ToBeRunningGameShow[i];
+                    _mTemporaryData = m_ToBeRunningGameShow[i];
                     GetGameShowResultPanelScript();
                 }
             }
         }
 
-        if (m_IsChangeMonth)
+        if (m_IsChangeMonth && m_NowMonth != 1 && m_NowMonth != 2)
         {
-            for (int i = 0; i < AllOriginalJsonData.Instance.OriginalRandomGameShowData.Count; i++)
-            {
-                if (GameTime.Instance.FlowTime.NowMonth + 1 == AllOriginalJsonData.Instance.OriginalRandomGameShowData[i].GameShow_Month &&
-                    !AllOriginalJsonData.Instance.OriginalRandomGameShowData[i].GameShow_Special)
-                {
-                    m_GameShowRandomDataPool.Add(AllOriginalJsonData.Instance.OriginalRandomGameShowData[i]);
-                }
-                // 매년 발생해야함
-                else if (AllOriginalJsonData.Instance.OriginalRandomGameShowData[i].GameShow_Year == 0 &&
-                    AllOriginalJsonData.Instance.OriginalRandomGameShowData[i].GameShow_Month == GameTime.Instance.FlowTime.NowMonth + 1 &&
-                    AllOriginalJsonData.Instance.OriginalRandomGameShowData[i].GameShow_Special)
-                {
-                    m_SpecialGameShowDataPool.Add(AllOriginalJsonData.Instance.OriginalRandomGameShowData[i]);
-                }
-                // 홀수년도 발생
-                else if (AllOriginalJsonData.Instance.OriginalRandomGameShowData[i].GameShow_Year == -1 && (10 % GameTime.Instance.FlowTime.NowYear) != 0 &&
-                    AllOriginalJsonData.Instance.OriginalRandomGameShowData[i].GameShow_Month == GameTime.Instance.FlowTime.NowMonth + 1 &&
-                    AllOriginalJsonData.Instance.OriginalRandomGameShowData[i].GameShow_Special)
-                {
-                    m_SpecialGameShowDataPool.Add(AllOriginalJsonData.Instance.OriginalRandomGameShowData[i]);
-                }
-                // 짝수년도 발생
-                else if (AllOriginalJsonData.Instance.OriginalRandomGameShowData[i].GameShow_Year == -2 && (10 % GameTime.Instance.FlowTime.NowYear) == 0 &&
-                    AllOriginalJsonData.Instance.OriginalRandomGameShowData[i].GameShow_Month == GameTime.Instance.FlowTime.NowMonth + 1 &&
-                    AllOriginalJsonData.Instance.OriginalRandomGameShowData[i].GameShow_Special)
-                {
-                    m_SpecialGameShowDataPool.Add(AllOriginalJsonData.Instance.OriginalRandomGameShowData[i]);
-                }
-            }
-
             m_IsChangeMonth = false;
 
             if (GameJam.m_GameJamHistory.Count != 0 && m_GameShowPanel.GameShowListContent.childCount == 0)
             {
-                TakeOutGameShowData();
-                Debug.Log("여기서 게임쇼 켜주나?");
+                CombineGameShowData();
             }
         }
+
+        //        if (PlayerInfo.Instance.IsFirstGameShow && m_TutorialCount > 0)
+        //        {
+        ////#if UNITY_EDITOR|| UNITY_EDITOR_WIN
+        ////            if (Input.GetMouseButtonDown(0))
+        ////            {
+        ////                TutorialContinue();
+        ////                //ClickEventManager.Instance.Sound.PlayIconTouch();
+        ////            }
+        ////#elif UNITY_ANDROID
+        ////            if (Input.touchCount > 0)
+        ////            {
+        ////                Touch touch = Input.GetTouch(0);
+        ////                if (touch.phase == TouchPhase.Ended)
+        ////                {
+        ////                    TutorialContinue();
+        ////                    //ClickEventManager.Instance.Sound.PlayIconTouch();
+        ////                }
+        ////            }
+        ////#endif
+        //        }
+
+        if (PlayerInfo.Instance.IsFirstGameShow && m_GameShowButton.GetComponent<Button>().interactable &&
+            m_TutorialCount == 0 && Time.timeScale != 0)
+        {
+            Time.timeScale = 0;
+            m_TutorialPanel.SetActive(true);
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameShowTutorial[m_ScriptCount];
+            m_NextButton.gameObject.SetActive(true);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+    }
+
+    public void CollectGameShowData()
+    {
+        List<GameShowSaveData> runData = new List<GameShowSaveData>(m_ToBeRunningGameShow);
+        Dictionary<int, List<GameShowSaveData>>
+            history = new Dictionary<int, List<GameShowSaveData>>(m_GameShowHistory);
+
+        AllInOneData.Instance.GameShowToBeRunning = runData;
+        AllInOneData.Instance.GameShowHistory = history;
+    }
+
+    private void DistributeGameShowData()
+    {
+        List<GameShowSaveData> runData = new List<GameShowSaveData>(AllInOneData.Instance.GameShowToBeRunning);
+        Dictionary<int, List<GameShowSaveData>> history =
+            new Dictionary<int, List<GameShowSaveData>>(AllInOneData.Instance.GameShowHistory);
+
+        m_ToBeRunningGameShow = runData;
+        m_GameShowHistory = history;
+
+        if (runData.Count != 0)
+        {
+            for (int i = 0; i < runData.Count; i++)
+            {
+                GameShowData _gameshow = SearchGameShowInfo((int)runData[i].m_GameShowID);
+
+                GameObject eventPrefab = m_ActivityEvent.MakeDistributeEventPrefab(_gameshow.GameShow_Name, (int)runData[i].m_MakeMonth, (int)runData[i].m_MakeWeek, (int)runData[i].m_MakeDay,
+                    true, (int)runData[i].m_MakeMonth);
+                eventPrefab.transform.GetComponent<EventPrefab>().m_IsGameJam = false;
+                m_ActivityEvent.SetEventPanelActive(true);
+
+                StartCoroutine(m_ActivityEvent.TypingText(eventPrefab, "게임쇼 준비중"));
+            }
+        }
+    }
+
+    private void TutorialContinue()
+    {
+        if (m_TutorialCount == 1)
+        {
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameShowTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 2)
+        {
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameShowTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 3)
+        {
+            if (m_FoldButton.GetComponent<PopUpUI>().isSlideMenuPanelOpend == false)
+            {
+                m_FoldButton.GetComponent<PopUpUI>().AutoSlideMenuUI();
+            }
+
+            m_BlackScreen.SetActive(true);
+            m_PDAlarm.SetActive(false);
+            m_Unmask.gameObject.SetActive(true);
+            m_NextButton.gameObject.SetActive(false);
+            m_Unmask.fitTarget = m_GameShowButton.GetComponent<RectTransform>();
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 5)
+        {
+            m_Unmask.fitTarget = m_GameShowPanel.GameShowRect;
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 150, 0);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 7)
+        {
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameShowTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 8)
+        {
+            m_Unmask.fitTarget = m_GameShowPanel.GameShowInfoRect;
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameShowTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 300, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 9)
+        {
+            m_Unmask.fitTarget = m_GameShowPanel.NeedElementRect;
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameShowTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 300, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 10)
+        {
+            m_Unmask.fitTarget = m_GameShowPanel.SelectPanelRect;
+            m_TutorialTextImage.gameObject.SetActive(true);
+            m_TutorialArrowImage.gameObject.SetActive(false);
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameShowTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-580, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 11)
+        {
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameShowTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 12)
+        {
+            m_Unmask.fitTarget = m_GameShowPanel.PrevGameJamListContent.GetChild(0).GetComponent<RectTransform>();
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialArrowImage.transform.Rotate(0, 0, 90);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-500, 0, 0);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 15)
+        {
+            m_TutorialPanel.SetActive(false);
+            m_NextButton.gameObject.SetActive(false);
+            PlayerInfo.Instance.IsFirstGameShow = false;
+        }
+    }
+
+    private void ClassifyGameShowData()
+    {
+        for (int i = 0; i < AllOriginalJsonData.Instance.OriginalRandomGameShowData.Count; i++)
+        {
+            if (AllOriginalJsonData.Instance.OriginalRandomGameShowData[i].GameShow_Fix)
+            {
+                m_FixedGameShowData.Add(AllOriginalJsonData.Instance.OriginalRandomGameShowData[i]);
+            }
+            else
+            {
+                m_RandomGameShowData.Add(AllOriginalJsonData.Instance.OriginalRandomGameShowData[i]);
+            }
+        }
+    }
+
+    public void SetActiveAlram(bool _isFirstAlram = false)
+    {
+        m_SliderBarArlam.SetActive(_isFirstAlram);
+        m_GameShowArlam.SetActive(_isFirstAlram);
     }
 
     public void EnqueueDataChangedEvent()
@@ -294,31 +462,11 @@ public class GameShow : MonoBehaviour
     // 게임쇼 버튼을 누르면 실행시켜줄 함수
     public void MakeGameShowList()
     {
-        CombineGameShowDataList();
-
+        SortRecommendList();
+        //CombineGameShowData();
         if (m_TotalGameShowData.Count == 0)
         {
             m_GameShowPanel.SetNoGameShow(true);
-        }
-        else if (m_MonthLimit > 0)
-        {
-            for (int i = 0; i < m_TotalGameShowData.Count; i++)
-            {
-                GameObject _gameShowList = Instantiate(m_GameShowListPrefab, m_GameShowPanel.GameShowListContent);
-
-                _gameShowList.name = m_TotalGameShowData[i].GameShow_Name;
-                _gameShowList.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = m_TotalGameShowData[i].GameShow_Name;
-
-                if (!m_GameShowHistory.ContainsKey(m_TotalGameShowData[i].GameShow_ID))
-                {
-                    _gameShowList.transform.GetChild(1).gameObject.SetActive(true);
-                }
-                else
-                {
-                    _gameShowList.transform.GetChild(1).gameObject.SetActive(false);
-                }
-                _gameShowList.GetComponent<Button>().onClick.AddListener(ClickGameShowListButton);
-            }
         }
         else
         {
@@ -327,7 +475,8 @@ public class GameShow : MonoBehaviour
                 GameObject _gameShowList = Instantiate(m_GameShowListPrefab, m_GameShowPanel.GameShowListContent);
 
                 _gameShowList.name = m_TotalGameShowData[i].GameShow_Name;
-                _gameShowList.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = m_TotalGameShowData[i].GameShow_Name;
+                _gameShowList.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text =
+                    m_TotalGameShowData[i].GameShow_Name;
 
                 if (!m_GameShowHistory.ContainsKey(m_TotalGameShowData[i].GameShow_ID))
                 {
@@ -337,9 +486,19 @@ public class GameShow : MonoBehaviour
                 {
                     _gameShowList.transform.GetChild(1).gameObject.SetActive(false);
                 }
+
                 _gameShowList.GetComponent<Button>().onClick.AddListener(ClickGameShowListButton);
             }
+
+            SetFirstGameShowInfo();
         }
+
+    }
+
+    public void CombineGameShowData()
+    {
+        BringFixedGameShowData();
+        BringRandomGameShowData();
     }
 
     // 보상 패널에서 받기 버튼을 눌렀을 때 
@@ -347,24 +506,48 @@ public class GameShow : MonoBehaviour
     {
         m_PopOffRewardPanel.TurnOffUI();
 
-        PlayerInfo.Instance.m_MyMoney += m_RewardMoney;
-        PlayerInfo.Instance.m_Awareness += m_RewardFamous;
+        PlayerInfo.Instance.MyMoney += m_RewardMoney;
+        PlayerInfo.Instance.Famous += m_RewardFamous;
 
+        Student _gameDesignerStudent =
+            ObjectManager.Instance.SearchStudentInfo(_mTemporaryData.m_GameDesignerStudentName);
+        Student _artStudent = ObjectManager.Instance.SearchStudentInfo(_mTemporaryData.m_ArtStudentName);
+        Student _programmingStudent =
+            ObjectManager.Instance.SearchStudentInfo(_mTemporaryData.m_ProgrammingStudentName);
 
-        for (int i = 0; i < m_TemporaryGameShowData.m_ParticipatingStudents.Length; i++)
-        {
-            m_TemporaryGameShowData.m_ParticipatingStudents[i].m_StudentStat.m_Health += m_RewardHealth;
-            m_TemporaryGameShowData.m_ParticipatingStudents[i].m_StudentStat.m_Passion += m_RewardPassion;
-        }
+        _gameDesignerStudent.m_StudentStat.m_Health += m_RewardHealth;
+        _gameDesignerStudent.m_StudentStat.m_Passion += m_RewardPassion;
+
+        _artStudent.m_StudentStat.m_Health += m_RewardHealth;
+        _artStudent.m_StudentStat.m_Passion += m_RewardPassion;
+
+        _programmingStudent.m_StudentStat.m_Health += m_RewardHealth;
+        _programmingStudent.m_StudentStat.m_Passion += m_RewardPassion;
     }
 
     #region _delegate로 등록할 함수들
+
     // 게임쇼를 켜주는 버튼이 클릭되었을 때 실행할 함수들.
     private void HandleGameShowListButtonClicked()
     {
         MakeGameShowList();
-        //m_GameShowPanel.ApplyButton
+        MakePrevGameJamForToBeRunning();
         m_GameShowPanel.SetActiveGameShowPanel(true);
+        m_GameShowPanel.ClickSelectButton();
+        _isPrevGameJamButtonClick = false;
+
+        if (m_TutorialCount == 4)
+        {
+            m_GameShowPanel.GameShowScrollView.GetComponent<ScrollRect>().vertical = false;
+            m_Unmask.fitTarget = m_GameShowPanel.GameShowScrollView.GetComponent<RectTransform>();
+            m_TutorialArrowImage.gameObject.SetActive(false);
+            m_TutorialTextImage.gameObject.SetActive(true);
+            m_NextButton.gameObject.SetActive(true);
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameJamTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(500, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
     }
 
     // 신청 버튼이 클릭되었을 때 실행 할 함수.
@@ -373,9 +556,17 @@ public class GameShow : MonoBehaviour
         if (m_GameShowPanel.ApplyButton.GetComponent<Image>().sprite == m_ApplySprite && m_MonthLimit > 0)
         {
             //// 이때 신청 완료하고 신청버튼 신청완료로 변경
-            if (_isCanParticipate)
+            if (_isCanParticipate && _isSameDayInList)
             {
                 ApplySuccess();
+            }
+            else if (!_isSameDayInList)
+            {
+                m_GameShowPanel.SetConditionFailPanel("이미 해당 날짜에 참가한 게임쇼가 있습니다!");
+            }
+            else if (!_isPrevGameJamButtonClick)
+            {
+                m_GameShowPanel.SetConditionFailPanel("출품할 게임을 선택해 주세요!");
             }
             // 아니라면 신청할 수 없다고 경고 메세지 띄워주기
             else
@@ -384,68 +575,59 @@ public class GameShow : MonoBehaviour
             }
         }
         // 참여횟수 모두 사용 
-        else if (m_GameShowPanel.ApplyButton.GetComponent<Image>().sprite == m_NotAllowedApplySprite && m_MonthLimit <= 0)
+        else if (m_GameShowPanel.ApplyButton.GetComponent<Image>().sprite == m_NotAllowedApplySprite &&
+                 m_MonthLimit <= 0)
         {
             // 버튼 클릭시 참가할 수 있는 횟수를 초과했다는 메세지 띄워주기
             m_GameShowPanel.SetConditionFailPanel("참가할 수 있는 횟수를 초과하였습니다!\n다음 달을 노려보세요.");
         }
         // else : 신청했던 버튼은 눌러도 따로 뭐 없음.
-    }
 
-    // 선택 버튼이 클릭되었을 때 실행 할 함수.
-    private void HandleGameShowListSelectButton()
-    {
-        GetPrevGameList();
-        m_GameShowPanel.ClickSelectButton();
+        if (m_TutorialCount == 14)
+        {
+            //m_TutorialPanel.SetActive(false);
+            //PlayerInfo.Instance.IsFirstGameShow = false;
+
+            m_TutorialArrowImage.gameObject.SetActive(false);
+            m_Unmask.gameObject.SetActive(false);
+            m_NextButton.gameObject.SetActive(true);
+            m_PDAlarm.SetActive(true);
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().GameShowTutorial[m_ScriptCount];
+
+            m_TutorialCount++;
+            m_ScriptCount++;
+        }
     }
 
     private void HandleGameShowResultButton()
     {
         m_PopOffResultPanel.TurnOffUI();
         CalculateScore();
-        TurnAnimationByScore(m_TemporaryGameShowData.m_GameShowResultAssessment);
+        TurnAnimationByScore((Assessment)_mTemporaryData.m_GameShowResultAssessment);
     }
+
     #endregion
 
     // 점수계산하는 함수
     private void CalculateScore()
     {
-        int _standardGenreAndConcept = GetScoreByHeart(m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Level, m_TemporaryGameShowData.m_GameShowGenreAndConceptHeart);
-        int _standardGenre = GetScoreByHeart(m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Level, m_TemporaryGameShowData.m_GenreHeart);
-        int _standardFun = GetScoreByHeart(m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Level, m_TemporaryGameShowData.m_FunnyHeart);
-        int _standardGraphic = GetScoreByHeart(m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Level, m_TemporaryGameShowData.m_GraphicHeart);
-        int _standardPercefication = GetScoreByHeart(m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Level, m_TemporaryGameShowData.m_PerceficationHeart);
+        GameShowData gameShowData = SearchGameShowInfo((int)_mTemporaryData.m_GameShowID);
 
-        int _selectGameJamIndex = GameJam.m_GameJamHistory[m_TemporaryGameShowData.m_GameJamID].FindIndex(x => x.m_GameJamData.m_GameName == m_TemporaryGameShowData.m_GameJamName);
-        int _myGenre = (int)GameJam.m_GameJamHistory[m_TemporaryGameShowData.m_GameJamID][_selectGameJamIndex].m_GameJamData.m_TotalGenreScore;
-        int _myFunny = (int)GameJam.m_GameJamHistory[m_TemporaryGameShowData.m_GameJamID][_selectGameJamIndex].m_GameJamData.m_Funny;
-        int _myGraphic = (int)GameJam.m_GameJamHistory[m_TemporaryGameShowData.m_GameJamID][_selectGameJamIndex].m_GameJamData.m_Graphic;
-        int _myPerfecation = (int)GameJam.m_GameJamHistory[m_TemporaryGameShowData.m_GameJamID][_selectGameJamIndex].m_GameJamData.m_Perfection;
-        float _novelty = 1f;
+        int _standardGenreAndConcept =
+            GetScoreByHeart(gameShowData.GameShow_Level, (int)_mTemporaryData.m_GameShowGenreAndConceptHeart);
+        int _standardGenre = GetScoreByHeart(gameShowData.GameShow_Level, (int)_mTemporaryData.m_GenreHeart);
+        int _standardFun = GetScoreByHeart(gameShowData.GameShow_Level, (int)_mTemporaryData.m_FunnyHeart);
+        int _standardGraphic = GetScoreByHeart(gameShowData.GameShow_Level, (int)_mTemporaryData.m_GraphicHeart);
+        int _standardPercefication = GetScoreByHeart(gameShowData.GameShow_Level, (int)_mTemporaryData.m_PerceficationHeart);
 
-        if (m_GameShowHistory.Count != 0 && m_GameShowHistory.ContainsKey(m_TemporaryGameShowData.m_TotalGameShowData.GameShow_ID))
-        {
-            List<SaveGameShowData> _temporary = new List<SaveGameShowData>();
-
-            m_GameShowHistory.TryGetValue(m_TemporaryGameShowData.m_TotalGameShowData.GameShow_ID, out _temporary);
-
-            for (int i = 0; i < _temporary.Count; i++)
-            {
-                if ((int)_temporary[i].m_GameShowResultAssessment >= 4)
-                {
-                    _novelty *= 0.2f;
-                }
-            }
-
-            if (_novelty < 0.1f)
-            {
-                _novelty = 0.1f;
-            }
-
-            m_PopUpNoveltyWarningPanel.TurnOnUI();
-            int _index = UnityEngine.Random.Range(0, m_NoveltyScriptList.Count);
-            m_NoveltyScript.text = m_NoveltyScriptList[_index];
-        }
+        int _selectGameJamIndex = GameJam.m_GameJamHistory[(int)_mTemporaryData.m_GameJamID]
+            .FindIndex(x => x.m_GameName == (string)_mTemporaryData.m_GameJamName);
+        int _myGenre = (int)GameJam.m_GameJamHistory[(int)_mTemporaryData.m_GameJamID][_selectGameJamIndex]
+            .m_TotalGenreScore;
+        int _myFunny = (int)GameJam.m_GameJamHistory[(int)_mTemporaryData.m_GameJamID][_selectGameJamIndex].m_Funny;
+        int _myGraphic = (int)GameJam.m_GameJamHistory[(int)_mTemporaryData.m_GameJamID][_selectGameJamIndex].m_Graphic;
+        int _myPerfecation =
+            (int)GameJam.m_GameJamHistory[(int)_mTemporaryData.m_GameJamID][_selectGameJamIndex].m_Perfection;
 
         Assessment _genre = GetGameShow((int)Math.Floor(_myGenre * _novelty) - _standardGenre);
         int _genreScore = GetScoreConversion(_genre);
@@ -459,38 +641,39 @@ public class GameShow : MonoBehaviour
         Assessment _perfecation = GetGameShow((int)Math.Floor(_myPerfecation * _novelty) - _standardPercefication);
         int _perfecationScore = GetScoreConversion(_perfecation);
 
-        Assessment _genreAndConcept = GetGameShow((int)Math.Floor(_standardGenreAndConcept * _novelty) - _standardGenreAndConcept);
+        Assessment _genreAndConcept =
+            GetGameShow((int)Math.Floor(_standardGenreAndConcept * _novelty) - _standardGenreAndConcept);
         int _genreAndConceptScore = GetScoreConversion(_genreAndConcept);
 
         int _totalSocre = _genreScore + _funnyScore + _graphicScore + _perfecationScore + _genreAndConceptScore;
 
-        m_TemporaryGameShowData.m_FunScore = _funnyScore;
-        m_TemporaryGameShowData.m_FunAssessment = _funny;
+        _mTemporaryData.m_FunScore = _funnyScore;
+        _mTemporaryData.m_FunAssessment = (int)_funny;
 
-        m_TemporaryGameShowData.m_GenreScore = _genreScore;
-        m_TemporaryGameShowData.m_GenreAssessment = _genre;
+        _mTemporaryData.m_GenreScore = _genreScore;
+        _mTemporaryData.m_GenreAssessment = (int)_genre;
 
-        m_TemporaryGameShowData.m_PerfectionScore = _perfecationScore;
-        m_TemporaryGameShowData.m_PerfectionAssessment = _perfecation;
+        _mTemporaryData.m_PerfectionScore = _perfecationScore;
+        _mTemporaryData.m_PerfectionAssessment = (int)_perfecation;
 
-        m_TemporaryGameShowData.m_GraphicScore = _graphicScore;
-        m_TemporaryGameShowData.m_GraphicAssessment = _graphic;
+        _mTemporaryData.m_GraphicScore = _graphicScore;
+        _mTemporaryData.m_GraphicAssessment = (int)_graphic;
 
-        m_TemporaryGameShowData.m_ConceptScore = _genreAndConceptScore;
-        m_TemporaryGameShowData.m_ConceptAssessment = _genreAndConcept;
+        _mTemporaryData.m_ConceptScore = _genreAndConceptScore;
+        _mTemporaryData.m_ConceptAssessment = (int)_genreAndConcept;
 
-        m_TemporaryGameShowData.m_GameShowResultAssessment = FinalGameShowScore(_totalSocre);
+        _mTemporaryData.m_GameShowResultAssessment = (int)FinalGameShowScore(_totalSocre);
 
         // 게임쇼가 끝나고 점수까지 저장할 때 필요
-        if (m_GameShowHistory.ContainsKey(m_TemporaryGameShowData.m_TotalGameShowData.GameShow_ID))
+        if (m_GameShowHistory.ContainsKey(gameShowData.GameShow_ID))
         {
-            m_GameShowHistory[m_TemporaryGameShowData.m_TotalGameShowData.GameShow_ID].Add(m_TemporaryGameShowData);
+            m_GameShowHistory[gameShowData.GameShow_ID].Add(_mTemporaryData);
         }
         else
         {
-            List<SaveGameShowData> m_GameshowDataList = new List<SaveGameShowData>();
-            m_GameshowDataList.Add(m_TemporaryGameShowData);
-            m_GameShowHistory.Add(m_TemporaryGameShowData.m_TotalGameShowData.GameShow_ID, m_GameshowDataList);
+            List<GameShowSaveData> m_GameshowDataList = new List<GameShowSaveData>();
+            m_GameshowDataList.Add(_mTemporaryData);
+            m_GameShowHistory.Add(gameShowData.GameShow_ID, m_GameshowDataList);
         }
     }
 
@@ -498,6 +681,9 @@ public class GameShow : MonoBehaviour
     private void TurnAnimationByScore(Assessment _gameShowFinalAssessment)
     {
         m_PopUpResultAnimationPanel.TurnOnUI();
+
+        m_SoundManager.StopInGameBgm();
+        m_SoundManager.PlayGameShowBgm();
 
         if (_gameShowFinalAssessment <= Assessment.Bad)
         {
@@ -509,10 +695,12 @@ public class GameShow : MonoBehaviour
         }
         else if (_gameShowFinalAssessment >= Assessment.Good)
         {
-            m_GameShowAnimationPanel.ChangeSpriteAnimation(m_FinalScoreSprite[2]);
+            m_GameShowAnimationPanel.ChangeSpriteAnimation(m_FinalScoreSprite[2], true);
         }
 
-        StartCoroutine(ChangeAnimationPanel());
+        m_ChangeAnimationPanel = ChangeAnimationPanel();
+
+        StartCoroutine(m_ChangeAnimationPanel);
     }
 
     // 결과창으로 이동하기 위해 띄워주는 패널에 쓰여질 스크립트 가져오기
@@ -523,50 +711,93 @@ public class GameShow : MonoBehaviour
         m_GoTOGameShowResultPanel.text = m_GotoGameShowScriptList[_index];
 
         m_PopUpResultPanel.TurnOnUI();
-        m_IsCheckGameShow = true;
+        m_ActivityEvent.m_IsCheckGameShow = true;
     }
 
-    // BGM재생 시간만큼 기다렸다가 패널 변경해주기
+    // BGameDesigner재생 시간만큼 기다렸다가 패널 변경해주기
     IEnumerator ChangeAnimationPanel()
     {
         yield return new WaitForSecondsRealtime(5f);
+        
+        m_SetSatisfactionStatusPanelCor = SetSatisfactionStatusPanel();
 
-        m_GameShowAnimationPanel.SetActiveAnimationPanel();
-
-        StartCoroutine(SetSatisfactionStatusPanel());
+        StartCoroutine(m_SetSatisfactionStatusPanelCor);
     }
+
+    #region _심사위원 애니메이션 싱크를 맞추기 위한 함수들
+
+    public void ShowFunAssessment()
+    {
+        FindEmojiAndScript((Assessment)_mTemporaryData.m_FunAssessment, "Fun");
+    }
+
+    public void ShowFunScore()
+    {
+        m_GameShowAnimationPanel.ChangeEvalutionResponseScore(_mTemporaryData.m_FunScore.ToString());
+    }
+
+    public void ShowGraphicAssessment()
+    {
+        FindEmojiAndScript((Assessment)_mTemporaryData.m_GraphicAssessment, "Graphic");
+    }
+
+    public void ShowGraphicScore()
+    {
+        m_GameShowAnimationPanel.ChangeEvalutionResponseScore(
+            (_mTemporaryData.m_FunScore + _mTemporaryData.m_GraphicScore).ToString());
+    }
+
+    public void ShowPerfectionAssessment()
+    {
+        FindEmojiAndScript((Assessment)_mTemporaryData.m_PerfectionAssessment, "Perfection");
+    }
+
+    public void ShowPerfectionScore()
+    {
+        m_GameShowAnimationPanel.ChangeEvalutionResponseScore(
+            (_mTemporaryData.m_FunScore + _mTemporaryData.m_GraphicScore + _mTemporaryData.m_PerfectionScore)
+            .ToString());
+    }
+
+    public void ShowGenreAssessment()
+    {
+        FindEmojiAndScript((Assessment)_mTemporaryData.m_GenreAssessment, "Genre");
+    }
+
+    public void ShowGenreScore()
+    {
+        m_GameShowAnimationPanel.ChangeEvalutionResponseScore((_mTemporaryData.m_FunScore +
+                                                               _mTemporaryData.m_GraphicScore +
+                                                               _mTemporaryData.m_PerfectionScore +
+                                                               _mTemporaryData.m_GenreScore).ToString());
+    }
+
+    public void ShowConceptAssessment()
+    {
+        FindEmojiAndScript((Assessment)_mTemporaryData.m_ConceptAssessment, "Concept");
+    }
+
+    public void ShowConceptScore()
+    {
+        m_GameShowAnimationPanel.ChangeEvalutionResponseScore((_mTemporaryData.m_FunScore +
+                                                               _mTemporaryData.m_GraphicScore +
+                                                               _mTemporaryData.m_PerfectionScore +
+                                                               _mTemporaryData.m_GenreScore +
+                                                               _mTemporaryData.m_ConceptScore).ToString());
+    }
+
+    #endregion
 
     // 게임 만족도 현황을 보여주기 위한 패널에 스크립트와 이미지를 넣어주는 함수
     private IEnumerator SetSatisfactionStatusPanel()
     {
-        m_GameShowAnimationPanel.SetAcademyName(PlayerInfo.Instance.m_AcademyName);
+        m_GameShowAnimationPanel.SetActiveAnimationPanel();
 
-        m_GameShowAnimationPanel.ChangeEvalutionResponseScore(m_TemporaryGameShowData.m_FunScore.ToString());
-        FindEmojiAndScript(m_TemporaryGameShowData.m_FunAssessment, "Fun");
+        m_GameShowAnimationPanel.SetAcademyName(PlayerInfo.Instance.AcademyName);
 
-        yield return new WaitForSecondsRealtime(3f);
+        yield return new WaitForSecondsRealtime(25f);
 
-        m_GameShowAnimationPanel.ChangeEvalutionResponseScore((m_TemporaryGameShowData.m_FunScore + m_TemporaryGameShowData.m_GraphicScore).ToString());
-        FindEmojiAndScript(m_TemporaryGameShowData.m_GraphicAssessment, "Graphic");
-
-        yield return new WaitForSecondsRealtime(3f);
-
-        m_GameShowAnimationPanel.ChangeEvalutionResponseScore((m_TemporaryGameShowData.m_FunScore + m_TemporaryGameShowData.m_GraphicScore + m_TemporaryGameShowData.m_PerfectionScore).ToString());
-        FindEmojiAndScript(m_TemporaryGameShowData.m_PerfectionAssessment, "Perfection");
-
-        yield return new WaitForSecondsRealtime(3f);
-
-        m_GameShowAnimationPanel.ChangeEvalutionResponseScore((m_TemporaryGameShowData.m_FunScore + m_TemporaryGameShowData.m_GraphicScore + m_TemporaryGameShowData.m_PerfectionScore + m_TemporaryGameShowData.m_GenreScore).ToString());
-        FindEmojiAndScript(m_TemporaryGameShowData.m_GenreAssessment, "Genre");
-
-        yield return new WaitForSecondsRealtime(3f);
-
-        m_GameShowAnimationPanel.ChangeEvalutionResponseScore((m_TemporaryGameShowData.m_FunScore + m_TemporaryGameShowData.m_GraphicScore + m_TemporaryGameShowData.m_PerfectionScore + m_TemporaryGameShowData.m_GenreScore + m_TemporaryGameShowData.m_ConceptScore).ToString());
-        FindEmojiAndScript(m_TemporaryGameShowData.m_ConceptAssessment, "Concept");
-
-        yield return new WaitForSecondsRealtime(2f);
-
-        SetStudentFaceSprite(m_TemporaryGameShowData.m_GameShowResultAssessment);
+        SetStudentFaceSprite((Assessment)_mTemporaryData.m_GameShowResultAssessment);
 
         yield return new WaitForSecondsRealtime(3f);
 
@@ -574,30 +805,23 @@ public class GameShow : MonoBehaviour
 
         m_PopUpResultScriptPanel.TurnOnUI();
 
-        FindResultScript(m_TemporaryGameShowData.m_GameShowResultAssessment, m_TemporaryGameShowData.m_FunScore, m_TemporaryGameShowData.m_GraphicScore, m_TemporaryGameShowData.m_PerfectionScore);
+        FindResultScript((Assessment)_mTemporaryData.m_GameShowResultAssessment, (int)_mTemporaryData.m_FunScore,
+            (int)_mTemporaryData.m_GraphicScore, (int)_mTemporaryData.m_PerfectionScore);
 
         yield return StartCoroutine(ResultPanelScript());
 
         m_PopOffResultScriptPanel.TurnOffUI();
+        m_SoundManager.ReplayInGameBgm();
+        m_SoundManager.StopMain2Audio();
 
-        m_PopUpRewardPanel.TurnOnUI();
+        yield return StartCoroutine(MakeResultReward());
 
-        // 보상에 따라 프리팹 생성해주는거 추가하기
-        m_StartPosition = m_RewardPanel.m_ContentsAnchor.position;
-        m_TargetPosition = m_StartPosition + Vector3.right * m_RewardPanel.m_ContentsAnchor.rect.width;
+        GameShowData _gameShowData = SearchGameShowInfo((int)_mTemporaryData.m_GameShowID);
 
-        MakeResultReward();
-
-        if (m_RewardPanel.m_ContentsTransform.childCount > 3)
-        {
-            m_RewardPanel.SetContentAnchor(false);
-
-            yield return StartCoroutine(ResultPanelScrollView());
-        }
-        else
-        {
-            m_RewardPanel.SetContentAnchor(true);
-        }
+        int _index = m_ToBeRunningGameShow.FindIndex(x => x.m_GameShowName == _gameShowData.GameShow_Name);
+        m_ToBeRunningGameShow.RemoveAt(_index);
+        
+        InitGameShowPanel();
     }
 
     private IEnumerator ResultPanelScript()
@@ -618,7 +842,6 @@ public class GameShow : MonoBehaviour
                 {
                     return false;
                 }
-
             });
 
             yield return null;
@@ -637,7 +860,8 @@ public class GameShow : MonoBehaviour
         while (!completedCycle)
         {
             float direction = scrollForward ? 1f : -1f;
-            m_RewardPanel.m_ContentsAnchor.Translate(Vector3.right * m_ScrollSpeed * direction * Time.unscaledDeltaTime);
+            m_RewardPanel.m_ContentsAnchor.Translate(Vector3.right * m_ScrollSpeed * direction *
+                                                     Time.unscaledDeltaTime);
 
             if (scrollForward && m_RewardPanel.m_ContentsAnchor.position.x >= m_TargetPosition.x)
             {
@@ -668,7 +892,10 @@ public class GameShow : MonoBehaviour
         max = max > _perfectionScore ? 5 : max;
 
         string _mainText2 = GetResultScript(Assessment.None, max);
-        m_ResultDialogQueue.Enqueue("시연회 반응으로는 \"" + _mainText1 + "\"," + "\"" + _mainText2 + "\"가(이) 있네요.");
+        char lastText = _mainText2.ElementAt(_mainText2.Length - 1);
+
+        string selectText = (lastText - 0xAC00) % 28 > 0 ? "이" : "가";
+        m_ResultDialogQueue.Enqueue("시연회 반응으로는 \"" + _mainText1 + "\"," + "\"" + _mainText2 + "\"" + selectText + " 있네요.");
 
         // 마무리멘트
         m_ResultDialogQueue.Enqueue(GetResultScript(Assessment.None, 6));
@@ -729,6 +956,39 @@ public class GameShow : MonoBehaviour
         }
     }
 
+    public void SkipAnim()
+    {
+        StopCoroutine(m_SetSatisfactionStatusPanelCor);
+        StopCoroutine(m_ChangeAnimationPanel);
+
+        StartCoroutine(ClickSkipButton());
+    }
+
+    private IEnumerator ClickSkipButton()
+    {
+        GameShowData _gameShowData = SearchGameShowInfo((int)_mTemporaryData.m_GameShowID);
+
+        m_PopOffResultAnimationPanel.TurnOffUI();
+
+        m_PopUpResultScriptPanel.TurnOnUI();
+
+        FindResultScript((Assessment)_mTemporaryData.m_GameShowResultAssessment, (int)_mTemporaryData.m_FunScore,
+            (int)_mTemporaryData.m_GraphicScore, (int)_mTemporaryData.m_PerfectionScore);
+
+        yield return StartCoroutine(ResultPanelScript());
+
+        m_PopOffResultScriptPanel.TurnOffUI();
+        m_SoundManager.ReplayInGameBgm();
+        m_SoundManager.StopMain2Audio();
+
+        yield return StartCoroutine(MakeResultReward());
+
+        int _index = m_ToBeRunningGameShow.FindIndex(x => x.m_GameShowName == _gameShowData.GameShow_Name);
+        m_ToBeRunningGameShow.RemoveAt(_index);
+
+        InitGameShowPanel();
+    }
+
     private void SetStudentFaceSprite(Assessment _assessment)
     {
         switch (_assessment)
@@ -740,12 +1000,6 @@ public class GameShow : MonoBehaviour
             break;
 
             case Assessment.Bad:
-            {
-                m_GameShowAnimationPanel.ChangeStudentFaceImage(m_StudentFace[0], m_StudentFace[1], m_StudentFace[2]);
-            }
-            break;
-
-            case Assessment.NotBad:
             {
                 m_GameShowAnimationPanel.ChangeStudentFaceImage(m_StudentFace[3], m_StudentFace[4], m_StudentFace[5]);
             }
@@ -776,136 +1030,170 @@ public class GameShow : MonoBehaviour
             break;
         }
     }
+
     // 결과에 따른 보상을 만들어준다.
-    private void MakeResultReward()
+    private IEnumerator MakeResultReward()
     {
-        if (m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Plusreward != 0)
+        GameShowData _gameShowData = SearchGameShowInfo((int)_mTemporaryData.m_GameShowID);
+
+        if (m_RewardPanel.m_ContentsTransform.childCount != 0)
         {
-            // 추가 보상이 있을 때 어떻게 할 지 고민하기
+            for (int i = m_RewardPanel.m_ContentsTransform.childCount - 1; i >= 0; i--)
+            {
+                Destroy(m_RewardPanel.m_ContentsTransform.GetChild(i).gameObject);
+            }
+        }
+
+        var (reward, famous, passion, health) = GetRewardByAssessment(_gameShowData.GameShow_Level,
+            (Assessment)_mTemporaryData.m_GameShowResultAssessment);
+
+        m_RewardMoney = reward;
+        m_RewardFamous = famous;
+        m_RewardPassion = passion;
+        m_RewardHealth = health;
+
+        if (m_RewardFamous != 0 || m_RewardHealth != 0 || m_RewardMoney != 0 || m_RewardPassion != 0)
+        {
+            m_PopUpRewardPanel.TurnOnUI();
+            m_SoundManager.PlayMoneyJackpotSound();
         }
         else
         {
-            var (reward, famous, passion, health) = GetRewardByAssessment(m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Level, m_TemporaryGameShowData.m_GameShowResultAssessment);
-
-            m_RewardMoney = reward;
-            m_RewardFamous = famous;
-            m_RewardPassion = passion;
-            m_RewardHealth = health;
-
-            if (m_RewardMoney != 0)
-            {
-                GameObject _reward = Instantiate(m_RewardPrefab, m_RewardPanel.m_ContentsTransform);
-                _reward.name = "RewardMoney";
-                _reward.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "상금";
-                //_reward.transform.GetChild(1).GetComponent<Imgae>().sprite = ;
-                _reward.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = m_RewardMoney.ToString();
-            }
-
-            if (m_RewardFamous != 0)
-            {
-                GameObject _reward = Instantiate(m_RewardPrefab, m_RewardPanel.m_ContentsTransform);
-                _reward.name = "RewardFamous";
-                _reward.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "인지도";
-                //_reward.transform.GetChild(1).GetComponent<Imgae>().sprite = ;
-                _reward.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = m_RewardFamous.ToString();
-            }
-
-            if (m_RewardPassion != 0)
-            {
-                GameObject _reward = Instantiate(m_RewardPrefab, m_RewardPanel.m_ContentsTransform);
-                _reward.name = "RewardPassion";
-                _reward.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "열정";
-                //_reward.transform.GetChild(1).GetComponent<Imgae>().sprite = ;
-                _reward.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = m_RewardPassion.ToString();
-            }
-
-            if (m_RewardHealth != 0)
-            {
-                GameObject _reward = Instantiate(m_RewardPrefab, m_RewardPanel.m_ContentsTransform);
-                _reward.name = "RewardHealth";
-                _reward.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = "체력";
-                //_reward.transform.GetChild(1).GetComponent<Imgae>().sprite = ;
-                _reward.transform.GetChild(2).GetComponent<TextMeshProUGUI>().text = m_RewardHealth.ToString();
-            }
+            yield break;
         }
 
-        int _index = m_ToBeRunningGameShow.FindIndex(x => x.m_TotalGameShowData.GameShow_ID == m_TemporaryGameShowData.m_TotalGameShowData.GameShow_ID);
-        m_ToBeRunningGameShow.RemoveAt(_index);
-    }
-
-    private GameObject MakeEventPrefab(string _gameShowName, int _gameShowMonth, int _gameShowWeek, int _gameShowDay)
-    {
-        GameObject _eventPrefab = Instantiate(m_EventPrefab, m_EventPanel.EventTransform);
-
-        _eventPrefab.name = _gameShowName;
-
-        // 합산된 D-Day 값
-        int totalDDay = ((GameTime.Instance.FlowTime.NowYear - 1) * 12 * 4 * 5) + ((_gameShowMonth - 1) * 4 * 5) + ((_gameShowWeek - 1) * 5) + _gameShowDay;
-        int today = (GameTime.Instance.FlowTime.NowYear - 1) * 12 * 4 * 5 + ((GameTime.Instance.FlowTime.NowMonth - 1) * 4 * 5) +
-            ((GameTime.Instance.FlowTime.NowWeek - 1) * 5) + GameTime.Instance.FlowTime.NowDay;
-
-        totalDDay -= today;
-
-        _eventPrefab.GetComponent<EventPrefab>().DDAyText.text = "D-" + totalDDay.ToString();
-
-        return _eventPrefab;
-        //StartCoroutine(DDayTimer());
-    }
-
-    public void ClickEventButton()
-    {
-        if (m_EventPanel.ScorllViewObj.activeSelf)
+        if (m_RewardMoney != 0)
         {
-            m_EventPanel.ScorllViewObj.SetActive(false);
+            GameObject _reward = Instantiate(m_RewardPrefab, m_RewardPanel.m_ContentsTransform);
+            _reward.name = "RewardMoney";
+            _reward.GetComponent<RewardPrefab>().m_Title.text = "상금";
+            _reward.GetComponent<RewardPrefab>().m_Icon.sprite = m_RewardSprite[0];
+            _reward.GetComponent<RewardPrefab>().m_RewardText.text = string.Format("{0:#,0}", m_RewardMoney);
         }
-        else
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        if (m_RewardFamous != 0)
         {
-            m_EventPanel.ScorllViewObj.SetActive(true);
+            GameObject _reward = Instantiate(m_RewardPrefab, m_RewardPanel.m_ContentsTransform);
+            _reward.name = "RewardFamous";
+            _reward.GetComponent<RewardPrefab>().m_Title.text = "인지도";
+            _reward.GetComponent<RewardPrefab>().m_Icon.sprite = m_RewardSprite[1];
+            _reward.GetComponent<RewardPrefab>().m_RewardText.text = m_RewardFamous.ToString();
         }
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        if (m_RewardPassion != 0)
+        {
+            GameObject _reward = Instantiate(m_RewardPrefab, m_RewardPanel.m_ContentsTransform);
+            _reward.name = "RewardPassion";
+            _reward.GetComponent<RewardPrefab>().m_Title.text = "열정";
+            _reward.GetComponent<RewardPrefab>().m_Icon.sprite = m_RewardSprite[2];
+            _reward.GetComponent<RewardPrefab>().m_RewardText.text = m_RewardPassion.ToString();
+        }
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        if (m_RewardHealth != 0)
+        {
+            GameObject _reward = Instantiate(m_RewardPrefab, m_RewardPanel.m_ContentsTransform);
+            _reward.name = "RewardHealth";
+            _reward.GetComponent<RewardPrefab>().m_Title.text = "체력";
+            _reward.GetComponent<RewardPrefab>().m_Icon.sprite = m_RewardSprite[3];
+            _reward.GetComponent<RewardPrefab>().m_RewardText.text = m_RewardHealth.ToString();
+        }
+
+        m_StartPosition = m_RewardPanel.m_ContentsAnchor.position;
+        m_TargetPosition = m_StartPosition + Vector3.right * m_RewardPanel.m_ContentsAnchor.rect.width;
+
+        if (m_RewardPanel.m_ContentsTransform.childCount > 3)
+        {
+            //m_RewardPanel.SetContentAnchor(false);
+
+            yield return StartCoroutine(ResultPanelScrollView());
+        }
+        //else
+        //{
+        //    //m_RewardPanel.SetContentAnchor(true);
+        //    //Math.Cos(90.0f);
+        //}
     }
 
     // 게임쇼 패널을 닫을 때 마다 해줄 데이터 초기화
     public void InitData()
     {
-        m_TemporaryGameShowData.m_TotalGameShowData = null;
-        m_TemporaryGameShowData.m_ParticipatingStudents = null;
-        m_TemporaryGameShowData.m_GameJamID = 0;
-        m_TemporaryGameShowData.m_FunnyHeart = 0;
-        m_TemporaryGameShowData.m_GenreHeart = 0;
-        m_TemporaryGameShowData.m_GraphicHeart = 0;
-        m_TemporaryGameShowData.m_PerceficationHeart = 0;
-        m_TemporaryGameShowData.m_GameShowGenreAndConceptHeart = 0;
-        m_TemporaryGameShowData.m_GameShowResultAssessment = Assessment.None;
+        _mTemporaryData.m_GameJamID = 0;
+        _mTemporaryData.m_FunnyHeart = 0;
+        _mTemporaryData.m_GenreHeart = 0;
+        _mTemporaryData.m_GraphicHeart = 0;
+        _mTemporaryData.m_PerceficationHeart = 0;
+        _mTemporaryData.m_GameShowGenreAndConceptHeart = 0;
+        _mTemporaryData.m_GameShowResultAssessment = (int)Assessment.None;
+    }
+
+    // 게임쇼가 끝날 때 초기화 해줄것들
+    private void InitGameShowPanel()
+    {
+        m_GameShowAnimationPanel.ChangeStudentFaceImage(m_StudentFace[3], m_StudentFace[4], m_StudentFace[5]);
+        m_GameShowAnimationPanel.InitPanel();
+        m_GameShowAnimationPanel.ChangeEvalutionResponseScore("0");
+        m_GameShowAnimationPanel.StopAnimation();
     }
 
     // 게임선택 버튼을 눌렀을 때 이전에 만든 게임 목록을 만들어줄 함수
-    private void GetPrevGameList()
+    private void MakePrevGameJamForToBeRunning(string _rank = "")
     {
         m_GameShowPanel.DestroyObj(m_GameShowPanel.PrevGameListContentObj);
 
         if (GameJam.m_GameJamHistory.Count == 0)
         {
             m_GameShowPanel.SetActiveIsNotPrevGameList(true);
+            return;
         }
-        // 게임쇼에 내보낸 게임은 선택 못하게 하고 맨 위로 보내줘야한다.
-        else if (m_ToBeRunningGameShow.Count != 0)
-        {
-            Dictionary<int, List<SaveGameJamData>> _gameJam = new Dictionary<int, List<SaveGameJamData>>(GameJam.m_GameJamHistory);
 
+        Dictionary<int, List<GameJamSaveData>> _gameJam = StaticDeepCopy.DeepClone(GameJam.m_GameJamHistory);
+
+        if (m_ToBeRunningGameShow.Count != 0)
+        {
             for (int i = 0; i < m_ToBeRunningGameShow.Count; i++)
             {
-                List<SaveGameJamData> gamejamdata1 = new List<SaveGameJamData>(_gameJam[m_ToBeRunningGameShow[i].m_GameJamID]);
-                MakeSelectPrevGameShowList(gamejamdata1);
+                int _index = (int)m_ToBeRunningGameShow[i].m_GameJamID;
+                int _gamejamIndex = _gameJam[_index].FindIndex(x => x.m_GameJamID == _index);
+                string _gameJamRank = "";
 
-                for (int j = 0; j < GameJam.m_GameJamHistory.Count; j++)
+                if (_rank != "")
+                    _gameJamRank = _gameJam[_index][_gamejamIndex].m_Rank;
+                else
                 {
-                    for (int k = 0; k < GameJam.m_GameJamHistory.ElementAt(j).Value.Count; k++)
+                    _rank = _gameJam[_index][_gamejamIndex].m_Rank;
+                    _gameJamRank = _gameJam[_index][_gamejamIndex].m_Rank;
+                }
+
+                if ((_gameJamRank == "" || _gameJamRank == _rank) && _gameJamRank != "미완성")
+                {
+                    List<GameJamSaveData> gamejamdata1 = new List<GameJamSaveData>(_gameJam[_index]);
+                    MakeSelectPrevGameShowList(gamejamdata1);
+                    _gameJam[_index].RemoveAt(_gamejamIndex);
+                }
+            }
+
+            for (int j = 0; j < _gameJam.Count; j++)
+            {
+                for (int k = 0; k < _gameJam.ElementAt(j).Value.Count; k++)
+                {
+                    string _gameJamRank = "";
+
+                    if (_rank != "")
+                        _gameJamRank = _gameJam.ElementAt(j).Value[k].m_Rank;
+                    else
                     {
-                        if (m_ToBeRunningGameShow[i].m_GameJamID != GameJam.m_GameJamHistory.ElementAt(j).Key)
-                        {
-                            MakePrevGameList(j, k);
-                        }
+                        _rank = _gameJam.ElementAt(j).Value[k].m_Rank;
+                        _gameJamRank = _gameJam.ElementAt(j).Value[k].m_Rank;
                     }
+
+                    if ((_gameJamRank == "" || _gameJamRank == _rank) && _gameJamRank != "미완성")
+                        MakePrevGameList(j, k);
                 }
             }
         }
@@ -915,7 +1203,18 @@ public class GameShow : MonoBehaviour
             {
                 for (int j = 0; j < GameJam.m_GameJamHistory.ElementAt(i).Value.Count; j++)
                 {
-                    MakePrevGameList(i, j);
+                    string _gameJamRank = "";
+
+                    if (_rank != "")
+                        _gameJamRank = _gameJam.ElementAt(i).Value[j].m_Rank;
+                    else
+                    {
+                        _rank = _gameJam.ElementAt(i).Value[j].m_Rank;
+                        _gameJamRank = _gameJam.ElementAt(i).Value[j].m_Rank;
+                    }
+
+                    if ((_gameJamRank == "" || _gameJamRank == _rank) && _gameJamRank != "미완성")
+                        MakePrevGameList(i, j);
                 }
             }
         }
@@ -924,17 +1223,21 @@ public class GameShow : MonoBehaviour
     // 게임잼에서 만든 게임들을 만들 함수
     private void MakePrevGameList(int _gameJamHistoryIndex, int _gameJamHistoryValueIndex)
     {
+        GameJamInfo _nowData = GameJam.SearchAllGameJamInfo(GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Key);
+
         GameObject _prevGameList = Instantiate(m_PrevGameListPrefab, m_GameShowPanel.PrevGameJamListContent);
 
-        string _gameName = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_GameJamData.m_GameName;
-        string _gameRank = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_GameJamData.m_Rank;
-        string _gameConcept = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_GameJamInfoData.m_GjamConcept;
-        string _gameGenre = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_GameJamData.m_Genre;
-        string _gameFunny = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_GameJamData.m_Funny.ToString();
-        string _gameGraphic = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_GameJamData.m_Funny.ToString();
-        string _gamePerfection = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_GameJamData.m_Funny.ToString();
+        int _gameConceptImageIndex = (int)GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_ConceptIndex;
+        string _gameConcept = _nowData.m_GjamConcept;
+        string _gameName = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_GameName;
+        string _gameRank = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_Rank;
+        string _gameGenre = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_Genre;
+        string _gameFunny = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_Funny.ToString();
+        string _gameGraphic = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_Graphic.ToString();
+        string _gamePerfection = GameJam.m_GameJamHistory.ElementAt(_gameJamHistoryIndex).Value[_gameJamHistoryValueIndex].m_Perfection.ToString();
 
         _prevGameList.name = _gameName;
+        _prevGameList.GetComponent<PrevGamePrefab>().m_ConceptImage.sprite = m_GameJam.RestultSprite[_gameConceptImageIndex];
         _prevGameList.GetComponent<PrevGamePrefab>().m_GameName.text = _gameName;
         _prevGameList.GetComponent<PrevGamePrefab>().m_Grade.text = _gameRank;
         _prevGameList.GetComponent<PrevGamePrefab>().m_Concept.text = _gameConcept;
@@ -946,21 +1249,24 @@ public class GameShow : MonoBehaviour
     }
 
     // 내가 선택한 게임 찾아서 먼저 만들어주기
-    private void MakeSelectPrevGameShowList(List<SaveGameJamData> _data)
+    private void MakeSelectPrevGameShowList(List<GameJamSaveData> _data)
     {
         for (int i = 0; i < _data.Count; i++)
         {
             GameObject _prevGameList = Instantiate(m_PrevGameListPrefab, m_GameShowPanel.PrevGameJamListContent);
 
-            string _gameName = _data[i].m_GameJamData.m_GameName;
-            string _gameRank = _data[i].m_GameJamData.m_Rank;
-            string _gameConcept = _data[i].m_GameJamInfoData.m_GjamConcept;
-            string _gameGenre = _data[i].m_GameJamData.m_Genre;
-            string _gameFunny = _data[i].m_GameJamData.m_Funny.ToString();
-            string _gameGraphic = _data[i].m_GameJamData.m_Funny.ToString();
-            string _gamePerfection = _data[i].m_GameJamData.m_Funny.ToString();
+            GameJamInfo _nowData = GameJam.SearchAllGameJamInfo((int)_data[i].m_GameJamID);
+
+            string _gameName = _data[i].m_GameName;
+            string _gameRank = _data[i].m_Rank;
+            string _gameConcept = _nowData.m_GjamConcept;
+            string _gameGenre = _data[i].m_Genre;
+            string _gameFunny = _data[i].m_Funny.ToString();
+            string _gameGraphic = _data[i].m_Funny.ToString();
+            string _gamePerfection = _data[i].m_Funny.ToString();
 
             _prevGameList.name = _gameName;
+            _prevGameList.GetComponent<PrevGamePrefab>().m_ConceptImage.sprite = m_GameJam.RestultSprite[(int)_data[i].m_ConceptIndex];
             _prevGameList.GetComponent<PrevGamePrefab>().m_GameName.text = _gameName;
             _prevGameList.GetComponent<PrevGamePrefab>().m_Grade.text = _gameRank;
             _prevGameList.GetComponent<PrevGamePrefab>().m_Concept.text = _gameConcept;
@@ -970,7 +1276,6 @@ public class GameShow : MonoBehaviour
             _prevGameList.GetComponent<PrevGamePrefab>().m_Perfection.text = _gamePerfection;
             _prevGameList.GetComponent<PrevGamePrefab>().m_Glow.SetActive(true);
             _prevGameList.GetComponent<PrevGamePrefab>().m_PrefabButton.interactable = false;
-            //_prevGameList.GetComponent<PrevGamePrefab>().m_PrefabButton.onClick.AddListener(ClickPrevGameButton);
         }
     }
 
@@ -989,49 +1294,11 @@ public class GameShow : MonoBehaviour
         }
         else if (_rankName == "All")
         {
-            GetPrevGameList();
+            MakePrevGameJamForToBeRunning();
         }
         else
         {
-            if (m_ToBeRunningGameShow.Count != 0)
-            {
-                Dictionary<int, List<SaveGameJamData>> _gameJam = new Dictionary<int, List<SaveGameJamData>>(GameJam.m_GameJamHistory);
-
-                for (int i = 0; i < m_ToBeRunningGameShow.Count; i++)
-                {
-                    for (int j = 0; j < GameJam.m_GameJamHistory.Count; j++)
-                    {
-                        for (int k = 0; k < GameJam.m_GameJamHistory.ElementAt(j).Value.Count; k++)
-                        {
-                            if (GameJam.m_GameJamHistory.ElementAt(j).Value[k].m_GameJamData.m_Rank == _rankName)
-                            {
-                                if (m_ToBeRunningGameShow[i].m_GameJamID != GameJam.m_GameJamHistory.ElementAt(j).Key)
-                                {
-                                    MakePrevGameList(j, k);
-                                }
-                                else
-                                {
-                                    List<SaveGameJamData> gamejamdata1 = new List<SaveGameJamData>(_gameJam[m_ToBeRunningGameShow[i].m_GameJamID]);
-                                    MakeSelectPrevGameShowList(gamejamdata1);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < GameJam.m_GameJamHistory.Count; i++)
-                {
-                    for (int j = 0; j < GameJam.m_GameJamHistory.ElementAt(i).Value.Count; j++)
-                    {
-                        if (GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Rank == _rankName)
-                        {
-                            MakePrevGameList(i, j);
-                        }
-                    }
-                }
-            }
+            MakePrevGameJamForToBeRunning(_rankName);
         }
     }
 
@@ -1044,40 +1311,81 @@ public class GameShow : MonoBehaviour
         {
             m_PrevClickObj.GetComponent<PrevGamePrefab>().m_Check.SetActive(false);
         }
+
         _currentObj.GetComponent<PrevGamePrefab>().m_Check.SetActive(true);
 
         _isCanParticipate = CheckStudentHealthAndPassion();
-
+        _isSameDayInList = CheckGameShowDay();
+        _isPrevGameJamButtonClick = true;
         m_GameShowPanel.ApplyButton.interactable = true;
         m_PrevClickObj = _currentObj;
+
+        if (m_TutorialCount == 13)
+        {
+            m_Unmask.fitTarget = m_GameShowPanel.ApplyButton.GetComponent<RectTransform>();
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_TutorialArrowImage.transform.Rotate(0, 0, -90);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 190, 0);
+            m_TutorialCount++;
+        }
     }
 
     private void ApplySuccess()
     {
         // 내가 이미 신청한 게임잼이 들어있는데 누른거라면 넘겨주기
-        int index = m_ToBeRunningGameShow.FindIndex(x => x.m_TotalGameShowData.GameShow_Name == m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Name);
+        int index = m_ToBeRunningGameShow.FindIndex(x => x.m_GameShowID == _mTemporaryData.m_GameShowID);
 
         if (m_MonthLimit > 0 && index == -1)
         {
+            GameShowData _gameData = SearchGameShowInfo((int)_mTemporaryData.m_GameShowID);
+            Student _gameDesignerStudent = ObjectManager.Instance.SearchStudentInfo(_mTemporaryData.m_GameDesignerStudentName);
+            Student _artStudent = ObjectManager.Instance.SearchStudentInfo(_mTemporaryData.m_ArtStudentName);
+            Student _programmingStudent = ObjectManager.Instance.SearchStudentInfo(_mTemporaryData.m_ProgrammingStudentName);
+
             m_GameShowPanel.ApplyButton.GetComponent<Image>().sprite = m_ApplySuccessSprite;
 
-            m_TemporaryGameShowData.m_GameShowGenreAndConceptHeart = m_GenreAndConceptHeart;
-            m_TemporaryGameShowData.m_FunnyHeart = m_TemporaryGameShowData.m_TotalGameShowData.GameShow_State["Fun"];
-            m_TemporaryGameShowData.m_PerceficationHeart = m_TemporaryGameShowData.m_TotalGameShowData.GameShow_State["Perfection"];
-            m_TemporaryGameShowData.m_GraphicHeart = m_TemporaryGameShowData.m_TotalGameShowData.GameShow_State["Graphic"];
-            m_TemporaryGameShowData.m_GenreHeart = m_TemporaryGameShowData.m_TotalGameShowData.GameShow_State["Genre"];
+            _mTemporaryData.m_GameShowGenreAndConceptHeart = m_GenreAndConceptHeart;
+            _mTemporaryData.m_FunnyHeart = _gameData.GameShow_State["Fun"];
+            _mTemporaryData.m_PerceficationHeart = _gameData.GameShow_State["Perfection"];
+            _mTemporaryData.m_GraphicHeart = _gameData.GameShow_State["Graphic"];
+            _mTemporaryData.m_GenreHeart = _gameData.GameShow_State["Genre"];
+            _mTemporaryData.m_GameShowName = _gameData.GameShow_Name;
+            _gameDesignerStudent.m_StudentStat.m_Health -= _gameData.GameShow_Health;
+            _gameDesignerStudent.m_StudentStat.m_Passion -= _gameData.GameShow_Pasion;
 
-            m_ToBeRunningGameShow.Add(m_TemporaryGameShowData);
+            _artStudent.m_StudentStat.m_Health -= _gameData.GameShow_Health;
+            _artStudent.m_StudentStat.m_Passion -= _gameData.GameShow_Pasion;
+
+            _programmingStudent.m_StudentStat.m_Health -= _gameData.GameShow_Health;
+            _programmingStudent.m_StudentStat.m_Passion -= _gameData.GameShow_Pasion;
+            _mTemporaryData.m_MakeMonth = _gameData.GameShow_Month;
+            _mTemporaryData.m_MakeWeek = _gameData.GameShow_Week;
+            _mTemporaryData.m_MakeDay = _gameData.GameShow_Day;
+
+            GameShowSaveData _newdata = StaticDeepCopy.DeepClone<GameShowSaveData>(_mTemporaryData);
+
+            m_ToBeRunningGameShow.Add(_newdata);
 
             m_MonthLimit -= 1;
 
-            GameObject _eventPrefab = MakeEventPrefab(m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Name, m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Month,
-                 m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Week, m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Day);
+            GameObject _eventPrefab = m_ActivityEvent.MakeEventPrefab(_gameData.GameShow_Name, _gameData.GameShow_Month,
+                _gameData.GameShow_Week, _gameData.GameShow_Day, false, _gameData.GameShow_Month);
 
-            m_EventPanel.gameObject.SetActive(true);
-            m_IsTypingAnmation = true;
+            m_ActivityEvent.SetEventPanelActive(true);
+            //m_EventPanel.gameObject.SetActive(true);
+            //m_IsTypingAnmation = true;
             m_PrevClickObj.GetComponent<PrevGamePrefab>().m_Glow.SetActive(true);
-            StartCoroutine(TypingText(_eventPrefab));
+            m_PrevClickObj.GetComponent<PrevGamePrefab>().m_Check.SetActive(false);
+
+            m_GameShowPanel.SetPractivePanel();
+
+            CheckNovelty(_mTemporaryData);
+
+            if (_novelty < 1f)
+                StartCoroutine(NoveltyScript());
+
+            StartCoroutine(m_ActivityEvent.TypingText(_eventPrefab, "게임쇼 준비중"));
         }
         else if (m_MonthLimit <= 0)
         {
@@ -1086,66 +1394,182 @@ public class GameShow : MonoBehaviour
         }
     }
 
+    private IEnumerator NoveltyScript()
+    {
+        yield return new WaitForSecondsRealtime(1f);
+
+        int _index = UnityEngine.Random.Range(0, m_NoveltyScriptList.Count);
+        string[] _dialog = m_NoveltyScriptList[_index].Split("/");
+
+        for (int i = 0; i < _dialog.Length; i++)
+        {
+            m_NoveltyDialoge.Enqueue(_dialog[i]);
+        }
+
+        m_PopUpNoveltyWarningPanel.TurnOnUI();
+
+        yield return StartCoroutine(Dialoge());
+
+        m_PopOffNoveltyWarningPanel.TurnOffUI();
+    }
+
+    private IEnumerator Dialoge()
+    {
+        while (m_NoveltyDialoge.Count > 0)
+        {
+            m_NoveltyScript.text = m_NoveltyDialoge.Dequeue();
+
+            yield return new WaitUntil(() =>
+            {
+                if ((Input.touchCount > 1 || Input.GetMouseButtonDown(0)) && m_NoveltyDialoge.Count >= 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            });
+
+            yield return null;
+        }
+    }
+
+    private void CheckNovelty(GameShowSaveData _data)
+    {
+        _novelty = 1f;
+
+        if (m_GameShowHistory.Count != 0)
+        {
+            for (int i = 0; i < m_GameShowHistory.Count; i++)
+            {
+                for (int j = 0; j < m_GameShowHistory.ElementAt(i).Value.Count; j++)
+                {
+                    if (_data.m_GameJamName == m_GameShowHistory.ElementAt(i).Value[j].m_GameJamName)
+                    {
+                        if ((int)_data.m_GameShowResultAssessment >= 4)
+                        {
+                            _novelty *= 0.2f;
+                        }
+
+                        if (_novelty < 0.1f)
+                        {
+                            _novelty = 0.1f;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void ApplyFailed()
     {
         string[] _text = new string[3];
 
-        for (int i = 0; i < 3; i++)
+        GameShowData _gameShowData = SearchGameShowInfo((int)_mTemporaryData.m_GameShowID);
+        List<Student> _compareStudentHealthAndPassion = new List<Student>();
+
+        Student _gameDesignerStudent =
+            ObjectManager.Instance.SearchStudentInfo(_mTemporaryData.m_GameDesignerStudentName);
+        Student _artStudent = ObjectManager.Instance.SearchStudentInfo(_mTemporaryData.m_ArtStudentName);
+        Student _programmingStudent =
+            ObjectManager.Instance.SearchStudentInfo(_mTemporaryData.m_ProgrammingStudentName);
+
+        _compareStudentHealthAndPassion.Add(_gameDesignerStudent);
+        _compareStudentHealthAndPassion.Add(_artStudent);
+        _compareStudentHealthAndPassion.Add(_programmingStudent);
+
+        for (int i = 0; i < _compareStudentHealthAndPassion.Count; i++)
         {
-            if (m_TemporaryGameShowData.m_ParticipatingStudents[i].m_StudentStat.m_Passion < m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Pasion)
+            if (_compareStudentHealthAndPassion[i].m_StudentStat.m_Passion < _gameShowData.GameShow_Pasion)
             {
-                _text[i] = m_TemporaryGameShowData.m_ParticipatingStudents[i].m_StudentStat.m_StudentName + "학생의 열정이 부족하여 게임쇼에 나갈 수 없습니다.";
+                if (_compareStudentHealthAndPassion[i].m_StudentStat.m_UserSettingName != "")
+                {
+                    _text[i] = _compareStudentHealthAndPassion[i].m_StudentStat.m_UserSettingName +
+                               "학생의 열정이 부족하여 게임쇼에 나갈 수 없습니다.";
+                }
+                else
+                {
+                    _text[i] = _compareStudentHealthAndPassion[i].m_StudentStat.m_StudentName +
+                               "학생의 열정이 부족하여 게임쇼에 나갈 수 없습니다.";
+                }
             }
-            else if (m_TemporaryGameShowData.m_ParticipatingStudents[i].m_StudentStat.m_Health < m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Health)
+            else if (_compareStudentHealthAndPassion[i].m_StudentStat.m_Health < _gameShowData.GameShow_Health)
             {
-                _text[i] = m_TemporaryGameShowData.m_ParticipatingStudents[i].m_StudentStat.m_StudentName + "학생의 체력이 부족하여 게임쇼에 나갈 수 없습니다.";
+                if (_compareStudentHealthAndPassion[i].m_StudentStat.m_UserSettingName != "")
+                {
+                    _text[i] = _compareStudentHealthAndPassion[i].m_StudentStat.m_UserSettingName +
+                               "학생의 체력이 부족하여 게임쇼에 나갈 수 없습니다.";
+                }
+                else
+                {
+                    _text[i] = _compareStudentHealthAndPassion[i].m_StudentStat.m_StudentName +
+                               "학생의 체력이 부족하여 게임쇼에 나갈 수 없습니다.";
+                }
             }
             else
             {
-                _text[i] = m_TemporaryGameShowData.m_ParticipatingStudents[i].m_StudentStat.m_StudentName + "학생의 체력과 열정이 부족하여 게임쇼에 나갈 수 없습니다.";
+                if (_compareStudentHealthAndPassion[i].m_StudentStat.m_UserSettingName != "")
+                {
+                    _text[i] = _compareStudentHealthAndPassion[i].m_StudentStat.m_UserSettingName +
+                               "학생의 체력과 열정이 부족하여 게임쇼에 나갈 수 없습니다.";
+                }
+                else
+                {
+                    _text[i] = _compareStudentHealthAndPassion[i].m_StudentStat.m_StudentName +
+                               "학생의 체력과 열정이 부족하여 게임쇼에 나갈 수 없습니다.";
+                }
             }
-
         }
 
         m_GameShowPanel.SetConditionFailPanel(_text[0] + "\n" + _text[1] + "\n" + _text[2] + "\n");
     }
 
-    private IEnumerator TypingText(GameObject _eventPrrerfab)
+    // 같은 날짜의 게임쇼를 참가 못하게 하기위해 있는지 확인해보는 함수
+    private bool CheckGameShowDay()
     {
-        string _originalText;
-        string _subString = "";
+        GameShowData _totalGameShowData = new GameShowData();
+        GameShowData _temporaryGameShowData = new GameShowData();
 
-        _originalText = "...";
-
-        while (m_IsTypingAnmation)
+        // 실행시킬 데이터가 있으면 찾아서 넣어주고 없다면 그냥 초기화 시켜준다.
+        if (m_ToBeRunningGameShow.Count != 0)
         {
-            for (int i = 0; i < _originalText.Length; i++)
-            {
-                _subString += _originalText.Substring(0, i);
-
-                for (int j = 0; j < m_EventPanel.EventTransform.childCount; j++)
-                {
-                    _eventPrrerfab.GetComponent<EventPrefab>().ActivityText.text = "게임쇼 준비중" + _subString;
-                    _subString = "";
-                }
-                //m_EventPanel.EventActivity.text = "게임쇼 준비중" + _subString;
-
-                yield return new WaitForSeconds(1.5f);
-            }
+            _totalGameShowData = SearchGameShowInfo((int)m_ToBeRunningGameShow[0].m_GameShowID);
+            _temporaryGameShowData = SearchGameShowDataForWeek((int)_mTemporaryData.m_GameShowID);
         }
+
+        if (m_ToBeRunningGameShow.Count == 0)
+        {
+            return true;
+        }
+        else if ((_totalGameShowData.GameShow_Month != _temporaryGameShowData.GameShow_Month &&
+                _totalGameShowData.GameShow_Week != _temporaryGameShowData.GameShow_Week) ||
+                (_totalGameShowData.GameShow_Month == _temporaryGameShowData.GameShow_Month &&
+                _totalGameShowData.GameShow_Week != _temporaryGameShowData.GameShow_Week))
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private void SetGenreAndConceptHeart(int _gameJamIndex, int _gameJamListIndex)
     {
-        if (m_TemporaryGameShowData.m_TotalGameShowData.GameShowConcept.Any(c => c == GameJam.m_GameJamHistory.ElementAt(_gameJamIndex).Value[_gameJamListIndex].m_GameJamInfoData.m_GjamConcept) &&
-            m_TemporaryGameShowData.m_TotalGameShowData.GameShowGenre.Any(g => g == GameJam.m_GameJamHistory.ElementAt(_gameJamIndex).Value[_gameJamListIndex].m_GameJamData.m_Genre)
-            || m_TemporaryGameShowData.m_TotalGameShowData.GameShowGenre[0] == "모든 장르" && m_TemporaryGameShowData.m_TotalGameShowData.GameShowGenre[0] == "모든 컨셉")
+        GameJamInfo _nowData = GameJam.SearchAllGameJamInfo(GameJam.m_GameJamHistory.ElementAt(_gameJamIndex).Key);
+        GameShowData _gameShowData = SearchGameShowInfo((int)_mTemporaryData.m_GameShowID);
+
+        if (_gameShowData.GameShowConcept.Any(c => c == _nowData.m_GjamConcept)
+            && _gameShowData.GameShowGenre.Any(g =>
+                g == GameJam.m_GameJamHistory.ElementAt(_gameJamIndex).Value[_gameJamListIndex].m_Genre)
+            || _gameShowData.GameShowGenre[0] == "모든 장르" && _gameShowData.GameShowGenre[0] == "모든 컨셉")
         {
             m_GenreAndConceptHeart = 3;
         }
-        else if (m_TemporaryGameShowData.m_TotalGameShowData.GameShowConcept.Any(c => c == GameJam.m_GameJamHistory.ElementAt(_gameJamIndex).Value[_gameJamListIndex].m_GameJamInfoData.m_GjamConcept) ||
-                 m_TemporaryGameShowData.m_TotalGameShowData.GameShowGenre.Any(g => g == GameJam.m_GameJamHistory.ElementAt(_gameJamIndex).Value[_gameJamListIndex].m_GameJamData.m_Genre)
-                 || m_TemporaryGameShowData.m_TotalGameShowData.GameShowGenre[0] == "모든 장르" || m_TemporaryGameShowData.m_TotalGameShowData.GameShowGenre[0] == "모든 컨셉")
+        else if (_gameShowData.GameShowConcept.Any(c => c == _nowData.m_GjamConcept)
+                 || _gameShowData.GameShowGenre.Any(g =>
+                     g == GameJam.m_GameJamHistory.ElementAt(_gameJamIndex).Value[_gameJamListIndex].m_Genre)
+                 || _gameShowData.GameShowGenre[0] == "모든 장르" || _gameShowData.GameShowGenre[0] == "모든 컨셉")
         {
             m_GenreAndConceptHeart = 2;
         }
@@ -1161,9 +1585,6 @@ public class GameShow : MonoBehaviour
 
         GameObject _prevGameButton = EventSystem.current.currentSelectedGameObject;
         string _gameName = _prevGameButton.name;
-        int _index = 0;
-
-        m_TemporaryGameShowData.m_ParticipatingStudents = new Student[3];
 
         List<Student> _student = new List<Student>(ObjectManager.Instance.m_StudentList);
 
@@ -1171,28 +1592,41 @@ public class GameShow : MonoBehaviour
         {
             for (int j = 0; j < GameJam.m_GameJamHistory.ElementAt(i).Value.Count; j++)
             {
-                if (_gameName == GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GameName)
+                if (_gameName == GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameName)
                 {
+                    GameJamInfo _nowData = GameJam.SearchAllGameJamInfo(GameJam.m_GameJamHistory.ElementAt(i).Key);
+
                     SetGenreAndConceptHeart(i, j);
-                    //m_StudentsParticipated[0] = GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GM[0];
-                    //m_StudentsParticipated[1] = GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Art[0];
-                    //m_StudentsParticipated[2] = GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Programming[0];
-                    m_TemporaryGameShowData.m_ParticipatingStudents[0] = GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GM[0];
-                    m_TemporaryGameShowData.m_ParticipatingStudents[1] = GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Art[0];
-                    m_TemporaryGameShowData.m_ParticipatingStudents[2] = GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_Programming[0];
-                    m_TemporaryGameShowData.m_GameJamID = GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamInfoData.m_GjamID;
-                    m_TemporaryGameShowData.m_GameJamName = GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameJamData.m_GameName;
+
+                    _mTemporaryData.m_GameDesignerStudentName =
+                        GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameDesignerStudentName;
+                    _mTemporaryData.m_ArtStudentName = GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_ArtStudentName;
+                    _mTemporaryData.m_ProgrammingStudentName =
+                        GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_ProgrammingStudentName;
+
+                    _mTemporaryData.m_GameJamID = _nowData.m_GjamID;
+                    _mTemporaryData.m_GameJamName = GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_GameName;
                     break;
                 }
             }
         }
 
+        Student _gameDesignerStudent =
+            ObjectManager.Instance.SearchStudentInfo(_mTemporaryData.m_GameDesignerStudentName);
+        Student _artStudent = ObjectManager.Instance.SearchStudentInfo(_mTemporaryData.m_GameDesignerStudentName);
+        Student _programmingStudent =
+            ObjectManager.Instance.SearchStudentInfo(_mTemporaryData.m_GameDesignerStudentName);
+
+        GameShowData _gameShowData = SearchGameShowInfo((int)_mTemporaryData.m_GameShowID);
+
         for (int i = 0; i < _student.Count; i++)
         {
-            if (_student[i].m_StudentStat.m_StudentName == m_TemporaryGameShowData.m_ParticipatingStudents[_index].m_StudentStat.m_StudentName)
+            if (_student[i].m_StudentStat.m_StudentName == _gameDesignerStudent.m_StudentStat.m_StudentName ||
+                _student[i].m_StudentStat.m_StudentName == _artStudent.m_StudentStat.m_StudentName ||
+                _student[i].m_StudentStat.m_StudentName == _programmingStudent.m_StudentStat.m_StudentName)
             {
-                if (_student[i].m_StudentStat.m_Health >= m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Health &&
-                    _student[i].m_StudentStat.m_Passion >= m_TemporaryGameShowData.m_TotalGameShowData.GameShow_Pasion)
+                if (_student[i].m_StudentStat.m_Health >= _gameShowData.GameShow_Health &&
+                    _student[i].m_StudentStat.m_Passion >= _gameShowData.GameShow_Pasion)
                 {
                     _isStudentConditionFine = true;
                 }
@@ -1212,13 +1646,50 @@ public class GameShow : MonoBehaviour
     // 신청한 정보가 있으면 신청 완료 버튼 스프라이트로 변경해주고 반응없게 하기
     private void ClickGameShowListButton()
     {
-        GameObject _clickButton = EventSystem.current.currentSelectedGameObject;
-        string _buttonName = _clickButton.name;
+        #region _버튼을 클릭했을 때 하이라이트가 남아있게 하기
+
+        if (m_PrevClickGameShowObj != null)
+        {
+            Button _prevButton = m_PrevClickGameShowObj.GetComponent<Button>();
+
+            ColorBlock _prevButtonColor = _prevButton.colors;
+
+            _prevButtonColor = ColorBlock.defaultColorBlock;
+
+            _prevButton.colors = _prevButtonColor;
+        }
+
+        GameObject _currentObj = EventSystem.current.currentSelectedGameObject;
+
+        if (_currentObj == null)
+        {
+            return;
+        }
+
+        m_PrevClickGameShowObj = _currentObj;
+
+        Button _currentButton = _currentObj.GetComponent<Button>();
+
+        ColorBlock _currentButtonColor = _currentButton.colors;
+
+        _currentButtonColor.normalColor = m_HighLightColor;
+        _currentButtonColor.highlightedColor = m_HighLightColor;
+        _currentButtonColor.pressedColor = m_HighLightColor;
+        _currentButtonColor.selectedColor = m_HighLightColor;
+
+        _currentButton.colors = _currentButtonColor;
+
+        #endregion
+
+        //GameObject _clickButton = EventSystem.current.currentSelectedGameObject;
+
+        string _buttonName = _currentObj.name;
+
         m_GameShowPanel.InitGameShowPanel();
 
         if (m_ToBeRunningGameShow.Count != 0)
         {
-            int _index = m_ToBeRunningGameShow.FindIndex(x => x.m_TotalGameShowData.GameShow_Name == _buttonName);
+            int _index = m_ToBeRunningGameShow.FindIndex(x => x.m_GameShowName == _buttonName);
 
             if (-1 != _index)
             {
@@ -1228,26 +1699,7 @@ public class GameShow : MonoBehaviour
                 {
                     if (m_TotalGameShowData[k].GameShow_Name == _buttonName)
                     {
-                        string _gameShowHostCompany = m_TotalGameShowData[k].GameShow_Host_Name;
-                        string _gameShowName = m_TotalGameShowData[k].GameShow_Name;
-                        string _gameShowLevel = m_TotalGameShowData[k].GameShow_Level.ToString();
-                        string _gameShowProgressDate = (m_TotalGameShowData[k].GameShow_Month.ToString()) + "월 " + (m_TotalGameShowData[k].GameShow_Week.ToString()) + "주";
-                        string _gameShowJudegeMent = m_TotalGameShowData[k].GameShow_Judges_Name;
-                        string _gameShowReward = m_TotalGameShowData[k].GameShow_Reward.ToString();
-                        string _gameShowHostHelath = m_TotalGameShowData[k].GameShow_Health.ToString();
-                        string _gameShowHostPassion = m_TotalGameShowData[k].GameShow_Pasion.ToString();
-                        int _gameShowFunny = m_TotalGameShowData[k].GameShow_State["Fun"];
-                        int _gameShowGraphic = m_TotalGameShowData[k].GameShow_State["Graphic"];
-                        int _gameShowPerfection = m_TotalGameShowData[k].GameShow_State["Perfection"];
-                        int _gameShowGenre = m_TotalGameShowData[k].GameShow_State["Genre"];
-
-                        m_GameShowPanel.SetGameShowListText(_gameShowHostCompany, _gameShowName, _gameShowLevel, _gameShowProgressDate, _gameShowJudegeMent, _gameShowReward, _gameShowHostHelath, _gameShowHostPassion);
-                        m_GameShowPanel.SetFunny(_gameShowFunny, true);
-                        m_GameShowPanel.SetGraphic(_gameShowGraphic, true);
-                        m_GameShowPanel.SetPerfection(_gameShowPerfection, true);
-                        m_GameShowPanel.SetGenre(_gameShowGenre, true);
-
-                        m_TemporaryGameShowData.m_TotalGameShowData = m_TotalGameShowData[k];
+                        SettingGameShowInfoPanel(k);
                         break;
                     }
                 }
@@ -1260,26 +1712,7 @@ public class GameShow : MonoBehaviour
                 {
                     if (m_TotalGameShowData[k].GameShow_Name == _buttonName)
                     {
-                        string _gameShowHostCompany = m_TotalGameShowData[k].GameShow_Host_Name;
-                        string _gameShowName = m_TotalGameShowData[k].GameShow_Name;
-                        string _gameShowLevel = m_TotalGameShowData[k].GameShow_Level.ToString();
-                        string _gameShowProgressDate = (m_TotalGameShowData[k].GameShow_Month.ToString()) + "월 " + (m_TotalGameShowData[k].GameShow_Week.ToString()) + "주";
-                        string _gameShowJudegeMent = m_TotalGameShowData[k].GameShow_Judges_Name;
-                        string _gameShowReward = m_TotalGameShowData[k].GameShow_Reward.ToString();
-                        string _gameShowHostHelath = m_TotalGameShowData[k].GameShow_Health.ToString();
-                        string _gameShowHostPassion = m_TotalGameShowData[k].GameShow_Pasion.ToString();
-                        int _gameShowFunny = m_TotalGameShowData[k].GameShow_State["Fun"];
-                        int _gameShowGraphic = m_TotalGameShowData[k].GameShow_State["Graphic"];
-                        int _gameShowPerfection = m_TotalGameShowData[k].GameShow_State["Perfection"];
-                        int _gameShowGenre = m_TotalGameShowData[k].GameShow_State["Genre"];
-
-                        m_GameShowPanel.SetGameShowListText(_gameShowHostCompany, _gameShowName, _gameShowLevel, _gameShowProgressDate, _gameShowJudegeMent, _gameShowReward, _gameShowHostHelath, _gameShowHostPassion);
-                        m_GameShowPanel.SetFunny(_gameShowFunny, true);
-                        m_GameShowPanel.SetGraphic(_gameShowGraphic, true);
-                        m_GameShowPanel.SetPerfection(_gameShowPerfection, true);
-                        m_GameShowPanel.SetGenre(_gameShowGenre, true);
-
-                        m_TemporaryGameShowData.m_TotalGameShowData = m_TotalGameShowData[k];
+                        SettingGameShowInfoPanel(k);
                         break;
                     }
                 }
@@ -1292,30 +1725,14 @@ public class GameShow : MonoBehaviour
                 {
                     if (m_TotalGameShowData[k].GameShow_Name == _buttonName)
                     {
-                        string _gameShowHostCompany = m_TotalGameShowData[k].GameShow_Host_Name;
-                        string _gameShowName = m_TotalGameShowData[k].GameShow_Name;
-                        string _gameShowLevel = m_TotalGameShowData[k].GameShow_Level.ToString();
-                        string _gameShowProgressDate = (m_TotalGameShowData[k].GameShow_Month.ToString()) + "월 " + (m_TotalGameShowData[k].GameShow_Week.ToString()) + "주";
-                        string _gameShowJudegeMent = m_TotalGameShowData[k].GameShow_Judges_Name;
-                        string _gameShowReward = m_TotalGameShowData[k].GameShow_Reward.ToString();
-                        string _gameShowHostHelath = m_TotalGameShowData[k].GameShow_Health.ToString();
-                        string _gameShowHostPassion = m_TotalGameShowData[k].GameShow_Pasion.ToString();
-                        int _gameShowFunny = m_TotalGameShowData[k].GameShow_State["Fun"];
-                        int _gameShowGraphic = m_TotalGameShowData[k].GameShow_State["Graphic"];
-                        int _gameShowPerfection = m_TotalGameShowData[k].GameShow_State["Perfection"];
-                        int _gameShowGenre = m_TotalGameShowData[k].GameShow_State["Genre"];
-
-                        m_GameShowPanel.SetGameShowListText(_gameShowHostCompany, _gameShowName, _gameShowLevel, _gameShowProgressDate, _gameShowJudegeMent, _gameShowReward, _gameShowHostHelath, _gameShowHostPassion);
-                        m_GameShowPanel.SetFunny(_gameShowFunny, true);
-                        m_GameShowPanel.SetGraphic(_gameShowGraphic, true);
-                        m_GameShowPanel.SetPerfection(_gameShowPerfection, true);
-                        m_GameShowPanel.SetGenre(_gameShowGenre, true);
-
-                        m_TemporaryGameShowData.m_TotalGameShowData = m_TotalGameShowData[k];
+                        SettingGameShowInfoPanel(k);
                         break;
                     }
                 }
             }
+
+            _isCanParticipate = CheckStudentHealthAndPassion();
+            _isSameDayInList = CheckGameShowDay();
         }
         else
         {
@@ -1325,68 +1742,103 @@ public class GameShow : MonoBehaviour
             {
                 if (m_TotalGameShowData[i].GameShow_Name == _buttonName)
                 {
-                    string _gameShowHostCompany = m_TotalGameShowData[i].GameShow_Host_Name;
-                    string _gameShowName = m_TotalGameShowData[i].GameShow_Name;
-                    string _gameShowLevel = m_TotalGameShowData[i].GameShow_Level.ToString();
-                    string _gameShowProgressDate = (m_TotalGameShowData[i].GameShow_Month.ToString()) + "월 " + (m_TotalGameShowData[i].GameShow_Week.ToString()) + "주";
-                    string _gameShowJudegeMent = m_TotalGameShowData[i].GameShow_Judges_Name;
-                    string _gameShowReward = m_TotalGameShowData[i].GameShow_Reward.ToString();
-                    string _gameShowHostHelath = m_TotalGameShowData[i].GameShow_Health.ToString();
-                    string _gameShowHostPassion = m_TotalGameShowData[i].GameShow_Pasion.ToString();
-                    int _gameShowFunny = m_TotalGameShowData[i].GameShow_State["Fun"];
-                    int _gameShowGraphic = m_TotalGameShowData[i].GameShow_State["Graphic"];
-                    int _gameShowPerfection = m_TotalGameShowData[i].GameShow_State["Perfection"];
-                    int _gameShowGenre = m_TotalGameShowData[i].GameShow_State["Genre"];
-
-                    m_GameShowPanel.SetGameShowListText(_gameShowHostCompany, _gameShowName, _gameShowLevel, _gameShowProgressDate, _gameShowJudegeMent, _gameShowReward, _gameShowHostHelath, _gameShowHostPassion);
-                    m_GameShowPanel.SetFunny(_gameShowFunny, true);
-                    m_GameShowPanel.SetGraphic(_gameShowGraphic, true);
-                    m_GameShowPanel.SetPerfection(_gameShowPerfection, true);
-                    m_GameShowPanel.SetGenre(_gameShowGenre, true);
-
-                    m_TemporaryGameShowData.m_TotalGameShowData = m_TotalGameShowData[i];
+                    SettingGameShowInfoPanel(i);
                     break;
                 }
             }
         }
+
+        if (m_TutorialCount == 6)
+        {
+            m_Unmask.fitTarget = m_GameShowPanel.NameLevelRect;
+            m_TutorialTextImage.gameObject.SetActive(true);
+            m_TutorialArrowImage.gameObject.SetActive(false);
+            m_NextButton.gameObject.SetActive(true);
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().GameShowTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-600, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
     }
 
-    // 랜덤 공고와 스페셜 공고를 모두 합친 다음 우선순위에 따라 정렬해주는 함수
-    private void CombineGameShowDataList()
+    // 게임쇼 제일 처음 부분. 
+    private void SetFirstGameShowInfo()
     {
-        foreach (var list in m_NowMonthRandomGameShowData)
+        #region _맨 위에있는 버튼에 하이라이트 해주기
+        if (m_PrevClickGameShowObj != null)
         {
-            if (!m_TotalGameShowData.Contains(list))
-            {
-                m_TotalGameShowData.Add(list);
-            }
+            Button _prevButton = m_PrevClickGameShowObj.GetComponent<Button>();
+
+            ColorBlock _prevButtonColor = _prevButton.colors;
+
+            _prevButtonColor = ColorBlock.defaultColorBlock;
+
+            _prevButton.colors = _prevButtonColor;
         }
 
-        foreach (var list in m_SpecialGameShowDataPool)
+        m_PrevClickGameShowObj = m_GameShowPanel.GameShowListContent.GetChild(0).gameObject;
+
+        Button _currentButton = m_GameShowPanel.GameShowListContent.GetChild(0).gameObject.GetComponent<Button>();
+
+        ColorBlock _currentButtonColor = _currentButton.colors;
+
+        _currentButtonColor.normalColor = m_HighLightColor;
+        _currentButtonColor.highlightedColor = m_HighLightColor;
+        _currentButtonColor.pressedColor = m_HighLightColor;
+        _currentButtonColor.selectedColor = m_HighLightColor;
+
+        _currentButton.colors = _currentButtonColor;
+
+        #endregion
+
+        m_GameShowPanel.InitGameShowPanel();
+
+        if (m_ToBeRunningGameShow.Count != 0)
         {
-            if (!m_TotalGameShowData.Contains(list))
+            GameShowData _gameShowData = SearchGameShowInfo((int)m_ToBeRunningGameShow[0].m_GameShowID);
+
+            if (_gameShowData.GameShow_Name == m_TotalGameShowData[0].GameShow_Name)
             {
-                m_TotalGameShowData.Add(list);
+                m_GameShowPanel.ApplyButton.GetComponent<Image>().sprite = m_ApplySuccessSprite;
+            }
+            else
+            {
+                m_GameShowPanel.ApplyButton.GetComponent<Image>().sprite = m_ApplySprite;
             }
         }
-
-        foreach (var list in m_HighLevelRandomPool)
+        else
         {
-            if (!m_TotalGameShowData.Contains(list))
-            {
-                m_TotalGameShowData.Add(list);
-            }
+            m_GameShowPanel.ApplyButton.GetComponent<Image>().sprite = m_ApplySprite;
         }
 
-        foreach (var list in m_LowLevelRandomPool)
-        {
-            if (!m_TotalGameShowData.Contains(list))
-            {
-                m_TotalGameShowData.Add(list);
-            }
-        }
+        SettingGameShowInfoPanel(0);
+    }
 
-        SortRecommendList();
+    private void SettingGameShowInfoPanel(int _index)
+    {
+        string _gameShowHostCompany = m_TotalGameShowData[_index].GameShow_Host_Name;
+        string _gameShowName = m_TotalGameShowData[_index].GameShow_Name;
+        string _gameShowLevel = m_TotalGameShowData[_index].GameShow_Level.ToString();
+        string _gameShowProgressDate = (m_TotalGameShowData[_index].GameShow_Month.ToString()) + "월 " +
+                                       (m_TotalGameShowData[_index].GameShow_Week.ToString()) + "주";
+        string _gameShowJudegeMent = m_TotalGameShowData[_index].GameShow_Judges_Name;
+        string _gameShowReward = string.Format("{0:#,0}", m_TotalGameShowData[_index].GameShow_Reward);
+        string _gameShowHostHelath = m_TotalGameShowData[_index].GameShow_Health.ToString();
+        string _gameShowHostPassion = m_TotalGameShowData[_index].GameShow_Pasion.ToString();
+        int _gameShowFunny = m_TotalGameShowData[_index].GameShow_State["Fun"];
+        int _gameShowGraphic = m_TotalGameShowData[_index].GameShow_State["Graphic"];
+        int _gameShowPerfection = m_TotalGameShowData[_index].GameShow_State["Perfection"];
+        int _gameShowGenre = m_TotalGameShowData[_index].GameShow_State["Genre"];
+
+        m_GameShowPanel.SetGameShowListText(_gameShowHostCompany, _gameShowName, _gameShowLevel, _gameShowProgressDate,
+            _gameShowJudegeMent, _gameShowReward, _gameShowHostHelath, _gameShowHostPassion);
+        m_GameShowPanel.SetFunny(_gameShowFunny, true);
+        m_GameShowPanel.SetGraphic(_gameShowGraphic, true);
+        m_GameShowPanel.SetPerfection(_gameShowPerfection, true);
+        m_GameShowPanel.SetGenre(_gameShowGenre, true);
+
+        _mTemporaryData.m_GameShowID = m_TotalGameShowData[_index].GameShow_ID;
+        //_mTemporaryData.m_TotalGameShowData = m_TotalGameShowData[_index];
     }
 
     public static void Swap<T>(List<T> list, int from, int to)
@@ -1396,202 +1848,337 @@ public class GameShow : MonoBehaviour
         list[to] = tmp;
     }
 
-    // 랜덤으로 데이터 뽑아내기
-    private void RandomGameShowDataList(ref List<GameShowData> _list, List<GameShowData> dataList, int count)
+    // 내 아카데미 등급에 따른 게임쇼
+    private void BringFixedGameShowData()
     {
-        List<GameShowData> _tempGameShowList = new List<GameShowData>(dataList);
-        int _listCount = _tempGameShowList.Count;
+        List<GameShowData> m_MonthGameShowData = new List<GameShowData>();
 
-        for (int i = 0; i < count; i++)
+        int difficulty = GetRankByMyAcademyRank(PlayerInfo.Instance.CurrentRank);
+        int _nowMonth = m_NowMonth + 1;
+        int _fun = 0;
+        int _graphic = 0;
+        int _perfection = 0;
+        int _genre = 0;
+
+        if (m_NowMonth == 12)
         {
-            int randomNum = UnityEngine.Random.Range(0, _listCount);
-            _list.Add(_tempGameShowList[randomNum]);
+            _nowMonth = 1;
+        }
 
-            Swap(_tempGameShowList, randomNum, _tempGameShowList.Count - 1);
-            _listCount -= 1;
+        for (int i = 0; i < m_FixedGameShowData.Count; i++)
+        {
+            // 매년 발생하는 공고
+            if (m_FixedGameShowData[i].GameShow_Year == 0 &&
+                m_FixedGameShowData[i].GameShow_Month == _nowMonth)
+            {
+                m_MonthGameShowData.Add(m_FixedGameShowData[i]);
+
+            }
+            // 홀수년도 발생
+            else if (m_FixedGameShowData[i].GameShow_Year == -1 &&
+                     (10 % GameTime.Instance.FlowTime.NowYear) != 0 &&
+                     m_FixedGameShowData[i].GameShow_Month == _nowMonth)   // 12월에는 1로 바꿔주기
+            {
+                m_MonthGameShowData.Add(m_FixedGameShowData[i]);
+
+            }
+            // 짝수년도 발생
+            else if (m_FixedGameShowData[i].GameShow_Year == -2 &&
+                     (10 % GameTime.Instance.FlowTime.NowYear) == 0 &&
+                     m_FixedGameShowData[i].GameShow_Month == _nowMonth)
+            {
+                m_MonthGameShowData.Add(m_FixedGameShowData[i]);
+
+            }
+
+        }
+
+        switch (difficulty)
+        {
+            // 난이도1 2개, 난이도 2,3,4,5 중 1개
+            case 1:
+            {
+                SortMyLevelList(m_MonthGameShowData);
+
+                int _listCount = m_MonthGameShowData.Count;
+
+                for (int i = 0; i < m_MonthGameShowData.Count; i++)
+                {
+                    int _randomDifficulty = UnityEngine.Random.Range(2, 6);
+                    int _randomIndex = UnityEngine.Random.Range(0, _listCount);
+
+                    if (i != _randomIndex)
+                    {
+                        SetGameShowData(m_MonthGameShowData, i, 1);
+                    }
+                    else
+                    {
+                        SetGameShowData(m_MonthGameShowData, _randomIndex, _randomDifficulty);
+                    }
+
+                    Swap(m_MonthGameShowData, _randomIndex, _listCount - 1);
+                    _listCount -= 1;
+                }
+            }
+            break;
+
+            // 난이도1 1개, 난이도 2 1개, 난이도 3,4,5 중 1개
+            case 2:
+            {
+                SortMyLevelList(m_MonthGameShowData);
+
+                int _listCount1 = 0;
+                int _listCount2 = 0;
+                int _randomDifficulty = UnityEngine.Random.Range(3, 6);
+                int _randomIndex = UnityEngine.Random.Range(0, m_MonthGameShowData.Count);
+
+                if (_randomIndex == 0)
+                {
+                    _listCount1 = 1;
+                    _listCount2 = 2;
+                }
+                else if (_randomIndex == 1)
+                {
+                    _listCount1 = 0;
+                    _listCount2 = 1;
+                }
+                else
+                {
+                    _listCount1 = 0;
+                    _listCount2 = 1;
+                }
+
+                SetGameShowData(m_MonthGameShowData, _randomIndex, _randomDifficulty);
+                SetGameShowData(m_MonthGameShowData, _listCount1, 1);
+                SetGameShowData(m_MonthGameShowData, _listCount2, 2);
+            }
+            break;
+
+            // 난이도1,2 중 1개, 난이도 3 1개, 난이도 4,5 중 1개
+            case 3:
+            {
+                SortMyLevelList(m_MonthGameShowData);
+
+                int _randomDifficulty1 = UnityEngine.Random.Range(1, 3);
+                int _randomDifficulty2 = UnityEngine.Random.Range(4, 6);
+
+                SetGameShowData(m_MonthGameShowData, 0, _randomDifficulty1);
+                SetGameShowData(m_MonthGameShowData, 2, _randomDifficulty2);
+                SetGameShowData(m_MonthGameShowData, 1, 3);
+            }
+            break;
+            // 난이도1,2,3 중 1개, 난이도 4 1개, 난이도 5 1개
+            case 4:
+            {
+                SortMyLevelList(m_MonthGameShowData);
+
+                int _listCount1 = 0;
+                int _listCount2 = 0;
+                int _randomDifficulty = UnityEngine.Random.Range(1, 4);
+                int _randomIndex = UnityEngine.Random.Range(0, m_MonthGameShowData.Count);
+
+                if (_randomIndex == 0)
+                {
+                    _listCount1 = 1;
+                    _listCount2 = 2;
+                }
+                else if (_randomIndex == 1)
+                {
+                    _listCount1 = 0;
+                    _listCount2 = 1;
+                }
+                else
+                {
+                    _listCount1 = 0;
+                    _listCount2 = 1;
+                }
+
+                SetGameShowData(m_MonthGameShowData, _randomIndex, _randomDifficulty);
+                SetGameShowData(m_MonthGameShowData, _listCount1, 4);
+                SetGameShowData(m_MonthGameShowData, _listCount2, 5);
+            }
+            break;
+
+            // 난이도1,2,3,4 중 1개, 난이도 5 2개
+            case 5:
+            {
+                SortMyLevelList(m_MonthGameShowData);
+
+                int _listCount = m_MonthGameShowData.Count;
+
+                for (int i = 0; i < m_MonthGameShowData.Count; i++)
+                {
+                    int _randomDifficulty = UnityEngine.Random.Range(1, 5);
+                    int _randomIndex = UnityEngine.Random.Range(0, _listCount);
+
+                    if (i != _randomIndex)
+                    {
+                        SetGameShowData(m_MonthGameShowData, i, 5);
+                    }
+                    else
+                    {
+                        SetGameShowData(m_MonthGameShowData, _randomIndex, _randomDifficulty);
+                    }
+
+                    Swap(m_MonthGameShowData, _randomIndex, _listCount - 1);
+                    _listCount -= 1;
+                }
+            }
+            break;
         }
     }
 
-    // 내 아카데미 등급에 따른 게임쇼
-    public void TakeOutGameShowData()
+    private void BringRandomGameShowData()
     {
-        InitLevelList();
+        List<GameShowData> m_MonthRandomList = new List<GameShowData>();
 
-        int _difficul = GetRankByMyAcademyRank(PlayerInfo.Instance.m_CurrentRank);
-
-        int _myLevel = UnityEngine.Random.Range(2, 4);
-        int _highLevel = UnityEngine.Random.Range(1, 3);
-        int _lowLevel = UnityEngine.Random.Range(1, 3);
-
-        for (int i = 0; i < m_GameShowRandomDataPool.Count; i++)
+        for (int i = 0; i < m_RandomGameShowData.Count; i++)
         {
-            int level = m_GameShowRandomDataPool[i].GameShow_Level;
-
-            if (!GameShowRandomData.ContainsKey(level))
+            if (m_RandomGameShowData[i].GameShow_Month - 1 == m_NowMonth)
             {
-                GameShowRandomData[level] = new List<GameShowData>();
+                m_MonthRandomList.Add(m_RandomGameShowData[i]);
             }
-
-            GameShowRandomData[level].Add(m_GameShowRandomDataPool[i]);
         }
 
-        if (!GameShowRandomData.ContainsKey(_difficul))
+        SortMyLevelList(m_MonthRandomList);
+
+        int _listCount = m_MonthRandomList.Count;
+
+        if (_listCount == 0)
         {
             return;
         }
 
-        switch (_difficul)
+        for (int i = 0; i < 2; i++)
         {
-            case 1:
+            int _randomIndex = UnityEngine.Random.Range(0, _listCount);
+            int _randomDifficulty = UnityEngine.Random.Range(1, 6);
+
+            SetGameShowData(m_MonthRandomList, _randomIndex, _randomDifficulty);
+            Swap(m_MonthRandomList, _randomIndex, _listCount - 1);
+            _listCount -= 1;
+        }
+    }
+
+    private (int fun, int graphic, int perfection, int genre) GetPresetForDifficulty(int presetID, int difficulty)
+    {
+        foreach (DifficultyPreset data in m_HeartPresetList)
+        {
+            if (presetID == data.PresetID && difficulty == data.Difficulty)
             {
-                SortMyLevelList(GameShowRandomData[1]);
-                RandomGameShowDataList(ref m_NowMonthRandomGameShowData, GameShowRandomData[1], _myLevel);
-
-                // 나보다 높은 레벨의 데이터들을 한곳에 몰아두고 그 중 1~2개만 뽑아서 쓴다.
-                for (int i = 0; i < GameShowRandomData[2].Count; i++)
-                {
-                    highleveltotalpool.Add(GameShowRandomData[2][i]);
-                }
-
-                for (int i = 0; i < GameShowRandomData[3].Count; i++)
-                {
-                    highleveltotalpool.Add(GameShowRandomData[3][i]);
-                }
-
-                // 나보다 높은 레벨의 데이터들
-                RandomGameShowDataList(ref m_HighLevelRandomPool, highleveltotalpool, _highLevel);
+                return (data.FunnyHeart, data.GraphicHeart, data.PerfectionHeart, data.GenreHeart);
             }
-            break;
+        }
 
-            case 2:
-            {
-                SortMyLevelList(GameShowRandomData[2]);
-                RandomGameShowDataList(ref m_NowMonthRandomGameShowData, GameShowRandomData[2], _myLevel);
+        return (0, 0, 0, 0);
+    }
 
-                // 나보다 높은 레벨의 데이터들을 한곳에 몰아두고 그 중 1~2개만 뽑아서 쓴다.
-                for (int i = 0; i < GameShowRandomData[3].Count; i++)
-                {
-                    highleveltotalpool.Add(GameShowRandomData[3][i]);
-                }
+    private void SetGameShowData(List<GameShowData> monthList, int listIndex, int difficulty)
+    {
+        int _fun = 0;
+        int _graphic = 0;
+        int _perfection = 0;
+        int _genre = 0;
 
-                for (int i = 0; i < GameShowRandomData[4].Count; i++)
-                {
-                    highleveltotalpool.Add(GameShowRandomData[4][i]);
-                }
+        if (listIndex == 0)
+        {
+            return;
+        }
 
-                // 나보다 높은 레벨의 데이터들
-                RandomGameShowDataList(ref m_HighLevelRandomPool, highleveltotalpool, _highLevel);
+        var (randomFun, randomGraphic, randomPerfection, randomGenre) =
+            GetPresetForDifficulty(monthList[listIndex].Preset_ID, difficulty);
 
-                // 나보다 낮은 레벨의 데이터들
-                RandomGameShowDataList(ref m_LowLevelRandomPool, GameShowRandomData[1], _lowLevel);
-            }
-            break;
+        _fun = randomFun;
+        _graphic = randomGraphic;
+        _perfection = randomPerfection;
+        _genre = randomGenre;
 
-            case 3:
-            {
-                SortMyLevelList(GameShowRandomData[3]);
-                RandomGameShowDataList(ref m_NowMonthRandomGameShowData, GameShowRandomData[3], _myLevel);
+        monthList[listIndex].GameShow_State["Fun"] = _fun;
+        monthList[listIndex].GameShow_State["Perfection"] = _perfection;
+        monthList[listIndex].GameShow_State["Graphic"] = _graphic;
+        monthList[listIndex].GameShow_State["Genre"] = _genre;
+        monthList[listIndex].GameShow_Level = difficulty;
 
-                for (int i = 0; i < GameShowRandomData[4].Count; i++)
-                {
-                    highleveltotalpool.Add(GameShowRandomData[4][i]);
-                }
+        if (monthList[listIndex].GameShow_Day == 0 || monthList[listIndex].GameShow_Week == 0)
+        {
+            int randomweek = UnityEngine.Random.Range(1, 5);
+            int randomday = UnityEngine.Random.Range(1, 6);
+            monthList[listIndex].GameShow_Day = randomday;
+            monthList[listIndex].GameShow_Week = randomweek;
+        }
 
-                for (int i = 0; i < GameShowRandomData[5].Count; i++)
-                {
-                    highleveltotalpool.Add(GameShowRandomData[5][i]);
-                }
+        int _id = m_TotalGameShowData.FindIndex(x => x.GameShow_ID == monthList[listIndex].GameShow_ID);
 
-                // 나보다 높은 레벨의 데이터들
-                RandomGameShowDataList(ref m_HighLevelRandomPool, highleveltotalpool, _highLevel);
+        // find로 바꾸기
+        if (_id == -1)
+        {
+            m_TotalGameShowData.Add(monthList[listIndex]);
 
-                // 나보다 낮은 레벨의 데이터들을 한곳에 몰아두고 그 중 1~2개만 뽑아서 쓴다.
-                for (int i = 0; i < GameShowRandomData[1].Count; i++)
-                {
-                    lowleveltotalpool.Add(GameShowRandomData[1][i]);
-                }
-
-                for (int i = 0; i < GameShowRandomData[2].Count; i++)
-                {
-                    lowleveltotalpool.Add(GameShowRandomData[2][i]);
-                }
-
-                // 나보다 낮은 레벨의 데이터들
-                RandomGameShowDataList(ref m_LowLevelRandomPool, lowleveltotalpool, _lowLevel);
-            }
-            break;
-
-            case 4:
-            {
-                SortMyLevelList(GameShowRandomData[4]);
-                RandomGameShowDataList(ref m_NowMonthRandomGameShowData, GameShowRandomData[4], _myLevel);
-
-                // 나보다 높은 레벨의 데이터들
-                RandomGameShowDataList(ref m_HighLevelRandomPool, GameShowRandomData[5], _highLevel);
-
-                // 나보다 낮은 레벨의 데이터들을 한곳에 몰아두고 그 중 1~2개만 뽑아서 쓴다.
-                for (int i = 0; i < GameShowRandomData[1].Count; i++)
-                {
-                    lowleveltotalpool.Add(GameShowRandomData[1][i]);
-                }
-
-                for (int i = 0; i < GameShowRandomData[2].Count; i++)
-                {
-                    lowleveltotalpool.Add(GameShowRandomData[2][i]);
-                }
-
-                for (int i = 0; i < GameShowRandomData[3].Count; i++)
-                {
-                    lowleveltotalpool.Add(GameShowRandomData[3][i]);
-                }
-
-                // 나보다 낮은 레벨의 데이터들
-                RandomGameShowDataList(ref m_LowLevelRandomPool, lowleveltotalpool, _lowLevel);
-            }
-            break;
-
-            case 5:
-            {
-                SortMyLevelList(GameShowRandomData[5]);
-                RandomGameShowDataList(ref m_NowMonthRandomGameShowData, GameShowRandomData[5], _myLevel);
-
-                // 나보다 낮은 레벨의 데이터들을 한곳에 몰아두고 그 중 1~2개만 뽑아서 쓴다.
-                for (int i = 0; i < GameShowRandomData[1].Count; i++)
-                {
-                    lowleveltotalpool.Add(GameShowRandomData[1][i]);
-                }
-
-                for (int i = 0; i < GameShowRandomData[2].Count; i++)
-                {
-                    lowleveltotalpool.Add(GameShowRandomData[2][i]);
-                }
-
-                for (int i = 0; i < GameShowRandomData[3].Count; i++)
-                {
-                    lowleveltotalpool.Add(GameShowRandomData[3][i]);
-                }
-
-                for (int i = 0; i < GameShowRandomData[4].Count; i++)
-                {
-                    lowleveltotalpool.Add(GameShowRandomData[4][i]);
-                }
-
-                // 나보다 낮은 레벨의 데이터들
-                RandomGameShowDataList(ref m_LowLevelRandomPool, lowleveltotalpool, _lowLevel);
-            }
-            break;
+            if (m_GameShowHistory.ContainsKey(monthList[listIndex].GameShow_ID) == false)
+                SetActiveAlram(true);
         }
     }
 
     #region _데이터 테이블 초기화 함수들
-    public void InitLevelList()
+
+    // 하트 프리셋
+    private void InitHeartPresetList()
     {
-        highleveltotalpool.Clear();
-        lowleveltotalpool.Clear();
-        GameShowRandomData.Clear();
-        m_NowMonthRandomGameShowData.Clear();
-        m_LowLevelRandomPool.Clear();
-        m_HighLevelRandomPool.Clear();
+        // 프리셋 1
+        m_HeartPresetList.Add(new DifficultyPreset(1, 1, 1, 1, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(1, 2, 1, 2, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(1, 3, 3, 1, 1, 2));
+        m_HeartPresetList.Add(new DifficultyPreset(1, 4, 3, 2, 2, 2));
+        m_HeartPresetList.Add(new DifficultyPreset(1, 5, 2, 2, 3, 3));
+
+        // 프리셋 2
+        m_HeartPresetList.Add(new DifficultyPreset(2, 1, 2, 1, 1, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(2, 2, 2, 2, 1, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(2, 3, 3, 1, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(2, 4, 3, 2, 2, 2));
+        m_HeartPresetList.Add(new DifficultyPreset(2, 5, 3, 3, 2, 2));
+
+        // 프리셋 3
+        m_HeartPresetList.Add(new DifficultyPreset(3, 1, 1, 2, 1, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(3, 2, 1, 2, 1, 2));
+        m_HeartPresetList.Add(new DifficultyPreset(3, 3, 1, 3, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(3, 4, 1, 3, 2, 2));
+        m_HeartPresetList.Add(new DifficultyPreset(3, 5, 2, 3, 3, 2));
+
+        // 프리셋 4
+        m_HeartPresetList.Add(new DifficultyPreset(4, 1, 1, 1, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(4, 2, 2, 1, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(4, 3, 1, 2, 3, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(4, 4, 2, 2, 3, 2));
+        m_HeartPresetList.Add(new DifficultyPreset(4, 5, 3, 2, 3, 2));
+
+        // 프리셋 5
+        m_HeartPresetList.Add(new DifficultyPreset(5, 1, 1, 2, 1, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(5, 2, 2, 2, 1, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(5, 3, 2, 3, 1, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(5, 4, 3, 2, 2, 2));
+        m_HeartPresetList.Add(new DifficultyPreset(5, 5, 3, 3, 2, 2));
+
+        // 프리셋 6
+        m_HeartPresetList.Add(new DifficultyPreset(6, 1, 2, 1, 1, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(6, 2, 2, 1, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(6, 3, 1, 3, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(6, 4, 2, 2, 3, 2));
+        m_HeartPresetList.Add(new DifficultyPreset(6, 5, 3, 2, 3, 2));
+
+        // 프리셋 7
+        m_HeartPresetList.Add(new DifficultyPreset(7, 1, 1, 2, 1, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(7, 2, 1, 2, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(7, 3, 1, 3, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(7, 4, 2, 3, 2, 2));
+        m_HeartPresetList.Add(new DifficultyPreset(7, 5, 2, 3, 3, 2));
+
+        // 프리셋 8
+        m_HeartPresetList.Add(new DifficultyPreset(8, 1, 1, 2, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(8, 2, 2, 2, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(8, 3, 2, 3, 2, 1));
+        m_HeartPresetList.Add(new DifficultyPreset(8, 4, 3, 2, 3, 2));
+        m_HeartPresetList.Add(new DifficultyPreset(8, 5, 3, 3, 3, 2));
     }
 
     // 게임쇼의 난이도를 정해주는 함수
@@ -1710,6 +2297,7 @@ public class GameShow : MonoBehaviour
     private void InitEvaluationResponseList()
     {
         #region _Terrible
+
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Terrible, "Fun", "최악"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Terrible, "Fun", "시간낭비"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Terrible, "Fun", "디자인이 문제"));
@@ -1729,9 +2317,11 @@ public class GameShow : MonoBehaviour
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Terrible, "Concept", "최악"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Terrible, "Concept", "시간낭비"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Terrible, "Concept", "똥이야"));
+
         #endregion
 
         #region _Bad
+
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Bad, "Fun", "너무한걸"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Bad, "Fun", "게임이 이상해"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Bad, "Fun", "의도가 뭐야"));
@@ -1751,9 +2341,11 @@ public class GameShow : MonoBehaviour
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Bad, "Concept", "너무한걸"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Bad, "Concept", "게임이 이상해"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Bad, "Concept", "컨셉이랑 안맞아"));
+
         #endregion
 
         #region _NotBad
+
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.NotBad, "Fun", "그냥저냥하네"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.NotBad, "Fun", "고민이 필요해"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.NotBad, "Fun", "재미없어"));
@@ -1773,9 +2365,11 @@ public class GameShow : MonoBehaviour
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.NotBad, "Concept", "그냥저냥하네"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.NotBad, "Concept", "고민이 필요해"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.NotBad, "Concept", "컨셉이 구려"));
+
         #endregion
 
         #region _SoSo
+
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.SoSo, "Fun", "무난해"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.SoSo, "Fun", "괜찮을지도?"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.SoSo, "Fun", "흠...아쉽네"));
@@ -1795,9 +2389,11 @@ public class GameShow : MonoBehaviour
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.SoSo, "Concept", "무난해"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.SoSo, "Concept", "괜찮을지도?"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.SoSo, "Concept", "좋네"));
+
         #endregion
 
         #region _Good
+
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Good, "Fun", "괜찮은데?"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Good, "Fun", "또 하고싶다"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Good, "Fun", "스토리가 좋아"));
@@ -1817,9 +2413,11 @@ public class GameShow : MonoBehaviour
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Good, "Concept", "괜찮은데?"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Good, "Concept", "또 하고싶다"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Good, "Concept", "장르랑 어울리네"));
+
         #endregion
 
         #region _Great
+
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Great, "Fun", "재미있어"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Great, "Fun", "출시가 언제지"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Great, "Fun", "레벨이 좋아"));
@@ -1839,9 +2437,11 @@ public class GameShow : MonoBehaviour
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Great, "Concept", "재미있어"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Great, "Concept", "출시가 언제지"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Great, "Concept", "컨셉 좋네"));
+
         #endregion
 
         #region _Excellent
+
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Excellent, "Fun", "최고야"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Excellent, "Fun", "나오면 사야지"));
         m_AssessmentResponseList.Add(new AssessmentResponse(Assessment.Excellent, "Fun", "훌륭해"));
@@ -1867,9 +2467,9 @@ public class GameShow : MonoBehaviour
 
     private void InitNoveltyScriptList()
     {
-        m_NoveltyScriptList.Add("많은 이들에게 이미 알려진 게임이라\n이번 시연회때는 어떤 결과를 얻을지 예상할 수 없겠어요.\n새롭고 참신한 게임들과 경쟁할 수 있을지… ");
-        m_NoveltyScriptList.Add("저번에 시연 했었던 게임을 출품하셨네요!\n이미 선보였던 게임이라 좋은 결과를 얻기는 힘들수 있겠어요.");
-        m_NoveltyScriptList.Add("새로운 게임 출품 신청이 더 좋지 않았을까 싶어요.\n좋은 결과를 바래보죠! ");
+        m_NoveltyScriptList.Add("많은 이들에게 이미 알려진 게임이라\n이번 시연회때는 어떤 결과를 얻을지 예상할 수 없겠어요./새롭고 참신한 게임들과 경쟁할 수 있을지… ");
+        m_NoveltyScriptList.Add("저번에 시연 했었던 게임을 출품하셨네요!/이미 선보였던 게임이라 좋은 결과를 얻기는 힘들수 있겠어요.");
+        m_NoveltyScriptList.Add("새로운 게임 출품 신청이 더 좋지 않았을까 싶어요./좋은 결과를 바래보죠! ");
     }
 
     private void InitGotoGameShowScriptList()
@@ -1882,6 +2482,12 @@ public class GameShow : MonoBehaviour
     private void InitResultPanelScript()
     {
         #region _introScript
+
+        m_ResultScriptList.Add(new ResultScript(Assessment.None, 1, "아쉽지만 다음을 노려봅시다."));
+        m_ResultScriptList.Add(new ResultScript(Assessment.None, 1, "무난한 첫 게임 시연회였네요!\n다음번엔 컨셉과 장르까지 잘 염두하여 참가해보면 어떨까요?"));
+        m_ResultScriptList.Add(new ResultScript(Assessment.None, 1, "축하합니다! 첫 시작인데 출발이 좋네요."));
+        m_ResultScriptList.Add(new ResultScript(Assessment.None, 1, "큰 규모의 게임쇼였는데 좋은 성적을 거두었습니다! 축하합니다!"));
+
         m_ResultScriptList.Add(new ResultScript(Assessment.Terrible, 1, "시연회의 결과가 최악입니다!"));
         m_ResultScriptList.Add(new ResultScript(Assessment.Terrible, 1, "시연회의 반응이 심상치않습니다\n나쁜의미로요."));
         m_ResultScriptList.Add(new ResultScript(Assessment.Terrible, 1, "시연회의 반응이 심각합니다!\n이런식으로 지속된다면 우리 아카데미 평판은 바닥을 칠 것입니다."));
@@ -1903,9 +2509,12 @@ public class GameShow : MonoBehaviour
         m_ResultScriptList.Add(new ResultScript(Assessment.Excellent, 1, "느껴지시나요 이 핫한 열기?\n시연회가 성공적으로 마무리 되었습니다!"));
         m_ResultScriptList.Add(new ResultScript(Assessment.Excellent, 1, "시연회 반응이 심상치 않습니다.\n놀랍군요!"));
         m_ResultScriptList.Add(new ResultScript(Assessment.Excellent, 1, "시연회가 성공적으로 마무리 되었습니다!"));
+
+
         #endregion
 
         #region _mainScript
+
         m_ResultScriptList.Add(new ResultScript(Assessment.Terrible, 2, "홀리 쉣"));
         m_ResultScriptList.Add(new ResultScript(Assessment.Terrible, 2, "진짜 똥겜이네요"));
         m_ResultScriptList.Add(new ResultScript(Assessment.Terrible, 2, "시간 아까워요"));
@@ -1949,12 +2558,16 @@ public class GameShow : MonoBehaviour
         m_ResultScriptList.Add(new ResultScript(Assessment.None, 5, "현실인줄 알았어요"));
         m_ResultScriptList.Add(new ResultScript(Assessment.None, 5, "현실과 가상을 구별해 낼 수 없어..."));
         m_ResultScriptList.Add(new ResultScript(Assessment.None, 5, "완성도가 높은 게임이야"));
+
         #endregion
 
         #region _endScript
+
         m_ResultScriptList.Add(new ResultScript(Assessment.None, 6, "고생하셨습니다!"));
+
         #endregion
     }
+
     #endregion
 
     // 내 레벨에 맞는 난이도에서 우선순위를 전 달에 제작한 게임과 일치하는 컨셉/장르로 설정한다.
@@ -1966,11 +2579,17 @@ public class GameShow : MonoBehaviour
 
         for (int i = 0; i < GameJam.m_GameJamHistory.Count; i++)
         {
-            if (GameTime.Instance.FlowTime.NowMonth - 1 == GameJam.m_GameJamHistory.ElementAt(i).Value[i].m_GameJamData.m_MakeMonth)
+            for (int j = 0; j < GameJam.m_GameJamHistory.ElementAt(i).Value.Count; j++)
             {
-                _gameConcept = GameJam.m_GameJamHistory.ElementAt(i).Value[i].m_GameJamInfoData.m_GjamConcept;
-                _gameGenre = GameJam.m_GameJamHistory.ElementAt(i).Value[i].m_GameJamData.m_Genre;
-                break;
+                if (GameTime.Instance.FlowTime.NowMonth - 1 ==
+                    GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_MakeMonth)
+                {
+                    GameJamInfo _nowData = GameJam.SearchAllGameJamInfo(GameJam.m_GameJamHistory.ElementAt(i).Key);
+
+                    _gameConcept = _nowData.m_GjamConcept;
+                    _gameGenre = GameJam.m_GameJamHistory.ElementAt(i).Value[j].m_Genre;
+                    break;
+                }
             }
         }
 
@@ -1994,11 +2613,13 @@ public class GameShow : MonoBehaviour
                     return UnityEngine.Random.Range(0, 40) == 0 ? -1 : 1;
                 }
 
-                bool _compareConcept = _gameConcept == x.GameShowConcept[0] || (x.GameShowConcept.Length == 2 && _gameConcept == x.GameShowConcept[1]);
+                bool _compareConcept = _gameConcept == x.GameShowConcept[0] ||
+                                       (x.GameShowConcept.Length == 2 && _gameConcept == x.GameShowConcept[1]);
                 if (_compareConcept)
                     return -1;
 
-                bool _compareGenre = _gameGenre == x.GameShowGenre[0] || (x.GameShowGenre.Length == 2 && _gameGenre == x.GameShowGenre[1]);
+                bool _compareGenre = _gameGenre == x.GameShowGenre[0] ||
+                                     (x.GameShowGenre.Length == 2 && _gameGenre == x.GameShowGenre[1]);
                 if (_compareGenre)
                     return -1;
 
@@ -2014,19 +2635,20 @@ public class GameShow : MonoBehaviour
     {
         for (int i = 0; i < m_TotalGameShowData.Count; i++)
         {
-            var (_reward, famous, passion, health) = GetRewardByAssessment(m_TotalGameShowData[i].GameShow_Level, Assessment.Good);
+            var (_reward, famous, passion, health) =
+                GetRewardByAssessment(m_TotalGameShowData[i].GameShow_Level, Assessment.Good);
             m_TotalGameShowData[i].GameShow_Reward = _reward;
         }
 
         m_TotalGameShowData = m_TotalGameShowData.OrderByDescending(x =>
-        {
-            if (!m_GameShowHistory.ContainsKey(x.GameShow_ID))
-                return 1;
-            else
-                return 0;
-        }).ThenBy(x => x.GameShow_Level)
-        .ThenByDescending(x => x.GameShow_Reward)
-        .ThenBy(x => x.GameShow_Name, StringComparer.CurrentCulture).ToList();
+            {
+                if (!m_GameShowHistory.ContainsKey(x.GameShow_ID))
+                    return 1;
+                else
+                    return 0;
+            }).ThenBy(x => x.GameShow_Level)
+            .ThenByDescending(x => x.GameShow_Reward)
+            .ThenBy(x => x.GameShow_Name, StringComparer.CurrentCulture).ToList();
     }
 
     // 내 아카데미 점수에 따른 게임쇼 난이도 뽑아주는 함수
@@ -2044,7 +2666,8 @@ public class GameShow : MonoBehaviour
     }
 
     // 내가 게임쇼에서 받은 평가 반응으로 얻게 될 상금
-    private (int _rewardMoney, int _famous, int _passion, int _health) GetRewardByAssessment(int level, Assessment assessment)
+    private (int _rewardMoney, int _famous, int _passion, int _health) GetRewardByAssessment(int level,
+        Assessment assessment)
     {
         foreach (GameShowRewardByDifficulty table in m_Assessnent)
         {
@@ -2133,16 +2756,35 @@ public class GameShow : MonoBehaviour
     // 결과창에 띄워줄 스크립트를 조건에 맞게 랜덤하게 출력
     private string GetResultScript(Assessment _assessment, int _scriptOrder)
     {
-        List<ResultScript> filteredList = m_ResultScriptList.FindAll(x => x.ResultAssessment == _assessment && x.ScriptOrder == _scriptOrder);
+        List<ResultScript> filteredList =
+            m_ResultScriptList.FindAll(x => x.ResultAssessment == _assessment && x.ScriptOrder == _scriptOrder);
 
         int count = filteredList.Count;
 
-        if (count > 0)
+        if (count > 0 && !_isFirstGameShow)
         {
             int randomIndex = UnityEngine.Random.Range(0, count);
             return filteredList[randomIndex].Script;
         }
+        else
+        {
+            int _index = _assessment == Assessment.Terrible ? 0 : _assessment == Assessment.SoSo ? 1 : 2;
+            _isFirstGameShow = false;
+            return filteredList[_index].Script;
+        }
+    }
+}
 
-        return "";
+public class StaticDeepCopy
+{
+    public static T DeepClone<T>(T obj)
+    {
+        using (var ms = new MemoryStream())
+        {
+            var formatter = new BinaryFormatter();
+            formatter.Serialize(ms, obj);
+            ms.Position = 0;
+            return (T)formatter.Deserialize(ms);
+        }
     }
 }

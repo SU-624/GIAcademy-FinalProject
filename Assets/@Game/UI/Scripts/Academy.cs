@@ -16,15 +16,30 @@ using System.Text.RegularExpressions;
 /// </summary>
 public class Academy : MonoBehaviour
 {
+    [SerializeField] private EventScriptManager tempScriptManagerObj;
+
     [SerializeField] private Image SetAcademyPanelBG;
 
     [SerializeField] private Tutorial SettingAcademyTutorial;
-    [SerializeField] private PopUpUI _popUpClassPanel;
 
     [SerializeField] private PopUpUI PopUpSetAcademyPanel; // ¾ÆÄ«µ¥¹Ì ¼¼ÆÃÀ» À§ÇÑ ÆÐ³Î ÆË¾÷/¿ÀÇÁ ¿¬°á
     [SerializeField] private PopOffUI PopOffSetAcademyPanel;
 
-    [Header("Æ©Åä¸®¾óÀ» À§ÇÑ ½Ã³ª¸®¿À ºÎºÐ")] [SerializeField]
+    [SerializeField] private GameObject SpriteImg1;
+    [SerializeField] private GameObject SpriteImg2;
+    [SerializeField] private GameObject ArtNameImg;
+    [SerializeField] private GameObject DesignNameImg;
+    [SerializeField] private GameObject ProgrammingNameImg;
+    [SerializeField] private GameObject BookstoreImg;
+    [SerializeField] private GameObject ShopImg;
+    [SerializeField] private GameObject GenreImg;
+    [SerializeField] private GameObject ArtImg;
+    [SerializeField] private GameObject DesignImg;
+    [SerializeField] private GameObject ProgrammingImg;
+    [SerializeField] private GameObject GameImg;
+
+    [Header("Æ©Åä¸®¾óÀ» À§ÇÑ ½Ã³ª¸®¿À ºÎºÐ")]
+    [SerializeField]
     private Image PDTalking;
 
     [SerializeField] private TextMeshProUGUI PDTalkingText;
@@ -33,7 +48,8 @@ public class Academy : MonoBehaviour
     [SerializeField] private TMP_InputField m_DirectorInputField;
     [SerializeField] private Button m_DirectorNameSetOKButton;
 
-    [Header("¾ÆÄ«µ¥¹Ì¸í ¼¼ÆÃ ºÎºÐ")] [SerializeField]
+    [Header("¾ÆÄ«µ¥¹Ì¸í ¼¼ÆÃ ºÎºÐ")]
+    [SerializeField]
     private Image AcademyNameSetting;
 
     [SerializeField] private TMP_InputField m_AcademyInputField;
@@ -44,8 +60,21 @@ public class Academy : MonoBehaviour
     [SerializeField] private Image m_NoticeImg;
     [SerializeField] private TextMeshProUGUI m_NoticeText; // ¾È³»¹®±¸ ¶ç¿öÁÙ º¯¼ö
     [SerializeField] private ClockScheduler m_Scheduler;
+    [SerializeField] private Unmask m_Unmask;
+    [SerializeField] private GameObject m_BlackScreen;
+    [SerializeField] private Image m_TutorialTextImage;
+    [SerializeField] private TextMeshProUGUI m_TutorialText;
+    [SerializeField] private RectTransform m_UnmaskTarget1;
+    [SerializeField] private RectTransform m_UnmaskTarget2;
+    [SerializeField] private RectTransform m_UnmaskTarget3;
+
+    [SerializeField] private GameObject m_MainCanvas;
+    [SerializeField] private Image m_FadeOutImg;
+
+    [SerializeField] private GameObject m_SkipButton;
+
     private int AcademySettingPanelCount = 0;
-    private int AcademySettingSciptCount = 0;
+    private int AcademySettingScriptCount = 0;
 
     private string m_AcademyName;
     private string m_DirectorName;
@@ -59,6 +88,16 @@ public class Academy : MonoBehaviour
     private int m_Activity;
     private int m_Goods;
 
+    private float m_LastTime;
+
+    private Vector3 m_velocity = Vector3.zero;
+    private Vector3 m_cameraOffset = new Vector3(-20, 45, -23);
+    private const int m_CameraZoomOutSize = 28;
+    private const int m_CameraBasizZoomSize = 18;
+    private const float m_ZoomSpeed = 0.3f;
+    private const float m_MoveSpeed = 0.2f;
+
+
     #region AcademyData
 
     public string MyAcademy
@@ -67,7 +106,7 @@ public class Academy : MonoBehaviour
         private set { m_AcademyName = value; }
     }
 
-    public string MyTeacher
+    public string MyName
     {
         get { return m_DirectorName; }
         private set { m_DirectorName = value; }
@@ -80,6 +119,14 @@ public class Academy : MonoBehaviour
     }
 
     #endregion
+
+    public void OnEnable()
+    {
+        if (Json.Instance.UseLoadingData == true)
+        {
+            PDTalkingNextButton.gameObject.SetActive(false);
+        }
+    }
 
     // ¹öÆ°¿¡ ¾ÆÄ«µ¥¹Ì¸í, ¿øÀå¸í Ã¼Å© ÈÄ ¾Àº¯°æ ÇÏ´Â ÇÔ¼ö ´Þ¾ÆµÎ±â
     private void Start()
@@ -100,7 +147,7 @@ public class Academy : MonoBehaviour
         m_AcademyScore = 0;
 
 
-        if (!Json.Instance.IsSavedDataExists)
+        if (!Json.Instance.UseLoadingData)
         {
             PlayerInfo.Instance.IsFirstAcademySetting = false;
             // Æ©Åä¸®¾óÀ» À§ÇÑ ¸Ç Ã³À½ ¶ß°Ô µÉ °Í
@@ -112,6 +159,12 @@ public class Academy : MonoBehaviour
             {
                 InitAcademySetting();
             }
+            this.gameObject.SetActive(false);
+            m_SkipButton.SetActive(false);
+
+            // ½ºÅ©¸³Æ®ÀÇ ¾ÆÄ«µ¥¹Ì¸íÀ» ÁöÁ¤ÇÑ ¾ÆÄ«µ¥¹ÌÀÌ¸§À¸·Î ¹Ù²Ù´Â µ¨¸®°ÔÀÌÆ®
+            EventScriptManager.dReadyEventScript SetAcademynameByPlayer = new EventScriptManager.dReadyEventScript(tempScriptManagerObj.CheckAcademyNameSet);
+            SetAcademynameByPlayer();
         }
     }
 
@@ -121,7 +174,10 @@ public class Academy : MonoBehaviour
         {
             if (AcademySettingPanelCount == 0)
             {
-                PDTalkingText.text = SettingAcademyTutorial.NameTutorial[AcademySettingPanelCount];
+                m_MainCanvas.SetActive(false);
+
+                //PDTalkingText.text = SettingAcademyTutorial.NameTutorial[AcademySettingScriptCount];
+                PDTalkingText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
 
                 SetAcademyPanelBG.gameObject.SetActive(true);
 
@@ -133,7 +189,7 @@ public class Academy : MonoBehaviour
                 PopUpSetAcademyPanel.TurnOnUI();
 
                 AcademySettingPanelCount++;
-                AcademySettingSciptCount++;
+                AcademySettingScriptCount++;
             }
         }
     }
@@ -146,96 +202,405 @@ public class Academy : MonoBehaviour
             {
                 PDTalkingText.text = SettingAcademyTutorial.NameTutorial[1];
             }
-                break;
+            break;
             case 2: // ´ë»ç ³¡³ª°í ¿øÀå¸í Á¤ÇÏ´Â ºÎºÐ
             {
-                PDTalkingText.text = PlayerInfo.Instance.m_TeacherName + " " + SettingAcademyTutorial.NameTutorial[1];
+                PDTalkingText.text = PlayerInfo.Instance.PrincipalName + " " + SettingAcademyTutorial.NameTutorial[1];
             }
-                break;
+            break;
         }
     }
 
     public void IfClickPDTalkingNextButton()
     {
-        if (AcademySettingPanelCount == 1 || AcademySettingPanelCount == 4 || AcademySettingPanelCount == 5 ||
-            AcademySettingPanelCount == 6 || AcademySettingPanelCount == 10)
+        if (AcademySettingPanelCount == 1 || AcademySettingPanelCount == 2 || AcademySettingPanelCount == 5 || AcademySettingPanelCount == 6 || AcademySettingPanelCount == 12 || AcademySettingPanelCount == 16 || AcademySettingPanelCount == 35 || AcademySettingPanelCount == 36)
         {
-            PDTalkingText.text = SettingAcademyTutorial.NameTutorial[AcademySettingSciptCount];
+            PDTalkingText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
 
             AcademySettingPanelCount++;
-            AcademySettingSciptCount++;
+            AcademySettingScriptCount++;
         }
-        else if (AcademySettingPanelCount == 2) // ¿øÀå ÀÌ¸§Á¤ÇÏ±â Ã¢ ÆË¾÷
+        else if (AcademySettingPanelCount == 14 || AcademySettingPanelCount == 22 || AcademySettingPanelCount == 23 || AcademySettingPanelCount == 24 || AcademySettingPanelCount == 33)
         {
+            m_TutorialText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
+
+            AcademySettingPanelCount++;
+            AcademySettingScriptCount++;
+        }
+        else if (AcademySettingPanelCount == 3)
+        {
+            PDTalkingNextButton.gameObject.SetActive(false);
             DirectorNameSetting.gameObject.SetActive(true);
 
             PDTalking.gameObject.SetActive(false);
             AcademyNameSetting.gameObject.SetActive(false);
 
-
             AcademySettingPanelCount++;
         }
-        else if (AcademySettingPanelCount == 7) // ¾ÆÄ«µ¥¹Ì ÀÌ¸§ Á¤ÇÏ±â Ã¢ ÆË¾÷
+        else if (AcademySettingPanelCount == 7)
         {
-            AcademyNameSetting.gameObject.SetActive(true);
-
+            m_BlackScreen.SetActive(true);
+            // todo : ±âÈ¹ ÀÌ¹ÌÁö µîÀå
+            DesignImg.SetActive(true);
             PDTalking.gameObject.SetActive(false);
-            DirectorNameSetting.gameObject.SetActive(false);
+
+            m_TutorialTextImage.gameObject.SetActive(true);
+            m_TutorialTextImage.transform.position = new Vector3(Screen.width / 2f, Screen.height / 5f, 0);
+            m_TutorialText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
 
             AcademySettingPanelCount++;
+            AcademySettingScriptCount++;
+        }
+        else if (AcademySettingPanelCount == 8)
+        {
+            // todo : ¾ÆÆ® ÀÌ¹ÌÁö µîÀå
+            ArtImg.SetActive(true);
+            m_TutorialText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
+
+            AcademySettingPanelCount++;
+            AcademySettingScriptCount++;
         }
         else if (AcademySettingPanelCount == 9)
         {
-            int splitIndex1 = SettingAcademyTutorial.NameTutorial[AcademySettingSciptCount].IndexOf("[");
-            int splitIndex2 = SettingAcademyTutorial.NameTutorial[AcademySettingSciptCount].IndexOf("]");
-
-            MyAcademy = m_AcademyInputField.text;
-
-            PDTalkingText.text =
-                SettingAcademyTutorial.NameTutorial[AcademySettingSciptCount].Substring(0, splitIndex1) + MyAcademy +
-                SettingAcademyTutorial.NameTutorial[AcademySettingSciptCount].Substring(splitIndex2 + 1);
+            // todo : ÇÃ¹Ö ÀÌ¹ÌÁö µîÀå
+            ProgrammingImg.SetActive(true);
+            m_TutorialText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
 
             AcademySettingPanelCount++;
-            AcademySettingSciptCount++;
+            AcademySettingScriptCount++;
+        }
+        else if (AcademySettingPanelCount == 10)
+        {
+            // todo : ÆÄÆ® ÀÌ¹ÌÁö ¸ðµÎ »ç¶óÁö°í °ÔÀÓ¾ÆÀÌÄÜ µîÀå
+            DesignImg.SetActive(false);
+            ArtImg.SetActive(false);
+            ProgrammingImg.SetActive(false);
+            GameImg.SetActive(true);
+            m_TutorialText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
+
+            AcademySettingPanelCount++;
+            AcademySettingScriptCount++;
         }
         else if (AcademySettingPanelCount == 11)
         {
-            // IfSetOKSaveJsonFile();           ÀúÀåÀº 1Â÷ ¹èÆ÷ Àü Áö¿ö³õ±â
+            PDTalking.gameObject.SetActive(true);
+            GameImg.SetActive(false);
 
-            InGameUI.Instance.m_nowAcademyName.text = MyAcademy;
-            InGameUI.Instance.m_nowDirectorName.text = MyTeacher;
+            m_BlackScreen.SetActive(false);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            PDTalkingText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
 
-            SetAcademyPanelBG.gameObject.SetActive(false);
-
-            PopOffSetAcademyPanel.TurnOffUI();
-
-            PlayerInfo.Instance.IsFirstAcademySetting = true;
+            AcademySettingPanelCount++;
+            AcademySettingScriptCount++;
         }
+        else if (AcademySettingPanelCount == 13)
+        {
+            PDTalking.gameObject.SetActive(false);
+
+            m_BlackScreen.SetActive(true);
+            m_TutorialTextImage.gameObject.SetActive(true);
+            m_TutorialText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
+            SpriteImg1.SetActive(true);
+
+            AcademySettingPanelCount++;
+            AcademySettingScriptCount++;
+        }
+        else if (AcademySettingPanelCount == 15)
+        {
+            PDTalking.gameObject.SetActive(true);
+
+            m_BlackScreen.SetActive(false);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            int splitIndex1 = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount].IndexOf("[");
+            int splitIndex2 = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount].IndexOf("]");
+
+            PDTalkingText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount].Substring(0, splitIndex1) + MyName + " " + SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount].Substring(splitIndex2 + 1);
+            SpriteImg1.SetActive(false);
+
+            AcademySettingPanelCount++;
+            AcademySettingScriptCount++;
+        }
+        else if (AcademySettingPanelCount == 17)
+        {
+            int splitIndex1 = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount].IndexOf("[");
+            int splitIndex2 = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount].IndexOf("]");
+
+            PDTalkingText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount].Substring(0, splitIndex1) + MyName + " " + SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount].Substring(splitIndex2 + 1);
+
+            AcademySettingPanelCount++;
+            AcademySettingScriptCount++;
+        }
+        else if (AcademySettingPanelCount == 18)
+        {
+            PDTalkingNextButton.gameObject.SetActive(false);
+            DirectorNameSetting.gameObject.SetActive(false);
+
+            PDTalking.gameObject.SetActive(false);
+            AcademyNameSetting.gameObject.SetActive(true);
+
+            AcademySettingPanelCount++;
+        }
+        else if (AcademySettingPanelCount == 20)
+        {
+            PDTalkingNextButton.gameObject.SetActive(true);
+
+            PDTalking.gameObject.SetActive(true);
+            PDTalkingText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
+
+            AcademySettingScriptCount++;
+            AcademySettingPanelCount++;
+        }
+        else if (AcademySettingPanelCount == 21)
+        {
+            PDTalking.gameObject.SetActive(false);
+            m_BlackScreen.SetActive(true);
+            m_TutorialTextImage.gameObject.SetActive(true);
+            m_TutorialText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
+            m_TutorialTextImage.transform.position = new Vector3(Screen.width / 2f, Screen.height / 5f - 50f, 0);
+            SpriteImg2.SetActive(true);
+
+            AcademySettingScriptCount++;
+            AcademySettingPanelCount++;
+        }
+        else if (AcademySettingPanelCount == 25)
+        {
+            SpriteImg2.gameObject.SetActive(false);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_BlackScreen.SetActive(false);
+
+            AcademySettingPanelCount++;
+            StartCoroutine(CameraZoomOut());
+        }
+        else if (AcademySettingPanelCount == 27)
+        {
+            m_TutorialTextImage.gameObject.SetActive(false);
+
+            AcademySettingPanelCount++;
+            StartCoroutine(MoveCamera(1));
+        }
+        else if (AcademySettingPanelCount == 29)
+        {
+            m_TutorialTextImage.gameObject.SetActive(false);
+
+            AcademySettingPanelCount++;
+            StartCoroutine(MoveCamera(2));
+        }
+        else if (AcademySettingPanelCount == 31)
+        {
+            m_TutorialTextImage.gameObject.SetActive(false);
+
+            AcademySettingPanelCount++;
+            StartCoroutine(MoveCamera(3));
+        }
+        else if (AcademySettingPanelCount == 34)
+        {
+            m_Unmask.gameObject.SetActive(false);
+            ShopImg.SetActive(false);
+            BookstoreImg.SetActive(false);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_BlackScreen.gameObject.SetActive(false);
+
+            PDTalking.gameObject.SetActive(true);
+            PDTalkingText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
+
+            AcademySettingScriptCount++;
+            AcademySettingPanelCount++;
+        }
+        else if (AcademySettingPanelCount == 37)
+        {
+            PDTalkingNextButton.gameObject.SetActive(false);
+            StartCoroutine(FadeOut());
+        }
+
+        ClickEventManager.Instance.Sound.PlayIconTouch();
+    }
+
+    IEnumerator CameraZoomOut()
+    {
+        while (Camera.main.orthographicSize < m_CameraZoomOutSize)
+        {
+            Camera.main.orthographicSize += m_ZoomSpeed;
+
+            yield return null;
+        }
+
+        m_TutorialTextImage.transform.position = new Vector3(Screen.width / 4f * 3, Screen.height / 5f * 4, 0);
+        m_TutorialText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
+        m_TutorialTextImage.gameObject.SetActive(true);
+
+        AcademySettingScriptCount++;
+        AcademySettingPanelCount++;
+    }
+
+    IEnumerator MoveCamera(int targetNum)
+    {
+        Transform tempTarget = this.transform;
+        RectTransform unmaskTarget = null;
+        if (targetNum == 1)
+        {
+            tempTarget = Camera.main.GetComponent<InGameCamera>().TutorialTarget1;
+            unmaskTarget = m_UnmaskTarget1;
+            m_TutorialTextImage.transform.position = new Vector3((Screen.width / 5f) * 4.15f, Screen.height / 2f, 0);
+        }
+        else if (targetNum == 2)
+        {
+            ArtNameImg.SetActive(false);
+            DesignNameImg.SetActive(false);
+            ProgrammingNameImg.SetActive(false);
+            tempTarget = Camera.main.GetComponent<InGameCamera>().TutorialTarget2;
+            unmaskTarget = m_UnmaskTarget2;
+            m_TutorialTextImage.transform.position = new Vector3((Screen.width / 5f) * 4, Screen.height / 2f, 0);
+        }
+        else if (targetNum == 3)
+        {
+            GenreImg.SetActive(false);
+            tempTarget = Camera.main.GetComponent<InGameCamera>().TutorialTarget3;
+            unmaskTarget = m_UnmaskTarget3;
+            m_TutorialTextImage.transform.position = new Vector3((Screen.width / 6f) * 2, Screen.height / 2f, 0);
+        }
+
+        m_BlackScreen.SetActive(false);
+        m_TutorialTextImage.gameObject.SetActive(false);
+
+        float distance = Vector3.Distance(Camera.main.transform.position, tempTarget.position);
+
+        while (distance > 1)
+        {
+            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, tempTarget.position + m_cameraOffset, m_MoveSpeed);
+            distance = Vector3.Distance(Camera.main.transform.position, tempTarget.position + m_cameraOffset);
+            if (Camera.main.orthographicSize > m_CameraBasizZoomSize)
+                Camera.main.orthographicSize -= m_ZoomSpeed * 2;
+
+            yield return null;
+        }
+
+        while (Camera.main.orthographicSize > m_CameraBasizZoomSize)
+        {
+            Camera.main.orthographicSize -= m_ZoomSpeed * 2;
+        }
+
+        m_Unmask.gameObject.SetActive(true);
+        m_Unmask.fitTarget = unmaskTarget;
+        m_BlackScreen.SetActive(true);
+        m_TutorialText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
+        m_TutorialTextImage.gameObject.SetActive(true);
+
+        if (targetNum == 1)
+        {
+            ArtNameImg.SetActive(true);
+            DesignNameImg.SetActive(true);
+            ProgrammingNameImg.SetActive(true);
+        }
+        else if (targetNum == 2)
+        {
+            GenreImg.SetActive(true);
+        }
+        else if (targetNum == 3)
+        {
+            BookstoreImg.SetActive(true);
+            ShopImg.SetActive(true);
+        }
+
+        AcademySettingScriptCount++;
+        AcademySettingPanelCount++;
+    }
+
+    IEnumerator CameraReset()
+    {
+        float distance = Vector3.Distance(Camera.main.transform.position, Camera.main.GetComponent<TestCamera>().BaseCameraPosition);
+
+        while (distance > 1)
+        {
+            Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, Camera.main.GetComponent<TestCamera>().BaseCameraPosition, m_MoveSpeed);
+            distance = Vector3.Distance(Camera.main.transform.position, Camera.main.GetComponent<TestCamera>().BaseCameraPosition);
+
+            yield return null;
+        }
+    }
+
+    IEnumerator FadeOut()
+    {
+        Time.timeScale = 0;
+        m_FadeOutImg.gameObject.SetActive(true);
+        m_LastTime = Time.realtimeSinceStartup;
+        while (m_FadeOutImg.color.a < 1f)
+        {
+            float deltaTime = Time.realtimeSinceStartup - m_LastTime;
+            m_FadeOutImg.color = new Color(m_FadeOutImg.color.r, m_FadeOutImg.color.g, m_FadeOutImg.color.b, m_FadeOutImg.color.a + (deltaTime / 0.5f));
+            m_LastTime = Time.realtimeSinceStartup;
+            yield return null;
+        }
+
+        StartCoroutine(CameraReset());
+
+        InGameUI.Instance.m_nowAcademyName.text = MyAcademy;
+        InGameUI.Instance.m_nowDirectorName.text = MyName;
+
+        SetAcademyPanelBG.gameObject.SetActive(false);
+
+        PopOffSetAcademyPanel.TurnOffUI();
+        m_MainCanvas.SetActive(true);
+
+        PlayerInfo.Instance.IsFirstAcademySetting = true;
+        m_SkipButton.SetActive(false);
+        //m_LastTime = Time.realtimeSinceStartup;
+        //while (m_FadeOutImg.color.a > 0f)
+        //{
+        //    float deltaTime = Time.realtimeSinceStartup - m_LastTime;
+        //    m_FadeOutImg.color = new Color(m_FadeOutImg.color.r, m_FadeOutImg.color.g, m_FadeOutImg.color.b, m_FadeOutImg.color.a - (deltaTime / 0.5f));
+        //    m_LastTime = Time.realtimeSinceStartup;
+        //    yield return null;
+        //}
+
+        //m_FadeOutImg.gameObject.SetActive(false);
+    }
+
+    public void ClickSkipButton()
+    {
+        MyName = "Å×½ºÆ®";
+        MyAcademy = "Å×½ºÆ®";
+
+        PlayerInfo.Instance.PrincipalName = MyName;
+        PlayerInfo.Instance.AcademyName = MyAcademy;
+
+        InGameUI.Instance.m_nowAcademyName.text = MyAcademy;
+        InGameUI.Instance.m_nowDirectorName.text = MyName;
+
+        SetAcademyPanelBG.gameObject.SetActive(false);
+
+        m_SkipButton.SetActive(false);
+        PopOffSetAcademyPanel.TurnOffUI();
+        m_MainCanvas.SetActive(true);
+        PlayerInfo.Instance.IsFirstAcademySetting = true;
+        PlayerInfo.Instance.IsFirstClassSetting = false;
+        PlayerInfo.Instance.IsFirstGameJam = false;
+        PlayerInfo.Instance.IsFirstGameShow = false;
     }
 
     public void IfClickSetOKtButton()
     {
-        if (AcademySettingPanelCount == 3) // ¿øÀå¸í ÁöÁ¤ ÈÄ
+        if (AcademySettingPanelCount == 4) // ¿øÀå¸í ÁöÁ¤ ÈÄ
         {
             string Check = Regex.Replace(m_DirectorInputField.text, @"[^a-zA-Z0-9°¡-ÆR]", "", RegexOptions.Singleline);
             Check = Regex.Replace(m_DirectorInputField.text, @"[^\w\.@-]", "", RegexOptions.Singleline);
 
             if (m_DirectorInputField.text != "" && m_DirectorInputField.text.Equals(Check) == true)
             {
-                int splitIndex = SettingAcademyTutorial.NameTutorial[AcademySettingSciptCount].IndexOf("]");
+                //int splitIndex = SettingAcademyTutorial.NameTutorial[AcademySettingScriptCount].IndexOf("]");
 
-                MyTeacher = m_DirectorInputField.text;
-                PlayerInfo.Instance.m_TeacherName = MyTeacher;
+                MyName = m_DirectorInputField.text;
+                PlayerInfo.Instance.PrincipalName = MyName;
 
-                PDTalkingText.text = MyTeacher + " " + SettingAcademyTutorial.NameTutorial[AcademySettingSciptCount]
-                    .Substring(splitIndex + 1);
+                //PDTalkingText.text = MyName + " " + SettingAcademyTutorial.NameTutorial[AcademySettingScriptCount].Substring(splitIndex + 1);
+                PDTalkingText.text = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount];
                 PDTalking.gameObject.SetActive(true);
 
                 AcademyNameSetting.gameObject.SetActive(false);
                 DirectorNameSetting.gameObject.SetActive(false);
+                PDTalkingNextButton.gameObject.SetActive(true);
 
                 AcademySettingPanelCount++;
-                AcademySettingSciptCount++;
+                AcademySettingScriptCount++;
             }
             else
             {
@@ -247,25 +612,36 @@ public class Academy : MonoBehaviour
                 StartCoroutine(AlarmScreenPopOff(1));
             }
         }
-        else if (AcademySettingPanelCount == 8) // ¾ÆÄ«µ¥¹Ì¸í ÁöÁ¤ ÈÄ
+        else if (AcademySettingPanelCount == 19) // ¾ÆÄ«µ¥¹Ì¸í ÁöÁ¤ ÈÄ
         {
             string Check = Regex.Replace(m_AcademyInputField.text, @"[^a-zA-Z0-9°¡-ÆR]", "", RegexOptions.Singleline);
             Check = Regex.Replace(m_AcademyInputField.text, @"[^\w\.@-]", "", RegexOptions.Singleline);
 
             if (m_AcademyInputField.text != "" && m_AcademyInputField.text.Equals(Check) == true)
             {
+                int splitIndex = SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount].IndexOf("]");
+
                 MyAcademy = m_AcademyInputField.text;
-                PlayerInfo.Instance.m_AcademyName = MyAcademy;
+                PlayerInfo.Instance.AcademyName = MyAcademy;
+
+                // ¾ÆÄ«µ¥¹Ì ÀÌ¸§À» ÁöÀº ÈÄ, ÇÃ·¹ÀÌ¾î°¡ Á¤ÇÑ ÀÌ¸§À¸·Î ¸ðµç ½ºÅ©¸³Æ®ÀÇ ¾ÆÄ«µ¥¹Ì¸íÀ» ¹Ù²Ù´Â µ¨¸®°ÔÀÌÆ®
+                EventScriptManager.dReadyEventScript SetAcademynameByPlayer = new EventScriptManager.dReadyEventScript(tempScriptManagerObj.CheckAcademyNameSet);
+                SetAcademynameByPlayer();
 
                 PDTalking.gameObject.SetActive(true);
 
-                PDTalkingText.text = SettingAcademyTutorial.NameTutorial[AcademySettingSciptCount];
+                PDTalkingText.text = MyAcademy + " " + SettingAcademyTutorial.StartTutorial[AcademySettingScriptCount].Substring(splitIndex + 1);
 
                 AcademyNameSetting.gameObject.SetActive(false);
                 DirectorNameSetting.gameObject.SetActive(false);
+                PDTalkingNextButton.gameObject.SetActive(true);
 
                 AcademySettingPanelCount++;
-                AcademySettingSciptCount++;
+                AcademySettingScriptCount++;
+
+                //temp.GetComponent<EventScriptManager>().EventTextScriptSplit();
+
+                // temp.EventTextScriptSplit();
             }
             else
             {
@@ -284,58 +660,5 @@ public class Academy : MonoBehaviour
         yield return new WaitForSecondsRealtime(delayTime);
 
         m_NoticeImg.gameObject.SetActive(false);
-    }
-
-    // ¾ÆÀÌµð·Î ·Î±×ÀÎ ÇÒ ¶§ (¹Ì»ç¿ë)
-    // ¾ÆÄ«µ¥¹ÌÀÌ¸§ & ¿øÀå ÀÌ¸§ ¼¼ÆÃ ( ÀÎ°ÔÀÓ UI - SetOK ¹öÆ° ´©¸£¸é ½ÇÇà)
-    public void SetAcademyData()
-    {
-        MyAcademy = m_AcademyInputField.text;
-        MyTeacher = m_DirectorInputField.text;
-
-        Debug.Log("AcademyName : " + MyAcademy);
-        Debug.Log("DirectorName : " + MyTeacher);
-        PlayerInfo.Instance.m_AcademyName = MyAcademy;
-        PlayerInfo.Instance.m_TeacherName = MyTeacher;
-        ///////////////////////
-
-        //AllInOneData.Instance.player.PlayerID = PlayerInfo.Instance.m_PlayerID;
-        AllInOneData.Instance.PlayerData.AcademyName = MyAcademy;
-        AllInOneData.Instance.PlayerData.PrincipalName = MyTeacher;
-        AllInOneData.Instance.PlayerData.AcademyScore = m_AcademyScore;
-        AllInOneData.Instance.PlayerData.Famous = m_Famous;
-        AllInOneData.Instance.PlayerData.Management = m_Management;
-        AllInOneData.Instance.PlayerData.TalentDevelopment = m_PracticalTalent;
-        AllInOneData.Instance.PlayerData.Activity = m_Activity;
-        AllInOneData.Instance.PlayerData.Goods = m_Goods;
-
-        // IfSetOKSaveJsonFile();
-
-        InGameUI.Instance.m_nowAcademyName.text = MyAcademy;
-        InGameUI.Instance.m_nowDirectorName.text = MyTeacher;
-    }
-
-    // ÀÔ·ÂÇÑ µ¥ÀÌÅÍ¸¦ ÀúÀåÇÏ±âÀ§ÇÑ ÇÔ¼ö
-    public void IfSetOKSaveJsonFile()
-    {
-        // 5.15 woodpie9 PlayerID Á¤º¸ »èÁ¦
-        // ÀÓ½ÃÁ¤º¸ ºÎ¿©
-        // m_NowLogInfo.MyID = "@GuestLogin";
-        // Debug.Log("Guest : " + m_NowLogInfo.MyID);
-        //
-        // PlayerInfo.Instance.m_PlayerID = m_NowLogInfo.MyID;
-
-#if UNITY_EDITOR
-        // var json = GameObject.Find("Json");             // ¾ÀÀÌ ´Ù¸£±â ¶§¹®¿¡ Json À» ¾²·Á¸é ÀÌ·¸°Ô ÇØÁà¾ß ÇÑ´Ù 
-        // json.GetComponent<Json>().SaveDataInSetAcademyPanel();
-        //Json.Instance.SaveDataInSetAcademyPanel();
-#elif UNITY_ANDROID
-        // var json = GameObject.Find("Json");             // ¾ÀÀÌ ´Ù¸£±â ¶§¹®¿¡ Json À» ¾²·Á¸é ÀÌ·¸°Ô ÇØÁà¾ß ÇÑ´Ù 
-        // json.GetComponent<Json>().SaveDataInSetAcademyPanel();
-
-        // string str = JsonUtility.ToJson(m_NowLogInfo.MyID);     // µ¥ÀÌÅÍ¸¦ Á¦ÀÌ½¼ Çü½ÄÀ¸·Î º¯È¯
-
-        // Debug.Log("To Json? :" + str);
-#endif
     }
 }

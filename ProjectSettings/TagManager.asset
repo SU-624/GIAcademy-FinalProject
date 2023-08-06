@@ -18,6 +18,11 @@ TagManager:
   - CharacterInfoButton
   - GenreRoomBox
   - Clicker
+  - FxTemporaire
+  - Vine
+  - Tree
+  - Grass
+  - GrassDoor
   layers:
   - Default
   - TransparentFX

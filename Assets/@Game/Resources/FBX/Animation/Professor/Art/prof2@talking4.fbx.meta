@@ -5,7 +5,7 @@ ModelImporter:
   internalIDToNameTable:
   - first:
       74: -203655887218126122
-    second: talking4
+    second: Talking4
   externalObjects: {}
   materials:
     materialImportMode: 2
@@ -36,11 +36,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: talking4
+      name: Talking4
       takeName: mixamo.com
       internalID: 0
       firstFrame: 0
-      lastFrame: 161
+      lastFrame: 151
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

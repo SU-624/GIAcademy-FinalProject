@@ -11,4 +11,5 @@ public class GameJamListPrefab : MonoBehaviour
     public TextMeshProUGUI m_Rank;
     public Button m_GameListPrefabButton;
     public Image m_GenreImage;
+    public Image m_GameConceptImage;
 }

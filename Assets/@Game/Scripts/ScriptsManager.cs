@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class ScriptsManager : MonoBehaviour
@@ -23,7 +24,7 @@ public class ScriptsManager : MonoBehaviour
     public List<string> RepairScripts = new List<string>();                     // 장르방 수리 스크립트
     public List<List<string>> FacilityScripts = new List<List<string>>();       // 시설 4종류
     public List<string> StudyRoom2M = new List<string>();                       // 시설 4종류 중 자습실만 2월에 달라짐
-    public List<List<string>> ObjectScripts = new List<List<string>>();         // 오브젝트 5종류
+    public List<List<string>> ObjectScripts = new List<List<string>>();         // 오브젝트 5종류, 게시판은 인재추천기간에 달라져서 총 6종류
     public List<List<string>> ClassScripts = new List<List<string>>();          // 학과수업 3종류, 2월 3종류
     public List<List<string>> InteractionScripts = new List<List<string>>();    // 학생간 친밀도별 3종류
     public List<string> FreeWalkScripts = new List<string>();                   // 자유이동시
@@ -35,6 +36,8 @@ public class ScriptsManager : MonoBehaviour
     public List<List<string>> StuProScripts = new List<List<string>>();         // 학생-강사 친밀도별 3종류
     public List<List<string>> ProStuScripts = new List<List<string>>();         // 강사-학생 친밀도별 3종류
     public List<List<string>> ProProScripts = new List<List<string>>();         // 강사-강사 기본, 2월
+    public List<List<string>> ProNoticeBoardScripts = new List<List<string>>(); // 강사용 게시판 스크립트 2종류
+    public List<List<string>> ProManVacationScripts = new List<List<string>>(); // 강사와 매니저 방학 인사, 방학 이동
 
     // 인재추천 기간 대화 스크립트들
     public List<List<string>> CStuCStuScripts = new List<List<string>>();       // 인재추천 완 학생 - 인재추천 완 학생 친밀도별 3종류
@@ -89,7 +92,7 @@ public class ScriptsManager : MonoBehaviour
                 newScripts.Add("평화롭구만");
                 newScripts.Add("재밌네");
                 newScripts.Add("얼마에팔지?");
-                newScripts.Add("노잼");
+                newScripts.Add("꼬꼬야 놀자");
                 GenreRoomScripts.Add(newScripts);
             }
             // 리듬
@@ -188,7 +191,7 @@ public class ScriptsManager : MonoBehaviour
             if (i == 0)
             {
                 List<string> newScripts = new List<string>();
-                newScripts.Add("폭행몬 빵!");
+                newScripts.Add("맛있겠다!");
                 newScripts.Add("이거살까?");
                 newScripts.Add("흠");
                 newScripts.Add("배고프다");
@@ -251,7 +254,7 @@ public class ScriptsManager : MonoBehaviour
         }
 
         // 오브젝트
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 6; i++)
         {
             // 자판기
             if (i == 0)
@@ -275,9 +278,11 @@ public class ScriptsManager : MonoBehaviour
             else if (i == 2)
             {
                 List<string> newScripts = new List<string>();
-                newScripts.Add("재밌당!");
-                newScripts.Add("즐거워");
-                newScripts.Add("앗 죽었다..");
+                newScripts.Add("좋은휴식이었어");
+                newScripts.Add("나도만들고파");
+                newScripts.Add("살것같아");
+                newScripts.Add("재밌다");
+                newScripts.Add("행복해");
                 ObjectScripts.Add(newScripts);
             }
             // 정수기
@@ -293,9 +298,48 @@ public class ScriptsManager : MonoBehaviour
             else if (i == 4)
             {
                 List<string> newScripts = new List<string>();
-                newScripts.Add("이것은 게시판이여");
-                newScripts.Add("게시판에 아무것도 없어");
+                newScripts.Add("출석률 왜이래");
+                newScripts.Add("좋은정보가 있나?");
+                newScripts.Add("공모전 떴다!");
+                newScripts.Add("훌륭한 정보야");
+                newScripts.Add("흥미롭군");
                 ObjectScripts.Add(newScripts);
+            }
+            // 게시판 인재추천기간
+            else if (i == 5)
+            {
+                List<string> newScripts = new List<string>();
+                newScripts.Add("취업공고있나");
+                newScripts.Add("좋은소식이군");
+                newScripts.Add("이 회사는!");
+                newScripts.Add("인재추천!");
+                ObjectScripts.Add(newScripts);
+            }
+        }
+
+        // 강사 게시판
+        for (int i = 0; i < 2; i++)
+        {
+            // 기본
+            if (i == 0)
+            {
+                List<string> newScripts = new List<string>();
+                newScripts.Add("여기다 붙이자");
+                newScripts.Add("좋은정보네");
+                newScripts.Add("흥미롭군");
+                newScripts.Add("오옷 이 정보는!");
+                newScripts.Add("오~");
+                ProNoticeBoardScripts.Add(newScripts);
+            }
+            // 인재추천기간
+            else if (i == 1)
+            {
+                List<string> newScripts = new List<string>();
+                newScripts.Add("휼륭한정보야");
+                newScripts.Add("공고가나왔네");
+                newScripts.Add("이런일이..");
+                newScripts.Add("흥미롭군");
+                ProNoticeBoardScripts.Add(newScripts);
             }
         }
 
@@ -306,43 +350,22 @@ public class ScriptsManager : MonoBehaviour
             if (i == 0)
             {
                 List<string> newScripts = new List<string>();
-                newScripts.Add("좋은 아이디어가 떠올랐어!");
-                newScripts.Add("나는 아무 생각이 없다...");
-                newScripts.Add("수업이 지루해요");
-                ClassScripts.Add(newScripts);
-            }
-            // 아트
-            else if (i == 1)
-            {
-                List<string> newScripts = new List<string>();
-                newScripts.Add("와! 내가 봐도 개잘그림");
-                newScripts.Add("손목이 아파...");
-                newScripts.Add("모델링 꿀잼~");
-                ClassScripts.Add(newScripts);
-            }
-            // 프로그래밍
-            else if (i == 2)
-            {
-                List<string> newScripts = new List<string>();
-                newScripts.Add("01101");                 
-                newScripts.Add("0111");         
-                newScripts.Add("01111100"); 
-                ClassScripts.Add(newScripts);
-            }
-            // 2월
-            // 기획
-            else if (i == 3)
-            {
-                List<string> newScripts = new List<string>();
                 newScripts.Add("디..자인");
                 newScripts.Add("어렵다");
                 newScripts.Add("기획의도는?");
                 newScripts.Add("소통이 중요해");
                 newScripts.Add("손목이 아파");
+                newScripts.Add("재밌다!");
+                newScripts.Add("지루해..");
+                newScripts.Add("찐막 유도법?");
+                newScripts.Add("혁신!");
+                newScripts.Add("영감이 필요해");
+                newScripts.Add("침착해");
+                newScripts.Add("가독성좋다");
                 ClassScripts.Add(newScripts);
             }
             // 아트
-            else if (i == 4)
+            else if (i == 1)
             {
                 List<string> newScripts = new List<string>();
                 newScripts.Add("아..트");
@@ -350,17 +373,92 @@ public class ScriptsManager : MonoBehaviour
                 newScripts.Add("AI어떡하지");
                 newScripts.Add("디테일 살리자");
                 newScripts.Add("허리 아프다");
+                newScripts.Add("난 금손이야");
+                newScripts.Add("난 똥손이야");
+                newScripts.Add("너무잘그렸어");
+                newScripts.Add("황금비율!");
+                newScripts.Add("어려워");
+                newScripts.Add("난 창조주야");
+                newScripts.Add("완벽해");
+                newScripts.Add("이게..내작품?");
+                ClassScripts.Add(newScripts);
+            }
+            // 프로그래밍
+            else if (i == 2)
+            {
+                List<string> newScripts = new List<string>();
+                newScripts.Add("프로그래밍..");
+                newScripts.Add("할 수 있나?");
+                newScripts.Add("고통스러워");
+                newScripts.Add("0과1의세상");
+                newScripts.Add("눈이 아프네");
+                newScripts.Add("훌륭해");
+                newScripts.Add("할 수 있다!");
+                newScripts.Add("내 코드최고");
+                newScripts.Add("공유하자");
+                newScripts.Add("터졌다..");
+                newScripts.Add("뻑났다..");
+                newScripts.Add("어딨니버그야");
+                newScripts.Add("오타났나?");
+                newScripts.Add("완벽하다");
+                ClassScripts.Add(newScripts);
+            }
+            // 2월
+            // 기획
+            else if (i == 3)
+            {
+                List<string> newScripts = new List<string>();
+                newScripts.Add("포폴잘쓰는법");
+                newScripts.Add("자소설!");
+                newScripts.Add("디자인..");
+                newScripts.Add("어려워");
+                newScripts.Add("자고싶어");
+                newScripts.Add("불안해");
+                newScripts.Add("붙겠지?");
+                newScripts.Add("나 찾는곳없나");
+                newScripts.Add("이정도면..");
+                newScripts.Add("새로워!");
+                newScripts.Add("자신감 넘친다");
+                newScripts.Add("잘썼다");
+                ClassScripts.Add(newScripts);
+            }
+            // 아트
+            else if (i == 4)
+            {
+                List<string> newScripts = new List<string>();
+                newScripts.Add("쉽지않네");
+                newScripts.Add("뿌듯해");
+                newScripts.Add("더 그릴걸");
+                newScripts.Add("이게 내작품?!");
+                newScripts.Add("창조주의 삶이란");
+                newScripts.Add("이게 아니야!");
+                newScripts.Add("수정할수록 좋네");
+                newScripts.Add("덩어리감!!");
+                newScripts.Add("취업 가능할까?");
+                newScripts.Add("졸지 말걸");
+                newScripts.Add("가능해!");
+                newScripts.Add("그려보자!");
+                newScripts.Add("포폴 써야지");
                 ClassScripts.Add(newScripts);
             }
             // 프로그래밍
             else if (i == 5)
             {
                 List<string> newScripts = new List<string>();
-                newScripts.Add("프로그래밍..");
-                newScripts.Add("할 수 있나?");
-                newScripts.Add("고통스러워");
-                newScripts.Add("1010101");
-                newScripts.Add("눈이 아프네");
+                newScripts.Add("코딩테스트..");
+                newScripts.Add("즐겁다");
+                newScripts.Add("곧 탈출이야!");
+                newScripts.Add("저빨간거뭐야");
+                newScripts.Add("감성이있어야지");
+                newScripts.Add("취업하기싫다");
+                newScripts.Add("완벽한 코드야");
+                newScripts.Add("준비 더 할걸");
+                newScripts.Add("더 공부할걸");
+                newScripts.Add("버그 잡는법");
+                newScripts.Add("나는야 물리의신");
+                newScripts.Add("할 수 있어!");
+                newScripts.Add("자신감 풀파워");
+                newScripts.Add("참신한 코드야");
                 ClassScripts.Add(newScripts);
             }
         }
@@ -441,7 +539,7 @@ public class ScriptsManager : MonoBehaviour
         FreeWalkScripts2.Add("면접연습해야지");
 
         // 강사 교실 스크립트
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 6; i++)
         {
             // 기획
             if (i == 0)
@@ -661,6 +759,52 @@ public class ScriptsManager : MonoBehaviour
                 newScripts.Add("아쉬워...");
                 newScripts.Add("너무 좋아");
                 VacationScripts.Add(newScripts);
+            }
+        }
+
+        // 강사 매니저
+        for (int i = 0; i < 3; i++)
+        {
+            // 인사
+            if (i == 0)
+            {
+                List<string> newScripts = new List<string>();
+                newScripts.Add("고생했습니다");
+                newScripts.Add("놀러오렴");
+                newScripts.Add("수고했다");
+                newScripts.Add("조심히 가");
+                newScripts.Add("인재가 되렴");
+                newScripts.Add("잘 가");
+                ProManVacationScripts.Add(newScripts);
+            }
+            // 이동
+            else if (i == 1)
+            {
+                List<string> newScripts = new List<string>();
+                newScripts.Add("방학!");
+                newScripts.Add("휴가군");
+                newScripts.Add("행복해");
+                newScripts.Add("쉴 수 있어");
+                newScripts.Add("자야겠어");
+                newScripts.Add("이제 뭐하지");
+                newScripts.Add("휴가조아");
+                newScripts.Add("수업준비해야지");
+                newScripts.Add("신입생은...");
+                ProManVacationScripts.Add(newScripts);
+            }
+            // 방학 끝나고 아카데미로 이동
+            else if (i == 2)
+            {
+                List<string> newScripts = new List<string>();
+                newScripts.Add("개학이라니");
+                newScripts.Add("개학이다!");
+                newScripts.Add("꿈인가");
+                newScripts.Add("새로운 시작!");
+                newScripts.Add("오랜만이네");
+                newScripts.Add("터벅터벅");
+                newScripts.Add("화이팅하자");
+                newScripts.Add("신입생은어떨까");
+                ProManVacationScripts.Add(newScripts);
             }
         }
 

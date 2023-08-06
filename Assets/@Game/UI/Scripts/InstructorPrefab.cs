@@ -9,6 +9,8 @@ public class InstructorPrefab : MonoBehaviour
 {
     [Header("전체강사목록에 넣을 프리팹을 받을 친구")]
     [SerializeField] private Image TeacherProfileImage;
+    [SerializeField] private TextMeshProUGUI TeacherLevelText;
+
     [SerializeField] private Image TeacherTypeImage;
     [SerializeField] private Image TeacherNameImage;
     [SerializeField] private TextMeshProUGUI TeacherNameText;
@@ -25,6 +27,12 @@ public class InstructorPrefab : MonoBehaviour
     {
         get { return TeacherProfileImage; }
         set { TeacherProfileImage = value; }
+    }
+
+    public TextMeshProUGUI GetTeacherLevelText
+    {
+        get { return TeacherLevelText; }
+        set { TeacherLevelText = value; }
     }
 
     public Image GetInstructorTypeImage

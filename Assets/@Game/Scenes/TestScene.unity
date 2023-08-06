@@ -1842,6 +1842,71 @@ MonoBehaviour:
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
   m_Version: 2
+--- !u!1001 &965747469
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5159112863933285623, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.031
+      objectReference: {fileID: 0}
+    - target: {fileID: 5159112863933285623, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840080, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_RootOrder
+      value: 28
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840080, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -2.521
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840080, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840080, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840080, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840080, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840080, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840080, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840080, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840080, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840080, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840081, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_Name
+      value: MaleStudent1 (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
 --- !u!1 &994566377
 GameObject:
   m_ObjectHideFlags: 0
@@ -3588,6 +3653,13 @@ MonoBehaviour:
   MoveSpeed: 0.3
   MaxValue: 6
   MinValue: 27
+  ZoomSpeed: 50
+  IsFixed: 0
+  FixedObject: {fileID: 0}
+  BlockAreas: []
+  m_TutorialTarget1: {fileID: 0}
+  m_TutorialTarget2: {fileID: 0}
+  m_TutorialTarget3: {fileID: 0}
 --- !u!114 &1999562029
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3959,6 +4031,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FemaleStudent5
       objectReference: {fileID: 0}
+    - target: {fileID: 4537365712168062491, guid: b625cbb59483fd44fa2172a9c20d7cb9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5081874491326935782, guid: b625cbb59483fd44fa2172a9c20d7cb9, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -3980,6 +4056,10 @@ PrefabInstance:
     - target: {fileID: 1464574462217100010, guid: 1d88be64a80f1fb48aa363e97b6ebfc4, type: 3}
       propertyPath: m_Name
       value: MaleStudent6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1464574462217100010, guid: 1d88be64a80f1fb48aa363e97b6ebfc4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1464574462217100562, guid: 1d88be64a80f1fb48aa363e97b6ebfc4, type: 3}
       propertyPath: m_RootOrder
@@ -4082,6 +4162,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FemaleStudent1
       objectReference: {fileID: 0}
+    - target: {fileID: 4931600071250625897, guid: d5839b46a9abaa641bde45b6ce3afebd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d5839b46a9abaa641bde45b6ce3afebd, type: 3}
 --- !u!1001 &3289760077423399127
@@ -4094,6 +4178,10 @@ PrefabInstance:
     - target: {fileID: 3432770719036024804, guid: 407f88483d6fee84ba84fae60ba30107, type: 3}
       propertyPath: m_Name
       value: FemaleStudent4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3432770719036024804, guid: 407f88483d6fee84ba84fae60ba30107, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6902161289692386863, guid: 407f88483d6fee84ba84fae60ba30107, type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -4221,6 +4309,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FemaleStudent8
       objectReference: {fileID: 0}
+    - target: {fileID: 8769971438285138130, guid: a422a901d2e4b5c42a26857f65461698, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7605951449112258310, guid: a422a901d2e4b5c42a26857f65461698, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: a422a901d2e4b5c42a26857f65461698, type: 3}
@@ -4278,6 +4370,10 @@ PrefabInstance:
     - target: {fileID: 4465334005735596570, guid: 30b38f9cfe2c55242aa100e844643996, type: 3}
       propertyPath: m_Name
       value: MaleStudent5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4465334005735596570, guid: 30b38f9cfe2c55242aa100e844643996, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 30b38f9cfe2c55242aa100e844643996, type: 3}
@@ -4348,6 +4444,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FemaleStudent3
       objectReference: {fileID: 0}
+    - target: {fileID: 4624892850737323334, guid: bf2dd852528484e48b56fc16b9b97019, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 7766106572830158561, guid: bf2dd852528484e48b56fc16b9b97019, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: bf2dd852528484e48b56fc16b9b97019, type: 3}
@@ -4361,6 +4461,10 @@ PrefabInstance:
     - target: {fileID: 4566360964825593412, guid: 282dfbbb2689d0b418b7ebc10a31b5f4, type: 3}
       propertyPath: m_Name
       value: MaleStudent9
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566360964825593412, guid: 282dfbbb2689d0b418b7ebc10a31b5f4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4566360964825593420, guid: 282dfbbb2689d0b418b7ebc10a31b5f4, type: 3}
       propertyPath: m_RootOrder
@@ -4475,6 +4579,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: 'FemaleStudent2 '
       objectReference: {fileID: 0}
+    - target: {fileID: 6951786600704065160, guid: f3140bbd6962d3d47a8a2dde89e92866, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6948538888270912020, guid: f3140bbd6962d3d47a8a2dde89e92866, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f3140bbd6962d3d47a8a2dde89e92866, type: 3}
@@ -4500,6 +4608,10 @@ PrefabInstance:
     - target: {fileID: 5819473240744910208, guid: 7b5d4e2f856e1eb4985bfca4ecb831ae, type: 3}
       propertyPath: m_Name
       value: FemaleStudent7
+      objectReference: {fileID: 0}
+    - target: {fileID: 5819473240744910208, guid: 7b5d4e2f856e1eb4985bfca4ecb831ae, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7861520871142955273, guid: 7b5d4e2f856e1eb4985bfca4ecb831ae, type: 3}
       propertyPath: m_RootOrder
@@ -4603,6 +4715,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MaleStudent3
       objectReference: {fileID: 0}
+    - target: {fileID: 4811394235710071163, guid: e9c9c872756f286498187147573c7c59, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e9c9c872756f286498187147573c7c59, type: 3}
 --- !u!1001 &5736731474986514895
@@ -4659,6 +4775,10 @@ PrefabInstance:
     - target: {fileID: 5736731475128840081, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
       propertyPath: m_Name
       value: MaleStudent1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5736731475128840081, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0d0068119af63f1499ef699185d3e827, type: 3}
@@ -4717,6 +4837,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MaleStudent8
       objectReference: {fileID: 0}
+    - target: {fileID: 6649336196242394252, guid: baa53324351e41842818409eafd95061, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: baa53324351e41842818409eafd95061, type: 3}
 --- !u!1001 &6749513865296500957
@@ -4773,6 +4897,10 @@ PrefabInstance:
     - target: {fileID: 6749513865751667834, guid: baa30f0b8ba84624f9a953655912ac79, type: 3}
       propertyPath: m_Name
       value: MaleStudent4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6749513865751667834, guid: baa30f0b8ba84624f9a953655912ac79, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: baa30f0b8ba84624f9a953655912ac79, type: 3}
@@ -4831,6 +4959,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: MaleStudent7
       objectReference: {fileID: 0}
+    - target: {fileID: 7307060536397230788, guid: 288a1e7c900ade94ab91b2dd6c548809, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 288a1e7c900ade94ab91b2dd6c548809, type: 3}
 --- !u!1001 &8491418213336530058
@@ -4843,6 +4975,10 @@ PrefabInstance:
     - target: {fileID: 8491418214486184199, guid: a13735c67c8762c4e8f00ebb51605bc6, type: 3}
       propertyPath: m_Name
       value: MaleStudent2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8491418214486184199, guid: a13735c67c8762c4e8f00ebb51605bc6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8491418214486184223, guid: a13735c67c8762c4e8f00ebb51605bc6, type: 3}
       propertyPath: m_RootOrder
@@ -4956,6 +5092,10 @@ PrefabInstance:
     - target: {fileID: 3156185218152138269, guid: 7d19f13ab6aae7249a02f723525a19c9, type: 3}
       propertyPath: m_Name
       value: FemaleStudent6
+      objectReference: {fileID: 0}
+    - target: {fileID: 3156185218152138269, guid: 7d19f13ab6aae7249a02f723525a19c9, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4689111627111003139, guid: 7d19f13ab6aae7249a02f723525a19c9, type: 3}

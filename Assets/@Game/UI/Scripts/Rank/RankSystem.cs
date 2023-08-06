@@ -20,6 +20,7 @@ public class RankSystem : MonoBehaviour
 {
     [SerializeField] private RankPanel m_RankPanel;
     [SerializeField] private RankPopUpPanel m_RankPopUpPanel;
+    [SerializeField] private PopOffUI m_PopOffRankPanel;
     [SerializeField] private CheckRankPnael m_CheckRankPnael;
     [SerializeField] private EndingAlramPanel m_EndingAlramPanel;
     [SerializeField] private RankScene1 m_RankScene1;
@@ -213,7 +214,9 @@ public class RankSystem : MonoBehaviour
     {
         yield return YieldInstructionCache.WaitForSecondsRealtime(1.5f);
 
-        string _totalScore = (PlayerInfo.Instance.m_Goods + PlayerInfo.Instance.m_Awareness + PlayerInfo.Instance.m_Management + PlayerInfo.Instance.m_TalentDevelopment + PlayerInfo.Instance.m_Activity).ToString();
+        string _totalScore = (PlayerInfo.Instance.Goods + PlayerInfo.Instance.Famous + PlayerInfo.Instance.Management + PlayerInfo.Instance.TalentDevelopment + PlayerInfo.Instance.Activity).ToString();
+
+        //SetFinalRank(GetFinalRankByScore(1600));
 
         SetFinalRank(GetFinalRankByScore(int.Parse(_totalScore)));
 
@@ -287,18 +290,18 @@ public class RankSystem : MonoBehaviour
         m_RankScene3.SetThrophyImage(0, false);
         m_RankScene3.AcademyGrade.SetActive(true);
 
-        if (QuarterlyReport.Instance.PrevYearAcademyRank.Count != 0)
-        {
-
-            m_RankScene3.SetAcademyGrade(PlayerInfo.Instance.m_AcademyName, "4500", m_Throphy[0]);
-            m_RankPanel.SetSpeechBubbleText(PlayerInfo.Instance.m_AcademyName + "!!");
-        }
-
         //if (QuarterlyReport.Instance.PrevYearAcademyRank.Count != 0)
         //{
-        //    m_RankScene3.SetAcademyGrade(QuarterlyReport.Instance.PrevYearAcademyRank[0].Key, QuarterlyReport.Instance.PrevYearAcademyRank[0].Value.ToString(), m_Throphy[0]);
-        //    m_RankPanel.SetSpeechBubbleText(QuarterlyReport.Instance.PrevYearAcademyRank[0].Key + "!!");
+
+        //    m_RankScene3.SetAcademyGrade(PlayerInfo.Instance.AcademyName, "4500", m_Throphy[0]);
+        //    m_RankPanel.SetSpeechBubbleText(PlayerInfo.Instance.AcademyName + "!!");
         //}
+
+        if (QuarterlyReport.Instance.PrevYearAcademyRank.Count != 0)
+        {
+            m_RankScene3.SetAcademyGrade(QuarterlyReport.Instance.PrevYearAcademyRank[0].Key, QuarterlyReport.Instance.PrevYearAcademyRank[0].Value.ToString(), m_Throphy[0]);
+            m_RankPanel.SetSpeechBubbleText(QuarterlyReport.Instance.PrevYearAcademyRank[0].Key + "!!");
+        }
 
         yield return YieldInstructionCache.WaitForSecondsRealtime(1.5f);
         m_RankScene3.gameObject.SetActive(false);
@@ -310,7 +313,7 @@ public class RankSystem : MonoBehaviour
     // Scene1에서 보여줄 유저지정 이름과 합친 고정멘트
     private void SetRankScene1Text()
     {
-        string _academyName = PlayerInfo.Instance.m_AcademyName;
+        string _academyName = PlayerInfo.Instance.AcademyName;
 
         m_RankPanel.SetSpeechBubbleText("다음은" + _academyName + "입니다.");
         m_RankScene1.ChangeTitle(_academyName + "점수발표");
@@ -327,19 +330,19 @@ public class RankSystem : MonoBehaviour
     // Scene2에서 보여줄 점수들을 셋팅해주는 함수
     private void SetScoreScene2()
     {
-        string _goodsScore = PlayerInfo.Instance.m_Goods.ToString();
-        string _famousScore = PlayerInfo.Instance.m_Awareness.ToString();
-        string _managementScore = PlayerInfo.Instance.m_Management.ToString();
-        string _activityScore = PlayerInfo.Instance.m_Activity.ToString();
-        string _talentDevelopmentScore = PlayerInfo.Instance.m_TalentDevelopment.ToString();
+        string _goodsScore = PlayerInfo.Instance.Goods.ToString();
+        string _famousScore = PlayerInfo.Instance.Famous.ToString();
+        string _managementScore = PlayerInfo.Instance.Management.ToString();
+        string _activityScore = PlayerInfo.Instance.Activity.ToString();
+        string _talentDevelopmentScore = PlayerInfo.Instance.TalentDevelopment.ToString();
 
-        string _totalScore = (PlayerInfo.Instance.m_Goods + PlayerInfo.Instance.m_Awareness + PlayerInfo.Instance.m_Management + PlayerInfo.Instance.m_TalentDevelopment + PlayerInfo.Instance.m_Activity).ToString();
+        string _totalScore = (PlayerInfo.Instance.Goods + PlayerInfo.Instance.Famous + PlayerInfo.Instance.Management + PlayerInfo.Instance.TalentDevelopment + PlayerInfo.Instance.Activity).ToString();
 
-        Sprite _goodsScoreImage = ScoreRank(GetRankByScore(PlayerInfo.Instance.m_Goods));
-        Sprite _famousScoreImage = ScoreRank(GetRankByScore(PlayerInfo.Instance.m_Awareness));
-        Sprite _managementScoreImage = ScoreRank(GetRankByScore(PlayerInfo.Instance.m_Management));
-        Sprite _activityScoreImage = ScoreRank(GetRankByScore(PlayerInfo.Instance.m_Activity));
-        Sprite _talentDevelopmentScoreImage = ScoreRank(GetRankByScore(PlayerInfo.Instance.m_TalentDevelopment));
+        Sprite _goodsScoreImage = ScoreRank(GetRankByScore(PlayerInfo.Instance.Goods));
+        Sprite _famousScoreImage = ScoreRank(GetRankByScore(PlayerInfo.Instance.Famous));
+        Sprite _managementScoreImage = ScoreRank(GetRankByScore(PlayerInfo.Instance.Management));
+        Sprite _activityScoreImage = ScoreRank(GetRankByScore(PlayerInfo.Instance.Activity));
+        Sprite _talentDevelopmentScoreImage = ScoreRank(GetRankByScore(PlayerInfo.Instance.TalentDevelopment));
 
         m_RankScene2.SetScoreText(_goodsScore, _famousScore, _managementScore, _activityScore, _talentDevelopmentScore, _totalScore);
 
@@ -351,84 +354,105 @@ public class RankSystem : MonoBehaviour
         m_RankPanel.SetSpeechBubbleActive(true);
         m_RankPanel.SetSpeechBubbleText("수상한 학원들 축하합니다.\n1,2,3위 학원들에게는\n부상이 주어집니다.");
 
-        string _1stAcademyScore = "4500";
+        //string _1stAcademyScore = "4500";
+        //string _2ndAcademyScore = "3000";
+        //string _3rdAcademyScore = "2000";
+
+        //string _1stAcademyName = PlayerInfo.Instance.AcademyName;
+        //string _2ndAcademyName = "뿡빵아카데미";
+        //string _3rdAcademyName = "GI아카데미";
+
+        //string _myAcademyName = PlayerInfo.Instance.AcademyName;
+
+        //string _myAcademyScore = "4500";
+        //string _myAcademyRank = "1";
+        //string _myAcademyIncrease = "0";
+
+        //string _otherAcademy1Name = "나몰라아케데미";
+        //string _otherAcademy1Score = "900";
+        //string _otherAcademy1Rank = "11";
+        //string _otherAcademy1Increase = "0";
+
+        //string _otherAcademy2Name = "해모스아카데미";
+        //string _otherAcademy2Score = "500";
+        //string _otherAcademy2Rank = "12";
+        //string _otherAcademy2Increase = "0";
+
+        string _1stAcademyScore = QuarterlyReport.Instance.TotalAcademyScores[0].Value.ToString();
         string _2ndAcademyScore = QuarterlyReport.Instance.TotalAcademyScores[1].Value.ToString();
         string _3rdAcademyScore = QuarterlyReport.Instance.TotalAcademyScores[2].Value.ToString();
 
-        string _1stAcademyName = PlayerInfo.Instance.m_AcademyName;
+        string _1stAcademyName = QuarterlyReport.Instance.TotalAcademyScores[0].Key;
         string _2ndAcademyName = QuarterlyReport.Instance.TotalAcademyScores[1].Key;
         string _3rdAcademyName = QuarterlyReport.Instance.TotalAcademyScores[2].Key;
 
-        string _myAcademyName = PlayerInfo.Instance.m_AcademyName;
+        string _myAcademyName = PlayerInfo.Instance.AcademyName;
 
-        int _myAcademyIndex = 0;
-        int _myAcademyRankIndex = 1;
-        int _myAcademyIncreaseIndex = 3;
+        int _myAcademyIndex = QuarterlyReport.Instance.TotalAcademyScores.FindIndex(x => x.Key == _myAcademyName);
+        int _myAcademyRankIndex = QuarterlyReport.Instance.PrevYearAcademyRank.FindIndex(x => x.Key == _myAcademyName);
+        int _myAcademyIncreaseIndex = QuarterlyReport.Instance.AcademyNameToRank.FindIndex(x => x.Key == _myAcademyName);
 
-        string _myAcademyScore = "4500";
-        string _myAcademyRank = "1";
-        string _myAcademyIncrease = "3";
+        string _myAcademyScore = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex].Value.ToString();
+        string _myAcademyRank = QuarterlyReport.Instance.PrevYearAcademyRank[_myAcademyRankIndex].Value.ToString();
+        string _myAcademyIncrease = QuarterlyReport.Instance.AcademyNameToRank[_myAcademyIncreaseIndex].Value.ToString();
 
-        string _otherAcademy1Name = QuarterlyReport.Instance.TotalAcademyScores[0].Key;
-        string _otherAcademy1Score = QuarterlyReport.Instance.TotalAcademyScores[0].Value.ToString();
-        string _otherAcademy1Rank = QuarterlyReport.Instance.PrevYearAcademyRank[0].Value.ToString();
-        string _otherAcademy1Increase = QuarterlyReport.Instance.AcademyNameToRank[2].Value.ToString();
+        string _otherAcademy1Name;
+        string _otherAcademy1Score;
+        string _otherAcademy1Rank;
+        string _otherAcademy1Increase;
 
-        string _otherAcademy2Name = QuarterlyReport.Instance.TotalAcademyScores[1].Key;
-        string _otherAcademy2Score = QuarterlyReport.Instance.TotalAcademyScores[1].Value.ToString();
-        string _otherAcademy2Rank = QuarterlyReport.Instance.PrevYearAcademyRank[1].Value.ToString();
-        string _otherAcademy2Increase = QuarterlyReport.Instance.AcademyNameToRank[4].Value.ToString();
+        string _otherAcademy2Name;
+        string _otherAcademy2Score;
+        string _otherAcademy2Rank;
+        string _otherAcademy2Increase;
 
-        //string _1stAcademyScore = QuarterlyReport.Instance.TotalAcademyScores[0].Value.ToString();
-        //string _2ndAcademyScore = QuarterlyReport.Instance.TotalAcademyScores[1].Value.ToString();
-        //string _3rdAcademyScore = QuarterlyReport.Instance.TotalAcademyScores[2].Value.ToString();
+        // 내가 일등이니 내 아래의 아카데이 2개의 정보를 보여준다.
+        if (_myAcademyRankIndex == 0)
+        {
+            m_RankScene4.MyAcademy.transform.SetAsFirstSibling();
+            _otherAcademy1Name = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex + 1].Key;
+            _otherAcademy1Score = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex + 1].Value.ToString();
+            _otherAcademy1Rank = QuarterlyReport.Instance.PrevYearAcademyRank[_myAcademyRankIndex + 1].Value.ToString();
+            _otherAcademy1Increase = QuarterlyReport.Instance.AcademyNameToRank[_myAcademyIncreaseIndex + 1].Value.ToString();
 
-        //string _1stAcademyName = QuarterlyReport.Instance.TotalAcademyScores[0].Key;
-        //string _2ndAcademyName = QuarterlyReport.Instance.TotalAcademyScores[1].Key;
-        //string _3rdAcademyName = QuarterlyReport.Instance.TotalAcademyScores[2].Key;
+            _otherAcademy2Name = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex + 2].Key;
+            _otherAcademy2Score = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex + 2].Value.ToString();
+            _otherAcademy2Rank = QuarterlyReport.Instance.PrevYearAcademyRank[_myAcademyRankIndex + 2].Value.ToString();
+            _otherAcademy2Increase = QuarterlyReport.Instance.AcademyNameToRank[_myAcademyIncreaseIndex + 2].Value.ToString();
+        }
+        else
+        {
+            _otherAcademy1Name = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex - 1].Key;
+            _otherAcademy1Score = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex - 1].Value.ToString();
+            _otherAcademy1Rank = QuarterlyReport.Instance.PrevYearAcademyRank[_myAcademyRankIndex - 1].Value.ToString();
+            _otherAcademy1Increase = QuarterlyReport.Instance.AcademyNameToRank[_myAcademyIncreaseIndex - 1].Value.ToString();
 
-        //string _myAcademyName = PlayerInfo.Instance.m_AcademyName;
-
-        //int _myAcademyIndex = QuarterlyReport.Instance.TotalAcademyScores.FindIndex(x => x.Key == _myAcademyName);
-        //int _myAcademyRankIndex = QuarterlyReport.Instance.PrevYearAcademyRank.FindIndex(x => x.Key == _myAcademyName);
-        //int _myAcademyIncreaseIndex = QuarterlyReport.Instance.AcademyNameToRank.FindIndex(x => x.Key == _myAcademyName);
-
-        //string _myAcademyScore = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex].Value.ToString();
-        //string _myAcademyRank = QuarterlyReport.Instance.PrevYearAcademyRank[_myAcademyRankIndex].Value.ToString();
-        //string _myAcademyIncrease = QuarterlyReport.Instance.AcademyNameToRank[_myAcademyIncreaseIndex].Value.ToString();
-
-        //string _otherAcademy1Name = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex - 1].Key;
-        //string _otherAcademy1Score = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex - 1].Value.ToString();
-        //string _otherAcademy1Rank = QuarterlyReport.Instance.PrevYearAcademyRank[_myAcademyRankIndex - 1].Value.ToString();
-        //string _otherAcademy1Increase = QuarterlyReport.Instance.AcademyNameToRank[_myAcademyIncreaseIndex - 1].Value.ToString();
-
-        //string _otherAcademy2Name = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex + 1].Key;
-        //string _otherAcademy2Score = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex + 1].Value.ToString();
-        //string _otherAcademy2Rank = QuarterlyReport.Instance.PrevYearAcademyRank[_myAcademyRankIndex + 1].Value.ToString();
-        //string _otherAcademy2Increase = QuarterlyReport.Instance.AcademyNameToRank[_myAcademyIncreaseIndex + 1].Value.ToString();
-
+            _otherAcademy2Name = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex + 1].Key;
+            _otherAcademy2Score = QuarterlyReport.Instance.TotalAcademyScores[_myAcademyIndex + 1].Value.ToString();
+            _otherAcademy2Rank = QuarterlyReport.Instance.PrevYearAcademyRank[_myAcademyRankIndex + 1].Value.ToString();
+            _otherAcademy2Increase = QuarterlyReport.Instance.AcademyNameToRank[_myAcademyIncreaseIndex + 1].Value.ToString();
+        }
 
         m_RankScene4.SetRankGraph(_1stAcademyName, _2ndAcademyName, _3rdAcademyName, _1stAcademyScore, _2ndAcademyScore, _3rdAcademyScore);
         m_RankScene4.SetMyAcademy(_myAcademyName, _myAcademyScore, _myAcademyRank);
         m_RankScene4.IncreaseAndDecrease(_otherAcademy1Increase, _myAcademyIncrease, _otherAcademy2Increase);
         m_RankScene4.SetOtherAcademy(_otherAcademy1Name, _otherAcademy1Score, _otherAcademy2Name, _otherAcademy2Score, _otherAcademy1Rank, _otherAcademy2Rank);
 
-        if (_myAcademyRankIndex == 0)
-        {
-            m_RankScene4.MyAcademy.transform.SetAsFirstSibling();
-        }
+        //SaveGrade(1);
+        //_currentGrade = 1;
 
-        if (_1stAcademyName == PlayerInfo.Instance.m_AcademyName)
+        if (_1stAcademyName == PlayerInfo.Instance.AcademyName)
         {
+            m_RankPanel.Set1stRankEffect(true);
             SaveGrade(1);
             _currentGrade = 1;
         }
-        else if (_2ndAcademyName == PlayerInfo.Instance.m_AcademyName)
+        else if (_2ndAcademyName == PlayerInfo.Instance.AcademyName)
         {
             SaveGrade(2);
             _currentGrade = 2;
         }
-        else if (_3rdAcademyName == PlayerInfo.Instance.m_AcademyName)
+        else if (_3rdAcademyName == PlayerInfo.Instance.AcademyName)
         {
             SaveGrade(3);
             _currentGrade = 3;
@@ -438,7 +462,6 @@ public class RankSystem : MonoBehaviour
             SaveGrade(0);
             _currentGrade = 0;
         }
-
     }
 
     // 몇 등을 몇번 했는지 저장해주기 위한 함수
@@ -463,13 +486,18 @@ public class RankSystem : MonoBehaviour
     {
         m_RankPanel.SetSpeechBubbleText("내년에 또 뵙겠습니다!");
 
-        m_RankPanel.CurtainObj.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, 0);
+        m_RankPanel.PlayCurtenAnimation();
 
         yield return StartCoroutine(m_RankPanel.FadeInPanel());
 
+        m_PopOffRankPanel.TurnOffUI();
+
+        yield return StartCoroutine(RankPopOffFadeOutPanel());
+
         m_CheckRankPnael.SetActiveCheckRankPanel(true);
 
-        _rankConditionIndex = GetConditionByRank(PlayerInfo.Instance.m_CurrentRank);
+        _rankConditionIndex = GetConditionByRank(PlayerInfo.Instance.CurrentRank);
+
         yield return StartCoroutine(SetCheckRankPanelContentByRank(_rankConditionIndex));
 
         _gradeConditionIndex = GetConditionByGrade(_currentGrade);
@@ -599,12 +627,14 @@ public class RankSystem : MonoBehaviour
                 string _reward1 = m_RankScriptList[i].Reward1Amount.ToString();
                 string _reward2 = m_RankScriptList[i].Reward2Amount.ToString();
 
-                string _data = GameTime.Instance.FlowTime.NowYear.ToString() + "년 " + GameTime.Instance.FlowTime.NowMonth.ToString() + "월 " + GameTime.Instance.FlowTime.NowDay.ToString() + "일";
+                int[] _data = new int[4];
+                _data[0] = GameTime.Instance.FlowTime.NowYear;
+                _data[1] = GameTime.Instance.FlowTime.NowMonth;
+                _data[2] = GameTime.Instance.FlowTime.NowWeek;
+                _data[3] = GameTime.Instance.FlowTime.NowDay;
 
-                m_RewardMail.MakeMail(_title, _data, _sender, _content, _reward1, _reward2, MailType.RewardMail, true, "", new Specification());
+                m_RewardMail.MakeMail(_title, _data, AllOriginalJsonData.Instance.OriginalRewardEmailData[_email].Email_sender_id, _sender, _content, _reward1, _reward2, MailType.RewardMail, true, "", new Specification());
                 m_RewardMail.SendMail();
-                //m_MakeMail.MakeRewardMail(_title, _data, _sender, _content, _reward1, _reward2);
-                //m_MakeMail.SendRewardMail();
             }
         }
     }
@@ -691,7 +721,7 @@ public class RankSystem : MonoBehaviour
                     m_PrevRank.Add(table.Grade, 1);
                 }
 
-                PlayerInfo.Instance.m_CurrentRank = table.Grade;
+                PlayerInfo.Instance.CurrentRank = table.Grade;
 
                 return table.Grade;
             }
@@ -711,6 +741,18 @@ public class RankSystem : MonoBehaviour
     private void InitRankPanel()
     {
         m_RankPanel.InitFadeImage();
+        m_RankPanel.Set1stRankEffect(false);
+    }
+
+    IEnumerator RankPopOffFadeOutPanel()
+    {
+        while (m_RankPanel.FadeInOutImage.color.a > 0f)
+        {
+            m_RankPanel.FadeInOutImage.color = new Color(m_RankPanel.FadeInOutImage.color.r, m_RankPanel.FadeInOutImage.color.g,
+                m_RankPanel.FadeInOutImage.color.b, m_RankPanel.FadeInOutImage.color.a - (Time.unscaledDeltaTime / 2f));
+
+            yield return null;
+        }
     }
 }
 

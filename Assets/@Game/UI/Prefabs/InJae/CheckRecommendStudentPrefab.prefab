@@ -223,6 +223,7 @@ GameObject:
   - component: {fileID: 8594233794502180377}
   - component: {fileID: 6171533239475998776}
   - component: {fileID: 6957705206670190823}
+  - component: {fileID: 4076456303634785523}
   m_Layer: 5
   m_Name: CheckRecommendStudentPrefab
   m_TagString: Untagged
@@ -290,6 +291,22 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4076456303634785523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4970252531262435898}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 264facc174e8ef741af90ce37be4a9c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_StudentImage: {fileID: 6957705206670190823}
+  m_PercentImage: {fileID: 3241343706606554198}
+  m_StudentName: {fileID: 8432158856480375092}
+  m_PassPercent: {fileID: 9116915327755536622}
 --- !u!1 &6374226465635840853
 GameObject:
   m_ObjectHideFlags: 0

@@ -31,16 +31,24 @@ public class Destination : Action
     private Transform m_canvas;
 
     private const int IdlePercent = 20;
+    private const int ClassIdlePercent = 70;
 
     private const float DesChangeDis = 1;
     private const float DesStoreDis = 1;
 
     private NavMeshAgent m_Agent;
+    private Animator m_Animator;
+
+    private bool m_IsWaiting;
+
+    private bool m_IsCoroutineRunning = false;
+    private bool m_NowTalking = false;
 
     public override void OnStart()
     {
         m_canvas = GameObject.Find("InGameCanvas").transform;
         m_Agent = gameObject.GetComponent<NavMeshAgent>();
+        m_Animator = gameObject.GetComponent<Animator>();
     }
 
     public override TaskStatus OnUpdate()
@@ -52,7 +60,7 @@ public class Destination : Action
             return TaskStatus.Failure;
         }
 
-        if (InGameTest.Instance.m_ClassState != ClassState.nothing)
+        if (InGameTest.Instance.m_ClassState != ClassState.nothing && InGameTest.Instance.m_ClassState != ClassState.ClassEnd)
         {
             return TaskStatus.Failure;
         }
@@ -68,13 +76,18 @@ public class Destination : Action
         }
 
         // 2월 4주 방학
-        if (GameTime.Instance.FlowTime.NowMonth == 2 && GameTime.Instance.FlowTime.NowWeek == 4)
+        if (GameTime.Instance.FlowTime.NowMonth == 2 && GameTime.Instance.FlowTime.NowWeek == 3 && GameTime.Instance.FlowTime.NowDay == 5)
         {
             _bNewDestination = SetVacation();
         }
         // 2월 1주~3주 목적지 설정
         else if (GameTime.Instance.FlowTime.NowMonth == 2 && (GameTime.Instance.FlowTime.NowWeek == 1 || GameTime.Instance.FlowTime.NowWeek == 2 || GameTime.Instance.FlowTime.NowWeek == 3))
         {
+            if (m_goingCategory == Category.GenreRoom)
+            {
+                m_goingCategory = Category.Nothing;
+                m_NowDestination = " ";
+            }
             // 갈 곳이 정해지지 않은경우
             if (m_NowDestination == " ")
             {
@@ -243,6 +256,8 @@ public class Destination : Action
                     }
 
                     m_Agent.SetDestination(InteractionManager.Instance.StudyRoomSeats[seatNum].position);
+                    gameObject.GetComponent<Student>().LookTransform =
+                        InteractionManager.Instance.StudyRoomSeats[seatNum];
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.StudyRoom;
                     m_NowDestination = "StudyRoomSeat";
                     m_goingCategory = Category.Facility;
@@ -258,6 +273,7 @@ public class Destination : Action
                     }
 
                     m_Agent.SetDestination(InteractionManager.Instance.LoungeSeats[seatNum].position);
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.LoungeSeats[seatNum];
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.Lounge1;
                     m_NowDestination = "1LoungeSeat";
                     m_goingCategory = Category.Facility;
@@ -273,18 +289,12 @@ public class Destination : Action
                     }
 
                     m_Agent.SetDestination(InteractionManager.Instance.Lounge2Seats[seatNum].position);
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.Lounge2Seats[seatNum];
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.Lounge1;
                     m_NowDestination = "2LoungeSeat";
                     m_goingCategory = Category.Facility;
                     return true;
                 }
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -298,6 +308,15 @@ public class Destination : Action
 
             if (dis < DesStoreDis)
             {
+                int randomAnim = Random.Range(1, 3);
+                if (randomAnim == 1)
+                {
+                    m_Animator.SetTrigger("ToIdle");
+                }
+                else
+                {
+                    m_Animator.SetTrigger("ToPointing");
+                }
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.Idle;
                 m_Agent.isStopped = true;
 
@@ -311,17 +330,6 @@ public class Destination : Action
                 }
                 else if (randomScript <= 30)
                 {
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsIdelToTalk", true);
-                        gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-                    }
-                    else if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToTalk", true);
-                        gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-                    }
-
                     int randomSelect = Random.Range(1, 3);
                     if (randomSelect == 1)
                     {
@@ -332,23 +340,8 @@ public class Destination : Action
                         InteractionManager.Instance.ShowEmoticon(3, this.transform);
                     }
                 }
-                else
-                {
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                    }
-
-                }
 
                 StartCoroutine(ChooseSomething());
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -362,10 +355,6 @@ public class Destination : Action
 
             if (dis < DesStoreDis)
             {
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                }
                 if (InteractionManager.Instance.FacilityList[0].IsCalculating)
                 {
                     gameObject.GetComponent<Student>().DoingValue = Student.Doing.Idle;
@@ -373,8 +362,9 @@ public class Destination : Action
                     InteractionManager.Instance.StoreWaitingQ.Add(this.gameObject);
                     if (waitingNum >= 3)
                         waitingNum = 2;
+                    
+                    m_Animator.SetTrigger("ToIdle");
                     m_Agent.SetDestination(InteractionManager.Instance.StorePoints[4 + waitingNum].position);
-                    m_Agent.isStopped = true;
                 }
                 else
                 {
@@ -382,14 +372,13 @@ public class Destination : Action
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.Store;
                     m_NowDestination = " ";
                     m_goingCategory = Category.Nothing;
+                    m_IsWaiting = false;
                 }
             }
             else
             {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
+                int randomAnim = Random.Range(1, 3);
+                m_Animator.SetTrigger("ToWalk" + randomAnim);
             }
             return true;
         }
@@ -403,6 +392,15 @@ public class Destination : Action
 
             if (dis < DesStoreDis)
             {
+                int randomAnim = Random.Range(1, 3);
+                if (randomAnim == 1)
+                {
+                    m_Animator.SetTrigger("ToIdle");
+                }
+                else
+                {
+                    m_Animator.SetTrigger("ToPointing");
+                }
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.Idle;
                 m_Agent.isStopped = true;
 
@@ -416,17 +414,6 @@ public class Destination : Action
                 }
                 else if (randomScript <= 30)
                 {
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsIdelToTalk", true);
-                        gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-                    }
-                    else if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToTalk", true);
-                        gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-                    }
-
                     int randomSelect = Random.Range(1, 3);
                     if (randomSelect == 1)
                     {
@@ -437,22 +424,8 @@ public class Destination : Action
                         InteractionManager.Instance.ShowEmoticon(8, this.transform);
                     }
                 }
-                else
-                {
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                    }
-                }
 
                 StartCoroutine(ChooseBook());
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -466,10 +439,6 @@ public class Destination : Action
 
             if (dis < DesStoreDis)
             {
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                }
                 if (InteractionManager.Instance.FacilityList[1].IsCalculating)
                 {
                     gameObject.GetComponent<Student>().DoingValue = Student.Doing.Idle;
@@ -477,8 +446,9 @@ public class Destination : Action
                     InteractionManager.Instance.BookStoreWaitingQ.Add(this.gameObject);
                     if (waitingNum >= 3)
                         waitingNum = 2;
+
+                    m_Animator.SetTrigger("ToIdle");
                     m_Agent.SetDestination(InteractionManager.Instance.BookStorePoints[4 + waitingNum].position);
-                    m_Agent.isStopped = true;
                 }
                 else
                 {
@@ -486,14 +456,8 @@ public class Destination : Action
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.BookStore;
                     m_NowDestination = " ";
                     m_goingCategory = Category.Nothing;
+                    m_IsWaiting = false;
                 }
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -510,19 +474,8 @@ public class Destination : Action
                 m_Agent.isStopped = true;
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.InFacility;
                 gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.StudyRoom;
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", true);
-                }
                 m_NowDestination = " ";
                 m_goingCategory = Category.Nothing;
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -536,22 +489,11 @@ public class Destination : Action
 
             if (dis < DesStoreDis)
             {
-                //gameObject.GetComponent<NavMeshAgent>().isStopped = true;
+                m_Agent.isStopped = true;
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.InFacility;
                 gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.Lounge1;
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", true);
-                }
                 m_NowDestination = " ";
                 m_goingCategory = Category.Nothing;
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -563,24 +505,13 @@ public class Destination : Action
 
             float dis = Vector3.Distance(myPos, desPos);
 
-            if (dis< DesStoreDis)
+            if (dis < DesStoreDis)
             {
                 m_Agent.isStopped = true;
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.InFacility;
                 gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.Lounge2;
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToSit", true);
-                }
                 m_NowDestination = " ";
                 m_goingCategory = Category.Nothing;
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -610,11 +541,6 @@ public class Destination : Action
                 {
                     m_NowDestination = "StudyRoomEntrance";
                     m_Agent.SetDestination(InteractionManager.Instance.StudyRoomEntrance.position);
-                }
-                // 라운지 이동
-                else
-                {
-
                 }
             }
             else
@@ -657,10 +583,8 @@ public class Destination : Action
             m_goingCategory = Category.Facility;
             gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
 
-            if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-            {
-                gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", false);
-            }
+            int randomAnim = Random.Range(1, 3);
+            m_Animator.SetTrigger("ToWalk" + randomAnim);
 
             return true;
         }
@@ -694,6 +618,7 @@ public class Destination : Action
                         return false;
                     }
                     m_Agent.SetDestination(InteractionManager.Instance.PuzzleSeats[seatNum].position);
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.PuzzleSeats[seatNum];
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.PuzzleRoom;
                     gameObject.GetComponent<Student>().m_NowSeatNum = seatNum;
                 }
@@ -706,6 +631,7 @@ public class Destination : Action
                         return false;
                     }
                     m_Agent.SetDestination(InteractionManager.Instance.SimulationSeats[seatNum].position);
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.SimulationSeats[seatNum];
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.SimulationRoom;
                     gameObject.GetComponent<Student>().m_NowSeatNum = seatNum;
                 }
@@ -718,6 +644,7 @@ public class Destination : Action
                         return false;
                     }
                     m_Agent.SetDestination(InteractionManager.Instance.RhythmSeats[seatNum].position);
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.RhythmSeats[seatNum];
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.RhythmRoom;
                     gameObject.GetComponent<Student>().m_NowSeatNum = seatNum;
                 }
@@ -730,6 +657,7 @@ public class Destination : Action
                         return false;
                     }
                     m_Agent.SetDestination(InteractionManager.Instance.AdventureSeats[seatNum].position);
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.AdventureSeats[seatNum];
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.AdventureRoom;
                     gameObject.GetComponent<Student>().m_NowSeatNum = seatNum;
                 }
@@ -742,6 +670,7 @@ public class Destination : Action
                         return false;
                     }
                     m_Agent.SetDestination(InteractionManager.Instance.RPGSeats[seatNum].position);
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.RPGSeats[seatNum];
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.RPGRoom;
                     gameObject.GetComponent<Student>().m_NowSeatNum = seatNum;
                 }
@@ -754,6 +683,7 @@ public class Destination : Action
                         return false;
                     }
                     m_Agent.SetDestination(InteractionManager.Instance.SportsSeats[seatNum].position);
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.SportsSeats[seatNum];
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.SportsRoom;
                     gameObject.GetComponent<Student>().m_NowSeatNum = seatNum;
                 }
@@ -766,6 +696,7 @@ public class Destination : Action
                         return false;
                     }
                     m_Agent.SetDestination(InteractionManager.Instance.ActionSeats[seatNum].position);
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.ActionSeats[seatNum];
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.ActionRoom;
                     gameObject.GetComponent<Student>().m_NowSeatNum = seatNum;
                 }
@@ -778,17 +709,11 @@ public class Destination : Action
                         return false;
                     }
                     m_Agent.SetDestination(InteractionManager.Instance.ShootingSeats[seatNum].position);
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.ShootingSeats[seatNum];
                     gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.ShootingRoom;
                     gameObject.GetComponent<Student>().m_NowSeatNum = seatNum;
                 }
                 m_NowDestination = "Seat";
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
             return true;
@@ -803,21 +728,12 @@ public class Destination : Action
 
             if (dis < DesChangeDis)
             {
+                m_Animator.SetTrigger("Idle");
+
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.InGenreRoom;
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                }
                 m_NowDestination = " ";
                 m_goingCategory = Category.Nothing;
                 m_Agent.isStopped = true;
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -870,10 +786,8 @@ public class Destination : Action
             gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
             m_goingCategory = Category.GenreRoom;
 
-            if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-            {
-                gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", false);
-            }
+            int randomAnim = Random.Range(1, 3);
+            m_Animator.SetTrigger("ToWalk" + randomAnim);
 
             return true;
         }
@@ -894,19 +808,8 @@ public class Destination : Action
             {
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.ObjectInteraction;
                 gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.VendingMachine;
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                }
                 m_NowDestination = " ";
                 m_goingCategory = Category.Object;
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -921,19 +824,8 @@ public class Destination : Action
             {
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.ObjectInteraction;
                 gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.Pot;
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                }
                 m_NowDestination = " ";
                 m_goingCategory = Category.Object;
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -946,21 +838,11 @@ public class Destination : Action
 
             if (dis < DesChangeDis)
             {
+                m_Animator.SetTrigger("ToIdle");
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.ObjectInteraction;
                 gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.AmusementMachine;
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                }
                 m_NowDestination = " ";
                 m_goingCategory = Category.Object;
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -973,21 +855,11 @@ public class Destination : Action
 
             if (dis < DesChangeDis)
             {
+                m_Animator.SetTrigger("ToIdle");
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.ObjectInteraction;
                 gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.WaterPurifier;
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                }
                 m_NowDestination = " ";
                 m_goingCategory = Category.Object;
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -1000,21 +872,11 @@ public class Destination : Action
 
             if (dis < DesChangeDis)
             {
+                m_Animator.SetTrigger("ToIdle");
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.ObjectInteraction;
                 gameObject.GetComponent<Student>().NowRoom = (int)InteractionManager.SpotName.NoticeBoard;
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                }
                 m_NowDestination = " ";
                 m_goingCategory = Category.Object;
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -1031,6 +893,7 @@ public class Destination : Action
                 if (!InteractionManager.Instance.VendingMachineList[randomSelect].IsUsed)
                 {
                     objectPoint = InteractionManager.Instance.VendingMachines[randomSelect].position;
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.VendingMachines[randomSelect];
                     m_NowDestination = "VendingMachine";
                     InteractionManager.Instance.UseObject((int)InteractionManager.SpotName.VendingMachine, randomSelect);
                     gameObject.GetComponent<Student>().UsingObjNum = randomSelect;
@@ -1042,6 +905,7 @@ public class Destination : Action
                 if (!InteractionManager.Instance.PotList[randomSelect].IsUsed)
                 {
                     objectPoint = InteractionManager.Instance.Pots[randomSelect].position;
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.Pots[randomSelect];
                     m_NowDestination = "Pot";
                     InteractionManager.Instance.UseObject((int)InteractionManager.SpotName.Pot, randomSelect);
                     gameObject.GetComponent<Student>().UsingObjNum = randomSelect;
@@ -1053,6 +917,7 @@ public class Destination : Action
                 if (!InteractionManager.Instance.AmusementMachineList[randomSelect].IsUsed)
                 {
                     objectPoint = InteractionManager.Instance.AmusementMachines[randomSelect].position;
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.AmusementMachines[randomSelect];
                     m_NowDestination = "AmusementMachine";
                     InteractionManager.Instance.UseObject((int)InteractionManager.SpotName.AmusementMachine, randomSelect);
                     gameObject.GetComponent<Student>().UsingObjNum = randomSelect;
@@ -1064,6 +929,7 @@ public class Destination : Action
                 if (!InteractionManager.Instance.WaterPurifierList[randomSelect].IsUsed)
                 {
                     objectPoint = InteractionManager.Instance.WaterPurifier[randomSelect].position;
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.WaterPurifier[randomSelect];
                     m_NowDestination = "WaterPurifier";
                     InteractionManager.Instance.UseObject((int)InteractionManager.SpotName.WaterPurifier, randomSelect);
                     gameObject.GetComponent<Student>().UsingObjNum = randomSelect;
@@ -1075,6 +941,7 @@ public class Destination : Action
                 if (!InteractionManager.Instance.NoticeBoardList[randomSelect].IsUsed)
                 {
                     objectPoint = InteractionManager.Instance.NoticeBoard[randomSelect].position;
+                    gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.NoticeBoard[randomSelect];
                     m_NowDestination = "NoticeBoard";
                     InteractionManager.Instance.UseObject((int)InteractionManager.SpotName.NoticeBoard, randomSelect);
                     gameObject.GetComponent<Student>().UsingObjNum = randomSelect;
@@ -1083,12 +950,10 @@ public class Destination : Action
             m_Agent.SetDestination(objectPoint);
             gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
 
-            if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-            {
-                gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", false);
-            }
+            int randomAnim = Random.Range(1, 3);
+            m_Animator.SetTrigger("ToWalk" + randomAnim);
 
-            return true; 
+            return true;
         }
     }
 
@@ -1106,10 +971,8 @@ public class Destination : Action
             m_Agent.SetDestination(resPoint);
             gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
 
-            if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-            {
-                gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", false);
-            }
+            int randomAnim = Random.Range(1, 3);
+            m_Animator.SetTrigger("ToWalk" + randomAnim);
 
             return true;
         }
@@ -1122,6 +985,17 @@ public class Destination : Action
 
             if (dis < DesChangeDis)
             {
+                int randomAnim = Random.Range(1, 3);
+
+                if (randomAnim == 1)
+                {
+                    m_Animator.SetTrigger("ToIdleYawn");
+                }
+                else
+                {
+                    m_Animator.SetTrigger("ToIdle");
+                }
+
                 int scriptsPlay = Random.Range(1, 101);
 
                 if (scriptsPlay <= 30)
@@ -1144,30 +1018,14 @@ public class Destination : Action
                     gameObject.GetComponent<Student>().DoingValue = Student.Doing.Idle;
                     m_Agent.isStopped = true;
 
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                    }
-
                     StartCoroutine(StudentWait());
                 }
                 else
                 {
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                    }
                     gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
                     m_NowDestination = " ";
                     m_goingCategory = Category.Nothing;
                 }
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
@@ -1179,16 +1037,13 @@ public class Destination : Action
 
         if (m_NowDestination == " ")
         {
+            int randomAnim = Random.Range(1, 3);
+            m_Animator.SetTrigger("ToWalk" + randomAnim);
             m_NowDestination = "ClassSeat";
             Vector3 seatPos = (Vector3)gameObject.GetComponent<BehaviorTree>().ExternalBehavior.GetVariable("MyClassSeat").GetValue();
             m_Agent.SetDestination(seatPos);
             gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
 
-            if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-            {
-                gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", false);
-            }
-            
             return true;
         }
         else
@@ -1200,44 +1055,20 @@ public class Destination : Action
 
             if (dis < DesChangeDis)
             {
+                m_Animator.SetTrigger("ToIdle");
+
                 int scriptsPlay = Random.Range(1, 101);
 
                 if (scriptsPlay <= 30)
                 {
-                    int randomScripts = Random.Range(0, ScriptsManager.Instance.ClassScripts[(int)gameObject.GetComponent<Student>().m_StudentStat.m_StudentType].Count);
+                    int randomScripts = Random.Range(0, ScriptsManager.Instance.ClassScripts[(int)gameObject.GetComponent<Student>().m_StudentStat.m_StudentType + 3].Count);
 
-                    StudentTalk(ScriptsManager.Instance.ClassScripts[1][randomScripts]);
+                    StudentTalk(ScriptsManager.Instance.ClassScripts[(int)gameObject.GetComponent<Student>().m_StudentStat.m_StudentType + 3][randomScripts]);
                 }
+                gameObject.GetComponent<Student>().DoingValue = Student.Doing.Idle;
 
-                int randomValue = Random.Range(0, 101);
-                if (randomValue <= IdlePercent)
-                {
-                    gameObject.GetComponent<Student>().DoingValue = Student.Doing.Idle;
-
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                    }
-                    m_Agent.isStopped = true;
-                    StartCoroutine(StudentWait());
-                }
-                else
-                {
-                    if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-                    {
-                        gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-                    }
-                    gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
-                    m_NowDestination = " ";
-                    m_goingCategory = Category.Nothing;
-                }
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
+                m_Agent.isStopped = true;
+                StartCoroutine(StudentWait());
             }
             return true;
         }
@@ -1257,24 +1088,15 @@ public class Destination : Action
             if (dis < DesChangeDis)
             {
                 m_NowDestination = "VacationPoint";
-                int randomPoint = Random.Range(1, 3);
+                int randomPoint = Random.Range(1, 4);
                 Vector3 pointPos = GameObject.Find("VacationPoint" + randomPoint).transform.position;
                 m_Agent.SetDestination(pointPos);
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
 
-                if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
+                if (!m_IsCoroutineRunning)
                 {
-                    gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", false);
+                    StartCoroutine(VacationMoveTalk());
                 }
-
-                StartCoroutine(VacationTalk(1));
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
 
@@ -1288,50 +1110,46 @@ public class Destination : Action
 
             if (dis < DesChangeDis)
             {
+                m_Animator.SetTrigger("ToIdle");
                 m_NowDestination = " ";
                 gameObject.GetComponent<Student>().DoingValue = Student.Doing.Vacation;
-            }
-            else
-            {
-                //if (m_Agent.velocity == Vector3.zero)
-                //{
-                //    m_Agent.SetDestination(desPos);
-                //}
             }
             return true;
         }
         else
         {
+            int randomAnim = Random.Range(1, 3);
+            m_Animator.SetTrigger("ToWalk" + randomAnim);
             m_NowDestination = "AcademyEntrance";
             Vector3 entrancePos = GameObject.Find("AcademyEntrance").transform.position;
             m_Agent.SetDestination(entrancePos);
             gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
 
-            if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
+            if (!m_IsCoroutineRunning)
             {
-                gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", false);
+                int randomTalk = Random.Range(1, 19);
+                if (randomTalk <= 6)
+                {
+                    m_IsCoroutineRunning = true;
+                    StartCoroutine(VacationTalk());
+                }
             }
-
-            StartCoroutine(VacationTalk(0));
 
             return true;
         }
     }
-    IEnumerator VacationTalk(int num)
+
+    IEnumerator VacationTalk()
     {
         yield return new WaitForSeconds(2f);
 
-        int randomScript = Random.Range(0, ScriptsManager.Instance.VacationScripts[num].Count);
+        int randomScript = Random.Range(0, ScriptsManager.Instance.VacationScripts[0].Count);
 
         GameObject chat = InGameObjectPool.GetChatObject(m_canvas);
 
         chat.GetComponent<FollowTarget>().m_Target = gameObject.transform.GetChild(0).transform;
-        chat.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ScriptsManager.Instance.VacationScripts[num][randomScript];
+        chat.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ScriptsManager.Instance.VacationScripts[0][randomScript];
 
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-        }
         StartCoroutine(VacationTalkEnd(chat));
     }
 
@@ -1339,16 +1157,51 @@ public class Destination : Action
     {
         yield return new WaitForSeconds(2f);
 
+        m_IsCoroutineRunning = false;
         InGameObjectPool.ReturnChatObject(chat);
+    }
+
+    IEnumerator VacationMoveTalk()
+    {
+        m_IsCoroutineRunning = true;
+
+        while (true)
+        {
+            int random = Random.Range(1, 101);
+
+            float randomCoolTime = Random.Range(1f, 3f);
+            if (random <= 30 && !m_NowTalking)
+            {
+                int randomScript = Random.Range(0, ScriptsManager.Instance.VacationScripts[1].Count);
+
+                GameObject chat = InGameObjectPool.GetChatObject(m_canvas);
+
+                chat.GetComponent<FollowTarget>().m_Target = gameObject.transform.GetChild(0).transform;
+                chat.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = ScriptsManager.Instance.VacationScripts[1][randomScript];
+                m_NowTalking = true;
+                this.GetComponent<Student>().ChatObject = chat;
+
+                StartCoroutine(VacationMoveTalkEnd(chat, randomCoolTime));
+            }
+
+            yield return new WaitForSeconds(randomCoolTime);
+        }
+    }
+
+    IEnumerator VacationMoveTalkEnd(GameObject chat, float returnTime)
+    {
+        yield return new WaitForSeconds(returnTime);
+
+        InGameObjectPool.ReturnChatObject(chat);
+        this.GetComponent<Student>().ChatObject = null;
+        m_NowTalking = false;
+        m_IsCoroutineRunning = false;
     }
 
     private void SeatCheck(int num)
     {
         gameObject.GetComponent<Student>().DoingValue = Student.Doing.Idle;
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", true);
-        }
+        m_Animator.SetTrigger("ToIdle");
         if (num == -1)
         {
             StudentTalk("자리가없네");
@@ -1383,18 +1236,6 @@ public class Destination : Action
 
         chat.GetComponent<FollowTarget>().m_Target = gameObject.transform.GetChild(0).transform;
         chat.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = sentence;
-        //m_NowDestination = " ";
-        //m_goingCategory = Category.Nothing;
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsIdelToTalk", true);
-            gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-        }
-        else if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToTalk", true);
-            gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-        }
         StartCoroutine(StoreTalkEnd(chat));
     }
 
@@ -1402,11 +1243,6 @@ public class Destination : Action
     {
         yield return new WaitForSeconds(2f);
 
-
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", false);
-        }
         InGameObjectPool.ReturnChatObject(chatBox);
     }
 
@@ -1418,60 +1254,51 @@ public class Destination : Action
         chat.transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = sentence;
         m_NowDestination = " ";
         m_goingCategory = Category.Nothing;
+        m_Agent.isStopped = true;
 
         m_RandomNumTalkAniIndex = Random.Range(0, 2);
-
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsIdelToTalk", true);
-            gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-        }
-        else if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Walk"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToTalk", true);
-            gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-        }
 
         StartCoroutine(TalkEnd(chat));
     }
 
     IEnumerator ChooseSomething()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
 
         m_Agent.isStopped = false;
         gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", false);
-        }
         m_NowDestination = "StoreCounter";
+
+        int randomAnim = Random.Range(1, 3);
+        m_Animator.SetTrigger("ToWalk" + randomAnim);
         m_goingCategory = Category.Facility;
         m_Agent.SetDestination(InteractionManager.Instance.StorePoints[3].position);
+        gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.StorePoints[3];
     }
 
     IEnumerator ChooseBook()
     {
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
 
         m_Agent.isStopped = false;
         gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Idel_1"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToIdel", false);
-        }
         m_NowDestination = "BookCounter";
+
+        int randomAnim = Random.Range(1, 3);
+        m_Animator.SetTrigger("ToWalk" + randomAnim);
         m_goingCategory = Category.Facility;
         m_Agent.SetDestination(InteractionManager.Instance.BookStorePoints[3].position);
+        gameObject.GetComponent<Student>().LookTransform = InteractionManager.Instance.BookStorePoints[3];
     }
 
     IEnumerator StudentWait()
     {
         yield return new WaitForSeconds(3f);
-
+        
+        m_Animator.SetTrigger("ToIdle");
         m_Agent.isStopped = false;
         gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
-        
+
         m_NowDestination = " ";
         m_goingCategory = Category.Nothing;
     }
@@ -1483,11 +1310,5 @@ public class Destination : Action
         InGameObjectPool.ReturnChatObject(chatBox);
         m_Agent.isStopped = false;
         gameObject.GetComponent<Student>().DoingValue = Student.Doing.FreeWalk;
-
-        if (gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Talking1") || gameObject.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("Talking3"))
-        {
-            gameObject.GetComponent<Animator>().SetBool("IsWalkToTalk", false);
-            gameObject.GetComponent<Animator>().SetInteger("TalkAniNumber", m_RandomNumTalkAniIndex);
-        }
     }
 }

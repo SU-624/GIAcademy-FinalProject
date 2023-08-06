@@ -5,28 +5,16 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/@Game/Scenes/TestScene.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
     path: Assets/@Game/Scenes/TitleScene.unity
     guid: 0ce87c40c646f2641b8217212d5955b1
   - enabled: 1
     path: Assets/@Game/Scenes/InGameScene.unity
-    guid: 8b8ce3d2c55e57945abd6a6900735bc6
+    guid: 57c053333f2541b4dbb42366a7c35848
   - enabled: 1
     path: Assets/@Game/Scenes/UIScene.unity
     guid: 063ade2873d305b438b00d6c6015e050
   - enabled: 0
-    path: Assets/@Game/Scenes/PrevInGameScene.unity
-    guid: 931dad74421ade941a91581c02fee25f
-  - enabled: 0
-    path: Assets/@Game/Scenes/PreInGameScene.unity
-    guid: 986a6d56434d67040a0532b20b2c272d
-  - enabled: 0
-    path: Assets/@Game/Scenes/UIScene_MangGGu.unity
-    guid: 4241b1c392b0191479b53bdc0202b28d
-  - enabled: 0
-    path: Assets/@Game/Scenes/UIScene_OhSoo.unity
-    guid: 70ec5c02f15516f4a9c55a565fdc0d8e
+    path: Assets/@Game/Scenes/2023_06_29InGameScene.unity
+    guid: 92fb637c123b86547be006114bef6feb
   m_configObjects: {}

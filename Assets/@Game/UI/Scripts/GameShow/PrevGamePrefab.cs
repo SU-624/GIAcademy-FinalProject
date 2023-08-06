@@ -6,6 +6,7 @@ using TMPro;
 
 public class PrevGamePrefab : MonoBehaviour
 {
+    public Image m_ConceptImage;
     public TextMeshProUGUI m_Grade;
     public TextMeshProUGUI m_GameName;
     public TextMeshProUGUI m_Concept;

@@ -4,9 +4,6 @@ using UnityEngine;
 using System.IO;
 using System.Text;
 using Newtonsoft.Json;
-using UnityEngine.SceneManagement;
-using UnityEngine.Networking;
-using UnityEngine.UI;
 
 /// <summary>
 /// 2023 . 02. 02 Mang
@@ -17,17 +14,17 @@ using UnityEngine.UI;
 /// 다른 데이터 값들을 여기서 모두 모아서 저장, 
 /// 어느 로그인데이터에 Json 저장할지는 다른 script에서
 /// </summary>
-public class Json : MonoBehaviour
+public class Json
 {
     private static Json _instance = null;
 
     const string DataFolderName = "GISaveData";
     //public AllInOneData player = new AllInOneData();
 
-    public bool IsSavedDataExists = false; // 플레이어가 저장한 데이터 있는지
-    public bool IsOriginalDataExists = false; // 초기 원본 데이터
+    private bool IsSavedDataExists; // 플레이어가 저장한 데이터 있는지
+    private bool IsOriginalDataExists; // 초기 원본 데이터
 
-    [SerializeField] private bool UseLoadingData = false;
+    public bool UseLoadingData = false; // 게임을 로딩할 때 불러온 데이터를 사용할 지 여부
 
     public static Json Instance
     {
@@ -35,76 +32,89 @@ public class Json : MonoBehaviour
         {
             if (_instance == null)
             {
-                Debug.Log("json 인스턴스가 없다");
-
-                return null;
+                _instance = new Json();
             }
 
             return _instance;
         }
 
-        set
-        {
-            Instance = value;
-
-            Debug.Log("set json");
-        }
+        set { _instance = value; }
     }
 
-    private void Awake()
+    private Json()
     {
-        if (_instance == null)
-        {
-            _instance = this;
-            DontDestroyOnLoad(gameObject);
-            Debug.Log("인스턴스 생성");
-        }
-        else
-        {
-            if (Instance != this)
-                Destroy(this.gameObject);
-            Debug.Log("인스턴스 이미 있어서 삭제");
-        }
+        IsSavedDataExists = false;
+        IsOriginalDataExists = false;
+        UseLoadingData = false;
     }
 
-
-    private void Start()
+    public void DataSetting()
     {
         // 1. 원본데이터는 그대로 로드를 해준다. 언제든 가져다 써야하기 때문에.
-        // 첫 로딩에 데이터를 가져온다.
-        if (!IsOriginalDataExists)
+        // JsonManager가 호출될 때 같이 부르자.
+        //if (!IsOriginaglDataExists)
         {
             LoadAllOriginalData();
             IsOriginalDataExists = true;
+            // 유니티의 싱글톤 객체의 전역 변수의 초기화가 안되는 (에디터 한정?) 문제가 있어서 일단 무조껀 로딩
         }
 
-        IsSavedDataExists = false; // 확인 전 변수 초기화
-        // 저장된 json 파일 존재유무 체크. 로딩 미사용시 빼기.
-        if (UseLoadingData)
-            IsExistJsonFile();
-
-        // 2. 서버에서 데이터를 불러왔으면 서버 데이터를 사용
+        // start에서 처리하면 안된다!
+        // 씬이 불리면 처리할 수 있도록 변경
         if (AllInOneData.Instance.ServerLoading)
         {
-            // 데이터 적절히 넣어주기
-            AllInOneData.Instance.DistributeLoadGameData();
-
-            // 저장된 데이터(서버데이터)를 사용한다고 알리고 서버 데이터 사용 정보 정리
             IsSavedDataExists = true;
-            AllInOneData.Instance.ServerLoading = false;
+            UseLoadingData = true;
         }
+        else
+        {
+            IsSavedDataExists = false;
+        }
+    }
 
-        // 3. 로컬 데이터가 있다면 가져온다.
-        if (IsSavedDataExists)
+    public void PressLadingBtn()
+    {
+        if (UseLoadingData)
+        {
+            if (!AllInOneData.Instance.ServerLoading)
+            {
+                if (IsExistJsonFile())
+                {
+                    IsSavedDataExists = true;
+                    LoadLocalSavedData(); // 로컬 데이터를 가져온다..
+                }
+            }
+
+            // 저장된 데이터가 있다면...!
+            if (IsSavedDataExists)
+            {
+                AllInOneData.Instance.DistributeLoadGameData(); // 데이터들을 적용한다.
+                AllInOneData.Instance.ServerLoading = false; // 서버에서 불러온 데이터는 한번만 사용함.
+            }
+            // 저장된 데이터가 없습니다. 라는 UI가 필요할까??
+            else
+            {
+                Debug.Log("불러올 데이터가 없습니다!!");
+                UseLoadingData = false; // 버튼이 없을 때의 임시 동작을 위함
+            }
+        }
+    }
+
+    public bool LoadJsonToAllInOneData()
+    {
+        if (IsExistJsonFile())
         {
             LoadLocalSavedData();
-
-            AllInOneData.Instance.DistributeLoadGameData();
+            return true;
+        }
+        else
+        {
+            return false;
         }
     }
 
     // 제이슨 파일의 경로가 존재하는지 체크하는 함수 -> 존재하면 true / 없으면 false
-    public void CheckFolderExists()
+    private bool CheckFolderExists()
     {
         var folderPath = Path.Combine(Application.persistentDataPath, DataFolderName);
         // var FolderPath = "jar:file://" + Application.dataPath + DataFolderName;
@@ -112,29 +122,29 @@ public class Json : MonoBehaviour
         if (!Directory.Exists(folderPath))
         {
             Debug.Log("false 폴더 경로" + folderPath);
-            IsSavedDataExists = false;
+            return false;
         }
         else
         {
             Debug.Log("true 폴더 경로" + folderPath);
-            IsSavedDataExists = true;
+            return true;
         }
     }
 
     // 불러오기 할 데이터가 있는지 확인한다.
-    public void CheckFileExists()
+    private bool CheckFileExists()
     {
         var jsonFilePath = Application.persistentDataPath + "\\" + DataFolderName + "\\LocalSave\\PlayerData.json";
 
         if (!File.Exists(jsonFilePath))
         {
             Debug.Log("flase 불러올 정보가 없습니다. 파일 경로" + jsonFilePath);
-            IsSavedDataExists = false;
+            return false;
         }
         else
         {
             Debug.Log("true 불러올 정보가 있습니다. 파일 경로" + jsonFilePath);
-            IsSavedDataExists = true;
+            return true;
         }
     }
 
@@ -217,15 +227,18 @@ public class Json : MonoBehaviour
 
     // ===== ===== 불러오기 ===== =====
     // 맨 처음에 Json 파일 존재 유무 체크 -> screenTouchButton 연결
-    public void IsExistJsonFile()
+    private bool IsExistJsonFile()
     {
-        CheckFolderExists();
-        CheckFileExists();
+        if (CheckFolderExists())
+            if (CheckFileExists())
+                return true;
+
+        return false;
     }
 
     // 저장된 데이터들을(json 원본들) 로드 할 함수
     // 
-    public void LoadLocalSavedData()
+    private void LoadLocalSavedData()
     {
         string jsonFilePath = Application.persistentDataPath + "\\" + DataFolderName + "\\LocalSave\\PlayerData.json";
 
@@ -261,6 +274,8 @@ public class Json : MonoBehaviour
         TextAsset SimpleExecutionEventRewardTextFile = Resources.Load<TextAsset>("Json/SimpleExecutionEventReward");
         TextAsset EventScriptTextFile = Resources.Load<TextAsset>("Json/EventScript");
         TextAsset RankScriptFile = Resources.Load<TextAsset>("Json/rankScript");
+        TextAsset AIAcademyDataFile = Resources.Load<TextAsset>("Json/AiAcademyData");
+        TextAsset StudentLastNameFile = Resources.Load<TextAsset>("Json/StudentLastNameData");
         TextAsset EmailScriptFile = Resources.Load<TextAsset>("Json/EmailData");
         TextAsset RewardEmailScriptFile = Resources.Load<TextAsset>("Json/RewardEmail");
         TextAsset BonusSkillConditionFile = Resources.Load<TextAsset>("Json/BonusSkillConditionData");
@@ -279,6 +294,8 @@ public class Json : MonoBehaviour
         string SimpleExecutionEventRewardList = SimpleExecutionEventRewardTextFile.text;
         string EventScriptList = EventScriptTextFile.text;
         string RankScriptList = RankScriptFile.text;
+        string AIAcademyData = AIAcademyDataFile.text;
+        string StudentLastNameData = StudentLastNameFile.text;
         string EmailScriptList = EmailScriptFile.text;
         string RewardEmailScriptList = RewardEmailScriptFile.text;
         string BonusSkillConditionList = BonusSkillConditionFile.text;
@@ -297,6 +314,8 @@ public class Json : MonoBehaviour
         StringCutting(1, ref SimpleExecutionEventRewardList);
         StringCutting(1, ref EventScriptList);
         StringCutting(1, ref RankScriptList);
+        StringCutting(1, ref AIAcademyData);
+        StringCutting(1, ref StudentLastNameData);
         StringCutting(1, ref EmailScriptList);
         StringCutting(1, ref RewardEmailScriptList);
         StringCutting(1, ref BonusSkillConditionList);
@@ -311,13 +330,14 @@ public class Json : MonoBehaviour
         // 각각의 제이슨 파일을 읽고 하나로 뭉쳐야 하는데 뭉쳐주질 못해서 일어나는 문제였나??????
         string allJsonOriginal = gameJamContent + "," + SuddenEventList + "," + injaeData + ","
                                  + ChoiceEventScriptRewardList + "," + SimpleExecutionEventRewardList + ","
-                                 + EventScriptList + "," + RankScriptList + "," + EmailScriptList + ","
+                                 + EventScriptList + "," + RankScriptList + "," + AIAcademyData + "," + StudentLastNameData + "," + EmailScriptList + ","
                                  + RewardEmailScriptList + "," + BonusSkillConditionList + "," + BonusSkillScriptList
                                  + "," + ClassAlramScriptList + "," + GameShowDataList + "," + MissionDataList;
 
         // 데이터를 읽은 다음에 저장을 해야하는데 스트링이 너무 길어서 다 읽지를 못하는 문제가 생긴다. 그래서 각 데이터 별로 클래스를 나눠서 넣어줘야 겠다.
         // 아니다. 각각의 제이슨파일을 읽은 친구들을 
         AllOriginalJsonData.Instance = JsonConvert.DeserializeObject<AllOriginalJsonData>(allJsonOriginal);
+        int a = 0;
     }
 
     // 제이슨 파일들을 읽고 컨버팅 해주기 전 하나의 스트링으로 만들어서 제이슨파일을 합쳐주고, 하나로 만들어진 스트링을 읽는다
@@ -332,7 +352,7 @@ public class Json : MonoBehaviour
                     _string = _string.Substring(0, _string.Length - 1);
                 }
             }
-                break;
+            break;
 
             case 1:
             {
@@ -346,7 +366,7 @@ public class Json : MonoBehaviour
                     _string = _string.Substring(1, _string.Length - 1);
                 }
             }
-                break;
+            break;
 
             case 2:
             {
@@ -355,7 +375,7 @@ public class Json : MonoBehaviour
                     _string = _string.Substring(1, _string.Length - 1);
                 }
             }
-                break;
+            break;
         }
     }
 

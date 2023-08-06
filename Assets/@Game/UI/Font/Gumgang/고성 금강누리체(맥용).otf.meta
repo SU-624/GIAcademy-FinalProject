@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 7cee23b1eebec3d459d5212751fe5ed0
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - GOSEONG GEUMGANGNURI
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: a88686202c8d6984ab23edb53a595795, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

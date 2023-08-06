@@ -20,7 +20,7 @@ public struct SaveSelectClassInfoData
 // 수업을 만들 때 이미지 교체를 위한 enum클래스
 enum PartName
 {
-    GM,
+    GameDesigner,
     Art,
     Programming,
     Commonm,
@@ -35,14 +35,14 @@ enum PartName
 /// </summary>
 public class SelectClass : MonoBehaviour
 {
+    public Color m_ClassStatTextColor;
     [SerializeField] private GameObject m_ClassPrefab;
     [SerializeField] private GameObject m_ProfessorPrefab;
     [SerializeField] private GameObject m_CheckClassPrefab;
 
     [SerializeField] private Button m_OpenClassButton;
 
-    [SerializeField] private ClassController m_SelectClass; // 원하는 수업의 세부내용을 보여주기 위해
-    [SerializeField] private ProfessorController m_SelectProfessor;
+    [SerializeField] private ClassController m_SelectClass;                                                     // 원하는 수업의 세부내용을 보여주기 위해
 
     [SerializeField] private TextMeshProUGUI m_InGameUICurrentMoney;
 
@@ -61,12 +61,14 @@ public class SelectClass : MonoBehaviour
     [SerializeField] private GameObject m_BlackScreen;
     [SerializeField] private GameObject m_PDAlarm;
     [SerializeField] private TextMeshProUGUI m_AlarmText;
+    [SerializeField] private Button m_NextButton;
 
+    [SerializeField] private Image m_FadeOutImg;
 
     public SetClassPanel m_SetClassPanel;
     public CheckSelecteClass m_CheckClassPanel;
 
-    public List<string> m_SelectClassButtonName = new List<string>(); // 내가 클릭한 버튼에 최종적으로 선택한 수업을 넣어주기 위해 만든 리스트
+    public List<string> m_SelectClassButtonName = new List<string>();                                           // 내가 클릭한 버튼에 최종적으로 선택한 수업을 넣어주기 위해 만든 리스트
 
     public SaveSelectClassInfoData m_SaveData = new SaveSelectClassInfoData();
     public SaveSelectClassInfoData m_TempSaveData = new SaveSelectClassInfoData();
@@ -74,44 +76,45 @@ public class SelectClass : MonoBehaviour
     public static List<SaveSelectClassInfoData> m_ArtData = new List<SaveSelectClassInfoData>();
     public static List<SaveSelectClassInfoData> m_ProgrammingData = new List<SaveSelectClassInfoData>();
 
-    public EachClass m_NowClass = new EachClass(); // 내가 현재 가지고 있는 수업들
-    public Professor m_NowPlayerProfessor = new Professor(); // 내가 현재 고용하고 있는 강사들
+    public EachClass m_NowClass = new EachClass();                                                              // 내가 현재 가지고 있는 수업들
 
     private ProfessorStat _ClickProfessorData;
     private Class _ClickClassData;
+    private Class _prevClickClassData;
     private GameObject _prevClass;
     private GameObject _prevProfessor;
-    private Color m_HighLightColor;
+    private List<IncreaseFee> m_ClassFeeList = new List<IncreaseFee>();
 
-    public int m_WeekClassIndex = 0; // 2이 되면 1,2주차 수업 모두 선택한거니 완료창으로 넘겨주기
-    public int m_WeekProfessorIndex = 0; // 2이 되면 1,2주차 교수 모두 선택한거니 완료창으로 넘겨주기
-    public int m_SaveDataIndex = 0; // 저장할 데이터들의 인덱스를 바꿔주기 위한 변수. 0과 1만 사용한다.
-    public int m_TotalMoney = 0; // SelectPanel에서 내가 선택한 수업들의 총 수업료를 계산해주기 위한 변수
+    public int m_WeekClassIndex = 0;                                                                            // 2이 되면 1,2주차 수업 모두 선택한거니 완료창으로 넘겨주기
+    public int m_WeekProfessorIndex = 0;                                                                        // 2이 되면 1,2주차 교수 모두 선택한거니 완료창으로 넘겨주기
+    public int m_SaveDataIndex = 0;                                                                             // 저장할 데이터들의 인덱스를 바꿔주기 위한 변수. 0과 1만 사용한다.
+    public int m_TotalMoney = 0;                                                                                // SelectPanel에서 내가 선택한 수업들의 총 수업료를 계산해주기 위한 변수
     public int m_TotalHealth = 0;
-    public float magnification;
 
-    private int m_ClassStack = 0; // 0~2까지는 1주차 기획,아트, 플밍 3~5까지는 2주차 기획,아트,플밍 강사, 수업 정보
+    private int m_ClassStack = 0;                                                                               // 0~2까지는 1주차 기획,아트, 플밍 3~5까지는 2주차 기획,아트,플밍 강사, 수업 정보
     private int[] m_StatNum = new int[5];
     private string[] m_StatName = new string[5];
     private int[] m_AllInfoStatNum = new int[5];
     private string[] m_AllInfoStatName = new string[5];
-    private string m_Week; // 수업 수정을 눌렀을 때 내가 누른 수업이 몇 주차 수업인지 담아주는 변수
+    private string m_Week;                                                                                      // 수업 수정을 눌렀을 때 내가 누른 수업이 몇 주차 수업인지 담아주는 변수
 
-    private string
-        m_ModifyProfessorString; // 수업을 다 선택한 후 수정 버튼을 눌러서 해당 학과의 수업을 수정하려는데 교수나 수업 둘 중 하나만 선택할 수 있으니 기존의 정보를 남겨두기 위한 예외처리 변수
+    private string m_ModifyProfessorString;                                                                     // 수업을 다 선택한 후 수정 버튼을 눌러서 해당 학과의 수업을 수정하려는데 교수나 수업 둘 중 하나만 선택할 수 있으니 기존의 정보를 남겨두기 위한 예외처리 변수
 
-    private string
-        m_ModifyClassString; // 수업을 다 선택한 후 수정 버튼을 눌러서 해당 학과의 수업을 수정하려는데 교수나 수업 둘 중 하나만 선택할 수 있으니 기존의 정보를 남겨두기 위한 예외처리 변수
-
-    private int m_CurrentMoney = 0; // SelectPanel에서 내가 현재 보유하고 있는 재화를 띄워주기 위한 변수
-    private int[] m_ClassMoney = new int[6]; // 클릭한 수업들의 수업료를 배열에 저장하여 배열의 요소들을 모두 더해주는 형식
+    private string m_ModifyClassString;                                                                         // 수업을 다 선택한 후 수정 버튼을 눌러서 해당 학과의 수업을 수정하려는데 교수나 수업 둘 중 하나만 선택할 수 있으니 기존의 정보를 남겨두기 위한 예외처리 변수
+    private string _currentMoney;
+    private int m_CurrentMoney = 0;                                                                             // SelectPanel에서 내가 현재 보유하고 있는 재화를 띄워주기 위한 변수
+    private int[] m_ClassMoney = new int[6];                                                                    // 클릭한 수업들의 수업료를 배열에 저장하여 배열의 요소들을 모두 더해주는 형식
     private int[] m_ClassHealth = new int[6];
     private bool _isOpenyearTrue = false;
     private bool _isOpenMonthTrue = false;
-    private bool m_IsChangeWeekend = false; // 1,2 주차 수업선택을 모두 하고 완료를 누를 때 다시 false로 바꿔주기
+    private bool m_IsChangeWeekend = false;                                                                     // 1,2 주차 수업선택을 모두 하고 완료를 누를 때 다시 false로 바꿔주기
+    private bool m_IsMoneyOK = false;
+    private bool m_IsHealthOK = false;
 
     private int m_TutorialCount;
     private int m_ScriptCount;
+
+    private bool m_IsTutorialStart;
 
     #region _구조체 형식의 리스트 인덱스를 바꾸기 위한 함수
 
@@ -123,263 +126,175 @@ public class SelectClass : MonoBehaviour
     }
 
     #endregion
-
+    
     private void Update()
     {
-        m_CurrentMoney = int.Parse(m_InGameUICurrentMoney.text);
+        _currentMoney = m_InGameUICurrentMoney.text.Replace(",", "");
+
+        m_CurrentMoney = int.Parse(_currentMoney);
 
         if (m_SetClassPanel.CurrentMoney != null)
         {
-            m_SetClassPanel.CurrentMoney.text = m_CurrentMoney.ToString();
-            m_CheckClassPanel.SetCurrentMoney(m_CurrentMoney.ToString());
+            m_SetClassPanel.CurrentMoney.text = string.Format("{0:#,0}", m_CurrentMoney);
+            m_CheckClassPanel.SetCurrentMoney(string.Format("{0:#,0}", m_CurrentMoney));
         }
 
         if (PlayerInfo.Instance.IsFirstAcademySetting && PlayerInfo.Instance.IsFirstClassSetting &&
-            PlayerInfo.Instance.IsFirstClassSettingPDEnd)
+            PlayerInfo.Instance.IsFirstClassSettingPdEnd && !m_IsTutorialStart)
         {
-#if UNITY_EDITOR
-            if (Input.GetMouseButtonDown(0))
-            {
-                if (m_TutorialCount == 0)
-                {
-                    m_TutorialPanel.SetActive(true);
-                    m_PDAlarm.SetActive(false);
-                    m_BlackScreen.SetActive(true);
-                    m_Unmask.gameObject.SetActive(true);
-                    m_Unmask.fitTarget = m_SetClassPanel.PartWeek.GetComponent<RectTransform>();
-                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(400, 0, 0);
-                    m_TutorialTextImage.gameObject.SetActive(true);
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 1)
-                {
-                    m_Unmask.fitTarget = m_SetClassPanel.CurrentMoney.gameObject.GetComponent<RectTransform>();
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-600, 0, 0);
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 2)
-                {
-                    m_SetClassPanel.ProfessorScrollView.vertical = false;
-                    m_SetClassPanel.ProfessorPrefabParent.GetChild(0).GetComponent<Button>().interactable = false;
-                    m_SetClassPanel.ProfessorPrefabParent.GetChild(1).GetComponent<Button>().interactable = false;
-                    m_Unmask.fitTarget = m_SetClassPanel.ProfessorScrollView.GetComponent<RectTransform>();
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(500, 0, 0);
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 3)
-                {
-                    m_Unmask.fitTarget =
-                        m_SetClassPanel.ProfessorPrefabParent.GetChild(0).GetComponent<RectTransform>();
-                    m_SetClassPanel.ProfessorPrefabParent.GetChild(0).GetComponent<Button>().interactable = true;
-                    m_SetClassPanel.ProfessorPrefabParent.GetChild(1).GetComponent<Button>().interactable = true;
-                    m_TutorialArrowImage.gameObject.SetActive(true);
-                    m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
-                    m_TutorialTextImage.gameObject.SetActive(false);
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 5)
-                {
-                    m_SetClassPanel.ClassScrollView.vertical = false;
-                    m_Unmask.fitTarget = m_SetClassPanel.ClassScrollView.GetComponent<RectTransform>();
-                    m_SetClassPanel.ClassPrefabParent.GetChild(0).GetComponent<Button>().interactable = false;
-                    m_SetClassPanel.ClassPrefabParent.GetChild(1).GetComponent<Button>().interactable = false;
-                    m_SetClassPanel.ClassPrefabParent.GetChild(2).GetComponent<Button>().interactable = false;
-                    m_TutorialArrowImage.gameObject.SetActive(false);
-                    m_TutorialTextImage.gameObject.SetActive(true);
-                    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-                    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-700, 0, 0);
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 6)
-                {
-                    m_Unmask.fitTarget = m_SetClassPanel.ClassPrefabParent.GetChild(0).GetComponent<RectTransform>();
-                    m_SetClassPanel.ClassPrefabParent.GetChild(0).GetComponent<Button>().interactable = true;
-                    m_SetClassPanel.ClassPrefabParent.GetChild(1).GetComponent<Button>().interactable = true;
-                    m_SetClassPanel.ClassPrefabParent.GetChild(2).GetComponent<Button>().interactable = true;
-                    m_TutorialArrowImage.gameObject.SetActive(true);
-                    m_TutorialTextImage.gameObject.SetActive(false);
-                    m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 150, 0);
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 8)
-                {
-                    m_Unmask.fitTarget = m_SetClassPanel.CompleteButton.gameObject.GetComponent<RectTransform>();
-                    m_SetClassPanel.CompleteButton.enabled = true;
-                    m_TutorialArrowImage.gameObject.SetActive(true);
-                    m_TutorialTextImage.gameObject.SetActive(false);
-                    m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-200, 150, 0);
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 10)
-                {
-                    m_TutorialPanel.SetActive(false);
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 13)
-                {
-                    m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 14)
-                {
-                    m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-                    m_ScriptCount++;
-                    m_TutorialCount++;
-                }
-                else if (m_TutorialCount == 15)
-                {
-                    m_Unmask.gameObject.SetActive(false);
-                    m_BlackScreen.gameObject.SetActive(false);
-                    m_TutorialTextImage.gameObject.SetActive(false);
-                    m_TutorialArrowImage.gameObject.SetActive(false);
-                    m_TutorialPanel.SetActive(false);
-                    m_TutorialCount++;
-                    PlayerInfo.Instance.IsFirstClassSetting = false;
-                    Time.timeScale = 1;
-                }
-            }
-#elif UNITY_ANDROID
-            if (Input.touchCount == 1 && !EventSystem.current.IsPointerOverGameObject())
-            {
-                Touch touch = Input.GetTouch(0); 
-                if (touch.phase == TouchPhase.Ended)
-                {
-                    if (m_TutorialCount == 0)
-                    {
-                        m_TutorialPanel.SetActive(true);
-                        m_PDAlarm.SetActive(false);
-                        m_BlackScreen.SetActive(true);
-                        m_Unmask.gameObject.SetActive(true);
-                        m_Unmask.fitTarget = m_SetClassPanel.PartWeek.GetComponent<RectTransform>();
-                        m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(400, 0, 0);
-                        m_TutorialTextImage.gameObject.SetActive(true);
-                        m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-                        m_ScriptCount++;
-                        m_TutorialCount++;
-                    }
-                    else if (m_TutorialCount == 1)
-                    {
-                        m_Unmask.fitTarget = m_SetClassPanel.CurrentMoney.gameObject.GetComponent<RectTransform>();
-                        m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-                        m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-600, 0, 0);
-                        m_ScriptCount++;
-                        m_TutorialCount++;
-                    }
-                    else if (m_TutorialCount == 2)
-                    {
-                        m_SetClassPanel.ProfessorScrollView.vertical = false;
-                        m_SetClassPanel.ProfessorPrefabParent.GetChild(0).GetComponent<Button>().interactable = false;
-                        m_SetClassPanel.ProfessorPrefabParent.GetChild(1).GetComponent<Button>().interactable = false;
-                        m_Unmask.fitTarget = m_SetClassPanel.ProfessorScrollView.GetComponent<RectTransform>();
-                        m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-                        m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(500, 0, 0);
-                        m_ScriptCount++;
-                        m_TutorialCount++;
-                    }
-                    else if (m_TutorialCount == 3)
-                    {
-                        m_Unmask.fitTarget =
- m_SetClassPanel.ProfessorPrefabParent.GetChild(0).GetComponent<RectTransform>();
-                        m_SetClassPanel.ProfessorPrefabParent.GetChild(0).GetComponent<Button>().interactable = true;
-                        m_SetClassPanel.ProfessorPrefabParent.GetChild(1).GetComponent<Button>().interactable = true;
-                        m_TutorialArrowImage.gameObject.SetActive(true);
-                        m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
-                        m_TutorialTextImage.gameObject.SetActive(false);
-                        m_TutorialCount++;
-                    }
-                    else if (m_TutorialCount == 5)
-                    {
-                        m_SetClassPanel.ClassScrollView.vertical = false;
-                        m_Unmask.fitTarget = m_SetClassPanel.ClassScrollView.GetComponent<RectTransform>();
-                        m_SetClassPanel.ClassPrefabParent.GetChild(0).GetComponent<Button>().interactable = false;
-                        m_SetClassPanel.ClassPrefabParent.GetChild(1).GetComponent<Button>().interactable = false;
-                        m_SetClassPanel.ClassPrefabParent.GetChild(2).GetComponent<Button>().interactable = false;
-                        m_TutorialArrowImage.gameObject.SetActive(false);
-                        m_TutorialTextImage.gameObject.SetActive(true);
-                        m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-                        m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-700, 0, 0);
-                        m_ScriptCount++;
-                        m_TutorialCount++;
-                    }
-                    else if (m_TutorialCount == 6)
-                    {
-                        m_Unmask.fitTarget =
- m_SetClassPanel.ClassPrefabParent.GetChild(0).GetComponent<RectTransform>();
-                        m_SetClassPanel.ClassPrefabParent.GetChild(0).GetComponent<Button>().interactable = true;
-                        m_SetClassPanel.ClassPrefabParent.GetChild(1).GetComponent<Button>().interactable = true;
-                        m_SetClassPanel.ClassPrefabParent.GetChild(2).GetComponent<Button>().interactable = true;
-                        m_TutorialArrowImage.gameObject.SetActive(true);
-                        m_TutorialTextImage.gameObject.SetActive(false);
-                        m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 150, 0);
-                        m_TutorialCount++;
-                    }
-                    else if (m_TutorialCount == 8)
-                    {
-                        m_Unmask.fitTarget = m_SetClassPanel.CompleteButton.gameObject.GetComponent<RectTransform>();
-                        m_SetClassPanel.CompleteButton.enabled = true;
-                        m_TutorialArrowImage.gameObject.SetActive(true);
-                        m_TutorialTextImage.gameObject.SetActive(false);
-                        m_TutorialArrowImage.transform.position =
- m_Unmask.fitTarget.position + new Vector3(-200, 150, 0);
-                        m_TutorialCount++;
-                    }
-                    else if (m_TutorialCount == 10)
-                    {
-                        m_TutorialPanel.SetActive(false);
-                        m_TutorialCount++;
-                    }
-                    else if (m_TutorialCount == 13)
-                    {
-                        m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-                        m_ScriptCount++;
-                        m_TutorialCount++;
-                    }
-                    else if (m_TutorialCount == 14)
-                    {
-                        m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-                        m_ScriptCount++;
-                        m_TutorialCount++;
-                    }
-                    else if (m_TutorialCount == 15)
-                    {
-                        m_Unmask.gameObject.SetActive(false);
-                        m_BlackScreen.gameObject.SetActive(false);
-                        m_TutorialTextImage.gameObject.SetActive(false);
-                        m_TutorialArrowImage.gameObject.SetActive(false);
-                        m_TutorialPanel.SetActive(false);
-                        m_TutorialCount++;
-                        PlayerInfo.Instance.IsFirstClassSetting = false;
-                        Time.timeScale = 1;
-                    }
-                }
-            }
+            m_TutorialPanel.SetActive(true);
+            m_PDAlarm.SetActive(false);
+            m_BlackScreen.SetActive(true);
+            m_Unmask.gameObject.SetActive(true);
+            m_Unmask.fitTarget = m_SetClassPanel.PartWeek.GetComponent<RectTransform>();
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(400, 0, 0);
+            m_TutorialTextImage.gameObject.SetActive(true);
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
+            m_NextButton.gameObject.SetActive(true);
+            m_ScriptCount++;
+            m_TutorialCount++;
+            m_IsTutorialStart = true;
+            //#if UNITY_EDITOR || UNITY_EDITOR_WIN
+            //            if (Input.GetMouseButtonDown(0))
+            //            {
+            //                TutorialContinue();
+            //            }
+            //#elif UNITY_ANDROID
+            //            if (Input.touchCount == 1)
+            //            {
+            //                Touch touch = Input.GetTouch(0); 
+            //                if (touch.phase == TouchPhase.Ended)
+            //                {
+            //                    TutorialContinue();
+            //                    ClickEventManager.Instance.Sound.PlayIconTouch();
+            //                }
+            //            }
+            //#endif
+        }
+    }
 
-#endif
+    private void TutorialContinue()
+    {
+        //if (m_TutorialCount == 0)
+        //{
+        //    m_TutorialPanel.SetActive(true);
+        //    m_PDAlarm.SetActive(false);
+        //    m_BlackScreen.SetActive(true);
+        //    m_Unmask.gameObject.SetActive(true);
+        //    m_Unmask.fitTarget = m_SetClassPanel.PartWeek.GetComponent<RectTransform>();
+        //    m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(400, 0, 0);
+        //    m_TutorialTextImage.gameObject.SetActive(true);
+        //    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
+        //    m_ScriptCount++;
+        //    m_TutorialCount++;
+        //}
+        if (m_TutorialCount == 1)
+        {
+            m_Unmask.fitTarget = m_SetClassPanel.MoneyRect;
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-450, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 2)
+        {
+            m_SetClassPanel.ProfessorScrollView.vertical = false;
+            m_Unmask.fitTarget = m_SetClassPanel.ProfessorListRect;
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(500, 0, 0);
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 3)
+        {
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 4)
+        {
+            m_SetClassPanel.ProfessorListRect.gameObject.SetActive(false);
+            m_Unmask.fitTarget =
+                m_SetClassPanel.ProfessorPrefabParent.GetChild(0).GetComponent<RectTransform>();
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 200, 0);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 6)
+        {
+            m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 7)
+        {
+            m_SetClassPanel.ClassListRect.gameObject.SetActive(false);
+            m_Unmask.fitTarget = m_SetClassPanel.ClassPrefabParent.GetChild(0).GetComponent<RectTransform>();
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(0, 150, 0);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 9)
+        {
+            m_Unmask.fitTarget = m_SetClassPanel.CompleteButton.gameObject.GetComponent<RectTransform>();
+            m_SetClassPanel.CompleteButton.enabled = true;
+            m_TutorialArrowImage.gameObject.SetActive(true);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialArrowImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-200, 150, 0);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 11)
+        {
+            m_TutorialPanel.SetActive(false);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 14)
+        {
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 15)
+        {
+            m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
+            m_ScriptCount++;
+            m_TutorialCount++;
+        }
+        else if (m_TutorialCount == 16)
+        {
+            m_Unmask.gameObject.SetActive(false);
+            m_BlackScreen.gameObject.SetActive(false);
+            m_TutorialTextImage.gameObject.SetActive(false);
+            m_TutorialArrowImage.gameObject.SetActive(false);
+            m_NextButton.gameObject.SetActive(false);
+            m_TutorialPanel.SetActive(false);
+            m_TutorialCount++;
+            PlayerInfo.Instance.IsFirstClassSetting = false;
+            GameTime.Instance.AlarmControl.AlarmMessageQ.Enqueue("1학기가 시작되었습니다.");
+            Time.timeScale = 1;
+            m_IsTutorialStart = false;
         }
     }
 
     private void Start()
     {
         m_TutorialCount = 0;
-        m_ScriptCount = 4;
+        m_ScriptCount = 3;
         m_GameDesignerData.Capacity = 2;
         m_ArtData.Capacity = 2;
         m_ProgrammingData.Capacity = 2;
-        m_HighLightColor = Color.gray;
         InitClass();
-        InitProfessor();
-        //InitData();
+        InitDifficultyClassFee();
         m_SetClassPanel.TotalMoney(Color.white, "0");
-        m_SetClassPanel.TotalHealth("0");
-        ObjectManager.Instance.LinkInstructorDataToObject(m_NowPlayerProfessor); // 데이터를 넣는다
+        m_NextButton.onClick.AddListener(TutorialContinue);
+        m_NextButton.onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
+        m_IsTutorialStart = false;
     }
 
     // 수업 선택 패널이 켜지자 마자 띄워줄 수업들을 각 리스트에 넣어준다.
@@ -413,51 +328,13 @@ public class SelectClass : MonoBehaviour
         }
     }
 
-    // 현재 사용가능한 강사를 찾아서 리스트에 넣어주는 함수 -> 이벤트 해금 코드에서 쓰기
-    public void InitProfessor()
-    {
-        for (int i = 0; i < m_SelectProfessor.professorData.Count; i++)
-        {
-            if (m_SelectProfessor.professorData.ElementAt(i).Value.m_ProfessorType == StudentType.Art &&
-                m_SelectProfessor.professorData.ElementAt(i).Value.IsUnLockProfessor == true)
-            {
-                if (!m_NowPlayerProfessor.ArtProfessor.Contains(m_SelectProfessor.professorData.ElementAt(i).Value))
-                {
-                    m_NowPlayerProfessor.ArtProfessor.Add(m_SelectProfessor.professorData.ElementAt(i).Value);
-                }
-            }
-
-            if (m_SelectProfessor.professorData.ElementAt(i).Value.m_ProfessorType == StudentType.GameDesigner &&
-                m_SelectProfessor.professorData.ElementAt(i).Value.IsUnLockProfessor == true)
-            {
-                if (!m_NowPlayerProfessor.GameManagerProfessor.Contains(m_SelectProfessor.professorData.ElementAt(i)
-                        .Value))
-                {
-                    m_NowPlayerProfessor.GameManagerProfessor.Add(m_SelectProfessor.professorData.ElementAt(i).Value);
-                }
-            }
-
-            if (m_SelectProfessor.professorData.ElementAt(i).Value.m_ProfessorType == StudentType.Programming &&
-                m_SelectProfessor.professorData.ElementAt(i).Value.IsUnLockProfessor == true)
-            {
-                if (!m_NowPlayerProfessor.ProgrammingProfessor.Contains(m_SelectProfessor.professorData.ElementAt(i)
-                        .Value))
-                {
-                    m_NowPlayerProfessor.ProgrammingProfessor.Add(m_SelectProfessor.professorData.ElementAt(i).Value);
-                }
-            }
-
-            // 여기에 모든 교수가 들어감ㅁ
-            // m_NowPlayerProfessor.AllProfessor.Add(m_SelectProfessor.professorData.ElementAt(i).Value);
-        }
-    }
-
     public void InitData()
     {
         m_GameDesignerData.Clear();
         m_ArtData.Clear();
         m_ProgrammingData.Clear();
-        m_InGameUICurrentMoney.text = (int.Parse(m_InGameUICurrentMoney.text) - m_TotalMoney).ToString();
+        string _money = (int.Parse(m_InGameUICurrentMoney.text.Replace(",", "")) - m_TotalMoney).ToString();
+        m_InGameUICurrentMoney.text = string.Format("{0:#,0}", _money);
 
         for (int i = 0; i < 2; i++)
         {
@@ -465,6 +342,20 @@ public class SelectClass : MonoBehaviour
             m_ArtData.Add(new SaveSelectClassInfoData());
             m_ProgrammingData.Add(new SaveSelectClassInfoData());
         }
+    }
+
+    // 학원 랭킹에 따른 수업료 상승폭
+    private void InitDifficultyClassFee()
+    {
+        m_ClassFeeList.Add(new IncreaseFee(Rank.SSS, 6f, 6f));
+        m_ClassFeeList.Add(new IncreaseFee(Rank.SS, 4.5f, 4.5f));
+        m_ClassFeeList.Add(new IncreaseFee(Rank.S, 4.5f, 4.5f));
+        m_ClassFeeList.Add(new IncreaseFee(Rank.A, 3f, 3f));
+        m_ClassFeeList.Add(new IncreaseFee(Rank.B, 3f, 3f));
+        m_ClassFeeList.Add(new IncreaseFee(Rank.C, 1.5f, 1.5f));
+        m_ClassFeeList.Add(new IncreaseFee(Rank.D, 1.5f, 1.5f));
+        m_ClassFeeList.Add(new IncreaseFee(Rank.E, 1f, 1));
+        m_ClassFeeList.Add(new IncreaseFee(Rank.F, 1f, 1));
     }
 
     private Sprite SetStatImage(string _statName)
@@ -477,31 +368,31 @@ public class SelectClass : MonoBehaviour
             {
                 _stat = m_StatImage[(int)AbilityType.Insight];
             }
-                break;
+            break;
 
             case "집중":
             {
                 _stat = m_StatImage[(int)AbilityType.Concentration];
             }
-                break;
+            break;
 
             case "감각":
             {
                 _stat = m_StatImage[(int)AbilityType.Sense];
             }
-                break;
+            break;
 
             case "기술":
             {
                 _stat = m_StatImage[(int)AbilityType.Technique];
             }
-                break;
+            break;
 
             case "재치":
             {
                 _stat = m_StatImage[(int)AbilityType.Wit];
             }
-                break;
+            break;
         }
 
         return _stat;
@@ -514,6 +405,7 @@ public class SelectClass : MonoBehaviour
         {
             _classPrefab.GetComponent<ClassPrefab>().AllStat.SetActive(true);
             _classPrefab.GetComponent<ClassPrefab>().AllStatText.text = m_StatNum[0].ToString();
+            _classPrefab.GetComponent<ClassPrefab>().AllStatText.color = Color.black;
         }
         else
         {
@@ -521,17 +413,55 @@ public class SelectClass : MonoBehaviour
             {
                 _classPrefab.GetComponent<ClassPrefab>().Stat[i].SetActive(true);
                 _classPrefab.GetComponent<ClassPrefab>().StatText[i].text = m_StatNum[i].ToString();
+                _classPrefab.GetComponent<ClassPrefab>().StatText[i].color = Color.black;
                 Sprite _statSprite = SetStatImage(m_StatName[i]);
                 _classPrefab.GetComponent<ClassPrefab>().StatImage[i].sprite = _statSprite;
             }
         }
     }
 
+    ///
+    // 스탯이 몇 개인지에 따라 교수 정보가 있다면 교수의 강의력만큼 수업 프리팹의 스탯들을 셋팅해주는 함수
+    private void SetClassStatsToProfessorPower(ProfessorStat _professor, int _statCount, GameObject _classPrefab)
+    {
+        float _professorPower = Professor.Instance.m_StatMagnification[_professor.m_ProfessorPower];
+        float _increase = SetIncreaseClassFeeOrStat(PlayerInfo.Instance.CurrentRank, true);
+
+        Color _textColor = _professorPower != 0 ? m_ClassStatTextColor : Color.black;
+
+        if (_statCount == 5)
+        {
+            double _stat = Math.Round(m_StatNum[0] * _professorPower);
+
+            _classPrefab.GetComponent<ClassPrefab>().AllStat.SetActive(true);
+            _classPrefab.GetComponent<ClassPrefab>().AllStatText.text = _stat.ToString();
+            _classPrefab.GetComponent<ClassPrefab>().AllStatText.color = _textColor;
+        }
+        else
+        {
+            for (int i = 0; i < _statCount; i++)
+            {
+                double _stat = Math.Round(m_StatNum[i] * _professorPower);
+
+                _classPrefab.GetComponent<ClassPrefab>().Stat[i].SetActive(true);
+                _classPrefab.GetComponent<ClassPrefab>().StatText[i].text = _stat.ToString();
+                _classPrefab.GetComponent<ClassPrefab>().StatText[i].color = _textColor;
+                Sprite _statSprite = SetStatImage(m_StatName[i]);
+                _classPrefab.GetComponent<ClassPrefab>().StatImage[i].sprite = _statSprite;
+            }
+        }
+    }
+
+    /// 
     // 스탯이 몇 개인지에 따라 선택이 완료된 수업 프리팹의 스탯들을 셋팅해주는 함수
     private void SetComplelteClassStats(int _statCount, GameObject _completePrefab)
     {
+        float _increase = SetIncreaseClassFeeOrStat(PlayerInfo.Instance.CurrentRank, true);
+
         if (_statCount == 5)
         {
+            //double _stat = Math.Round(m_StatNum[0]  * _increase);
+
             _completePrefab.GetComponent<CompleteClassPrefab>().AllStat.SetActive(true);
             _completePrefab.GetComponent<CompleteClassPrefab>().AllStatText.text = m_StatNum[0].ToString();
         }
@@ -539,6 +469,8 @@ public class SelectClass : MonoBehaviour
         {
             for (int i = 0; i < _statCount; i++)
             {
+                //double _stat = Math.Round(m_StatNum[0] * _increase);
+
                 _completePrefab.GetComponent<CompleteClassPrefab>().Stat[i].SetActive(true);
                 _completePrefab.GetComponent<CompleteClassPrefab>().StatText[i].text = m_StatNum[i].ToString();
                 Sprite _statSprite = SetStatImage(m_StatName[i]);
@@ -658,6 +590,7 @@ public class SelectClass : MonoBehaviour
             if (_isOpenyearTrue && _isOpenMonthTrue)
             {
                 GameObject _classPrefab = GameObject.Instantiate(m_ClassPrefab, m_SetClassPanel.ClassPrefabParent);
+                _classPrefab.GetComponent<Button>().onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
 
                 _classPrefab.name = m_NowClass.NoneClass[i].m_ClassName;
                 _classPrefab.GetComponent<Button>().onClick.AddListener(ClickClass);
@@ -689,7 +622,7 @@ public class SelectClass : MonoBehaviour
 
                 SetClassStats(StatCount, _classPrefab);
 
-                _classPrefab.GetComponent<ClassPrefab>().MoneyText.text = m_NowClass.NoneClass[i].m_Money.ToString();
+                _classPrefab.GetComponent<ClassPrefab>().MoneyText.text = string.Format("{0:#,0}", m_NowClass.NoneClass[i].m_Money);
                 _classPrefab.GetComponent<ClassPrefab>().HealthText.text = m_NowClass.NoneClass[i].m_Health.ToString();
             }
         }
@@ -707,13 +640,14 @@ public class SelectClass : MonoBehaviour
             if (_isOpenMonthTrue && _isOpenyearTrue)
             {
                 GameObject _classPrefab = GameObject.Instantiate(m_ClassPrefab, m_SetClassPanel.ClassPrefabParent);
+                _classPrefab.GetComponent<Button>().onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
 
                 _classPrefab.name = m_NowClass.GameDesignerClass[i].m_ClassName;
                 _classPrefab.GetComponent<Button>().onClick.AddListener(ClickClass);
 
                 if (m_NowClass.GameDesignerClass[i].m_ClassStatType == ClassType.Class)
                 {
-                    _classPrefab.GetComponent<ClassPrefab>().PartImage.sprite = m_ClassPartImage[(int)PartName.GM];
+                    _classPrefab.GetComponent<ClassPrefab>().PartImage.sprite = m_ClassPartImage[(int)PartName.GameDesigner];
                 }
                 else if (m_NowClass.GameDesignerClass[i].m_ClassStatType == ClassType.Special)
                 {
@@ -737,10 +671,8 @@ public class SelectClass : MonoBehaviour
 
                 SetClassStats(StatCount, _classPrefab);
 
-                _classPrefab.GetComponent<ClassPrefab>().MoneyText.text =
-                    m_NowClass.GameDesignerClass[i].m_Money.ToString();
-                _classPrefab.GetComponent<ClassPrefab>().HealthText.text =
-                    m_NowClass.GameDesignerClass[i].m_Health.ToString();
+                _classPrefab.GetComponent<ClassPrefab>().MoneyText.text = string.Format("{0:#,0}", m_NowClass.GameDesignerClass[i].m_Money);
+                _classPrefab.GetComponent<ClassPrefab>().HealthText.text = m_NowClass.GameDesignerClass[i].m_Health.ToString();
             }
         }
 
@@ -749,17 +681,18 @@ public class SelectClass : MonoBehaviour
 
     public void MakeProfessor()
     {
-        for (int i = 0; i < m_NowPlayerProfessor.GameManagerProfessor.Count; i++)
+        for (int i = 0; i < Professor.Instance.GameManagerProfessor.Count; i++)
         {
             GameObject _professorPrefab = Instantiate(m_ProfessorPrefab, m_SetClassPanel.ProfessorPrefabParent);
+            _professorPrefab.GetComponent<Button>().onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
 
-            _professorPrefab.name = m_NowPlayerProfessor.GameManagerProfessor[i].m_ProfessorNameValue;
+            _professorPrefab.name = Professor.Instance.GameManagerProfessor[i].m_ProfessorName;
             _professorPrefab.GetComponent<Button>().onClick.AddListener(ClickProfessor);
 
             _professorPrefab.GetComponent<ProfessorPrefab>().professorName.text =
-                m_NowPlayerProfessor.GameManagerProfessor[i].m_ProfessorNameValue;
+                Professor.Instance.GameManagerProfessor[i].m_ProfessorName;
 
-            if (m_NowPlayerProfessor.GameManagerProfessor[i].m_ProfessorSet == "전임")
+            if (Professor.Instance.GameManagerProfessor[i].m_ProfessorSet == "전임")
             {
                 _professorPrefab.GetComponent<ProfessorPrefab>().professorPosition.sprite = m_FullTimeProfessor;
             }
@@ -769,24 +702,19 @@ public class SelectClass : MonoBehaviour
             }
 
             _professorPrefab.GetComponent<ProfessorPrefab>().CurrentHealth.text =
-                m_NowPlayerProfessor.GameManagerProfessor[i].m_ProfessorHealth.ToString();
+                Professor.Instance.GameManagerProfessor[i].m_ProfessorHealth.ToString();
             _professorPrefab.GetComponent<ProfessorPrefab>().CurrentPassion.text =
-                m_NowPlayerProfessor.GameManagerProfessor[i].m_ProfessorPassion.ToString();
+                Professor.Instance.GameManagerProfessor[i].m_ProfessorPassion.ToString();
 
             _professorPrefab.GetComponent<ProfessorPrefab>().ProfessorSkillName.text =
-                m_NowPlayerProfessor.GameManagerProfessor[i].m_ProfessorSkills[0];
+                Professor.Instance.GameManagerProfessor[i].m_ProfessorSkills[0];
             _professorPrefab.GetComponent<ProfessorPrefab>().ProfessorSkillInfo.text =
-                m_NowPlayerProfessor.GameManagerProfessor[i].m_ProfessorSkills[1];
+                Professor.Instance.GameManagerProfessor[i].m_ProfessorSkills[1];
             _professorPrefab.GetComponent<ProfessorPrefab>().ProfessorProfileImg.sprite =
-                m_NowPlayerProfessor.GameManagerProfessor[i].m_TeacherProfileImg;
+                Professor.Instance.GameManagerProfessor[i].m_TeacherProfileImg;
+            _professorPrefab.GetComponent<ProfessorPrefab>().professorLevelText.text =
+                "Lv. " + Professor.Instance.GameManagerProfessor[i].m_ProfessorPower.ToString();
         }
-
-        //if (PlayerInfo.Instance.isFirstClassSetting)
-        //{
-        //    m_TutorialPanel.SetActive(true);
-        //    m_Unmask.fitTarget = m_SetClassPanel.ProfessorPrefabParent.GetChild(0).GetComponent<RectTransform>();
-        //    m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[0];
-        //}
     }
 
     public void MakeOtherClass()
@@ -807,6 +735,7 @@ public class SelectClass : MonoBehaviour
                 if (_isOpenMonthTrue && _isOpenyearTrue)
                 {
                     GameObject _classPrefab = GameObject.Instantiate(m_ClassPrefab, m_SetClassPanel.ClassPrefabParent);
+                    _classPrefab.GetComponent<Button>().onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
 
                     _classPrefab.name = m_NowClass.ArtClass[i].m_ClassName;
                     _classPrefab.GetComponent<Button>().onClick.AddListener(ClickClass);
@@ -838,7 +767,7 @@ public class SelectClass : MonoBehaviour
 
                     SetClassStats(StatCount, _classPrefab);
 
-                    _classPrefab.GetComponent<ClassPrefab>().MoneyText.text = m_NowClass.ArtClass[i].m_Money.ToString();
+                    _classPrefab.GetComponent<ClassPrefab>().MoneyText.text = string.Format("{0:#,0}", m_NowClass.ArtClass[i].m_Money);
                     _classPrefab.GetComponent<ClassPrefab>().HealthText.text =
                         m_NowClass.ArtClass[i].m_Health.ToString();
                 }
@@ -851,6 +780,8 @@ public class SelectClass : MonoBehaviour
                  m_ArtData[m_WeekClassIndex].m_SelectClassDataSave != null &&
                  m_ProgrammingData[m_WeekClassIndex].m_SelectClassDataSave == null)
         {
+            m_SetClassPanel.SetBackButtonActive(true);
+
             m_SetClassPanel.SetPartImage(m_ClassPanelPartImage[(int)StudentType.Programming]);
 
             for (int i = 0; i < m_NowClass.ProgrammingClass.Count; i++)
@@ -860,6 +791,7 @@ public class SelectClass : MonoBehaviour
                 if (_isOpenMonthTrue && _isOpenyearTrue)
                 {
                     GameObject _classPrefab = GameObject.Instantiate(m_ClassPrefab, m_SetClassPanel.ClassPrefabParent);
+                    _classPrefab.GetComponent<Button>().onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
 
                     _classPrefab.name = m_NowClass.ProgrammingClass[i].m_ClassName;
                     _classPrefab.GetComponent<Button>().onClick.AddListener(ClickClass);
@@ -892,8 +824,7 @@ public class SelectClass : MonoBehaviour
 
                     SetClassStats(StatCount, _classPrefab);
 
-                    _classPrefab.GetComponent<ClassPrefab>().MoneyText.text =
-                        m_NowClass.ProgrammingClass[i].m_Money.ToString();
+                    _classPrefab.GetComponent<ClassPrefab>().MoneyText.text = string.Format("{0:#,0}", m_NowClass.ProgrammingClass[i].m_Money);
                     _classPrefab.GetComponent<ClassPrefab>().HealthText.text =
                         m_NowClass.ProgrammingClass[i].m_Health.ToString();
                 }
@@ -916,17 +847,18 @@ public class SelectClass : MonoBehaviour
         if (m_GameDesignerData[m_WeekProfessorIndex].m_SelectClassDataSave != null &&
             m_ArtData[m_WeekProfessorIndex].m_SelectClassDataSave == null)
         {
-            for (int i = 0; i < m_NowPlayerProfessor.ArtProfessor.Count; i++)
+            for (int i = 0; i < Professor.Instance.ArtProfessor.Count; i++)
             {
                 GameObject _professorPrefab = Instantiate(m_ProfessorPrefab, m_SetClassPanel.ProfessorPrefabParent);
+                _professorPrefab.GetComponent<Button>().onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
 
-                _professorPrefab.name = m_NowPlayerProfessor.ArtProfessor[i].m_ProfessorNameValue;
+                _professorPrefab.name = Professor.Instance.ArtProfessor[i].m_ProfessorName;
                 _professorPrefab.GetComponent<Button>().onClick.AddListener(ClickProfessor);
 
                 _professorPrefab.GetComponent<ProfessorPrefab>().professorName.text =
-                    m_NowPlayerProfessor.ArtProfessor[i].m_ProfessorNameValue;
+                    Professor.Instance.ArtProfessor[i].m_ProfessorName;
 
-                if (m_NowPlayerProfessor.ArtProfessor[i].m_ProfessorSet == "전임")
+                if (Professor.Instance.ArtProfessor[i].m_ProfessorSet == "전임")
                 {
                     _professorPrefab.GetComponent<ProfessorPrefab>().professorPosition.sprite = m_FullTimeProfessor;
                 }
@@ -936,16 +868,18 @@ public class SelectClass : MonoBehaviour
                 }
 
                 _professorPrefab.GetComponent<ProfessorPrefab>().CurrentHealth.text =
-                    m_NowPlayerProfessor.ArtProfessor[i].m_ProfessorHealth.ToString();
+                    Professor.Instance.ArtProfessor[i].m_ProfessorHealth.ToString();
                 _professorPrefab.GetComponent<ProfessorPrefab>().CurrentPassion.text =
-                    m_NowPlayerProfessor.ArtProfessor[i].m_ProfessorPassion.ToString();
+                    Professor.Instance.ArtProfessor[i].m_ProfessorPassion.ToString();
 
                 _professorPrefab.GetComponent<ProfessorPrefab>().ProfessorSkillName.text =
-                    m_NowPlayerProfessor.ArtProfessor[i].m_ProfessorSkills[0];
+                    Professor.Instance.ArtProfessor[i].m_ProfessorSkills[0];
                 _professorPrefab.GetComponent<ProfessorPrefab>().ProfessorSkillInfo.text =
-                    m_NowPlayerProfessor.ArtProfessor[i].m_ProfessorSkills[1];
+                    Professor.Instance.ArtProfessor[i].m_ProfessorSkills[1];
                 _professorPrefab.GetComponent<ProfessorPrefab>().ProfessorProfileImg.sprite =
-                    m_NowPlayerProfessor.ArtProfessor[i].m_TeacherProfileImg;
+                    Professor.Instance.ArtProfessor[i].m_TeacherProfileImg;
+                _professorPrefab.GetComponent<ProfessorPrefab>().professorLevelText.text =
+                "Lv. " + Professor.Instance.ArtProfessor[i].m_ProfessorPower.ToString();
             }
         }
         else if (m_GameDesignerData[m_WeekProfessorIndex].m_SelectClassDataSave != null &&
@@ -958,17 +892,18 @@ public class SelectClass : MonoBehaviour
         else if (m_GameDesignerData[m_WeekProfessorIndex].m_SelectClassDataSave != null &&
                  m_ArtData[m_WeekProfessorIndex].m_SelectClassDataSave != null)
         {
-            for (int i = 0; i < m_NowPlayerProfessor.ProgrammingProfessor.Count; i++)
+            for (int i = 0; i < Professor.Instance.ProgrammingProfessor.Count; i++)
             {
                 GameObject _professorPrefab = Instantiate(m_ProfessorPrefab, m_SetClassPanel.ProfessorPrefabParent);
+                _professorPrefab.GetComponent<Button>().onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
 
-                _professorPrefab.name = m_NowPlayerProfessor.ProgrammingProfessor[i].m_ProfessorNameValue;
+                _professorPrefab.name = Professor.Instance.ProgrammingProfessor[i].m_ProfessorName;
                 _professorPrefab.GetComponent<Button>().onClick.AddListener(ClickProfessor);
 
                 _professorPrefab.GetComponent<ProfessorPrefab>().professorName.text =
-                    m_NowPlayerProfessor.ProgrammingProfessor[i].m_ProfessorNameValue;
+                    Professor.Instance.ProgrammingProfessor[i].m_ProfessorName;
 
-                if (m_NowPlayerProfessor.ProgrammingProfessor[i].m_ProfessorSet == "전임")
+                if (Professor.Instance.ProgrammingProfessor[i].m_ProfessorSet == "전임")
                 {
                     _professorPrefab.GetComponent<ProfessorPrefab>().professorPosition.sprite = m_FullTimeProfessor;
                 }
@@ -978,16 +913,18 @@ public class SelectClass : MonoBehaviour
                 }
 
                 _professorPrefab.GetComponent<ProfessorPrefab>().CurrentHealth.text =
-                    m_NowPlayerProfessor.ProgrammingProfessor[i].m_ProfessorHealth.ToString();
+                    Professor.Instance.ProgrammingProfessor[i].m_ProfessorHealth.ToString();
                 _professorPrefab.GetComponent<ProfessorPrefab>().CurrentPassion.text =
-                    m_NowPlayerProfessor.ProgrammingProfessor[i].m_ProfessorPassion.ToString();
+                    Professor.Instance.ProgrammingProfessor[i].m_ProfessorPassion.ToString();
 
                 _professorPrefab.GetComponent<ProfessorPrefab>().ProfessorSkillName.text =
-                    m_NowPlayerProfessor.ProgrammingProfessor[i].m_ProfessorSkills[0];
+                    Professor.Instance.ProgrammingProfessor[i].m_ProfessorSkills[0];
                 _professorPrefab.GetComponent<ProfessorPrefab>().ProfessorSkillInfo.text =
-                    m_NowPlayerProfessor.ProgrammingProfessor[i].m_ProfessorSkills[1];
+                    Professor.Instance.ProgrammingProfessor[i].m_ProfessorSkills[1];
                 _professorPrefab.GetComponent<ProfessorPrefab>().ProfessorProfileImg.sprite =
-                    m_NowPlayerProfessor.ProgrammingProfessor[i].m_TeacherProfileImg;
+                    Professor.Instance.ProgrammingProfessor[i].m_TeacherProfileImg;
+                _professorPrefab.GetComponent<ProfessorPrefab>().professorLevelText.text =
+                "Lv. " + Professor.Instance.ProgrammingProfessor[i].m_ProfessorPower.ToString();
             }
         }
     }
@@ -998,24 +935,23 @@ public class SelectClass : MonoBehaviour
         InitStatArr();
 
         m_SetClassPanel.SetBackButtonActive(false);
-        //if (m_ClassStack <= 1)
-        //{
-        //}
 
         m_SetClassPanel.SetClassName(_tempList[_index].m_SelectClassDataSave.m_ClassName);
-        m_SetClassPanel.SetProfessorInfo(_tempList[_index].m_SelectProfessorDataSave.m_ProfessorNameValue,
+        m_SetClassPanel.SetProfessorInfo(_tempList[_index].m_SelectProfessorDataSave.m_ProfessorName,
             _tempList[_index].m_SelectProfessorDataSave.m_TeacherProfileImg);
 
         int _tempindex = SelectedClassDataStatIndex(_tempList, _index);
+        float _increase = SetIncreaseClassFeeOrStat(PlayerInfo.Instance.CurrentRank, true);
+        float _magnification = Professor.Instance.m_StatMagnification[_tempList[_index].m_SelectProfessorDataSave.m_ProfessorPower];
+        double _increaseStat = Math.Round(_increase * _magnification);
 
         for (int j = 0; j < _tempindex;)
         {
             if (_tempList[_index].m_SelectClassDataSave.m_Insight > 0 ||
                 _tempList[_index].m_SelectClassDataSave.m_Insight < 0)
             {
-                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Insight +
-                               (int)m_NowPlayerProfessor.m_StatMagnification[
-                                   _tempList[_index].m_SelectProfessorDataSave.professorPower];
+
+                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Insight * (int)_increaseStat;
                 m_StatName[j] = "통찰";
                 j++;
             }
@@ -1023,9 +959,9 @@ public class SelectClass : MonoBehaviour
             if (_tempList[_index].m_SelectClassDataSave.m_Concentration > 0 ||
                 _tempList[_index].m_SelectClassDataSave.m_Concentration < 0)
             {
-                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Concentration +
-                               (int)m_NowPlayerProfessor.m_StatMagnification[
-                                   _tempList[_index].m_SelectProfessorDataSave.professorPower];
+                double _concentration = Math.Round(_increase * _magnification);
+
+                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Concentration * (int)_increaseStat;
                 m_StatName[j] = "집중";
                 j++;
             }
@@ -1033,9 +969,9 @@ public class SelectClass : MonoBehaviour
             if (_tempList[_index].m_SelectClassDataSave.m_Sense > 0 ||
                 _tempList[_index].m_SelectClassDataSave.m_Sense < 0)
             {
-                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Sense +
-                               (int)m_NowPlayerProfessor.m_StatMagnification[
-                                   _tempList[_index].m_SelectProfessorDataSave.professorPower];
+                double _sense = Math.Round(_increase * _magnification);
+
+                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Sense * (int)_increaseStat;
                 m_StatName[j] = "감각";
                 j++;
             }
@@ -1043,18 +979,18 @@ public class SelectClass : MonoBehaviour
             if (_tempList[_index].m_SelectClassDataSave.m_Technique > 0 ||
                 _tempList[_index].m_SelectClassDataSave.m_Technique < 0)
             {
-                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Technique +
-                               (int)m_NowPlayerProfessor.m_StatMagnification[
-                                   _tempList[_index].m_SelectProfessorDataSave.professorPower];
+                double _technique = Math.Round(_increase * _magnification);
+
+                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Technique * (int)_increaseStat;
                 m_StatName[j] = "기술";
                 j++;
             }
 
             if (_tempList[_index].m_SelectClassDataSave.m_Wit > 0 || _tempList[_index].m_SelectClassDataSave.m_Wit < 0)
             {
-                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Wit +
-                               (int)m_NowPlayerProfessor.m_StatMagnification[
-                                   _tempList[_index].m_SelectProfessorDataSave.professorPower];
+                double _wit = Math.Round(_increase * _magnification);
+
+                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Wit * (int)_increaseStat;
                 m_StatName[j] = "재치";
                 j++;
             }
@@ -1093,7 +1029,6 @@ public class SelectClass : MonoBehaviour
             }
         }
 
-        m_SetClassPanel.SetClassMoney(Color.white, _tempList[_index].m_SelectClassDataSave.m_Money.ToString());
         m_SetClassPanel.SetClassUseHealth(_tempList[_index].m_SelectClassDataSave.m_Health.ToString());
     }
 
@@ -1102,20 +1037,20 @@ public class SelectClass : MonoBehaviour
     {
         // CompleteClassPrefab의 수업 이름과 교수 이름 변경 부분.
         _obj.GetComponent<CompleteClassPrefab>().ClassName.text = _tempList[_index].m_SelectClassDataSave.m_ClassName;
-        _obj.GetComponent<CompleteClassPrefab>().ProfessorName.text =
-            _tempList[_index].m_SelectProfessorDataSave.m_ProfessorNameValue;
-        _obj.GetComponent<CompleteClassPrefab>().ProfessorImage.sprite =
-            _tempList[_index].m_SelectProfessorDataSave.m_TeacherProfileImg;
+        _obj.GetComponent<CompleteClassPrefab>().ProfessorName.text = _tempList[_index].m_SelectProfessorDataSave.m_ProfessorName;
+        _obj.GetComponent<CompleteClassPrefab>().ProfessorImage.sprite = _tempList[_index].m_SelectProfessorDataSave.m_TeacherProfileImg;
 
         int _tempindex = SelectedClassDataStatIndex(_tempList, _index);
+        float _increase = SetIncreaseClassFeeOrStat(PlayerInfo.Instance.CurrentRank, true);
+        float _magnification = Professor.Instance.m_StatMagnification[_tempList[_index].m_SelectProfessorDataSave.m_ProfessorPower];
+
         for (int j = 0; j < _tempindex;)
         {
             if (_tempList[_index].m_SelectClassDataSave.m_Insight > 0 ||
                 _tempList[_index].m_SelectClassDataSave.m_Insight < 0)
             {
-                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Insight +
-                               (int)m_NowPlayerProfessor.m_StatMagnification[
-                                   _tempList[_index].m_SelectProfessorDataSave.professorPower];
+                double _insight = Math.Round(_increase * _tempList[_index].m_SelectClassDataSave.m_Insight * _magnification);
+                m_StatNum[j] = (int)_insight;
                 m_StatName[j] = "통찰";
                 j++;
             }
@@ -1123,9 +1058,8 @@ public class SelectClass : MonoBehaviour
             if (_tempList[_index].m_SelectClassDataSave.m_Concentration > 0 ||
                 _tempList[_index].m_SelectClassDataSave.m_Concentration < 0)
             {
-                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Concentration +
-                               (int)m_NowPlayerProfessor.m_StatMagnification[
-                                   _tempList[_index].m_SelectProfessorDataSave.professorPower];
+                double _concentration = Math.Round(_increase * _tempList[_index].m_SelectClassDataSave.m_Concentration * _magnification);
+                m_StatNum[j] = (int)_concentration;
                 m_StatName[j] = "집중";
                 j++;
             }
@@ -1133,9 +1067,8 @@ public class SelectClass : MonoBehaviour
             if (_tempList[_index].m_SelectClassDataSave.m_Sense > 0 ||
                 _tempList[_index].m_SelectClassDataSave.m_Sense < 0)
             {
-                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Sense +
-                               (int)m_NowPlayerProfessor.m_StatMagnification[
-                                   _tempList[_index].m_SelectProfessorDataSave.professorPower];
+                double _sense = Math.Round(_increase * _tempList[_index].m_SelectClassDataSave.m_Sense * _magnification);
+                m_StatNum[j] = (int)_sense;
                 m_StatName[j] = "감각";
                 j++;
             }
@@ -1143,18 +1076,16 @@ public class SelectClass : MonoBehaviour
             if (_tempList[_index].m_SelectClassDataSave.m_Technique > 0 ||
                 _tempList[_index].m_SelectClassDataSave.m_Technique < 0)
             {
-                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Technique +
-                               (int)m_NowPlayerProfessor.m_StatMagnification[
-                                   _tempList[_index].m_SelectProfessorDataSave.professorPower];
+                double _technique = Math.Round(_increase * _tempList[_index].m_SelectClassDataSave.m_Technique * _magnification);
+                m_StatNum[j] = (int)_technique;
                 m_StatName[j] = "기술";
                 j++;
             }
 
             if (_tempList[_index].m_SelectClassDataSave.m_Wit > 0 || _tempList[_index].m_SelectClassDataSave.m_Wit < 0)
             {
-                m_StatNum[j] = _tempList[_index].m_SelectClassDataSave.m_Wit +
-                               (int)m_NowPlayerProfessor.m_StatMagnification[
-                                   _tempList[_index].m_SelectProfessorDataSave.professorPower];
+                double _wit = Math.Round(_increase * _tempList[_index].m_SelectClassDataSave.m_Wit * _magnification);
+                m_StatNum[j] = (int)_wit;
                 m_StatName[j] = "재치";
                 j++;
             }
@@ -1172,12 +1103,8 @@ public class SelectClass : MonoBehaviour
 
         SetComplelteClassStats(StatCount, _obj);
 
-        _obj.GetComponent<CompleteClassPrefab>().MoneyText.text =
-            _tempList[_index].m_SelectClassDataSave.m_Money.ToString();
-        _obj.GetComponent<CompleteClassPrefab>().HealthText.text =
-            _tempList[_index].m_SelectClassDataSave.m_Health.ToString();
-        //_obj.transform.GetChild(6).GetChild(0).GetComponent<TextMeshProUGUI>().text = _tempList[_index].m_SelectClassDataSave.m_Money.ToString();
-        //_obj.transform.GetChild(7).GetChild(0).GetComponent<TextMeshProUGUI>().text = _tempList[_index].m_SelectClassDataSave.m_Health.ToString();
+        _obj.GetComponent<CompleteClassPrefab>().MoneyText.text = string.Format("{0:#,0}", _tempList[_index].m_SelectClassDataSave.m_Money);
+        _obj.GetComponent<CompleteClassPrefab>().HealthText.text = _tempList[_index].m_SelectClassDataSave.m_Health.ToString();
     }
 
     private int SelectedClassDataStatIndex(List<SaveSelectClassInfoData> _tempList, int _listIndex)
@@ -1205,38 +1132,6 @@ public class SelectClass : MonoBehaviour
         }
 
         if (_tempList[_listIndex].m_SelectClassDataSave.m_Wit != 0)
-        {
-            _index++;
-        }
-
-        return _index;
-    }
-
-    private int AllInfoDataStatIndex(SaveSelectClassInfoData _saveData)
-    {
-        int _index = 0;
-
-        if (_saveData.m_SelectClassDataSave.m_Insight != 0)
-        {
-            _index++;
-        }
-
-        if (_saveData.m_SelectClassDataSave.m_Concentration != 0)
-        {
-            _index++;
-        }
-
-        if (_saveData.m_SelectClassDataSave.m_Sense != 0)
-        {
-            _index++;
-        }
-
-        if (_saveData.m_SelectClassDataSave.m_Technique != 0)
-        {
-            _index++;
-        }
-
-        if (_saveData.m_SelectClassDataSave.m_Wit != 0)
         {
             _index++;
         }
@@ -1276,34 +1171,66 @@ public class SelectClass : MonoBehaviour
         return _index;
     }
 
+    private int UnSelectedClickClassDataStatIndex(Class _tempList)
+    {
+        int _index = 0;
+
+        if (_tempList.m_Insight != 0)
+        {
+            _index++;
+        }
+
+        if (_tempList.m_Concentration != 0)
+        {
+            _index++;
+        }
+
+        if (_tempList.m_Sense != 0)
+        {
+            _index++;
+        }
+
+        if (_tempList.m_Technique != 0)
+        {
+            _index++;
+        }
+
+        if (_tempList.m_Wit != 0)
+        {
+            _index++;
+        }
+
+        return _index;
+    }
+
     // 1주는 0, 2주는 1 이고 기획반은 1, 아트반은 2, 플밍반은 3이다.
     private void MakeTotalInfo(List<SaveSelectClassInfoData> _tempList, int _partIndex)
     {
         string _1WeekClassName = _tempList[0].m_SelectClassDataSave.m_ClassName;
         string _2WeekClassName = _tempList[1].m_SelectClassDataSave.m_ClassName;
-        string _1WeekClassMoney = _tempList[0].m_SelectClassDataSave.m_Money.ToString();
-        string _2WeekClassMoney = _tempList[1].m_SelectClassDataSave.m_Money.ToString();
+        string _1WeekClassMoney = string.Format("{0:#,0}", _tempList[0].m_SelectClassDataSave.m_Money);
+        string _2WeekClassMoney = string.Format("{0:#,0}", _tempList[1].m_SelectClassDataSave.m_Money);
 
         switch (_partIndex)
         {
             case 1:
             {
-                m_CheckClassPanel.SetGMData(_1WeekClassName, _2WeekClassName, _1WeekClassMoney, _2WeekClassMoney);
+                m_CheckClassPanel.SetGameDesignerData(_1WeekClassName, _2WeekClassName, _1WeekClassMoney, _2WeekClassMoney);
             }
-                break;
+            break;
 
             case 2:
             {
                 m_CheckClassPanel.SetArtData(_1WeekClassName, _2WeekClassName, _1WeekClassMoney, _2WeekClassMoney);
             }
-                break;
+            break;
 
             case 3:
             {
                 m_CheckClassPanel.SetProgrammingData(_1WeekClassName, _2WeekClassName, _1WeekClassMoney,
                     _2WeekClassMoney);
             }
-                break;
+            break;
         }
     }
 
@@ -1355,7 +1282,7 @@ public class SelectClass : MonoBehaviour
 
         m_ModifyProfessorString = _parentObj.GetComponent<CompleteClassPrefab>().ProfessorName.text;
 
-        m_SelectProfessor.professorData.TryGetValue(m_ModifyProfessorString, out _tempProfessor);
+        Professor.Instance.SelectProfessor.professorData.TryGetValue(m_ModifyProfessorString, out _tempProfessor);
 
         if (m_SaveData.m_SelectClassDataSave == null || m_SaveData.m_SelectClassDataSave != _tempData)
         {
@@ -1404,6 +1331,7 @@ public class SelectClass : MonoBehaviour
             if (_isOpenyearTrue && _isOpenMonthTrue)
             {
                 GameObject _classPrefab = GameObject.Instantiate(m_ClassPrefab, m_SetClassPanel.ClassPrefabParent);
+                _classPrefab.GetComponent<Button>().onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
 
                 _classPrefab.name = _nowClass[i].m_ClassName;
                 _classPrefab.GetComponent<Button>().onClick.AddListener(ClickClass);
@@ -1427,28 +1355,28 @@ public class SelectClass : MonoBehaviour
                     case "기획":
                     {
                         m_SetClassPanel.SetPartImage(m_ClassPanelPartImage[(int)StudentType.GameDesigner]);
-                        _classPrefab.GetComponent<ClassPrefab>().PartImage.sprite = m_ClassPartImage[(int)PartName.GM];
+                        _classPrefab.GetComponent<ClassPrefab>().PartImage.sprite = m_ClassPartImage[(int)PartName.GameDesigner];
                     }
-                        break;
+                    break;
 
                     case "아트":
                     {
                         m_SetClassPanel.SetPartImage(m_ClassPanelPartImage[(int)StudentType.Art]);
                         _classPrefab.GetComponent<ClassPrefab>().PartImage.sprite = m_ClassPartImage[(int)PartName.Art];
                     }
-                        break;
+                    break;
 
                     case "플밍":
                     {
                         m_SetClassPanel.SetPartImage(m_ClassPanelPartImage[(int)StudentType.Programming]);
-                        _classPrefab.GetComponent<ClassPrefab>().PartImage.sprite = m_ClassPartImage[(int)PartName.GM];
+                        _classPrefab.GetComponent<ClassPrefab>().PartImage.sprite = m_ClassPartImage[(int)PartName.GameDesigner];
                     }
-                        break;
+                    break;
                 }
 
                 _classPrefab.GetComponent<ClassPrefab>().ClassName.text = _nowClass[i].m_ClassName;
 
-                _classPrefab.GetComponent<ClassPrefab>().MoneyText.text = _nowClass[i].m_Money.ToString();
+                _classPrefab.GetComponent<ClassPrefab>().MoneyText.text = string.Format("{0:#,0}", _nowClass[i].m_Money);
                 _classPrefab.GetComponent<ClassPrefab>().HealthText.text = _nowClass[i].m_Health.ToString();
             }
         }
@@ -1456,11 +1384,12 @@ public class SelectClass : MonoBehaviour
         for (int i = 0; i < _nowProfessor.Count; i++)
         {
             GameObject _professorPrefab = Instantiate(m_ProfessorPrefab, m_SetClassPanel.ProfessorPrefabParent);
+            _professorPrefab.GetComponent<Button>().onClick.AddListener(ClickEventManager.Instance.Sound.PlayIconTouch);
 
-            _professorPrefab.name = _nowProfessor[i].m_ProfessorNameValue;
+            _professorPrefab.name = _nowProfessor[i].m_ProfessorName;
             _professorPrefab.GetComponent<Button>().onClick.AddListener(ClickProfessor);
 
-            _professorPrefab.GetComponent<ProfessorPrefab>().professorName.text = _nowProfessor[i].m_ProfessorNameValue;
+            _professorPrefab.GetComponent<ProfessorPrefab>().professorName.text = _nowProfessor[i].m_ProfessorName;
 
             if (_nowProfessor[i].m_ProfessorSet == "전임")
             {
@@ -1482,6 +1411,8 @@ public class SelectClass : MonoBehaviour
                 _nowProfessor[i].m_ProfessorSkills[1];
             _professorPrefab.GetComponent<ProfessorPrefab>().ProfessorProfileImg.sprite =
                 _nowProfessor[i].m_TeacherProfileImg;
+            _professorPrefab.GetComponent<ProfessorPrefab>().professorLevelText.text =
+                "Lv. " + Professor.Instance.GameManagerProfessor[i].m_ProfessorPower.ToString();
 
             switch (_partName)
             {
@@ -1489,19 +1420,19 @@ public class SelectClass : MonoBehaviour
                 {
                     m_SetClassPanel.SetPartImage(m_ClassPanelPartImage[(int)StudentType.GameDesigner]);
                 }
-                    break;
+                break;
 
                 case "아트":
                 {
                     m_SetClassPanel.SetPartImage(m_ClassPanelPartImage[(int)StudentType.Art]);
                 }
-                    break;
+                break;
 
                 case "플밍":
                 {
                     m_SetClassPanel.SetPartImage(m_ClassPanelPartImage[(int)StudentType.Programming]);
                 }
-                    break;
+                break;
             }
 
             //if (_nowProfessor[i].m_ProfessorSkills != null)
@@ -1539,32 +1470,32 @@ public class SelectClass : MonoBehaviour
     {
         if (_tempClass.m_ClassType == StudentType.Art)
         {
-            SetToSeletPanel(m_NowClass.ArtClass, m_NowPlayerProfessor.ArtProfessor, "아트", m_ArtData);
+            SetToSeletPanel(m_NowClass.ArtClass, Professor.Instance.ArtProfessor, "아트", m_ArtData);
         }
         else if (_tempClass.m_ClassType == StudentType.GameDesigner)
         {
-            SetToSeletPanel(m_NowClass.GameDesignerClass, m_NowPlayerProfessor.GameManagerProfessor, "기획",
+            SetToSeletPanel(m_NowClass.GameDesignerClass, Professor.Instance.GameManagerProfessor, "기획",
                 m_GameDesignerData);
         }
         else if (_tempClass.m_ClassType == StudentType.Programming)
         {
-            SetToSeletPanel(m_NowClass.ProgrammingClass, m_NowPlayerProfessor.ProgrammingProfessor, "플밍",
+            SetToSeletPanel(m_NowClass.ProgrammingClass, Professor.Instance.ProgrammingProfessor, "플밍",
                 m_ProgrammingData);
         }
         else if (_tempClass.m_ClassType == StudentType.None)
         {
             if (_tempProfessor.m_ProfessorType == StudentType.GameDesigner)
             {
-                SetToSeletPanel(m_NowClass.GameDesignerClass, m_NowPlayerProfessor.GameManagerProfessor, "기획",
+                SetToSeletPanel(m_NowClass.GameDesignerClass, Professor.Instance.GameManagerProfessor, "기획",
                     m_GameDesignerData);
             }
             else if (_tempProfessor.m_ProfessorType == StudentType.Art)
             {
-                SetToSeletPanel(m_NowClass.ArtClass, m_NowPlayerProfessor.ArtProfessor, "아트", m_ArtData);
+                SetToSeletPanel(m_NowClass.ArtClass, Professor.Instance.ArtProfessor, "아트", m_ArtData);
             }
             else if (_tempProfessor.m_ProfessorType == StudentType.Programming)
             {
-                SetToSeletPanel(m_NowClass.ProgrammingClass, m_NowPlayerProfessor.ProgrammingProfessor, "플밍",
+                SetToSeletPanel(m_NowClass.ProgrammingClass, Professor.Instance.ProgrammingProfessor, "플밍",
                     m_ProgrammingData);
             }
         }
@@ -1621,7 +1552,7 @@ public class SelectClass : MonoBehaviour
             m_SetClassPanel.PopOffSelectClassPanel();
             m_CheckClassPanel.PopUpCheckClassPanel();
 
-            m_CheckClassPanel.SetTotalMoney(CalculateTotalMoneyCheckPanel().ToString());
+            m_CheckClassPanel.SetTotalMoney(string.Format("{0:#,0}", CalculateTotalMoneyCheckPanel()));
 
             m_CheckClassPanel._1WeekButton.onClick.AddListener(MakeCheckClass);
             m_CheckClassPanel._2WeekButton.onClick.AddListener(MakeCheckClass);
@@ -1634,7 +1565,10 @@ public class SelectClass : MonoBehaviour
     {
         GameObject _currentButton = EventSystem.current.currentSelectedGameObject;
 
-        m_CheckClassPanel.SetCurrentMoney(m_CurrentMoney.ToString());
+        _currentMoney = m_InGameUICurrentMoney.text.Replace(",", "");
+        m_CurrentMoney = int.Parse(_currentMoney);
+
+        m_CheckClassPanel.SetCurrentMoney(string.Format("{0:#,0}", m_CurrentMoney));
 
         if (_currentButton.name != "2WeekButton")
         {
@@ -1678,7 +1612,7 @@ public class SelectClass : MonoBehaviour
                         MakeTotalInfo(m_GameDesignerData, 1);
                     }
                 }
-                    break;
+                break;
 
                 case 1:
                 {
@@ -1693,7 +1627,7 @@ public class SelectClass : MonoBehaviour
                         MakeTotalInfo(m_ArtData, 2);
                     }
                 }
-                    break;
+                break;
 
                 case 2:
                 {
@@ -1708,7 +1642,7 @@ public class SelectClass : MonoBehaviour
                         MakeTotalInfo(m_ProgrammingData, 3);
                     }
                 }
-                    break;
+                break;
             }
         }
     }
@@ -1716,10 +1650,18 @@ public class SelectClass : MonoBehaviour
     public void ClickCompleteButton()
     {
         // 순서대로 보유재화부족과 강사의 체력 부족, 내가 선택한 총 수업료가 보유 재화를 넘어갔을 때 뜨는 경고이다.
-        if (m_SetClassPanel.MoneyWarningMessage.activeSelf == false &&
-            m_SetClassPanel.HealthWarningMessage.activeSelf == false &&
-            m_SetClassPanel.CurrentMoneyWarningMessage.activeSelf == false)
+        if (m_IsHealthOK == true && m_IsMoneyOK == true)
         {
+            _currentMoney = m_SetClassPanel.m_TotalMoney.text.Replace(",", "");
+
+            int _totalMoney = int.Parse(_currentMoney);
+
+            if (_totalMoney > m_CurrentMoney)
+            {
+                m_SetClassPanel.SetWarningText("재화가 부족합니다.");
+                return;
+            }
+
             if (m_SaveData.m_SelectClassDataSave != null && m_SaveData.m_SelectProfessorDataSave != null)
             {
                 if (m_SaveData.m_SelectClassDataSave.m_ClassType == StudentType.Art)
@@ -1741,22 +1683,23 @@ public class SelectClass : MonoBehaviour
                     m_ProgrammingData.RemoveAt(2);
 
                     // 모든 학과의 수업을 선택했으면 내가 선택한 정보들을 한번에 띄워 줄 UI를 띄워야한다.
-                    if (m_ArtData[1].m_SelectClassDataSave != null && m_ProgrammingData[1].m_SelectClassDataSave != null
-                                                                   && m_GameDesignerData[1].m_SelectClassDataSave !=
-                                                                   null)
+                    if (m_ArtData[1].m_SelectClassDataSave != null
+                        && m_ProgrammingData[1].m_SelectClassDataSave != null
+                        && m_GameDesignerData[1].m_SelectClassDataSave != null)
                     {
+
                         m_SetClassPanel.SetBackButtonActive(false);
 
                         m_CheckClassPanel.PopUpCheckClassPanel();
                         m_SetClassPanel.PopOffSelectClassPanel();
 
-                        m_CheckClassPanel.SetTotalMoney(CalculateTotalMoneyCheckPanel().ToString());
+                        m_CheckClassPanel.SetTotalMoney(string.Format("{0:#,0}", CalculateTotalMoneyCheckPanel()));
 
                         m_CheckClassPanel._1WeekButton.onClick.AddListener(MakeCheckClass);
                         m_CheckClassPanel._2WeekButton.onClick.AddListener(MakeCheckClass);
 
 
-                        if (PlayerInfo.Instance.IsFirstClassSetting && m_TutorialCount == 11)
+                        if (PlayerInfo.Instance.IsFirstClassSetting && m_TutorialCount == 12)
                         {
                             m_Unmask.gameObject.SetActive(true);
                             m_Unmask.fitTarget =
@@ -1794,20 +1737,19 @@ public class SelectClass : MonoBehaviour
                         m_ProgrammingData.RemoveAt(2);
 
                         // 모든 학과의 수업을 선택했으면 내가 선택한 정보들을 한번에 띄워 줄 UI를 띄워야한다.
-                        if (m_ArtData[1].m_SelectClassDataSave != null && m_ProgrammingData[1].m_SelectClassDataSave !=
-                                                                       null
-                                                                       && m_GameDesignerData[1].m_SelectClassDataSave !=
-                                                                       null)
+                        if (m_ArtData[1].m_SelectClassDataSave != null
+                            && m_ProgrammingData[1].m_SelectClassDataSave != null
+                            && m_GameDesignerData[1].m_SelectClassDataSave != null)
                         {
                             m_CheckClassPanel.PopUpCheckClassPanel();
                             m_SetClassPanel.PopOffSelectClassPanel();
 
-                            m_CheckClassPanel.SetTotalMoney(CalculateTotalMoneyCheckPanel().ToString());
+                            m_CheckClassPanel.SetTotalMoney(string.Format("{0:#,0}", CalculateTotalMoneyCheckPanel()));
 
                             m_CheckClassPanel._1WeekButton.onClick.AddListener(MakeCheckClass);
                             m_CheckClassPanel._2WeekButton.onClick.AddListener(MakeCheckClass);
 
-                            if (PlayerInfo.Instance.IsFirstClassSetting && m_TutorialCount == 11)
+                            if (PlayerInfo.Instance.IsFirstClassSetting && m_TutorialCount == 12)
                             {
                                 m_Unmask.gameObject.SetActive(true);
                                 m_Unmask.fitTarget =
@@ -1862,14 +1804,28 @@ public class SelectClass : MonoBehaviour
                 }
             }
         }
+        else if (m_IsMoneyOK == false)
+        {
+            m_SetClassPanel.SetWarningText("재화가 부족합니다.");
+        }
+        else if (m_IsHealthOK == false)
+        {
+            m_SetClassPanel.SetWarningText("체력이 부족합니다.");
+        }
+        else if (m_IsMoneyOK == false && m_IsHealthOK == false)
+        {
+            m_SetClassPanel.SetWarningText("재화와 체력이 부족합니다.");
+        }
 
-        if (PlayerInfo.Instance.IsFirstClassSetting && m_TutorialCount == 9)
+        if (PlayerInfo.Instance.IsFirstClassSetting && m_TutorialCount == 10)
         {
             m_Unmask.gameObject.SetActive(false);
             m_TutorialArrowImage.gameObject.SetActive(false);
             m_TutorialTextImage.gameObject.SetActive(true);
+            m_NextButton.gameObject.SetActive(true);
             m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-            m_TutorialTextImage.transform.position = new Vector3(2340f / 2f, 1080f / 2f, 0);
+            //m_TutorialTextImage.transform.position = new Vector3(2340f / 2f, 1080f / 2f, 0);
+            m_TutorialTextImage.transform.position = new Vector3(Screen.width / 2f, Screen.height / 2f, 0);
             m_ScriptCount++;
             m_TutorialCount++;
         }
@@ -1909,7 +1865,7 @@ public class SelectClass : MonoBehaviour
 
         // 총 수업료
         m_SetClassPanel.TotalMoney(Color.white, "0");
-        m_SetClassPanel.TotalHealth("0");
+        //m_SetClassPanel.TotalHealth("0");
         m_SaveData.m_SelectClassDataSave = null;
         m_SaveData.m_SelectProfessorDataSave = null;
         _ClickProfessorData = null;
@@ -1925,134 +1881,98 @@ public class SelectClass : MonoBehaviour
     private void FindStat(List<Class> _nowClass, int _index)
     {
         int _tempindex = UnSelectedClassDataStatIndex(_nowClass, _index);
+        float _increase = SetIncreaseClassFeeOrStat(PlayerInfo.Instance.CurrentRank, true);
 
         for (int j = 0; j < _tempindex;)
         {
             if (_nowClass[_index].m_Insight > 0 || _nowClass[_index].m_Insight < 0)
             {
-                m_StatNum[j] = _nowClass[_index].m_Insight;
+                double _insight = Math.Round(_nowClass[_index].m_Insight * _increase);
+                m_StatNum[j] = (int)_insight;
                 m_StatName[j] = "통찰";
                 j++;
             }
 
             if (_nowClass[_index].m_Concentration > 0 || _nowClass[_index].m_Concentration < 0)
             {
-                m_StatNum[j] = _nowClass[_index].m_Concentration;
+                double _concentration = Math.Round(_nowClass[_index].m_Concentration * _increase);
+                m_StatNum[j] = (int)_concentration;
+
                 m_StatName[j] = "집중";
                 j++;
             }
 
             if (_nowClass[_index].m_Sense > 0 || _nowClass[_index].m_Sense < 0)
             {
-                m_StatNum[j] = _nowClass[_index].m_Sense;
+                double _sense = Math.Round(_nowClass[_index].m_Sense * _increase);
+                m_StatNum[j] = (int)_sense;
                 m_StatName[j] = "감각";
                 j++;
             }
 
             if (_nowClass[_index].m_Technique > 0 || _nowClass[_index].m_Technique < 0)
             {
-                m_StatNum[j] = _nowClass[_index].m_Technique;
+                double _technique = Math.Round(_nowClass[_index].m_Technique * _increase);
+                m_StatNum[j] = (int)_technique;
                 m_StatName[j] = "기술";
                 j++;
             }
 
             if (_nowClass[_index].m_Wit > 0 || _nowClass[_index].m_Wit < 0)
             {
-                m_StatNum[j] = _nowClass[_index].m_Wit;
+                double _wit = Math.Round(_nowClass[_index].m_Wit * _increase);
+                m_StatNum[j] = (int)_wit;
                 m_StatName[j] = "재치";
                 j++;
             }
         }
     }
 
-    // 이미 수업을 선택한 상태에서 교수를 눌렀을 때 AllInfo에 교수의 능력치를 더한 스탯을 띄워주기 위한 함수.
-    private void FindStatAllInfo()
+    private void FindClickClassStat(Class _nowClass)
     {
-        int _tempindex = AllInfoDataStatIndex(m_SaveData);
+        int _tempindex = UnSelectedClickClassDataStatIndex(_nowClass);
+        float _increase = SetIncreaseClassFeeOrStat(PlayerInfo.Instance.CurrentRank, true);
 
         for (int j = 0; j < _tempindex;)
         {
-            if (m_SaveData.m_SelectClassDataSave.m_Insight > 0 || m_SaveData.m_SelectClassDataSave.m_Insight < 0)
+            if (_nowClass.m_Insight > 0 || _nowClass.m_Insight < 0)
             {
-                m_AllInfoStatNum[j] = m_SaveData.m_SelectClassDataSave.m_Insight;
-                m_AllInfoStatName[j] = "통찰";
+                double _insight = Math.Round(_nowClass.m_Insight * _increase);
+                m_StatNum[j] = (int)_insight;
+                m_StatName[j] = "통찰";
                 j++;
             }
 
-            if (m_SaveData.m_SelectClassDataSave.m_Concentration > 0 ||
-                m_SaveData.m_SelectClassDataSave.m_Concentration < 0)
+            if (_nowClass.m_Concentration > 0 || _nowClass.m_Concentration < 0)
             {
-                m_AllInfoStatNum[j] = m_SaveData.m_SelectClassDataSave.m_Concentration;
-                m_AllInfoStatName[j] = "집중";
+                double _concentration = Math.Round(_nowClass.m_Concentration * _increase);
+                m_StatNum[j] = (int)_concentration;
+                m_StatName[j] = "집중";
                 j++;
             }
 
-            if (m_SaveData.m_SelectClassDataSave.m_Sense > 0 || m_SaveData.m_SelectClassDataSave.m_Sense < 0)
+            if (_nowClass.m_Sense > 0 || _nowClass.m_Sense < 0)
             {
-                m_AllInfoStatNum[j] = m_SaveData.m_SelectClassDataSave.m_Sense;
-                m_AllInfoStatName[j] = "감각";
+                double _sense = Math.Round(_nowClass.m_Sense * _increase);
+                m_StatNum[j] = (int)_sense;
+                m_StatName[j] = "감각";
                 j++;
             }
 
-            if (m_SaveData.m_SelectClassDataSave.m_Technique > 0 || m_SaveData.m_SelectClassDataSave.m_Technique < 0)
+            if (_nowClass.m_Technique > 0 || _nowClass.m_Technique < 0)
             {
-                m_AllInfoStatNum[j] = m_SaveData.m_SelectClassDataSave.m_Technique;
-                m_AllInfoStatName[j] = "기술";
+                double _technique = Math.Round(_nowClass.m_Technique * _increase);
+                m_StatNum[j] = (int)_technique;
+                m_StatName[j] = "기술";
                 j++;
             }
 
-            if (m_SaveData.m_SelectClassDataSave.m_Wit > 0 || m_SaveData.m_SelectClassDataSave.m_Wit < 0)
+            if (_nowClass.m_Wit > 0 || _nowClass.m_Wit < 0)
             {
-                m_AllInfoStatNum[j] = m_SaveData.m_SelectClassDataSave.m_Wit;
-                m_AllInfoStatName[j] = "재치";
+                double _wit = Math.Round(_nowClass.m_Wit * _increase);
+                m_StatNum[j] = (int)_wit;
+                m_StatName[j] = "재치";
                 j++;
-            }
-        }
-    }
-
-    // 수업을 눌렀을 때 AllInfo에 선택한 수업의 스탯을 똑같이 띄워주기 위한 함수
-    private void SetStat(GameObject _classPrefab)
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            if (_classPrefab.GetComponent<ClassPrefab>().AllStat.activeSelf)
-            {
-                foreach (GameObject _stat in m_SetClassPanel.AllInfoPanelClassStat)
-                {
-                    _stat.SetActive(false);
-                }
-
-                m_SetClassPanel.SetStatsActive(true);
-                m_SetClassPanel.SetAllStatText(_classPrefab.GetComponent<ClassPrefab>().AllStatText.text);
-                return;
-            }
-
-            if (_classPrefab.GetComponent<ClassPrefab>().Stat[i].activeSelf)
-            {
-                m_SetClassPanel.SetStatsActive(false);
-
-                m_SetClassPanel.AllInfoPanelClassStat[i].SetActive(true);
-                m_SetClassPanel.AllInfoPanelClassStatImage[i].sprite =
-                    _classPrefab.GetComponent<ClassPrefab>().StatImage[i].sprite;
-
-                string _tempStat = _classPrefab.GetComponent<ClassPrefab>().StatText[i].text;
-
-                // 교수를 선택한 상황에서 수업을 선택하면 내가 선택한 수업의 스탯이랑 선택한 교수의 능력치를 더해서 결과를 AllInfo에 보여준다.
-                if (m_SaveData.m_SelectProfessorDataSave != null)
-                {
-                    //int _parshingStat = int.Parse(_tempStat) + m_SaveData.m_SelectProfessorDataSave.professorPower;
-                    int _parshingStat = int.Parse(_tempStat) * (int)magnification;
-
-                    m_SetClassPanel.AllInfoPanelClassStatText[i].text = _parshingStat.ToString();
-                }
-                else
-                {
-                    m_SetClassPanel.AllInfoPanelClassStatText[i].text = _tempStat;
-                }
-            }
-            else
-            {
-                m_SetClassPanel.AllInfoPanelClassStat[i].SetActive(false);
             }
         }
     }
@@ -2074,10 +1994,9 @@ public class SelectClass : MonoBehaviour
         {
             if (_Weekpanel.transform.GetChild(i + 1).gameObject.activeSelf == true)
             {
-                string _tempGMMoney = _Weekpanel.transform.GetChild(i + 1).GetChild(2).GetComponent<TextMeshProUGUI>()
-                    .text;
-
-                m_ClassMoney[i + _2WeekPanelIndex] = int.Parse(_tempGMMoney);
+                string _tempGameDesignerMoney = _Weekpanel.transform.GetChild(i + 1).GetChild(2).GetComponent<TextMeshProUGUI>().text;
+                _tempGameDesignerMoney = _tempGameDesignerMoney.Replace(",", "");
+                m_ClassMoney[i + _2WeekPanelIndex] = int.Parse(_tempGameDesignerMoney);
             }
         }
     }
@@ -2098,7 +2017,6 @@ public class SelectClass : MonoBehaviour
     private void InitAllInfoStat()
     {
         // 체력과 돈
-        m_SetClassPanel.SetClassMoney(Color.white, "");
         m_SetClassPanel.SetClassUseHealth("");
 
         // 수업이름
@@ -2128,17 +2046,26 @@ public class SelectClass : MonoBehaviour
     // 수업 클릭했을 때 클릭한 수업의 정보를 AllInfoPanel에 띄워주기 위한 함수
     private void ClickClass()
     {
-        #region _버튼을 클릭했을 때 하이라이트가 남아있게 하기
+        #region _버튼을 클릭했을 때 체크 스프라이트 켜주기
 
         if (_prevClass != null)
         {
-            Button _prevButton = _prevClass.GetComponent<Button>();
+            _prevClass.GetComponent<ClassPrefab>().CheckImage.SetActive(false);
 
-            ColorBlock _prevButtonColor = _prevButton.colors;
+            InitStatArr();
+            FindClickClassStat(_prevClickClassData);
 
-            _prevButtonColor = ColorBlock.defaultColorBlock;
+            int StatCount = 0;
 
-            _prevButton.colors = _prevButtonColor;
+            for (int j = 0; j < 5; j++)
+            {
+                if (m_StatNum[j] != 0 && m_StatName[j] != "")
+                {
+                    StatCount += 1;
+                }
+            }
+
+            SetClassStats(StatCount, _prevClass);
         }
 
         GameObject _currentObj = EventSystem.current.currentSelectedGameObject;
@@ -2149,107 +2076,91 @@ public class SelectClass : MonoBehaviour
         }
 
         _prevClass = _currentObj;
-
-        Button _currentButton = _currentObj.GetComponent<Button>();
-
-        ColorBlock _currentButtonColor = _currentButton.colors;
-
-        _currentButtonColor.normalColor = m_HighLightColor;
-        _currentButtonColor.highlightedColor = m_HighLightColor;
-        _currentButtonColor.pressedColor = m_HighLightColor;
-        _currentButtonColor.selectedColor = m_HighLightColor;
-
-        _currentButton.colors = _currentButtonColor;
-
+        _currentObj.GetComponent<ClassPrefab>().CheckImage.SetActive(true);
         #endregion
 
         m_SelectClass.classData.TryGetValue(_currentObj.name, out _ClickClassData);
 
-        int _compareMoney = int.Parse(m_InGameUICurrentMoney.text);
+        int _compareMoney = int.Parse(m_InGameUICurrentMoney.text.Replace(",", ""));
         int _compareHealth = _ClickClassData.m_Health;
 
         m_SetClassPanel.SetClassName(_ClickClassData.m_ClassName);
         m_SetClassPanel.SetClassUseHealth(_ClickClassData.m_Health.ToString());
 
+        float _increase = SetIncreaseClassFeeOrStat(PlayerInfo.Instance.CurrentRank, false);
+
+        double _money = Math.Round(_ClickClassData.m_Money * _increase);
+
         // 현재 내가 소지하고 있는 돈보다 수업료가 더 비싸면 경고 띄워주기
-        if (_compareMoney >= _ClickClassData.m_Money)
+        if (_compareMoney < _ClickClassData.m_Money)
         {
-            m_SetClassPanel.MoneyWarningMessage.SetActive(false);
-            m_SetClassPanel.SetClassMoney(Color.white, _ClickClassData.m_Money.ToString());
+
+            m_IsMoneyOK = false;
+            m_SetClassPanel.TotalMoney(Color.red, string.Format("{0:#,0}", _money));
         }
         else
         {
-            m_SetClassPanel.MoneyWarningMessage.SetActive(true);
-            m_SetClassPanel.SetClassMoney(Color.red, _ClickClassData.m_Money.ToString());
+            m_IsMoneyOK = true;
+            m_SetClassPanel.TotalMoney(Color.white, string.Format("{0:#,0}", _money));
         }
+
+        _prevClickClassData = _ClickClassData;
 
         if (_ClickProfessorData != null)
         {
-            if (_compareHealth <= _ClickProfessorData.m_ProfessorHealth)
+            if (_compareHealth > _ClickProfessorData.m_ProfessorHealth)
             {
-                m_SetClassPanel.HealthWarningMessage.SetActive(false);
-                m_SetClassPanel.SetProfessorHealth(Color.white);
+                m_IsHealthOK = false;
+                m_SetClassPanel.SetProfessorHealth(Color.red);
             }
             else
             {
-                m_SetClassPanel.HealthWarningMessage.SetActive(false);
-                m_SetClassPanel.SetProfessorHealth(Color.red);
+                m_IsHealthOK = true;
+                m_SetClassPanel.SetProfessorHealth(Color.white);
             }
 
-            // 내가 선택한 교수가 있다면 그 버튼을 선택한 상태로 만들어준다.
-            for (int i = 0; i < m_SetClassPanel.ProfessorPrefabParent.childCount; i++)
+            InitStatArr();
+            FindClickClassStat(_ClickClassData);
+            int StatCount = 0;
+
+            for (int j = 0; j < 5; j++)
             {
-                if (m_SetClassPanel.ProfessorPrefabParent.GetChild(i).name == _ClickProfessorData.m_ProfessorNameValue)
+                if (m_StatNum[j] != 0 && m_StatName[j] != "")
                 {
-                    ColorBlock _buttonColor =
-                        m_SetClassPanel.ProfessorPrefabParent.GetChild(i).GetComponent<Button>().colors;
-
-                    _buttonColor.normalColor = m_HighLightColor;
-                    _buttonColor.highlightedColor = m_HighLightColor;
-                    _buttonColor.pressedColor = m_HighLightColor;
-                    _buttonColor.selectedColor = m_HighLightColor;
-
-                    m_SetClassPanel.ProfessorPrefabParent.GetChild(i).GetComponent<Button>().colors = _buttonColor;
-
-                    break;
+                    StatCount += 1;
                 }
             }
-        }
 
-        // AllInfo 스탯부분 셋팅
-        SetStat(_currentObj);
+            SetClassStatsToProfessorPower(_ClickProfessorData, StatCount, _currentObj);
+        }
 
         if (m_SetClassPanel.WeekText.text == "1주차")
         {
             if (_ClickClassData.m_ClassType == StudentType.GameDesigner)
             {
-                m_SetClassPanel.Set1WeekGMPanel(true, _ClickClassData.m_ClassName, _ClickClassData.m_Money.ToString());
+                m_SetClassPanel.Set1WeekGameDesignerPanel(true, _ClickClassData.m_ClassName, string.Format("{0:#,0}", _ClickClassData.m_Money));
             }
             else if (_ClickClassData.m_ClassType == StudentType.Art)
             {
-                m_SetClassPanel.Set1WeekArtPanel(true, _ClickClassData.m_ClassName, _ClickClassData.m_Money.ToString());
+                m_SetClassPanel.Set1WeekArtPanel(true, _ClickClassData.m_ClassName, string.Format("{0:#,0}", _ClickClassData.m_Money));
             }
             else if (_ClickClassData.m_ClassType == StudentType.Programming)
             {
-                m_SetClassPanel.Set1WeekProgrammingPanel(true, _ClickClassData.m_ClassName,
-                    _ClickClassData.m_Money.ToString());
+                m_SetClassPanel.Set1WeekProgrammingPanel(true, _ClickClassData.m_ClassName, string.Format("{0:#,0}", _ClickClassData.m_Money));
             }
             else if (_ClickClassData.m_ClassType == StudentType.None)
             {
                 if (m_SetClassPanel.PartImage.sprite == m_ClassPanelPartImage[(int)StudentType.GameDesigner])
                 {
-                    m_SetClassPanel.Set1WeekGMPanel(true, _ClickClassData.m_ClassName,
-                        _ClickClassData.m_Money.ToString());
+                    m_SetClassPanel.Set1WeekGameDesignerPanel(true, _ClickClassData.m_ClassName, string.Format("{0:#,0}", _ClickClassData.m_Money));
                 }
                 else if (m_SetClassPanel.PartImage.sprite == m_ClassPanelPartImage[(int)StudentType.Art])
                 {
-                    m_SetClassPanel.Set1WeekArtPanel(true, _ClickClassData.m_ClassName,
-                        _ClickClassData.m_Money.ToString());
+                    m_SetClassPanel.Set1WeekArtPanel(true, _ClickClassData.m_ClassName, string.Format("{0:#,0}", _ClickClassData.m_Money));
                 }
                 else if (m_SetClassPanel.PartImage.sprite == m_ClassPanelPartImage[(int)StudentType.Programming])
                 {
-                    m_SetClassPanel.Set1WeekProgrammingPanel(true, _ClickClassData.m_ClassName,
-                        _ClickClassData.m_Money.ToString());
+                    m_SetClassPanel.Set1WeekProgrammingPanel(true, _ClickClassData.m_ClassName, string.Format("{0:#,0}", _ClickClassData.m_Money));
                 }
             }
 
@@ -2264,33 +2175,29 @@ public class SelectClass : MonoBehaviour
                 m_SetClassPanel._1WeekPanel.SetActive(false);
                 m_SetClassPanel._2WeekPanel.SetActive(true);
                 m_SetClassPanel.SetUpButton(true);
-                m_SetClassPanel.Set2WeekGMPanel(true, _ClickClassData.m_ClassName, _ClickClassData.m_Money.ToString());
+                m_SetClassPanel.Set2WeekGameDesignerPanel(true, _ClickClassData.m_ClassName, string.Format("{0:#,0}", _ClickClassData.m_Money));
             }
             else if (_ClickClassData.m_ClassType == StudentType.Art)
             {
-                m_SetClassPanel.Set2WeekArtPanel(true, _ClickClassData.m_ClassName, _ClickClassData.m_Money.ToString());
+                m_SetClassPanel.Set2WeekArtPanel(true, _ClickClassData.m_ClassName, string.Format("{0:#,0}", _ClickClassData.m_Money));
             }
             else if (_ClickClassData.m_ClassType == StudentType.Programming)
             {
-                m_SetClassPanel.Set2WeekProgrammingPanel(true, _ClickClassData.m_ClassName,
-                    _ClickClassData.m_Money.ToString());
+                m_SetClassPanel.Set2WeekProgrammingPanel(true, _ClickClassData.m_ClassName, string.Format("{0:#,0}", _ClickClassData.m_Money));
             }
             else if (_ClickClassData.m_ClassType == StudentType.None)
             {
                 if (m_SetClassPanel.PartImage.sprite == m_ClassPanelPartImage[(int)StudentType.GameDesigner])
                 {
-                    m_SetClassPanel.Set2WeekGMPanel(true, _ClickClassData.m_ClassName,
-                        _ClickClassData.m_Money.ToString());
+                    m_SetClassPanel.Set2WeekGameDesignerPanel(true, _ClickClassData.m_ClassName, string.Format("{0:#,0}", _ClickClassData.m_Money));
                 }
                 else if (m_SetClassPanel.PartImage.sprite == m_ClassPanelPartImage[(int)StudentType.Art])
                 {
-                    m_SetClassPanel.Set2WeekArtPanel(true, _ClickClassData.m_ClassName,
-                        _ClickClassData.m_Money.ToString());
+                    m_SetClassPanel.Set2WeekArtPanel(true, _ClickClassData.m_ClassName, string.Format("{0:#,0}", _ClickClassData.m_Money));
                 }
                 else if (m_SetClassPanel.PartImage.sprite == m_ClassPanelPartImage[(int)StudentType.Programming])
                 {
-                    m_SetClassPanel.Set2WeekProgrammingPanel(true, _ClickClassData.m_ClassName,
-                        _ClickClassData.m_Money.ToString());
+                    m_SetClassPanel.Set2WeekProgrammingPanel(true, _ClickClassData.m_ClassName, string.Format("{0:#,0}", _ClickClassData.m_Money));
                 }
             }
 
@@ -2309,29 +2216,28 @@ public class SelectClass : MonoBehaviour
             m_TotalHealth += m_ClassHealth[i];
         }
 
+        double increaseMoney = Math.Round(m_TotalMoney * _increase);
+        m_TotalMoney = (int)increaseMoney;
+
         if (m_TotalMoney > m_CurrentMoney)
         {
-            m_SetClassPanel.CurrentMoneyWarningMessage.SetActive(true);
-            m_SetClassPanel.TotalMoney(Color.red, m_TotalMoney.ToString());
-            // totalmoney 0, 0번 Text 빨갛게 만들어주기
+            m_SetClassPanel.TotalMoney(Color.red, string.Format("{0:#,0}", m_TotalMoney));
         }
         else
         {
-            m_SetClassPanel.CurrentMoneyWarningMessage.SetActive(false);
-            m_SetClassPanel.TotalMoney(Color.white, m_TotalMoney.ToString());
+            m_SetClassPanel.TotalMoney(Color.white, string.Format("{0:#,0}", m_TotalMoney));
         }
 
-        m_SetClassPanel.TotalHealth(m_TotalHealth.ToString());
-
-        if (PlayerInfo.Instance.IsFirstClassSetting && m_TutorialCount == 7)
+        if (PlayerInfo.Instance.IsFirstClassSetting && m_TutorialCount == 8)
         {
             m_SetClassPanel.ClassScrollView.vertical = true;
             m_Unmask.fitTarget = m_SetClassPanel.CompleteButton.gameObject.GetComponent<RectTransform>();
             m_SetClassPanel.CompleteButton.enabled = false;
             m_TutorialArrowImage.gameObject.SetActive(false);
             m_TutorialTextImage.gameObject.SetActive(true);
+            m_NextButton.gameObject.SetActive(true);
             m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-700, 200, 0);
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-700, 300, 0);
             m_ScriptCount++;
             m_TutorialCount++;
         }
@@ -2345,13 +2251,7 @@ public class SelectClass : MonoBehaviour
 
         if (_prevProfessor != null)
         {
-            Button _prevButton = _prevProfessor.GetComponent<Button>();
-
-            ColorBlock _prevButtonColor = _prevButton.colors;
-
-            _prevButtonColor = ColorBlock.defaultColorBlock;
-
-            _prevButton.colors = _prevButtonColor;
+            _prevProfessor.GetComponent<ProfessorPrefab>().CheckImage.SetActive(false);
         }
 
         GameObject _currentObj = EventSystem.current.currentSelectedGameObject;
@@ -2363,113 +2263,67 @@ public class SelectClass : MonoBehaviour
 
         _prevProfessor = _currentObj;
 
-        Button _currentButton = _currentObj.GetComponent<Button>();
-
-        ColorBlock _currentButtonColor = _currentButton.colors;
-
-        _currentButtonColor.normalColor = m_HighLightColor;
-        _currentButtonColor.highlightedColor = m_HighLightColor;
-        _currentButtonColor.pressedColor = m_HighLightColor;
-        _currentButtonColor.selectedColor = m_HighLightColor;
-
-        _currentButton.colors = _currentButtonColor;
+        _currentObj.GetComponent<ProfessorPrefab>().CheckImage.SetActive(true);
 
         #endregion
 
-        m_SelectProfessor.professorData.TryGetValue(_currentObj.name, out _ClickProfessorData);
+        Professor.Instance.SelectProfessor.professorData.TryGetValue(_currentObj.name, out _ClickProfessorData);
 
-        m_SetClassPanel.SetProfessorInfo(_ClickProfessorData.m_ProfessorNameValue,
-            _ClickProfessorData.m_TeacherProfileImg);
-
-        magnification = m_NowPlayerProfessor.m_StatMagnification[_ClickProfessorData.m_ProfessorPower];
+        m_SetClassPanel.SetProfessorInfo(_ClickProfessorData.m_ProfessorName, _ClickProfessorData.m_TeacherProfileImg);
 
         if (_ClickClassData != null)
         {
             int _compareHealth = _ClickClassData.m_Health;
 
-            if (_compareHealth <= _ClickProfessorData.m_ProfessorHealth)
+            if (_compareHealth > _ClickProfessorData.m_ProfessorHealth)
             {
-                m_SetClassPanel.HealthWarningMessage.SetActive(false);
-                m_SetClassPanel.SetProfessorHealth(Color.white);
+                m_IsHealthOK = false;
+                m_SetClassPanel.SetProfessorHealth(Color.red);
             }
             else
             {
-                m_SetClassPanel.HealthWarningMessage.SetActive(true);
-                m_SetClassPanel.SetProfessorHealth(Color.red);
+                m_IsHealthOK = true;
+                m_SetClassPanel.SetProfessorHealth(Color.white);
             }
 
             InitStatArr();
-
-            FindStatAllInfo();
+            FindClickClassStat(_ClickClassData);
 
             int StatCount = 0;
 
-            for (int i = 0; i < 5; i++)
+            for (int j = 0; j < 5; j++)
             {
-                if (m_AllInfoStatNum[i] != 0)
+                if (m_StatNum[j] != 0 && m_StatName[j] != "")
                 {
                     StatCount += 1;
                 }
             }
 
-            if (StatCount == 5)
-            {
-                foreach (GameObject _stat in m_SetClassPanel.AllInfoPanelClassStat)
-                {
-                    _stat.SetActive(false);
-                }
-
-                m_SetClassPanel.SetStatsActive(true);
-                m_SetClassPanel.SetAllStatText((m_StatNum[0]).ToString());
-            }
-            else
-            {
-                m_SetClassPanel.SetStatsActive(false);
-
-                for (int i = 0; i < StatCount; i++)
-                {
-                    m_SetClassPanel.AllInfoPanelClassStat[i].SetActive(true);
-                    m_SetClassPanel.AllInfoPanelClassStatText[i].text =
-                        (m_AllInfoStatNum[i] * (int)magnification).ToString();
-                    Sprite _statSprite = SetStatImage(m_AllInfoStatName[i]);
-                    m_SetClassPanel.AllInfoPanelClassStatImage[i].sprite = _statSprite;
-                }
-            }
+            SetClassStatsToProfessorPower(_ClickProfessorData, StatCount, _prevClass);
 
             // 내가 선택한 교수가 있다면 그 버튼을 선택한 상태로 만들어준다.
-            for (int i = 0; i < m_SetClassPanel.ClassPrefabParent.childCount; i++)
-            {
-                if (m_SetClassPanel.ClassPrefabParent.GetChild(i).name == _ClickClassData.m_ClassName)
-                {
-                    ColorBlock _buttonColor =
-                        m_SetClassPanel.ClassPrefabParent.GetChild(i).GetComponent<Button>().colors;
-
-                    _buttonColor.normalColor = m_HighLightColor;
-                    _buttonColor.highlightedColor = m_HighLightColor;
-                    _buttonColor.pressedColor = m_HighLightColor;
-                    _buttonColor.selectedColor = m_HighLightColor;
-
-                    m_SetClassPanel.ClassPrefabParent.GetChild(i).GetComponent<Button>().colors = _buttonColor;
-
-                    break;
-                }
-            }
+            //for (int i = 0; i < m_SetClassPanel.ClassPrefabParent.childCount; i++)
+            //{
+            //    if (m_SetClassPanel.ClassPrefabParent.GetChild(i).name == _ClickClassData.m_ClassName)
+            //    {
+            //        m_SetClassPanel.ClassPrefabParent.GetChild(i).GetComponent<ClassPrefab>().CheckImage.SetActive(true);
+            //        break;
+            //    }
+            //}
         }
 
-        if (PlayerInfo.Instance.IsFirstClassSetting && m_TutorialCount == 4)
+        if (PlayerInfo.Instance.IsFirstClassSetting && m_TutorialCount == 5)
         {
-            m_Unmask.fitTarget = m_SetClassPanel.ClassScrollView.GetComponent<RectTransform>();
-            m_SetClassPanel.ClassPrefabParent.GetChild(0).GetComponent<Button>().interactable = false;
-            m_SetClassPanel.ClassPrefabParent.GetChild(1).GetComponent<Button>().interactable = false;
-            m_SetClassPanel.ClassPrefabParent.GetChild(2).GetComponent<Button>().interactable = false;
+            m_Unmask.fitTarget = m_SetClassPanel.ClassListRect;
             m_TutorialArrowImage.gameObject.SetActive(false);
             m_TutorialTextImage.gameObject.SetActive(true);
             m_TutorialText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
-            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-700, 0, 0);
+            m_TutorialTextImage.transform.position = m_Unmask.fitTarget.position + new Vector3(-250, 0, 0);
             m_ScriptCount++;
             m_TutorialCount++;
             m_SetClassPanel.ProfessorScrollView.vertical = true;
             m_SetClassPanel.ClassScrollView.vertical = false;
+            m_NextButton.gameObject.SetActive(true);
         }
 
         m_SaveData.m_SelectProfessorDataSave = _ClickProfessorData;
@@ -2539,7 +2393,7 @@ public class SelectClass : MonoBehaviour
                 // 위에서 다 비워준 뒤 다시 내가 이전에 선택했던 정보를 넣어준다.
                 m_SaveData = m_TempSaveData;
             }
-                break;
+            break;
 
             case 2: // 1주차 플밍
             {
@@ -2554,7 +2408,7 @@ public class SelectClass : MonoBehaviour
 
                 m_SaveData = m_TempSaveData;
             }
-                break;
+            break;
 
             case 3: // 2주차 기획
             {
@@ -2586,7 +2440,7 @@ public class SelectClass : MonoBehaviour
 
                 m_SaveData = m_TempSaveData;
             }
-                break;
+            break;
 
             case 4: // 2주차 아트
             {
@@ -2608,10 +2462,10 @@ public class SelectClass : MonoBehaviour
 
                 MakeClass();
                 MakeProfessor();
-
+                m_SetClassPanel.SetBackButtonActive(true);
                 m_SaveData = m_TempSaveData;
             }
-                break;
+            break;
 
             case 5: // 2주차 플밍
             {
@@ -2635,7 +2489,7 @@ public class SelectClass : MonoBehaviour
 
                 m_SaveData = m_TempSaveData;
             }
-                break;
+            break;
         }
     }
 
@@ -2706,33 +2560,46 @@ public class SelectClass : MonoBehaviour
         }
     }
 
+    public float SetIncreaseClassFeeOrStat(Rank _myAcademyRank, bool _isStat)
+    {
+        if (!_isStat)
+        {
+            foreach (IncreaseFee list in m_ClassFeeList)
+            {
+                if (list.MyAcademyRank == _myAcademyRank)
+                {
+                    return list.RisingFee;
+                }
+            }
+        }
+        else
+        {
+            foreach (IncreaseFee list in m_ClassFeeList)
+            {
+                if (list.MyAcademyRank == _myAcademyRank)
+                {
+                    return list.RisingStat;
+                }
+            }
+        }
+
+        return 0;
+    }
+
     private void ContinueTutorial()
     {
-        if (PlayerInfo.Instance.IsFirstClassSetting && m_TutorialCount == 12)
+        if (PlayerInfo.Instance.IsFirstClassSetting && m_TutorialCount == 13)
         {
             Time.timeScale = 0;
             m_PDAlarm.SetActive(true);
             m_Unmask.gameObject.SetActive(false);
             m_TutorialArrowImage.gameObject.SetActive(false);
             m_TutorialTextImage.gameObject.SetActive(false);
+            m_NextButton.gameObject.SetActive(true);
             m_BlackScreen.SetActive(false);
             m_AlarmText.text = m_TutorialPanel.GetComponent<Tutorial>().ClassTutorial[m_ScriptCount];
             m_ScriptCount++;
             m_TutorialCount++;
         }
-    }
-
-    public int CalculateSalary()
-    {
-        int _totalSalary = 0;
-
-        for (int i = 0; i < 2; i++)
-        {
-            _totalSalary += m_ArtData[i].m_SelectProfessorDataSave.m_ProfessorPay;
-            _totalSalary += m_GameDesignerData[i].m_SelectProfessorDataSave.m_ProfessorPay;
-            _totalSalary += m_ProgrammingData[i].m_SelectProfessorDataSave.m_ProfessorPay;
-        }
-
-        return _totalSalary;
     }
 }
